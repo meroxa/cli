@@ -27,14 +27,12 @@ var createCmd = &cobra.Command{
 	Short: "create meroxa pipeline components",
 	Long: `use the create command to create various Meroxa pipeline components
 including Resources, Connections and Functions.`,
-	//Run: func(cmd *cobra.Command, args []string) {
-	//fmt.Println("create called")
-	//},
 }
 
 var createResourceCmd = &cobra.Command{
-	Use:   "resource",
+	Use:   "resource [resource-type]",
 	Short: "create resource",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("create resource called")
 	},
@@ -61,6 +59,9 @@ func init() {
 
 	// Subcommands
 	createCmd.AddCommand(createResourceCmd)
+	createResourceCmd.Flags().String("name", "", "resource name")
+	createResourceCmd.Flags().StringP("config", "c", "", "resource configuration")
+
 	createCmd.AddCommand(createConnectionCmd)
 	createCmd.AddCommand(createFunctionCmd)
 
