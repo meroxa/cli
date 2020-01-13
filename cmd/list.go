@@ -24,13 +24,9 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "list components",
+	Long: `list the components of the Meroxa platform, including pipelines,
+ resources, connections, functions etc... You may also filter by type.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("list called")
 	},
@@ -39,12 +35,6 @@ to quickly create a Cobra application.`,
 var listResourcesCmd = &cobra.Command{
 	Use:   "resources",
 	Short: "list resources",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("list resources called")
 	},
@@ -53,12 +43,6 @@ to quickly create a Cobra application.`,
 var listConnectionsCmd = &cobra.Command{
 	Use:   "connections",
 	Short: "list connections",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("list connections called")
 	},
@@ -67,12 +51,6 @@ to quickly create a Cobra application.`,
 var listResourceTypesCmd = &cobra.Command{
 	Use:   "resource-types",
 	Short: "list resources-types",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("list resource-types called")
 	},

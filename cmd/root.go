@@ -32,7 +32,7 @@ var client *meroxaAPIClient
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "meroxa",
-	Short: "the meroxa CLI",
+	Short: "the Meroxa CLI",
 	Long: `The Meroxa CLI allows quick and easy access to the Meroxa data platform.
 
 Using the CLI you are able to create and manage sophisticated data pipelines
