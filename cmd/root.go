@@ -27,6 +27,8 @@ import (
 
 var cfgFile string
 
+const version = "v0.1.0"
+
 var client *meroxaAPIClient
 
 // rootCmd represents the base command when called without any subcommands

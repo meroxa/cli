@@ -7,6 +7,7 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.9
+      - image: circleci/postgres:10
 
     working_directory: /go/src/github.com/meroxa/cli
     steps:
@@ -14,4 +15,4 @@ jobs:
 
       # specify any bash command here prefixed with `run: `
       - run: go get -v -t -d ./...
-      - run: go test -v ./...
+      - run: go test -v -race ./...
