@@ -24,7 +24,7 @@ import (
 // connectCmd represents the connect command
 var connectCmd = &cobra.Command{
 	Use:   "connect",
-	Short: "connect two resources toegether",
+	Short: "connect two resources together",
 	Long: `use the connect commands to automatically configure the connections
 		   required to pull data from one datasource (the source) to another
 		   (the target).
