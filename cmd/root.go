@@ -29,8 +29,6 @@ var cfgFile string
 
 const version = "v0.1.0"
 
-var client *meroxaAPIClient
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "meroxa",
@@ -55,13 +53,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Initialize meroxa API client
-	if viper.Get("url") != nil {
-		client = newClient(viper.Get("url").(string))
-	} else {
-		client = newClient("https://api.meroxa.io/v1")
-	}
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

@@ -35,12 +35,16 @@ var createResourceCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("create resource called")
+		if name, err := cmd.Flags().GetString("name"); name != "" && err == nil {
+			fmt.Println("name:", name)
+		}
 	},
 }
 
 var createConnectionCmd = &cobra.Command{
 	Use:   "connection",
 	Short: "create connection",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("create connection called")
 	},
@@ -63,6 +67,7 @@ func init() {
 	createResourceCmd.Flags().StringP("config", "c", "", "resource configuration")
 
 	createCmd.AddCommand(createConnectionCmd)
+	createConnectionCmd.Flags().StringP("config", "c", "", "connection configuration")
 	createCmd.AddCommand(createFunctionCmd)
 
 	// Here you will define your flags and configuration settings.

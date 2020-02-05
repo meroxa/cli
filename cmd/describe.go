@@ -16,7 +16,10 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -36,7 +39,21 @@ var describeResourceCmd = &cobra.Command{
 	Use:   "resource",
 	Short: "describe resource",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("describe resource called")
+		c, err := client()
+		intID, err := strconv.Atoi(args[0])
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		res, err := c.GetResource(ctx, intID)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+		fmt.Printf("Resource: %+v", res)
 	},
 }
 

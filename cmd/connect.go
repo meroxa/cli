@@ -24,9 +24,14 @@ import (
 // connectCmd represents the connect command
 var connectCmd = &cobra.Command{
 	Use:   "connect",
-	Short: "connect a resource to the pipeline",
-	Long: `configure connection between the resource and the pipeline. The 
-appropriate connector will automatically be setup by the Meroxa platform`,
+	Short: "connect two resources toegether",
+	Long: `use the connect commands to automatically configure the connections
+		   required to pull data from one datasource (the source) to another
+		   (the target).
+
+		   this is essentially a shortcut for creating a connection from the
+		   source to Meroxa and creating a connection from Meroxa to the target`,
+	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("connect called")
 	},
@@ -34,6 +39,10 @@ appropriate connector will automatically be setup by the Meroxa platform`,
 
 func init() {
 	rootCmd.AddCommand(connectCmd)
+
+	// Subcommands
+	connectCmd.Flags().String("to", "", "resource name")
+	connectCmd.MarkFlagRequired("to")
 
 	// Here you will define your flags and configuration settings.
 

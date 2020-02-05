@@ -33,3 +33,7 @@ var versionCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd)
 }
+
+func versionString() string {
+	return fmt.Sprintf("meroxa cli %s", version)
+}
