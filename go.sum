@@ -67,6 +67,8 @@ github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czP
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/meroxa/meroxa-go v0.0.0-20200205004729-f91d3f03d6c5 h1:a2dzmhud8q0V9lv/gyR/gstKYH+vOy7ijUJzdozgahI=
 github.com/meroxa/meroxa-go v0.0.0-20200205004729-f91d3f03d6c5/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20200205182309-29556b882654 h1:X0aLFV5OrQu9qa5MUyPEkfEtiQ/F1TCqwQWZucr/Y3g=
+github.com/meroxa/meroxa-go v0.0.0-20200205182309-29556b882654/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=

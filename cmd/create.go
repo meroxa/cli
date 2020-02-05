@@ -16,8 +16,11 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"time"
 
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
@@ -34,10 +37,50 @@ var createResourceCmd = &cobra.Command{
 	Short: "create resource",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create resource called")
-		if name, err := cmd.Flags().GetString("name"); name != "" && err == nil {
-			fmt.Println("name:", name)
+
+		// Resource Type
+		resType := args[0]
+
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
 		}
+
+		// Assemble resource struct from config
+		name, err := cmd.Flags().GetString("name")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		u, err := cmd.Flags().GetString("url")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		// TODO: Figure out best way to handle creds, config and metadata
+
+		r := meroxa.Resource{
+			Kind:          resType,
+			Name:          name,
+			URL:           u,
+			Credentials:   nil,
+			Configuration: nil,
+			Metadata:      nil,
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		fmt.Printf("Creating %s Resouce...", resType)
+
+		res, err := c.CreateResource(ctx, &r)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		fmt.Println("Resource successfully created!")
+		prettyPrint("resource", res)
 	},
 }
 
@@ -63,8 +106,11 @@ func init() {
 
 	// Subcommands
 	createCmd.AddCommand(createResourceCmd)
-	createResourceCmd.Flags().String("name", "", "resource name")
+	createResourceCmd.Flags().StringP("name", "n", "", "resource name")
+	createResourceCmd.Flags().StringP("url", "u", "", "resource url")
+	createResourceCmd.Flags().String("credentials", "", "resource credentials")
 	createResourceCmd.Flags().StringP("config", "c", "", "resource configuration")
+	createResourceCmd.Flags().StringP("metadata", "m", "", "resource metadata")
 
 	createCmd.AddCommand(createConnectionCmd)
 	createConnectionCmd.Flags().StringP("config", "c", "", "connection configuration")

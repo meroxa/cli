@@ -29,10 +29,7 @@ var describeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "describe a component",
 	Long: `describe a component of the Meroxa data platform, including pipelines,
-	resources, connections, functions etc...`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("describe called")
-	},
+resources, connections, functions etc...`,
 }
 
 var describeResourceCmd = &cobra.Command{
@@ -53,7 +50,8 @@ var describeResourceCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
-		fmt.Printf("Resource: %+v", res)
+
+		prettyPrint("resource", res)
 	},
 }
 
@@ -61,7 +59,22 @@ var describeConnectionCmd = &cobra.Command{
 	Use:   "connection",
 	Short: "describe connection",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("describe connection called")
+		c, err := client()
+		intID, err := strconv.Atoi(args[0])
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		res, err := c.GetConnection(ctx, intID)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("connection", res)
 	},
 }
 
