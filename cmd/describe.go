@@ -33,8 +33,9 @@ resources, connections, functions etc...`,
 }
 
 var describeResourceCmd = &cobra.Command{
-	Use:   "resource",
+	Use:   "resource <id>",
 	Short: "describe resource",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := client()
 		intID, err := strconv.Atoi(args[0])

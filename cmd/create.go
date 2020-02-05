@@ -33,7 +33,7 @@ including Resources, Connections and Functions.`,
 }
 
 var createResourceCmd = &cobra.Command{
-	Use:   "resource [resource-type]",
+	Use:   "resource <resource-type>",
 	Short: "create resource",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
