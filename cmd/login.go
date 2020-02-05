@@ -17,21 +17,47 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
 
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
+
+const ConfigFileName = ".meroxa"
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "log into the Meroxa platform",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("login called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		err := saveCreds(args[0], args[1])
+		if err != nil {
+			return err
+		}
+		fmt.Println("login saved")
+		return nil
+	},
+}
+
+var whoAmICmd = &cobra.Command{
+	Use:   "whoami",
+	Short: "retrieve currently logged in user",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		u, _, err := readCreds()
+		if err != nil {
+			return err
+		}
+		fmt.Printf("username: %s", u)
+		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
+
+	// Subcommands
+	loginCmd.AddCommand(whoAmICmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -42,4 +68,40 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// loginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func saveCreds(username, password string) error {
+	bytes := []byte(fmt.Sprintf("%s:%s", username, password))
+
+	filePath, err := configFilePath()
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(filePath, bytes, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func readCreds() (string, string, error) {
+	filePath, err := configFilePath()
+	if err != nil {
+		return "", "", err
+	}
+	dat, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return "", "", err
+	}
+
+	creds := strings.Split(string(dat), ":")
+	return creds[0], creds[1], nil
+}
+
+func configFilePath() (string, error) {
+	dir, err := homedir.Dir()
+	if err != nil {
+		return "", nil
+	}
+	return dir + "/" + ConfigFileName, nil
 }

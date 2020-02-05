@@ -11,54 +11,68 @@ import (
 
 var memDB map[string]map[string]interface{}
 
-func listResourcesHandler(w http.ResponseWriter, r *http.Request) {
-	resources := memDB["resources"]
-
-	resourcesJSON, err := json.Marshal(resources)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(resourcesJSON))
-}
-
-func createResourceHandler(w http.ResponseWriter, req *http.Request) {
-	if memDB["resources"] == nil {
-		memDB["resources"] = make(map[string]interface{})
-	}
-
-	decoder := json.NewDecoder(req.Body)
-	var r map[string]interface{}
-	err := decoder.Decode(&r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	nextID := strconv.Itoa(len(memDB["resources"]) + 1)
-	memDB["resources"][nextID] = r
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "resource created")
-}
-
-func getResourceHandler(w http.ResponseWriter, r *http.Request) {
-	//vars := mux.Vars(r)
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "here are the resources")
-}
-
 func main() {
 
 	// Init in-memory database
 	memDB = make(map[string]map[string]interface{})
 
-	r := mux.NewRouter()
+	r := mux.NewRouter().PathPrefix("/v1").Subrouter()
 
 	// Routes
-	r.HandleFunc("/resources", listResourcesHandler).Methods("GET")
-	r.HandleFunc("/resources", createResourceHandler).Methods("POST")
-	r.HandleFunc("/resources/{resource}", listResourcesHandler)
+	r.HandleFunc("/{object}", listHandler).Methods("GET")
+	r.HandleFunc("/{object}", createHandler).Methods("POST")
+	r.HandleFunc("/{object}/{id}", describeHandler).Methods("GET")
 
 	// Run Server
 	http.ListenAndServe(":8080", r)
+}
+
+func listHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	object := vars["object"]
+	list := memDB[object]
+
+	responseJSON, err := json.Marshal(list)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, string(responseJSON))
+}
+
+func createHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	object := vars["object"]
+
+	if memDB[object] == nil {
+		memDB[object] = make(map[string]interface{})
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var o map[string]interface{}
+	err := decoder.Decode(&o)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	nextID := strconv.Itoa(len(memDB[object]) + 1)
+	memDB[object][nextID] = o
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "%s created", object)
+}
+
+func describeHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	object := vars["object"]
+	id := vars["id"]
+
+	res := memDB[object][id]
+
+	responseJSON, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, string(responseJSON))
 }

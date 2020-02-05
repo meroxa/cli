@@ -27,7 +27,7 @@ import (
 
 var cfgFile string
 
-var client *meroxaAPIClient
+const version = "v0.1.0"
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -54,22 +54,15 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Initialize meroxa API client
-	if viper.Get("url") != nil {
-		client = newClient(viper.Get("url").(string))
-	} else {
-		client = newClient("https://api.meroxa.io/v1")
-	}
-
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
+	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
