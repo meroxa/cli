@@ -20,7 +20,7 @@ type Connector struct {
 func (c *Client) CreateConnection(ctx context.Context, resourceID int, config map[string]string) (*Connector, error) {
 	path := fmt.Sprintf("/v1/resources/%d/connection", resourceID)
 
-	resp, err := c.makeRequest(ctx, http.MethodPost, path, config)
+	resp, err := c.makeRequest(ctx, http.MethodPost, path, config, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (c *Client) CreateConnection(ctx context.Context, resourceID int, config ma
 func (c *Client) GetConnection(ctx context.Context, id int) (*Connector, error) {
 	path := fmt.Sprintf("/v1/connections/%d", id)
 
-	resp, err := c.makeRequest(ctx, http.MethodPost, path, nil)
+	resp, err := c.makeRequest(ctx, http.MethodPost, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *Client) GetConnection(ctx context.Context, id int) (*Connector, error) 
 func (c *Client) DeleteConnection(ctx context.Context, id int) error {
 	path := fmt.Sprintf("/v1/connections/%d", id)
 
-	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil)
+	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {
 		return err
 	}

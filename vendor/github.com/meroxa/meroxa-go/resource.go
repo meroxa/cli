@@ -29,7 +29,7 @@ type Resource struct {
 func (c *Client) CreateResource(ctx context.Context, resource *Resource) (*Resource, error) {
 	path := fmt.Sprintf("/v1/resources")
 
-	resp, err := c.makeRequest(ctx, http.MethodPost, path, resource)
+	resp, err := c.makeRequest(ctx, http.MethodPost, path, resource, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *Client) CreateResource(ctx context.Context, resource *Resource) (*Resou
 func (c *Client) ListResources(ctx context.Context) ([]*Resource, error) {
 	path := fmt.Sprintf("/v1/resources")
 
-	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil)
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,29 @@ func (c *Client) ListResources(ctx context.Context) ([]*Resource, error) {
 func (c *Client) GetResource(ctx context.Context, id int) (*Resource, error) {
 	path := fmt.Sprintf("/v1/resources/%d", id)
 
-	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil)
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var r Resource
+	err = json.NewDecoder(resp.Body).Decode(&r)
+	if err != nil {
+		return nil, err
+	}
+
+	return &r, nil
+}
+
+// GetResourceByName returns a Resource with the given name
+func (c *Client) GetResourceByName(ctx context.Context, name string) (*Resource, error) {
+	path := fmt.Sprintf("/v1/resources")
+
+	params := map[string][]string{
+		"name": []string{name},
+	}
+
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, params)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +105,7 @@ func (c *Client) GetResource(ctx context.Context, id int) (*Resource, error) {
 func (c *Client) DeleteResource(ctx context.Context, id int) error {
 	path := fmt.Sprintf("/v1/resources/%d", id)
 
-	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil)
+	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -95,7 +117,7 @@ func (c *Client) DeleteResource(ctx context.Context, id int) error {
 func (c *Client) ListResourceConnections(ctx context.Context, id int) ([]*Connector, error) {
 	path := fmt.Sprintf("/v1/resources/%d/connections", id)
 
-	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil)
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -41,12 +41,22 @@ func New(username, password, ua string) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) makeRequest(ctx context.Context, method, path string, body interface{}) (*http.Response, error) {
+func (c *Client) makeRequest(ctx context.Context, method, path string, body interface{}, params url.Values) (*http.Response, error) {
 	req, err := c.newRequest(ctx, method, path, body)
 	if err != nil {
 		return nil, err
 	}
 
+	// Merge params
+	if params != nil {
+		q := req.URL.Query()
+		for k, v := range params { // v is a []string
+			for _, vv := range v {
+				q.Add(k, vv)
+			}
+			req.URL.RawQuery = q.Encode()
+		}
+	}
 	resp, err := c.do(ctx, req)
 	if err != nil {
 		return nil, err

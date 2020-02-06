@@ -33,21 +33,18 @@ resources, connections, functions etc...`,
 }
 
 var describeResourceCmd = &cobra.Command{
-	Use:   "resource <id>",
+	Use:   "resource <name>",
 	Short: "describe resource",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := client()
-		intID, err := strconv.Atoi(args[0])
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
+		name := args[0]
 
+		c, err := client()
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		res, err := c.GetResource(ctx, intID)
+		res, err := c.GetResourceByName(ctx, name)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
