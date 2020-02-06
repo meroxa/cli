@@ -80,7 +80,7 @@ var describeFunctionCmd = &cobra.Command{
 	Use:   "function",
 	Short: "describe function",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list resource-types called")
+		fmt.Println("describe function called")
 	},
 }
 

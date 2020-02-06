@@ -16,7 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -52,7 +54,21 @@ var listResourceTypesCmd = &cobra.Command{
 	Use:   "resource-types",
 	Short: "list resources-types",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list resource-types called")
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		res, err := c.ListResourceTypes(ctx)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("resource types", res)
 	},
 }
 
