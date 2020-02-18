@@ -2,6 +2,21 @@
 
 All commands start with `meroxa` (the name of the binary).
 
+### Examples
+
+* Create Resource:
+    ```
+    meroxa create resource postgres --name mypg --url postgres://user:secret@localhost:5432/db
+    ```
+* Create Connection:
+    ```
+    meroxa create connection mypg --config '{"table.whitelist":"public.purchases"}'
+    ```
+* List Resources:
+    ```
+    meroxa list resources
+    ```
+
 ### Build
 
 Build CLI as `meroxa` binary:
@@ -30,5 +45,7 @@ GOSUMDB=off go get -u github.com/meroxa/meroxa-go
 
 
 ### Test
+
+_TODO_
 
 

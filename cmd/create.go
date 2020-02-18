@@ -17,7 +17,9 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/meroxa/meroxa-go"
@@ -57,22 +59,49 @@ var createResourceCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 		}
 
-		// TODO: Figure out best way to handle creds, config and metadata
-
 		r := meroxa.Resource{
 			Kind:          resType,
 			Name:          name,
 			URL:           u,
-			Credentials:   nil,
 			Configuration: nil,
 			Metadata:      nil,
+		}
+
+		// TODO: Figure out best way to handle creds, config and metadata
+		// Get credentials (expect a JSON string)
+		credsString, err := cmd.Flags().GetString("credentials")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+		if credsString != "" {
+			var creds meroxa.Credentials
+			err = json.Unmarshal([]byte(credsString), &creds)
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+
+			r.Credentials = &creds
+		}
+
+		metadataString, err := cmd.Flags().GetString("metadata")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+		if metadataString != "" {
+			var metadata map[string]string
+			err = json.Unmarshal([]byte(metadataString), &metadata)
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+
+			r.Metadata = metadata
 		}
 
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		fmt.Printf("Creating %s Resouce...", resType)
+		fmt.Printf("Creating %s Resource...\n", resType)
 
 		res, err := c.CreateResource(ctx, &r)
 		if err != nil {
@@ -89,7 +118,55 @@ var createConnectionCmd = &cobra.Command{
 	Short: "create connection",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create connection called")
+		// Resource Name
+		resName := args[0]
+
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// get resource ID from name
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		res, err := c.GetResourceByName(ctx, resName)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// create connection
+		ctx = context.Background()
+		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		cfgString, err := cmd.Flags().GetString("config")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		log.Println("Config:", cfgString)
+
+		var cfg map[string]string
+		err = json.Unmarshal([]byte(cfgString), &cfg)
+		if err != nil {
+			fmt.Println("1Error: ", err)
+			return
+		}
+
+		fmt.Println("Creating connection...")
+		con, err := c.CreateConnection(ctx, res.ID, cfg)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		fmt.Println("Connection successfully created!")
+		prettyPrint("connector", con)
 	},
 }
 

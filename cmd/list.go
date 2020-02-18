@@ -29,16 +29,27 @@ var listCmd = &cobra.Command{
 	Short: "list components",
 	Long: `list the components of the Meroxa platform, including pipelines,
  resources, connections, functions etc... You may also filter by type.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
-	},
 }
 
 var listResourcesCmd = &cobra.Command{
 	Use:   "resources",
 	Short: "list resources",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list resources called")
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		rr, err := c.ListResources(ctx)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("resources", rr)
 	},
 }
 
