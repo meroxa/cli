@@ -7,20 +7,24 @@ import (
 	"net/http"
 )
 
+// Credentials represents the Meroxa Resource credentials type within the
+// Meroxa API
+type Credentials struct {
+	Username      string `json:"username"`
+	Password      string `json:"password"`
+	CACert        string `json:"ca_cert"`
+	ClientCert    string `json:"client_cert"`
+	ClientCertKey string `json:"client_cert_key"`
+	UseSSL        bool   `json:"ssl"`
+}
+
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
-	ID          int    `json:"id"`
-	Kind        string `json:"kind"`
-	Name        string `json:"name"`
-	URL         string `json:"url"`
-	Credentials *struct {
-		Username      string `json:"username"`
-		Password      string `json:"password"`
-		CACert        string `json:"ca_cert"`
-		ClientCert    string `json:"client_cert"`
-		ClientCertKey string `json:"client_cert_key"`
-		UseSSL        bool   `json:"ssl"`
-	} `json:"credentials,omitempty"`
+	ID            int               `json:"id"`
+	Kind          string            `json:"kind"`
+	Name          string            `json:"name"`
+	URL           string            `json:"url"`
+	Credentials   *Credentials      `json:"credentials,omitempty"`
 	Configuration map[string]string `json:"configuration"`
 	Metadata      map[string]string `json:"metadata"`
 }
