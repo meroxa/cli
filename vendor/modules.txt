@@ -17,7 +17,7 @@ github.com/hashicorp/hcl/json/token
 github.com/inconshreveable/mousetrap
 # github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
-# github.com/meroxa/meroxa-go v0.0.0-20200224204031-3fa578a03b00
+# github.com/meroxa/meroxa-go v0.0.0-20200225180300-608c1974e417
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
