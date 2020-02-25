@@ -57,7 +57,21 @@ var listConnectionsCmd = &cobra.Command{
 	Use:   "connections",
 	Short: "list connections",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list connections called")
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		res, err := c.ListConnections(ctx)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("connections", res)
 	},
 }
 

@@ -19,7 +19,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/meroxa/meroxa-go"
@@ -148,8 +147,6 @@ var createConnectionCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 			return
 		}
-
-		log.Println("Config:", cfgString)
 
 		var cfg map[string]string
 		err = json.Unmarshal([]byte(cfgString), &cfg)

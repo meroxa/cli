@@ -69,6 +69,14 @@ github.com/meroxa/meroxa-go v0.0.0-20200206183129-3285bc549cc1 h1:rTAfeSWMyoJ6Ni
 github.com/meroxa/meroxa-go v0.0.0-20200206183129-3285bc549cc1/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/meroxa/meroxa-go v0.0.0-20200217222214-ac09952621d5 h1:hB0JKTyARyhYk06cTfCKPBAl29q10CGxbV+JZqf2dvE=
 github.com/meroxa/meroxa-go v0.0.0-20200217222214-ac09952621d5/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20200224202843-ad92c920822f h1:2Qyq8cY8mAEvqCxd7W4o94p5nVUK+meYwGMboDYxc+4=
+github.com/meroxa/meroxa-go v0.0.0-20200224202843-ad92c920822f/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20200224203212-a60e1f354594 h1:oO4imXVi5x181OJh4RimvOgmueX3/RiNnoTssZGvsuQ=
+github.com/meroxa/meroxa-go v0.0.0-20200224203212-a60e1f354594/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20200224203825-927c2c1da615 h1:cNJ2Afud1EB4Tuf6kxZi7RKjYt5Y+5JWvKBlcTmg59M=
+github.com/meroxa/meroxa-go v0.0.0-20200224203825-927c2c1da615/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20200224204031-3fa578a03b00 h1:cgh9PaBKTqR4/rRcfXZXgBiYVdgj1n70tO/5Z0ehWE4=
+github.com/meroxa/meroxa-go v0.0.0-20200224204031-3fa578a03b00/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
