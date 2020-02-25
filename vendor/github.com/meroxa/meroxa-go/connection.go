@@ -8,11 +8,12 @@ import (
 )
 
 type Connector struct {
-	ID            int               `json:"id"`
-	Kind          string            `json:"kind"`
-	Name          string            `json:"name"`
-	Configuration map[string]string `json:"configuration"`
-	Metadata      map[string]string `json:"metadata"`
+	ID            int                    `json:"id"`
+	Kind          string                 `json:"type"`
+	Name          string                 `json:"name"`
+	Configuration map[string]string      `json:"config"`
+	Metadata      map[string]string      `json:"metadata"`
+	Streams       map[string]interface{} `json:"streams"`
 }
 
 // CreateConnection provisions a connection between the Resource and the Meroxa
@@ -20,7 +21,11 @@ type Connector struct {
 func (c *Client) CreateConnection(ctx context.Context, resourceID int, config map[string]string) (*Connector, error) {
 	path := fmt.Sprintf("/v1/resources/%d/connection", resourceID)
 
-	resp, err := c.makeRequest(ctx, http.MethodPost, path, config, nil)
+	options := map[string]map[string]string{
+		"configuration": config,
+	}
+
+	resp, err := c.makeRequest(ctx, http.MethodPost, path, options, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,6 +37,24 @@ func (c *Client) CreateConnection(ctx context.Context, resourceID int, config ma
 	}
 
 	return &con, nil
+}
+
+// ListConnections returns an array of Connections (scoped to the calling user)
+func (c *Client) ListConnections(ctx context.Context) ([]*Connector, error) {
+	path := fmt.Sprintf("/v1/connectors")
+
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var rr []*Connector
+	err = json.NewDecoder(resp.Body).Decode(&rr)
+	if err != nil {
+		return nil, err
+	}
+
+	return rr, nil
 }
 
 // GetConnection returns a Connector for the given connection ID
