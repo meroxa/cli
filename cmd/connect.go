@@ -33,7 +33,7 @@ var connectCmd = &cobra.Command{
 		   source to Meroxa and creating a connection from Meroxa to the target`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("connect called")
+		fmt.Println("connect called - Not Implemented")
 	},
 }
 

@@ -171,7 +171,7 @@ var createFunctionCmd = &cobra.Command{
 	Use:   "function",
 	Short: "create function",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list resource-types called")
+		fmt.Println("create function called - Not Implemented")
 	},
 }
 
