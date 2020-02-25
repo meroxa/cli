@@ -16,7 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -27,24 +29,91 @@ var destroyCmd = &cobra.Command{
 	Short: "destroy a component",
 	Long: `deprovision a component of the Meroxa platform, including pipelines,
  resources, connections, functions etc...`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("destroy called")
-	},
 }
 
 var destroyResourceCmd = &cobra.Command{
-	Use:   "resource",
+	Use:   "resource <name>",
 	Short: "destroy resource",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("destroy resource called")
+		// Resource Name
+		resName := args[0]
+
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// get Resource ID from name
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		res, err := c.GetResourceByName(ctx, resName)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		c, err = client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx = context.Background()
+		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		err = c.DeleteResource(ctx, res.ID)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("connection destroyed", res)
 	},
 }
 
 var destroyConnectionCmd = &cobra.Command{
-	Use:   "connection",
+	Use:   "connection <name>",
 	Short: "destroy connection",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("destroy connection called")
+		// Connection Name
+		conName := args[0]
+
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// get Connection ID from name
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		con, err := c.GetConnectionByName(ctx, conName)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		c, err = client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx = context.Background()
+		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		err = c.DeleteConnection(ctx, con.ID)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("connection destroyed", con)
 	},
 }
 
@@ -52,7 +121,7 @@ var destroyFunctionCmd = &cobra.Command{
 	Use:   "function",
 	Short: "destroy function",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list resource-types called")
+		fmt.Println("destroy function called - Not Implemented")
 	},
 }
 
