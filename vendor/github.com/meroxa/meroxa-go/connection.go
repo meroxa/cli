@@ -61,7 +61,7 @@ func (c *Client) ListConnections(ctx context.Context) ([]*Connector, error) {
 func (c *Client) GetConnection(ctx context.Context, id int) (*Connector, error) {
 	path := fmt.Sprintf("/v1/connectors/%d", id)
 
-	resp, err := c.makeRequest(ctx, http.MethodPost, path, nil, nil)
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}
