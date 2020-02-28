@@ -26,11 +26,11 @@ var connectCmd = &cobra.Command{
 	Use:   "connect <name> --to <name>",
 	Short: "connect two resources together",
 	Long: `use the connect commands to automatically configure the connections
-		   required to pull data from one datasource (the source) to another
-		   (the target).
+required to pull data from one datasource (the source) to another
+(the target).
 
-		   this is essentially a shortcut for creating a connection from the
-		   source to Meroxa and creating a connection from Meroxa to the target`,
+this is essentially a shortcut for creating a connection from the
+source to Meroxa and creating a connection from Meroxa to the target`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("connect called - Not Implemented")

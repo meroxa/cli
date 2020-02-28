@@ -30,6 +30,7 @@ const ConfigFileName = ".meroxa"
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "log into the Meroxa platform",
+	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		err := saveCreds(args[0], args[1])
 		if err != nil {

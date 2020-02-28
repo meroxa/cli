@@ -148,10 +148,27 @@ var createConnectionCmd = &cobra.Command{
 			return
 		}
 
-		var cfg map[string]string
-		err = json.Unmarshal([]byte(cfgString), &cfg)
+		//var cfg Config
+		cfg := Config{}
+		if cfgString != "" {
+			var customCfg Config
+			err = json.Unmarshal([]byte(cfgString), &customCfg)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return
+			}
+			cfg.Merge(customCfg)
+		}
+
+		// merge in input
+		input, err := cmd.Flags().GetString("input")
 		if err != nil {
-			fmt.Println("1Error: ", err)
+			fmt.Println("Error: ", err)
+			return
+		}
+		err = cfg.Set("input", input)
+		if err != nil {
+			fmt.Println("Error: ", err)
 			return
 		}
 
@@ -188,6 +205,8 @@ func init() {
 
 	createCmd.AddCommand(createConnectionCmd)
 	createConnectionCmd.Flags().StringP("config", "c", "", "connection configuration")
+	createConnectionCmd.Flags().String("input", "", "command delimeted list of input streams")
+	createConnectionCmd.MarkFlagRequired("input")
 	createCmd.AddCommand(createFunctionCmd)
 
 	// Here you will define your flags and configuration settings.
