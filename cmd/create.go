@@ -148,11 +148,16 @@ var createConnectionCmd = &cobra.Command{
 			return
 		}
 
-		var cfg Config
-		err = json.Unmarshal([]byte(cfgString), &cfg)
-		if err != nil {
-			fmt.Println("1Error: ", err)
-			return
+		//var cfg Config
+		cfg := Config{}
+		if cfgString != "" {
+			var customCfg Config
+			err = json.Unmarshal([]byte(cfgString), &customCfg)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return
+			}
+			cfg.Merge(customCfg)
 		}
 
 		// merge in input
