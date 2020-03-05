@@ -105,6 +105,7 @@ var createResourceCmd = &cobra.Command{
 		res, err := c.CreateResource(ctx, &r)
 		if err != nil {
 			fmt.Println("Error: ", err)
+			return
 		}
 
 		fmt.Println("Resource successfully created!")
@@ -192,6 +193,53 @@ var createFunctionCmd = &cobra.Command{
 	},
 }
 
+var createPipelineCmd = &cobra.Command{
+	Use:   "pipeline <name>",
+	Short: "create pipeline",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		pipelineName := args[0]
+
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		p := &meroxa.Pipeline{
+			Name: pipelineName,
+		}
+
+		// Process metadata
+		metadataString, err := cmd.Flags().GetString("metadata")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+		if metadataString != "" {
+			var metadata map[string]string
+			err = json.Unmarshal([]byte(metadataString), &metadata)
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+			p.Metadata = metadata
+		}
+
+		fmt.Print("Creating Pipeline...\n")
+
+		res, err := c.CreatePipeline(ctx, p)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		fmt.Println("Pipeline successfully created!")
+		prettyPrint("pipeline", res)
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(createCmd)
 
@@ -207,15 +255,9 @@ func init() {
 	createConnectionCmd.Flags().StringP("config", "c", "", "connection configuration")
 	createConnectionCmd.Flags().String("input", "", "command delimeted list of input streams")
 	createConnectionCmd.MarkFlagRequired("input")
+
 	createCmd.AddCommand(createFunctionCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	createCmd.AddCommand(createPipelineCmd)
+	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")
 }

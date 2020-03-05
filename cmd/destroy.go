@@ -70,7 +70,7 @@ var destroyResourceCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("connection destroyed", res)
+		prettyPrint("resource destroyed", res)
 	},
 }
 
@@ -125,6 +125,49 @@ var destroyFunctionCmd = &cobra.Command{
 	},
 }
 
+var destroyPipelineCmd = &cobra.Command{
+	Use:   "pipeline <name>",
+	Short: "destroy pipeline",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		// Pipeline Name
+		pipelineName := args[0]
+
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// get Pipeline ID from name
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		pipeline, err := c.GetPipelineByName(ctx, pipelineName)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		c, err = client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx = context.Background()
+		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		err = c.DeletePipeline(ctx, pipeline.ID)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("pipeline destroyed", pipeline)
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(destroyCmd)
 
@@ -132,6 +175,7 @@ func init() {
 	destroyCmd.AddCommand(destroyResourceCmd)
 	destroyCmd.AddCommand(destroyConnectionCmd)
 	destroyCmd.AddCommand(destroyFunctionCmd)
+	destroyCmd.AddCommand(destroyPipelineCmd)
 
 	// Here you will define your flags and configuration settings.
 
