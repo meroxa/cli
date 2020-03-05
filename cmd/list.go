@@ -115,7 +115,7 @@ var listPipelinesCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("resources", rr)
+		prettyPrint("pipelines", rr)
 	},
 }
 
