@@ -97,6 +97,28 @@ var listResourceTypesCmd = &cobra.Command{
 	},
 }
 
+var listPipelinesCmd = &cobra.Command{
+	Use:   "pipelines",
+	Short: "list pipelines",
+	Run: func(cmd *cobra.Command, args []string) {
+		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		rr, err := c.ListPipelines(ctx)
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		prettyPrint("resources", rr)
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(listCmd)
 
@@ -104,6 +126,7 @@ func init() {
 	listCmd.AddCommand(listResourcesCmd)
 	listCmd.AddCommand(listConnectionsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
+	listCmd.AddCommand(listPipelinesCmd)
 
 	// Here you will define your flags and configuration settings.
 

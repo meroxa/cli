@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -28,6 +29,14 @@ func (c *Client) CreateConnection(ctx context.Context, resourceID int, config ma
 	resp, err := c.makeRequest(ctx, http.MethodPost, path, options, nil)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode > 204 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf("Status %d, %v", resp.StatusCode, string(body))
 	}
 
 	var con Connector
@@ -101,9 +110,13 @@ func (c *Client) GetConnectionByName(ctx context.Context, name string) (*Connect
 func (c *Client) DeleteConnection(ctx context.Context, id int) error {
 	path := fmt.Sprintf("/v1/connectors/%d", id)
 
-	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
+	resp, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode > 204 {
+		return fmt.Errorf("Status %d, %v", resp.StatusCode, err)
 	}
 
 	return nil
