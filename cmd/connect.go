@@ -52,8 +52,8 @@ source to Meroxa and creating a connection from Meroxa to the target`,
 		}
 
 		cfg := struct {
-			From *Config
-			To   *Config
+			From *Config `json:"from"`
+			To   *Config `json:"to"`
 		}{
 			From: &Config{},
 			To:   &Config{},
