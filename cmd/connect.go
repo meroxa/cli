@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -26,14 +27,70 @@ var connectCmd = &cobra.Command{
 	Use:   "connect <name> --to <name>",
 	Short: "connect two resources together",
 	Long: `use the connect commands to automatically configure the connections
-required to pull data from one datasource (the source) to another
+required to pull data from one resource (the source) to another
 (the target).
 
 this is essentially a shortcut for creating a connection from the
 source to Meroxa and creating a connection from Meroxa to the target`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("connect called - Not Implemented")
+		// source name
+		sourceName := args[0]
+
+		// target name
+		targetName, err := cmd.Flags().GetString("to")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// config
+		cfgString, err := cmd.Flags().GetString("config")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		cfg := struct {
+			From *Config
+			To   *Config
+		}{
+			From: &Config{},
+			To:   &Config{},
+		}
+		if cfgString != "" {
+			err = json.Unmarshal([]byte(cfgString), &cfg)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return
+			}
+		}
+
+		// merge in input
+		input, err := cmd.Flags().GetString("input")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		// create connection from source to meroxa
+		fmt.Println("Creating connection from source...")
+		srcCon, err := createConnection(sourceName, cfg.From, input)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+		fmt.Println("Connection successfully created!")
+
+		inputStreams := srcCon.Streams["output"].([]interface{})
+
+		fmt.Println("Creating connection to target...")
+		_, err = createConnection(targetName, cfg.To, inputStreams[0].(string))
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+		fmt.Println("Connection successfully created!")
 	},
 }
 
@@ -41,8 +98,11 @@ func init() {
 	rootCmd.AddCommand(connectCmd)
 
 	// Subcommands
-	connectCmd.Flags().String("to", "", "resource name")
+	connectCmd.Flags().String("to", "", "target resource name")
 	connectCmd.MarkFlagRequired("to")
+	connectCmd.Flags().String("from", "", "source resource name")
+	connectCmd.Flags().StringP("config", "c", "", "connection configuration")
+	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
 
 	// Here you will define your flags and configuration settings.
 
