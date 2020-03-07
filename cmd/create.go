@@ -121,44 +121,19 @@ var createConnectionCmd = &cobra.Command{
 		// Resource Name
 		resName := args[0]
 
-		c, err := client()
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
-		// get resource ID from name
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-
-		res, err := c.GetResourceByName(ctx, resName)
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
-		// create connection
-		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-
 		cfgString, err := cmd.Flags().GetString("config")
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
 
-		//var cfg Config
-		cfg := Config{}
+		cfg := &Config{}
 		if cfgString != "" {
-			var customCfg Config
-			err = json.Unmarshal([]byte(cfgString), &customCfg)
+			err = json.Unmarshal([]byte(cfgString), cfg)
 			if err != nil {
 				fmt.Println("Error: ", err)
 				return
 			}
-			cfg.Merge(customCfg)
 		}
 
 		// merge in input
@@ -174,12 +149,11 @@ var createConnectionCmd = &cobra.Command{
 		}
 
 		fmt.Println("Creating connection...")
-		con, err := c.CreateConnection(ctx, res.ID, cfg)
+		con, err := createConnection(resName, cfg, input)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
-
 		fmt.Println("Connection successfully created!")
 		prettyPrint("connector", con)
 	},
@@ -260,4 +234,47 @@ func init() {
 
 	createCmd.AddCommand(createPipelineCmd)
 	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")
+}
+
+func createConnection(resourceName string, config *Config, input string) (*meroxa.Connector, error) {
+	c, err := client()
+	if err != nil {
+		return nil, err
+	}
+
+	// get resource ID from name
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	res, err := c.GetResourceByName(ctx, resourceName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create connection
+	ctx = context.Background()
+	ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	//var cfg Config
+	cfg := Config{}
+	if config != nil {
+		cfg.Merge(*config)
+	}
+
+	// merge in input
+	if input != "" {
+		err = cfg.Set("input", input)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	con, err := c.CreateConnection(ctx, res.ID, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return con, nil
 }
