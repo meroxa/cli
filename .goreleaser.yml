@@ -4,7 +4,7 @@ project_name: meroxa
 builds:
 - env:
   - CGO_ENABLED=0
-- flags:
+  flags:
   - -mod=vendor
 archives:
 - replacements:
