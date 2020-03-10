@@ -4,6 +4,8 @@ project_name: meroxa
 builds:
 - env:
   - CGO_ENABLED=0
+- flags:
+  - -mod=vendor
 archives:
 - replacements:
     darwin: Darwin
