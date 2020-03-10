@@ -25,8 +25,8 @@ type Resource struct {
 	Name          string            `json:"name"`
 	URL           string            `json:"url"`
 	Credentials   *Credentials      `json:"credentials,omitempty"`
-	Configuration map[string]string `json:"configuration"`
-	Metadata      map[string]string `json:"metadata"`
+	Configuration map[string]string `json:"configuration,omitempty"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
 }
 
 // CreateResource provisions a new Resource from the given Resource struct
