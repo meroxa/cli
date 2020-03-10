@@ -21,5 +21,3 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-release:
-  disable: true
