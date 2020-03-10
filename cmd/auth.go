@@ -18,13 +18,15 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
 
-const ConfigFileName = ".meroxa"
+const MeroxaDirPath = ".config/meroxa"
+const ConfigFileName = "meroxa.config"
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
@@ -37,6 +39,21 @@ var loginCmd = &cobra.Command{
 			return err
 		}
 		fmt.Println("login saved")
+		return nil
+	},
+}
+
+// logoutCmd represents the logout command
+var logoutCmd = &cobra.Command{
+	Use:   "logout",
+	Short: "logout of the Meroxa platform",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// TODO: add confirmation
+		err := clearCreds()
+		if err != nil {
+			return err
+		}
+		fmt.Println("credentials cleared")
 		return nil
 	},
 }
@@ -55,10 +72,13 @@ var whoAmICmd = &cobra.Command{
 }
 
 func init() {
+	// Login
 	rootCmd.AddCommand(loginCmd)
-
 	// Subcommands
 	loginCmd.AddCommand(whoAmICmd)
+
+	// Logout
+	rootCmd.AddCommand(logoutCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -99,10 +119,42 @@ func readCreds() (string, string, error) {
 	return creds[0], creds[1], nil
 }
 
-func configFilePath() (string, error) {
-	dir, err := homedir.Dir()
+func clearCreds() error {
+	filePath, err := configFilePath()
 	if err != nil {
-		return "", nil
+		return err
 	}
-	return dir + "/" + ConfigFileName, nil
+
+	err = os.Remove(filePath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createOrFindMeroxaConfigDir() (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", err
+	}
+
+	targetDirPath := home + "/" + MeroxaDirPath
+
+	// Create Meroxa Config Dir if needed
+	err = os.MkdirAll(targetDirPath, 0744)
+	if err != nil {
+		return "", err
+	}
+
+	return targetDirPath, nil
+
+}
+
+func configFilePath() (string, error) {
+	mDir, err := createOrFindMeroxaConfigDir()
+	if err != nil {
+		return "", err
+	}
+	return mDir + "/" + ConfigFileName, nil
 }
