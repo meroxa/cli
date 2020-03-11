@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -44,12 +43,9 @@ func (c *Client) CreatePipeline(ctx context.Context, pipeline *Pipeline) (*Pipel
 		return nil, err
 	}
 
-	if resp.StatusCode > 204 {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, fmt.Errorf("Status %d, %v", resp.StatusCode, string(body))
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
 	}
 
 	var p Pipeline
@@ -66,6 +62,11 @@ func (c *Client) ListPipelines(ctx context.Context) ([]*Pipeline, error) {
 	path := fmt.Sprintf("/v1/pipelines")
 
 	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +93,9 @@ func (c *Client) GetPipelineByName(ctx context.Context, name string) (*Pipeline,
 		return nil, err
 	}
 
-	if resp.StatusCode > 204 {
-		return nil, fmt.Errorf("Status %d, %v", resp.StatusCode, err)
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
 	}
 
 	var p Pipeline
@@ -111,7 +113,12 @@ func (c *Client) GetPipelineByName(ctx context.Context, name string) (*Pipeline,
 func (c *Client) DeletePipeline(ctx context.Context, id int) error {
 	path := fmt.Sprintf("/v1/pipelines/%d", id)
 
-	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
+	resp, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return err
 	}
@@ -124,6 +131,11 @@ func (c *Client) GetPipelineStages(ctx context.Context, pipelineID int) ([]*Pipe
 	path := fmt.Sprintf("/v1/pipelines/%d/stages", pipelineID)
 
 	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -150,6 +162,11 @@ func (c *Client) AddPipelineStage(ctx context.Context, pipelineID int, connector
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var s PipelineStage
 	err = json.NewDecoder(resp.Body).Decode(&s)
 	if err != nil {
@@ -168,12 +185,9 @@ func (c *Client) RemovePipelineStage(ctx context.Context, pipelineID int, stageI
 		return err
 	}
 
-	if resp.StatusCode > 204 {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		return fmt.Errorf("Status %d, %v", resp.StatusCode, string(body))
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return err
 	}
 
 	return nil

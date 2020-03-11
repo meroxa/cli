@@ -38,6 +38,11 @@ func (c *Client) CreateResource(ctx context.Context, resource *Resource) (*Resou
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var r Resource
 	err = json.NewDecoder(resp.Body).Decode(&r)
 	if err != nil {
@@ -56,6 +61,11 @@ func (c *Client) ListResources(ctx context.Context) ([]*Resource, error) {
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var rr []*Resource
 	err = json.NewDecoder(resp.Body).Decode(&rr)
 	if err != nil {
@@ -70,6 +80,11 @@ func (c *Client) GetResource(ctx context.Context, id int) (*Resource, error) {
 	path := fmt.Sprintf("/v1/resources/%d", id)
 
 	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +111,11 @@ func (c *Client) GetResourceByName(ctx context.Context, name string) (*Resource,
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var r Resource
 	err = json.NewDecoder(resp.Body).Decode(&r)
 	if err != nil {
@@ -109,7 +129,12 @@ func (c *Client) GetResourceByName(ctx context.Context, name string) (*Resource,
 func (c *Client) DeleteResource(ctx context.Context, id int) error {
 	path := fmt.Sprintf("/v1/resources/%d", id)
 
-	_, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
+	resp, err := c.makeRequest(ctx, http.MethodDelete, path, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return err
 	}
@@ -122,6 +147,11 @@ func (c *Client) ListResourceConnections(ctx context.Context, id int) ([]*Connec
 	path := fmt.Sprintf("/v1/resources/%d/connections", id)
 
 	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}

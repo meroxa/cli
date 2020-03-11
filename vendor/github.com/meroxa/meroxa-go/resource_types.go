@@ -16,6 +16,11 @@ func (c *Client) ListResourceTypes(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var supportedTypes []string
 	err = json.NewDecoder(resp.Body).Decode(&supportedTypes)
 	if err != nil {
