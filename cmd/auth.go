@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"bytes"
+	"context"
 	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
@@ -29,6 +30,7 @@ import (
 	"time"
 
 	"github.com/manifoldco/promptui"
+	"github.com/meroxa/meroxa-go"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
@@ -71,13 +73,26 @@ var signupCmd = &cobra.Command{
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "log into the Meroxa platform",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		err := saveCreds(args[0], args[1])
+		u, err := prompt("Username", usernameValidator, false)
 		if err != nil {
 			return err
 		}
-		fmt.Println("login saved")
+		p, err := prompt("Password", passwordValidator, true)
+		if err != nil {
+			return err
+		}
+
+		err = verifyCredentials(u, p)
+		if err != nil {
+			return err
+		}
+
+		err = saveCreds(u, p)
+		if err != nil {
+			return err
+		}
+		fmt.Println("Logged in!")
 		return nil
 	},
 }
@@ -282,6 +297,25 @@ func signup(username, password, email string) error {
 	}
 	if resp.StatusCode > 204 {
 		return fmt.Errorf("error %+v", string(body))
+	}
+
+	return nil
+}
+
+func verifyCredentials(username, password string) error {
+	c, err := meroxa.New(username, password, versionString())
+
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	_, err = c.ListResourceTypes(ctx)
+	if err != nil {
+		return err
 	}
 
 	return nil

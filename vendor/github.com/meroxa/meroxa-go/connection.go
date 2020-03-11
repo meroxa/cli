@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -31,12 +30,9 @@ func (c *Client) CreateConnection(ctx context.Context, resourceID int, config ma
 		return nil, err
 	}
 
-	if resp.StatusCode > 204 {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, fmt.Errorf("Status %d, %v", resp.StatusCode, string(body))
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
 	}
 
 	var con Connector
@@ -57,6 +53,11 @@ func (c *Client) ListConnections(ctx context.Context) ([]*Connector, error) {
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var rr []*Connector
 	err = json.NewDecoder(resp.Body).Decode(&rr)
 	if err != nil {
@@ -71,6 +72,11 @@ func (c *Client) GetConnection(ctx context.Context, id int) (*Connector, error) 
 	path := fmt.Sprintf("/v1/connectors/%d", id)
 
 	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -97,6 +103,11 @@ func (c *Client) GetConnectionByName(ctx context.Context, name string) (*Connect
 		return nil, err
 	}
 
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
 	var con Connector
 	err = json.NewDecoder(resp.Body).Decode(&con)
 	if err != nil {
@@ -115,8 +126,9 @@ func (c *Client) DeleteConnection(ctx context.Context, id int) error {
 		return err
 	}
 
-	if resp.StatusCode > 204 {
-		return fmt.Errorf("Status %d, %v", resp.StatusCode, err)
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return err
 	}
 
 	return nil
