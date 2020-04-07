@@ -43,6 +43,15 @@ the following:
 GOSUMDB=off go get -u github.com/meroxa/meroxa-go
 ```
 
+### Release
+
+A [goreleaser](https://github.com/goreleaser/goreleaser) Github Action is
+configured to automatically build the CLI and cut a new release whenever a new
+git tag is pushed to the repo.
+
+* Tag - `git tag -a vX.X.X -m "<message goes here>"`
+* Push - `git push origin vX.X.X`
+
 
 ### Test
 
