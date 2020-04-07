@@ -3,9 +3,14 @@ package meroxa
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 )
+
+var ErrMissingScheme = errors.New("URL scheme required")
 
 // Credentials represents the Meroxa Resource credentials type within the
 // Meroxa API
@@ -32,6 +37,13 @@ type Resource struct {
 // CreateResource provisions a new Resource from the given Resource struct
 func (c *Client) CreateResource(ctx context.Context, resource *Resource) (*Resource, error) {
 	path := fmt.Sprintf("/v1/resources")
+
+	// url encode url username/password if needed
+	var err error
+	resource.URL, err = encodeURLCreds(resource.URL)
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := c.makeRequest(ctx, http.MethodPost, path, resource, nil)
 	if err != nil {
@@ -163,4 +175,32 @@ func (c *Client) ListResourceConnections(ctx context.Context, id int) ([]*Connec
 	}
 
 	return cc, nil
+}
+
+// Reassemble URL in order to properly encode username and password
+func encodeURLCreds(u string) (string, error) {
+	s1 := strings.SplitAfter(u, "://")
+	scheme := s1[0] // pull out scheme
+	if len(s1) == 1 {
+		return "", ErrMissingScheme
+	}
+
+	rest := strings.Split(s1[1], "@") // pull out everything after the @
+	if len(rest) == 1 {               // no username and password
+		return u, nil
+	}
+
+	escapedURL, err := url.Parse(scheme + rest[1])
+	if err != nil {
+		return "", err
+	}
+
+	if rest[0] != "" {
+		username := strings.Split(rest[0], ":")[0]
+		password := strings.Split(rest[0], ":")[1]
+		ui := url.UserPassword(username, password)
+		escapedURL.User = ui
+	}
+
+	return escapedURL.String(), nil
 }
