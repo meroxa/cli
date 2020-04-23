@@ -32,7 +32,7 @@ github.com/manifoldco/promptui/screenbuf
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
-# github.com/meroxa/meroxa-go v0.0.0-20200407000008-ab97e83a1bf2
+# github.com/meroxa/meroxa-go v0.0.0-20200407000008-ab97e83a1bf2 => ../meroxa-go
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
