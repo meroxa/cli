@@ -298,6 +298,10 @@ func signup(username, password, email string) error {
 	if resp.StatusCode > 204 {
 		return fmt.Errorf("error %+v", string(body))
 	}
+	err = saveCreds(username, password)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
