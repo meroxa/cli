@@ -3,7 +3,6 @@ package meroxa
 import (
 	"bytes"
 	"context"
-	b64 "encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -33,12 +32,12 @@ func New(username, password, ua string) (*Client, error) {
 		return nil, err
 	}
 
-	b64Password := b64.StdEncoding.EncodeToString([]byte(password))
+	escapedPassword := url.QueryEscape(password)
 	c := &Client{
 		BaseURL:    u,
 		userAgent:  userAgent(ua),
 		username:   username,
-		password:   b64Password,
+		password:   escapedPassword,
 		httpClient: httpClient(),
 	}
 	return c, nil
