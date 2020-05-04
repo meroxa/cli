@@ -18,12 +18,12 @@ package cmd
 import (
 	"bytes"
 	"context"
-	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -270,11 +270,11 @@ func signup(username, password, email string) error {
 		Timeout: 5 * time.Second,
 	}
 
-	b64Password := b64.StdEncoding.EncodeToString([]byte(password))
+	escapedPassword := url.QueryEscape(password)
 
 	requestBody, err := json.Marshal(map[string]string{
 		"username": username,
-		"password": b64Password,
+		"password": escapedPassword,
 		"email":    email,
 	})
 	if err != nil {
