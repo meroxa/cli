@@ -14,6 +14,8 @@ type Connector struct {
 	Configuration map[string]string      `json:"config"`
 	Metadata      map[string]string      `json:"metadata"`
 	Streams       map[string]interface{} `json:"streams"`
+	State         string                 `json:"state"`
+	Trace         string                 `json:"trace,omitempty"`
 }
 
 // CreateConnection provisions a connection between the Resource and the Meroxa
@@ -95,7 +97,7 @@ func (c *Client) GetConnectionByName(ctx context.Context, name string) (*Connect
 	path := fmt.Sprintf("/v1/connectors")
 
 	params := map[string][]string{
-		"name": []string{name},
+		"name": {name},
 	}
 
 	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, params)
