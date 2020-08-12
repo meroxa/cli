@@ -1,3 +1,5 @@
+# github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
+github.com/alexeyco/simpletable
 # github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 github.com/chzyer/readline
 # github.com/fsnotify/fsnotify v1.4.7
@@ -32,7 +34,9 @@ github.com/manifoldco/promptui/screenbuf
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
-# github.com/meroxa/meroxa-go v0.0.0-20200407000008-ab97e83a1bf2 => ../meroxa-go
+# github.com/mattn/go-runewidth v0.0.9
+github.com/mattn/go-runewidth
+# github.com/meroxa/meroxa-go v0.0.0-20200807224254-6d5da351027d => ../meroxa-go
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
@@ -55,7 +59,8 @@ github.com/spf13/pflag
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a
+# golang.org/x/sys v0.0.0-20200515095857-1151b9dac4a9
+golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.0
 golang.org/x/text/transform
