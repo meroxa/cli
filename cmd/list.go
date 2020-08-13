@@ -59,7 +59,7 @@ var listResourcesCmd = &cobra.Command{
 		case "json":
 			prettyPrint("resources", rr)
 		default:
-			printResourceTable(rr)
+			printResourcesTable(rr)
 		}
 
 	},
