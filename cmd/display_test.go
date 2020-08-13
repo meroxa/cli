@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestResourceTable(t *testing.T) {
+func TestResourcesTable(t *testing.T) {
 	resource := &meroxa.Resource{
 		ID:            0,
 		Kind:          "jdbc",
@@ -33,7 +33,7 @@ func TestResourceTable(t *testing.T) {
 
 	for name, resources := range tests {
 		t.Run(name, func(t *testing.T) {
-			printResourceTable(resources)
+			printResourcesTable(resources)
 		})
 	}
 }
@@ -81,6 +81,29 @@ func TestConnectionsTable(t *testing.T) {
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
 			printConnectionsTable(connections)
+		})
+	}
+}
+
+func TestPipelinesTable(t *testing.T) {
+	pipelineIDAlign := &meroxa.Pipeline{}
+	pipelineBase := &meroxa.Pipeline{
+		ID:       0,
+		Name:     "pipeline-base",
+		Metadata: nil,
+	}
+	deepCopy(pipelineBase, pipelineIDAlign)
+	pipelineIDAlign.ID = 1000
+	pipelineIDAlign.Name = "pipeline-align"
+
+	tests := map[string][]*meroxa.Pipeline{
+		"Base":         {pipelineBase},
+		"ID_Alignment": {pipelineBase, pipelineIDAlign},
+	}
+
+	for name, pipeline := range tests {
+		t.Run(name, func(t *testing.T) {
+			printPipelinesTable(pipeline)
 		})
 	}
 }

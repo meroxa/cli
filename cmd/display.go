@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go"
+	"strconv"
 	"strings"
 )
 
@@ -20,7 +21,7 @@ func prettyPrint(section string, data interface{}) {
 	fmt.Printf("%s \n", p)
 }
 
-func printResourceTable(resources []*meroxa.Resource) {
+func printResourcesTable(resources []*meroxa.Resource) {
 	table := simpletable.New()
 
 	table.Header = &simpletable.Header{
@@ -113,6 +114,28 @@ func printResourceTypesTable(types []string) {
 	for _, t := range types {
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: t},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+	table.SetStyle(simpletable.StyleDefault)
+	fmt.Println(table.String())
+}
+
+func printPipelinesTable(pipelines []*meroxa.Pipeline) {
+	table := simpletable.New()
+
+	table.Header = &simpletable.Header{
+		Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: "ID"},
+			{Align: simpletable.AlignCenter, Text: "Name"},
+		},
+	}
+
+	for _, p := range pipelines {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
+			{Align: simpletable.AlignCenter, Text: p.Name},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
