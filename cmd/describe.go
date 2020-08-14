@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"strconv"
+	"github.com/meroxa/meroxa-go"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -40,6 +41,9 @@ var describeResourceCmd = &cobra.Command{
 		name := args[0]
 
 		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
@@ -54,25 +58,32 @@ var describeResourceCmd = &cobra.Command{
 }
 
 var describeConnectionCmd = &cobra.Command{
-	Use:   "connection",
+	Use:   "connection [name]",
 	Short: "describe connection",
-	Run: func(cmd *cobra.Command, args []string) {
-		c, err := client()
-		intID, err := strconv.Atoi(args[0])
-		if err != nil {
-			fmt.Println("Error: ", err)
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires a connection name")
 		}
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			err  error
+			conn *meroxa.Connector
+		)
+		name := args[0]
+		c, err := client()
 
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		res, err := c.GetConnection(ctx, intID)
+		conn, err = c.GetConnectionByName(ctx, name)
 		if err != nil {
 			fmt.Println("Error: ", err)
+			return
 		}
-
-		prettyPrint("connection", res)
+		prettyPrint("connection", conn)
 	},
 }
 
