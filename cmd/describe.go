@@ -18,7 +18,8 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"strconv"
+	"github.com/meroxa/meroxa-go"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -40,6 +41,9 @@ var describeResourceCmd = &cobra.Command{
 		name := args[0]
 
 		c, err := client()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
@@ -56,23 +60,50 @@ var describeResourceCmd = &cobra.Command{
 var describeConnectionCmd = &cobra.Command{
 	Use:   "connection",
 	Short: "describe connection",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if cmd.Flags().NFlag() > 1 {
+			fmt.Println("INFO: Only 1 flag can be set")
+			err := cmd.Usage()
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+			os.Exit(1)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			err  error
+			conn *meroxa.Connector
+		)
+
 		c, err := client()
-		intID, err := strconv.Atoi(args[0])
+
+		intID, err := cmd.Flags().GetInt("id")
 		if err != nil {
 			fmt.Println("Error: ", err)
+			return
+		}
+
+		name, err := cmd.Flags().GetString("name")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
 		}
 
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		res, err := c.GetConnection(ctx, intID)
+		if intID == -1 && name != "" {
+			conn, err = c.GetConnectionByName(ctx, name)
+		} else {
+			conn, err = c.GetConnection(ctx, intID)
+		}
 		if err != nil {
 			fmt.Println("Error: ", err)
+			return
 		}
-
-		prettyPrint("connection", res)
+		prettyPrint("connection", conn)
 	},
 }
 
@@ -90,6 +121,9 @@ func init() {
 	// Subcommands
 	describeCmd.AddCommand(describeResourceCmd)
 	describeCmd.AddCommand(describeConnectionCmd)
+	describeConnectionCmd.Flags().IntP("id", "i", -1, "connection id")
+	describeConnectionCmd.Flags().StringP("name", "n", "", "connection name")
+
 	describeCmd.AddCommand(describeFunctionCmd)
 
 	// Here you will define your flags and configuration settings.
