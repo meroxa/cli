@@ -44,12 +44,24 @@ var listResourcesCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
+		output, err := cmd.Flags().GetString("output")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
 		rr, err := c.ListResources(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("resources", rr)
+		switch output {
+		case "json":
+			prettyPrint("resources", rr)
+		default:
+			printResourcesTable(rr)
+		}
+
 	},
 }
 
@@ -66,12 +78,23 @@ var listConnectionsCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		res, err := c.ListConnections(ctx)
+		output, err := cmd.Flags().GetString("output")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		connections, err := c.ListConnections(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("connections", res)
+		switch output {
+		case "json":
+			prettyPrint("connections", connections)
+		default:
+			printConnectionsTable(connections)
+		}
 	},
 }
 
@@ -88,12 +111,23 @@ var listResourceTypesCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		res, err := c.ListResourceTypes(ctx)
+		output, err := cmd.Flags().GetString("output")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
+		resTypes, err := c.ListResourceTypes(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("resource types", res)
+		switch output {
+		case "json":
+			prettyPrint("resource types", resTypes)
+		default:
+			printResourceTypesTable(resTypes)
+		}
 	},
 }
 
@@ -123,6 +157,7 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 
 	// Subcommands
+	listCmd.PersistentFlags().StringP("output", "o", "table", "output format [json|table]")
 	listCmd.AddCommand(listResourcesCmd)
 	listCmd.AddCommand(listConnectionsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
