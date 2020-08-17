@@ -43,7 +43,7 @@ func printResourcesTable(resources []*meroxa.Resource) {
 
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
-	table.SetStyle(simpletable.StyleDefault)
+	table.SetStyle(simpletable.StyleCompact)
 	fmt.Println(table.String())
 }
 
@@ -98,7 +98,7 @@ func printConnectionsTable(connections []*meroxa.Connector) {
 
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
-	table.SetStyle(simpletable.StyleDefault)
+	table.SetStyle(simpletable.StyleCompact)
 	fmt.Println(table.String())
 }
 
@@ -118,7 +118,7 @@ func printResourceTypesTable(types []string) {
 
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
-	table.SetStyle(simpletable.StyleDefault)
+	table.SetStyle(simpletable.StyleCompact)
 	fmt.Println(table.String())
 }
 
@@ -140,6 +140,6 @@ func printPipelinesTable(pipelines []*meroxa.Pipeline) {
 
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
-	table.SetStyle(simpletable.StyleDefault)
+	table.SetStyle(simpletable.StyleCompact)
 	fmt.Println(table.String())
 }
