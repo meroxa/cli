@@ -26,7 +26,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "display the version of the Meroxa CLI",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Meroxa CLI version %s\n", version)
+		fmt.Printf("Meroxa CLI version %s\n", meroxaVersion)
 	},
 }
 
@@ -35,5 +35,5 @@ func init() {
 }
 
 func versionString() string {
-	return fmt.Sprintf("meroxa cli %s", version)
+	return fmt.Sprintf("meroxa cli %s", meroxaVersion)
 }
