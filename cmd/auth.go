@@ -16,126 +16,93 @@ limitations under the License.
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/fatih/color"
+	"golang.org/x/oauth2"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"os"
-	"regexp"
+	"os/exec"
+	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/manifoldco/promptui"
-	"github.com/meroxa/meroxa-go"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/meroxa/cli/credstore"
+
+	rndm "github.com/nmrshll/rndm-go"
 	"github.com/spf13/cobra"
 )
 
-const MeroxaDirPath = ".config/meroxa"
-const ConfigFileName = "meroxa.config"
+const ClientID = "780birp93au255rqsenjc2o0pu"
+const CallbackURL = "http://localhost:21900/oauth/callback"
+const AuthDomain = "tjl-meroxa.auth.us-east-1.amazoncognito.com"
+const meroxaLabel = "meroxa-cli"
+const meroxaURL = "https://www.meroxa.io"
+const PORT = 21900
+const authTimeout = 300
+const oauthStateStringContextKey = 232
 
-var signupCmd = &cobra.Command{
-	Use:   "signup",
-	Short: "sign up to the Meroxa platform",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		u, err := prompt("Username", usernameValidator, false)
-		if err != nil {
-			fmt.Println("Username invalid: ", err)
-			return err
-		}
-		p, err := prompt("Password", passwordValidator, true)
-		if err != nil {
-			fmt.Println("Password invalid: ", err)
-			return err
-		}
-		e, err := prompt("Email", emailValidator, false)
-		if err != nil {
-			fmt.Println("Email invalid: ", err)
-			return err
-		}
-
-		fmt.Println("Registering user...")
-		err = signup(u, p, e)
-		if err != nil {
-			return err
-		}
-
-		fmt.Println("User registered!")
-		return nil
+var oauthConfig = &oauth2.Config{
+	ClientID: ClientID, // also known as client key sometimes
+	Scopes:   []string{"email"},
+	Endpoint: oauth2.Endpoint{
+		AuthURL:  "https://tjl-meroxa.auth.us-east-1.amazoncognito.com/oauth2/authorize",
+		TokenURL: "https://tjl-meroxa.auth.us-east-1.amazoncognito.com/oauth2/token",
 	},
+	RedirectURL: CallbackURL,
 }
 
-// loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "log into the Meroxa platform",
+	Short: "login or sign up to the Meroxa platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		u, err := prompt("Username", usernameValidator, false)
+		err := login()
 		if err != nil {
 			return err
 		}
-		p, err := prompt("Password", passwordValidator, true)
-		if err != nil {
-			return err
-		}
-
-		err = verifyCredentials(u, p)
-		if err != nil {
-			return err
-		}
-
-		err = saveCreds(u, p)
-		if err != nil {
-			return err
-		}
-		fmt.Println("Logged in!")
 		return nil
 	},
 }
 
 // logoutCmd represents the logout command
-var logoutCmd = &cobra.Command{
-	Use:   "logout",
-	Short: "logout of the Meroxa platform",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// TODO: add confirmation
-		err := clearCreds()
-		if err != nil {
-			return err
-		}
-		fmt.Println("credentials cleared")
-		return nil
-	},
-}
+//var logoutCmd = &cobra.Command{
+//	Use:   "logout",
+//	Short: "logout of the Meroxa platform",
+//	RunE: func(cmd *cobra.Command, args []string) error {
+//		// TODO: add confirmation
+//		err := logout()
+//		if err != nil {
+//			return err
+//		}
+//		fmt.Println("credentials cleared")
+//		return nil
+//	},
+//}
 
-var whoAmICmd = &cobra.Command{
-	Use:   "whoami",
-	Short: "retrieve currently logged in user",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		u, _, err := readCreds()
-		if err != nil {
-			return err
-		}
-		fmt.Printf("username: %s", u)
-		return nil
-	},
-}
+//var whoAmICmd = &cobra.Command{
+//	Use:   "whoami",
+//	Short: "retrieve currently logged in user",
+//	RunE: func(cmd *cobra.Command, args []string) error {
+//		u, _, err := readCreds()
+//		if err != nil {
+//			return err
+//		}
+//		fmt.Printf("username: %s", u)
+//		return nil
+//	},
+//}
 
 func init() {
 	// Login
 	rootCmd.AddCommand(loginCmd)
 	// Subcommands
-	loginCmd.AddCommand(whoAmICmd)
-
-	// Logout
-	rootCmd.AddCommand(logoutCmd)
-
-	// Signup
-	rootCmd.AddCommand(signupCmd)
+	//loginCmd.AddCommand(whoAmICmd)
+	//// Logout
+	//rootCmd.AddCommand(logoutCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -148,179 +115,191 @@ func init() {
 	// loginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func saveCreds(username, password string) error {
-	bytes := []byte(fmt.Sprintf("%s:%s", username, password))
-
-	filePath, err := configFilePath()
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(filePath, bytes, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func readCreds() (string, string, error) {
-	filePath, err := configFilePath()
-	if err != nil {
-		return "", "", err
-	}
-	dat, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return "", "", err
-	}
-
-	creds := strings.Split(string(dat), ":")
-	return creds[0], creds[1], nil
-}
-
-func clearCreds() error {
-	filePath, err := configFilePath()
-	if err != nil {
-		return err
-	}
-
-	err = os.Remove(filePath)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func createOrFindMeroxaConfigDir() (string, error) {
-	home, err := homedir.Dir()
-	if err != nil {
-		return "", err
-	}
-
-	targetDirPath := home + "/" + MeroxaDirPath
-
-	// Create Meroxa Config Dir if needed
-	err = os.MkdirAll(targetDirPath, 0744)
-	if err != nil {
-		return "", err
-	}
-
-	return targetDirPath, nil
-
-}
-
-func configFilePath() (string, error) {
-	mDir, err := createOrFindMeroxaConfigDir()
-	if err != nil {
-		return "", err
-	}
-	return mDir + "/" + ConfigFileName, nil
-}
-
-// Prompts
-
-func passwordValidator(input string) error {
-	if len(input) < 8 || len(input) > 256 {
-		return errors.New("password should be between 8 and 256 characters long")
-	}
-	return nil
-}
-
-func emailValidator(input string) error {
-	rxEmail := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-
-	if len(input) > 254 || !rxEmail.MatchString(input) {
-		return errors.New("email provided is invalid")
-	}
-
-	return nil
-}
-
-func usernameValidator(input string) error {
-	usernameRegexp := regexp.MustCompile(`(?i)^[a-z][a-z0-9]{2,11}$`)
-	if len(input) < 3 {
-		return errors.New("input should be at least 3 characters long")
-	}
-
-	if len(input) > 12 {
-		return errors.New("input should be no longer than 12 characters")
-	}
-
-	if !usernameRegexp.Match([]byte(input)) {
-		return errors.New("username should start only contain alphanumeric characters and start with a letter")
-	}
-
-	return nil
-}
-
-func prompt(label string, validator func(input string) error, mask bool) (string, error) {
-	p := promptui.Prompt{
-		Label:    label,
-		Validate: validator,
-	}
-
-	if mask {
-		p.Mask = '*'
-	}
-
-	return p.Run()
-}
-
-func signup(username, password, email string) error {
-	c := &http.Client{
-		Timeout: 5 * time.Second,
-	}
-
-	escapedPassword := url.QueryEscape(password)
-
-	requestBody, err := json.Marshal(map[string]string{
-		"username": username,
-		"password": escapedPassword,
-		"email":    email,
-	})
-	if err != nil {
-		return err
-	}
-
-	apiURL := "https://api.meroxa.io/v1/"
-	if u := os.Getenv("API_URL"); u != "" {
-		apiURL = u
-	}
-	resp, err := c.Post(apiURL+"users", "application/json", bytes.NewBuffer(requestBody))
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode > 204 {
-		return fmt.Errorf("error %+v", string(body))
-	}
-	err = saveCreds(username, password)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func verifyCredentials(username, password string) error {
-	c, err := meroxa.New(username, password, versionString())
-
-	if err != nil {
-		return err
-	}
+func login() error {
 
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 
-	_, err = c.ListResourceTypes(ctx)
+	// Some random string, random for each request
+	oauthStateString := rndm.String(8)
+	ctx = context.WithValue(ctx, oauthStateStringContextKey, oauthStateString)
+	urlString := oauthConfig.AuthCodeURL(oauthStateString, oauth2.AccessTypeOffline)
+
+	labelChan, stopHTTPServerChan, cancelAuthentication := startHTTPServer(ctx, oauthConfig)
+	log.Println(color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
+	log.Println(color.CyanString(urlString))
+	log.Println(color.CyanString("If you are opening the url manually on a different machine you will need to curl the result url on this machine manually."))
+	time.Sleep(1000 * time.Millisecond)
+	err := openBrowser(urlString)
 	if err != nil {
-		return err
+		log.Println(color.RedString("Failed to open browser, you MUST do the manual process."))
+	}
+	time.Sleep(600 * time.Millisecond)
+
+	// shutdown the server after timeout
+	go func() {
+		log.Printf("Authentication will be cancelled in %s seconds", strconv.Itoa(authTimeout))
+		time.Sleep(authTimeout * time.Second)
+		stopHTTPServerChan <- struct{}{}
+	}()
+
+	select {
+	// wait for client on clientChan
+	case label := <-labelChan:
+		// After the callbackHandler returns a client, it's time to shutdown the server gracefully
+		stopHTTPServerChan <- struct{}{}
+		fmt.Println("debug", *label)
+		user, token, err := credstore.Get(meroxaLabel, meroxaURL)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("User: %s Token: %s", user, token)
+
+		return nil
+
+		// if authentication process is cancelled first return an error
+	case <-cancelAuthentication:
+		return fmt.Errorf("authentication timed out and was cancelled")
 	}
 
 	return nil
+}
+
+func startHTTPServer(ctx context.Context, conf *oauth2.Config) (tokenChan chan *string, stopHTTPServerChan chan struct{}, cancelAuthentication chan struct{}) {
+	// init returns
+	tokenChan = make(chan *string)
+	stopHTTPServerChan = make(chan struct{})
+	cancelAuthentication = make(chan struct{})
+
+	http.HandleFunc("/oauth/callback", callbackHandler(ctx, conf, tokenChan))
+	srv := &http.Server{Addr: ":" + strconv.Itoa(PORT)}
+
+	// handle server shutdown signal
+	go func() {
+		// wait for signal on stopHTTPServerChan
+		<-stopHTTPServerChan
+		log.Println("Shutting down server...")
+
+		// give it 5 sec to shutdown gracefully, else quit program
+		d := time.Now().Add(5 * time.Second)
+		ctx, cancel := context.WithDeadline(context.Background(), d)
+		defer cancel()
+
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Printf(color.RedString("Auth server could not shutdown gracefully: %v"), err)
+		}
+
+		// after server is shutdown, quit program
+		cancelAuthentication <- struct{}{}
+	}()
+
+	// handle callback request
+	go func() {
+		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+		fmt.Println("Server gracefully stopped")
+	}()
+
+	return tokenChan, stopHTTPServerChan, cancelAuthentication
+}
+
+func callbackHandler(ctx context.Context, oauthConfig *oauth2.Config, labelChan chan *string) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		requestStateString := ctx.Value(oauthStateStringContextKey).(string)
+		responseStateString := r.FormValue("state")
+		if responseStateString != requestStateString {
+			fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", requestStateString, responseStateString)
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
+		}
+
+		code := r.FormValue("code")
+		v := url.Values{
+			"grant_type":   {"authorization_code"},
+			"code":         {code},
+			"client_id":    {oauthConfig.ClientID},
+			"redirect_uri": {oauthConfig.RedirectURL},
+		}
+		req, err := http.NewRequest("POST", oauthConfig.Endpoint.TokenURL, strings.NewReader(v.Encode()))
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Printf("oauthoauthConfig.Exchange() failed with '%s'\n", err)
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
+		}
+
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		//body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1<<20))
+		if err != nil || resp.StatusCode != 200 {
+			fmt.Printf("cannot fetch token: %v", err)
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
+		}
+
+		var tj tokenJSON
+		if err = json.Unmarshal(body, &tj); err != nil {
+			fmt.Printf("invaid token response: %v", err)
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
+		}
+		token := &oauth2.Token{
+			AccessToken:  tj.AccessToken,
+			TokenType:    tj.TokenType,
+			RefreshToken: tj.RefreshToken,
+			Expiry:       tj.expiry(),
+		}
+
+		//TODO parse token for username
+		//store token in native storage
+		err = credstore.Set(meroxaLabel, "meroxa-cli", token.AccessToken)
+		if err != nil {
+			fmt.Printf("Cant store token: %v", err)
+		}
+		// show success page
+		successPage := `
+		<div style="height:100px; width:100%!; display:flex; flex-direction: column; justify-content: center; align-items:center; background-color:#2ecc71; color:white; font-size:22"><div>Success!</div></div>
+		<p style="margin-top:20px; font-size:18; text-align:center">You are authenticated, you can now return to the program. This will auto-close</p>
+		<script>window.onload=function(){setTimeout(this.close, 5000)}</script>
+		`
+		sm := ""
+		fmt.Fprintf(w, successPage)
+		// quitSignalChan <- quitSignal
+		labelChan <- &sm
+	}
+}
+
+func openBrowser(url string) (err error) {
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	return
+}
+
+type tokenJSON struct {
+	AccessToken  string         `json:"access_token"`
+	TokenType    string         `json:"token_type"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresIn    expirationTime `json:"expires_in"` // at least PayPal returns string, while most return number
+	Expires      expirationTime `json:"expires"`    // broken Facebook spelling of expires_in
+}
+type expirationTime int32
+
+func (e *tokenJSON) expiry() (t time.Time) {
+	if v := e.ExpiresIn; v != 0 {
+		return time.Now().Add(time.Duration(v) * time.Second)
+	}
+	if v := e.Expires; v != 0 {
+		return time.Now().Add(time.Duration(v) * time.Second)
+	}
+	return
 }

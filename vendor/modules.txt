@@ -2,8 +2,20 @@
 github.com/alexeyco/simpletable
 # github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 github.com/chzyer/readline
+# github.com/danieljoos/wincred v1.1.0
+github.com/danieljoos/wincred
+# github.com/docker/docker-credential-helpers v0.6.3
+github.com/docker/docker-credential-helpers/credentials
+github.com/docker/docker-credential-helpers/osxkeychain
+github.com/docker/docker-credential-helpers/pass
+github.com/docker/docker-credential-helpers/registryurl
+github.com/docker/docker-credential-helpers/wincred
+# github.com/fatih/color v1.9.0
+github.com/fatih/color
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
+# github.com/golang/protobuf v1.3.1
+github.com/golang/protobuf/proto
 # github.com/gorilla/mux v1.7.3
 github.com/gorilla/mux
 # github.com/hashicorp/hcl v1.0.0
@@ -30,9 +42,9 @@ github.com/magiconair/properties
 github.com/manifoldco/promptui
 github.com/manifoldco/promptui/list
 github.com/manifoldco/promptui/screenbuf
-# github.com/mattn/go-colorable v0.0.9
+# github.com/mattn/go-colorable v0.1.4
 github.com/mattn/go-colorable
-# github.com/mattn/go-isatty v0.0.4
+# github.com/mattn/go-isatty v0.0.11
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.9
 github.com/mattn/go-runewidth
@@ -42,6 +54,8 @@ github.com/meroxa/meroxa-go
 github.com/mitchellh/go-homedir
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
+# github.com/nmrshll/rndm-go v0.0.0-20170430161430-8da3024e53de
+github.com/nmrshll/rndm-go
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
 # github.com/spf13/afero v1.1.2
@@ -59,12 +73,26 @@ github.com/spf13/pflag
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
+# golang.org/x/net v0.0.0-20190522155817-f3200d17e092
+golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
+# golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+golang.org/x/oauth2
+golang.org/x/oauth2/internal
 # golang.org/x/sys v0.0.0-20200515095857-1151b9dac4a9
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.0
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
+# google.golang.org/appengine v1.1.0
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/remote_api
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/urlfetch
 # gopkg.in/ini.v1 v1.51.0
 gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.4
