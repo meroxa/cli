@@ -148,14 +148,18 @@ var createConnectionCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Creating connection...")
 		con, err := createConnection(resName, cfg, input)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
-		fmt.Println("Connection successfully created!")
-		prettyPrint("connector", con)
+
+		if flagRootOutputJson {
+			jsonPrint(con)
+		} else {
+			fmt.Println("Connection successfully created!")
+			prettyPrint("connector", con)
+		}
 	},
 }
 

@@ -3,11 +3,21 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alexeyco/simpletable"
-	"github.com/meroxa/meroxa-go"
 	"strconv"
 	"strings"
+
+	"github.com/alexeyco/simpletable"
+	"github.com/meroxa/meroxa-go"
 )
+
+func jsonPrint(data interface{}) {
+	p, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%s \n", p)
+}
 
 func prettyPrint(section string, data interface{}) {
 	var p []byte

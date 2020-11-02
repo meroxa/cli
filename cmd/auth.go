@@ -35,31 +35,52 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const MeroxaDirPath = ".config/meroxa"
-const ConfigFileName = "meroxa.config"
+const (
+	MeroxaDirPath  = ".config/meroxa"
+	ConfigFileName = "meroxa.config"
+)
+
+var (
+	flagSignupUsername string
+	flagSignupPassword string
+	flagSignupEmail    string
+
+	flagLoginUsername string
+	flagLoginPassword string
+)
 
 var signupCmd = &cobra.Command{
 	Use:   "signup",
 	Short: "sign up to the Meroxa platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		u, err := prompt("Username", usernameValidator, false)
-		if err != nil {
-			fmt.Println("Username invalid: ", err)
-			return err
+		var err error
+
+		if flagSignupUsername == "" {
+			flagSignupUsername, err = prompt("Username", usernameValidator, false)
+			if err != nil {
+				fmt.Println("Username invalid: ", err)
+				return err
+			}
 		}
-		p, err := prompt("Password", passwordValidator, true)
-		if err != nil {
-			fmt.Println("Password invalid: ", err)
-			return err
+
+		if flagSignupPassword == "" {
+			flagSignupPassword, err = prompt("Password", passwordValidator, true)
+			if err != nil {
+				fmt.Println("Password invalid: ", err)
+				return err
+			}
 		}
-		e, err := prompt("Email", emailValidator, false)
-		if err != nil {
-			fmt.Println("Email invalid: ", err)
-			return err
+
+		if flagSignupEmail == "" {
+			flagSignupEmail, err = prompt("Email", emailValidator, false)
+			if err != nil {
+				fmt.Println("Email invalid: ", err)
+				return err
+			}
 		}
 
 		fmt.Println("Registering user...")
-		err = signup(u, p, e)
+		err = signup(flagSignupUsername, flagSignupPassword, flagSignupEmail)
 		if err != nil {
 			return err
 		}
@@ -74,21 +95,28 @@ var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "log into the Meroxa platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		u, err := prompt("Username", usernameValidator, false)
-		if err != nil {
-			return err
+		var err error
+
+		if flagLoginUsername == "" {
+			flagLoginUsername, err = prompt("Username", usernameValidator, false)
+			if err != nil {
+				return err
+			}
 		}
-		p, err := prompt("Password", passwordValidator, true)
+
+		if flagLoginPassword == "" {
+			flagLoginPassword, err = prompt("Password", passwordValidator, true)
+			if err != nil {
+				return err
+			}
+		}
+
+		err = verifyCredentials(flagLoginUsername, flagLoginPassword)
 		if err != nil {
 			return err
 		}
 
-		err = verifyCredentials(u, p)
-		if err != nil {
-			return err
-		}
-
-		err = saveCreds(u, p)
+		err = saveCreds(flagLoginUsername, flagLoginPassword)
 		if err != nil {
 			return err
 		}
@@ -128,6 +156,9 @@ var whoAmICmd = &cobra.Command{
 func init() {
 	// Login
 	rootCmd.AddCommand(loginCmd)
+	loginCmd.PersistentFlags().StringVar(&flagLoginUsername, "username", "", "username")
+	loginCmd.PersistentFlags().StringVar(&flagLoginPassword, "password", "", "password")
+
 	// Subcommands
 	loginCmd.AddCommand(whoAmICmd)
 
@@ -136,6 +167,9 @@ func init() {
 
 	// Signup
 	rootCmd.AddCommand(signupCmd)
+	signupCmd.PersistentFlags().StringVar(&flagSignupUsername, "username", "", "username")
+	signupCmd.PersistentFlags().StringVar(&flagSignupPassword, "password", "", "password")
+	signupCmd.PersistentFlags().StringVar(&flagSignupEmail, "email", "", "email")
 
 	// Here you will define your flags and configuration settings.
 
