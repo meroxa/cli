@@ -16,7 +16,7 @@ func jsonPrint(data interface{}) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("%s \n", p)
+	fmt.Printf("%s\n", p)
 }
 
 func prettyPrint(section string, data interface{}) {
@@ -28,7 +28,7 @@ func prettyPrint(section string, data interface{}) {
 		return
 	}
 	fmt.Printf("== %s ==\n", strings.ToTitle(section))
-	fmt.Printf("%s \n", p)
+	fmt.Printf("%s\n", p)
 }
 
 func printResourcesTable(resources []*meroxa.Resource) {
