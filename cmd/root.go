@@ -28,6 +28,8 @@ import (
 var (
 	meroxaVersion string
 	cfgFile       string
+
+	flagRootOutputJson bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -55,6 +57,8 @@ func Execute(version string) {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJson, "json", false, "output json")
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,

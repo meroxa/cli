@@ -19,8 +19,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/meroxa-go"
 	"time"
+
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/spf13/cobra"
 )
@@ -53,7 +54,11 @@ var describeResourceCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("resource", res)
+		if flagRootOutputJson {
+			jsonPrint(res)
+		} else {
+			prettyPrint("resource", res)
+		}
 	},
 }
 
@@ -83,7 +88,12 @@ var describeConnectionCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 			return
 		}
-		prettyPrint("connection", conn)
+
+		if flagRootOutputJson {
+			jsonPrint(conn)
+		} else {
+			prettyPrint("connection", conn)
+		}
 	},
 }
 

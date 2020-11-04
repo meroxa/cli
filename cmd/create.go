@@ -100,7 +100,9 @@ var createResourceCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		fmt.Printf("Creating %s Resource...\n", resType)
+		if !flagRootOutputJson {
+			fmt.Printf("Creating %s Resource...\n", resType)
+		}
 
 		res, err := c.CreateResource(ctx, &r)
 		if err != nil {
@@ -108,8 +110,12 @@ var createResourceCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Resource successfully created!")
-		prettyPrint("resource", res)
+		if flagRootOutputJson {
+			jsonPrint(res)
+		} else {
+			fmt.Println("Resource successfully created!")
+			prettyPrint("resource", res)
+		}
 	},
 }
 
@@ -148,14 +154,22 @@ var createConnectionCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Creating connection...")
+		if !flagRootOutputJson {
+			fmt.Println("Creating connection...")
+		}
+
 		con, err := createConnection(resName, cfg, input)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
-		fmt.Println("Connection successfully created!")
-		prettyPrint("connector", con)
+
+		if flagRootOutputJson {
+			jsonPrint(con)
+		} else {
+			fmt.Println("Connection successfully created!")
+			prettyPrint("connector", con)
+		}
 	},
 }
 
@@ -201,7 +215,9 @@ var createPipelineCmd = &cobra.Command{
 			p.Metadata = metadata
 		}
 
-		fmt.Print("Creating Pipeline...\n")
+		if !flagRootOutputJson {
+			fmt.Println("Creating Pipeline...")
+		}
 
 		res, err := c.CreatePipeline(ctx, p)
 		if err != nil {
@@ -209,8 +225,12 @@ var createPipelineCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Pipeline successfully created!")
-		prettyPrint("pipeline", res)
+		if flagRootOutputJson {
+			jsonPrint(res)
+		} else {
+			fmt.Println("Pipeline successfully created!")
+			prettyPrint("pipeline", res)
+		}
 	},
 }
 
