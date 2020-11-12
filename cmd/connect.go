@@ -26,12 +26,12 @@ import (
 var connectCmd = &cobra.Command{
 	Use:   "connect <name> --to <name>",
 	Short: "connect two resources together",
-	Long: `use the connect commands to automatically configure the connections
+	Long: `use the connect commands to automatically configure the connectors
 required to pull data from one resource (the source) to another
 (the target).
 
-this is essentially a shortcut for creating a connection from the
-source to Meroxa and creating a connection from Meroxa to the target`,
+this is essentially a shortcut for creating a connector from the
+source to Meroxa and creating a connector from Meroxa to the target`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// source name
@@ -73,24 +73,24 @@ source to Meroxa and creating a connection from Meroxa to the target`,
 			return
 		}
 
-		// create connection from source to meroxa
-		fmt.Println("Creating connection from source...")
-		srcCon, err := createConnection(sourceName, cfg.From, input)
+		// create connector from source to meroxa
+		fmt.Println("Creating connector from source...")
+		srcCon, err := createConnector("", sourceName, cfg.From, nil, input)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
-		fmt.Println("Connection successfully created!")
+		fmt.Println("Connector successfully created!")
 
 		inputStreams := srcCon.Streams["output"].([]interface{})
 
-		fmt.Println("Creating connection to target...")
-		_, err = createConnection(targetName, cfg.To, inputStreams[0].(string))
+		fmt.Println("Creating connector to target...")
+		_, err = createConnector("", targetName, cfg.To, nil, inputStreams[0].(string))
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
 		}
-		fmt.Println("Connection successfully created!")
+		fmt.Println("Connector successfully created!")
 	},
 }
 
@@ -101,7 +101,7 @@ func init() {
 	connectCmd.Flags().String("to", "", "target resource name")
 	connectCmd.MarkFlagRequired("to")
 	connectCmd.Flags().String("from", "", "source resource name")
-	connectCmd.Flags().StringP("config", "c", "", "connection configuration")
+	connectCmd.Flags().StringP("config", "c", "", "connector configuration")
 	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
 
 	// Here you will define your flags and configuration settings.

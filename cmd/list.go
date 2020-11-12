@@ -28,7 +28,7 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list components",
 	Long: `list the components of the Meroxa platform, including pipelines,
- resources, connections, functions etc... You may also filter by type.`,
+ resources, connectors, functions etc... You may also filter by type.`,
 }
 
 var listResourcesCmd = &cobra.Command{
@@ -57,9 +57,9 @@ var listResourcesCmd = &cobra.Command{
 	},
 }
 
-var listConnectionsCmd = &cobra.Command{
-	Use:   "connections",
-	Short: "list connections",
+var listConnectorsCmd = &cobra.Command{
+	Use:   "connectors",
+	Short: "list connectors",
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := client()
 		if err != nil {
@@ -70,15 +70,15 @@ var listConnectionsCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		connections, err := c.ListConnections(ctx)
+		connectors, err := c.ListConnectors(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
 		if flagRootOutputJson {
-			jsonPrint(connections)
+			jsonPrint(connectors)
 		} else {
-			printConnectionsTable(connections)
+			printConnectorsTable(connectors)
 		}
 	},
 }
@@ -140,7 +140,7 @@ func init() {
 
 	// Subcommands
 	listCmd.AddCommand(listResourcesCmd)
-	listCmd.AddCommand(listConnectionsCmd)
+	listCmd.AddCommand(listConnectorsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
 	listCmd.AddCommand(listPipelinesCmd)
 
