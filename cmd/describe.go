@@ -31,7 +31,7 @@ var describeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "describe a component",
 	Long: `describe a component of the Meroxa data platform, including pipelines,
-resources, connections, functions etc...`,
+resources, connectors, functions etc...`,
 }
 
 var describeResourceCmd = &cobra.Command{
@@ -62,12 +62,12 @@ var describeResourceCmd = &cobra.Command{
 	},
 }
 
-var describeConnectionCmd = &cobra.Command{
-	Use:   "connection [name]",
-	Short: "describe connection",
+var describeConnectorCmd = &cobra.Command{
+	Use:   "connector [name]",
+	Short: "describe connector",
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires a connection name")
+			return errors.New("requires a connector name")
 		}
 		return nil
 	},
@@ -83,7 +83,7 @@ var describeConnectionCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		conn, err = c.GetConnectionByName(ctx, name)
+		conn, err = c.GetConnectorByName(ctx, name)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
@@ -92,7 +92,7 @@ var describeConnectionCmd = &cobra.Command{
 		if flagRootOutputJson {
 			jsonPrint(conn)
 		} else {
-			prettyPrint("connection", conn)
+			prettyPrint("connector", conn)
 		}
 	},
 }
@@ -110,7 +110,7 @@ func init() {
 
 	// Subcommands
 	describeCmd.AddCommand(describeResourceCmd)
-	describeCmd.AddCommand(describeConnectionCmd)
+	describeCmd.AddCommand(describeConnectorCmd)
 	describeCmd.AddCommand(describeFunctionCmd)
 
 	// Here you will define your flags and configuration settings.

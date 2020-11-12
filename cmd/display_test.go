@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/meroxa/meroxa-go"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/meroxa/meroxa-go"
 )
 
 func TestResourcesTable(t *testing.T) {
@@ -108,7 +109,7 @@ func TestConnectionsTable(t *testing.T) {
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := captureOutput(func() {
-				printConnectionsTable(connections)
+				printConnectorsTable(connections)
 			})
 
 			switch name {

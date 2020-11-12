@@ -65,7 +65,7 @@ func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
 	return cells
 }
 
-func printConnectionsTable(connections []*meroxa.Connector) {
+func printConnectorsTable(connectors []*meroxa.Connector) {
 	table := simpletable.New()
 
 	table.Header = &simpletable.Header{
@@ -78,7 +78,7 @@ func printConnectionsTable(connections []*meroxa.Connector) {
 		},
 	}
 
-	for _, conn := range connections {
+	for _, conn := range connectors {
 		var streamStr string
 
 		if streamInput, ok := conn.Streams["input"]; ok {

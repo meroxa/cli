@@ -30,7 +30,7 @@ var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create meroxa pipeline components",
 	Long: `use the create command to create various Meroxa pipeline components
-including Resources, Connections and Functions.`,
+including Resources, Connectors and Functions.`,
 }
 
 var createResourceCmd = &cobra.Command{
@@ -119,13 +119,19 @@ var createResourceCmd = &cobra.Command{
 	},
 }
 
-var createConnectionCmd = &cobra.Command{
-	Use:   "connection",
-	Short: "create connection",
+var createConnectorCmd = &cobra.Command{
+	Use:   "connector",
+	Short: "create connector",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Resource Name
 		resName := args[0]
+
+		name, err := cmd.Flags().GetString("name")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
 
 		cfgString, err := cmd.Flags().GetString("config")
 		if err != nil {
@@ -136,6 +142,20 @@ var createConnectionCmd = &cobra.Command{
 		cfg := &Config{}
 		if cfgString != "" {
 			err = json.Unmarshal([]byte(cfgString), cfg)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return
+			}
+		}
+
+		// Process metadata
+		metadataString, err := cmd.Flags().GetString("metadata")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+		metadata := map[string]string{}
+		if metadataString != "" {
+			err = json.Unmarshal([]byte(metadataString), &metadata)
 			if err != nil {
 				fmt.Println("Error: ", err)
 				return
@@ -155,10 +175,10 @@ var createConnectionCmd = &cobra.Command{
 		}
 
 		if !flagRootOutputJson {
-			fmt.Println("Creating connection...")
+			fmt.Println("Creating connector...")
 		}
 
-		con, err := createConnection(resName, cfg, input)
+		con, err := createConnector(name, resName, cfg, metadata, input)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
@@ -167,7 +187,7 @@ var createConnectionCmd = &cobra.Command{
 		if flagRootOutputJson {
 			jsonPrint(con)
 		} else {
-			fmt.Println("Connection successfully created!")
+			fmt.Println("Connector successfully created!")
 			prettyPrint("connector", con)
 		}
 	},
@@ -245,10 +265,12 @@ func init() {
 	createResourceCmd.Flags().StringP("config", "c", "", "resource configuration")
 	createResourceCmd.Flags().StringP("metadata", "m", "", "resource metadata")
 
-	createCmd.AddCommand(createConnectionCmd)
-	createConnectionCmd.Flags().StringP("config", "c", "", "connection configuration")
-	createConnectionCmd.Flags().String("input", "", "command delimeted list of input streams")
-	createConnectionCmd.MarkFlagRequired("input")
+	createCmd.AddCommand(createConnectorCmd)
+	createConnectorCmd.Flags().StringP("name", "n", "", "connector name")
+	createConnectorCmd.Flags().StringP("config", "c", "", "connector configuration")
+	createConnectorCmd.Flags().StringP("metadata", "m", "", "connector metadata")
+	createConnectorCmd.Flags().String("input", "", "command delimeted list of input streams")
+	createConnectorCmd.MarkFlagRequired("input")
 
 	createCmd.AddCommand(createFunctionCmd)
 
@@ -256,7 +278,7 @@ func init() {
 	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")
 }
 
-func createConnection(resourceName string, config *Config, input string) (*meroxa.Connector, error) {
+func createConnector(connectorName string, resourceName string, config *Config, metadata map[string]string, input string) (*meroxa.Connector, error) {
 	c, err := client()
 	if err != nil {
 		return nil, err
@@ -272,7 +294,7 @@ func createConnection(resourceName string, config *Config, input string) (*merox
 		return nil, err
 	}
 
-	// create connection
+	// create connector
 	ctx = context.Background()
 	ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -291,7 +313,7 @@ func createConnection(resourceName string, config *Config, input string) (*merox
 		}
 	}
 
-	con, err := c.CreateConnection(ctx, res.ID, cfg)
+	con, err := c.CreateConnector(ctx, connectorName, res.ID, cfg, metadata)
 	if err != nil {
 		return nil, err
 	}
