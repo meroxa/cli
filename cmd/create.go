@@ -127,6 +127,12 @@ var createConnectorCmd = &cobra.Command{
 		// Resource Name
 		resName := args[0]
 
+		name, err := cmd.Flags().GetString("name")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+
 		cfgString, err := cmd.Flags().GetString("config")
 		if err != nil {
 			fmt.Println("Error: ", err)
@@ -136,6 +142,20 @@ var createConnectorCmd = &cobra.Command{
 		cfg := &Config{}
 		if cfgString != "" {
 			err = json.Unmarshal([]byte(cfgString), cfg)
+			if err != nil {
+				fmt.Println("Error: ", err)
+				return
+			}
+		}
+
+		// Process metadata
+		metadataString, err := cmd.Flags().GetString("metadata")
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+		metadata := map[string]string{}
+		if metadataString != "" {
+			err = json.Unmarshal([]byte(metadataString), &metadata)
 			if err != nil {
 				fmt.Println("Error: ", err)
 				return
@@ -258,7 +278,7 @@ func init() {
 	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")
 }
 
-func createConnection(resourceName string, config *Config, input string) (*meroxa.Connector, error) {
+func createConnector(connectorName string, resourceName string, config *Config, metadata map[string]string, input string) (*meroxa.Connector, error) {
 	c, err := client()
 	if err != nil {
 		return nil, err
