@@ -3,11 +3,21 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alexeyco/simpletable"
-	"github.com/meroxa/meroxa-go"
 	"strconv"
 	"strings"
+
+	"github.com/alexeyco/simpletable"
+	"github.com/meroxa/meroxa-go"
 )
+
+func jsonPrint(data interface{}) {
+	p, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%s\n", p)
+}
 
 func prettyPrint(section string, data interface{}) {
 	var p []byte
@@ -18,7 +28,7 @@ func prettyPrint(section string, data interface{}) {
 		return
 	}
 	fmt.Printf("== %s ==\n", strings.ToTitle(section))
-	fmt.Printf("%s \n", p)
+	fmt.Printf("%s\n", p)
 }
 
 func printResourcesTable(resources []*meroxa.Resource) {
@@ -55,7 +65,7 @@ func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
 	return cells
 }
 
-func printConnectionsTable(connections []*meroxa.Connector) {
+func printConnectorsTable(connectors []*meroxa.Connector) {
 	table := simpletable.New()
 
 	table.Header = &simpletable.Header{
@@ -68,7 +78,7 @@ func printConnectionsTable(connections []*meroxa.Connector) {
 		},
 	}
 
-	for _, conn := range connections {
+	for _, conn := range connectors {
 		var streamStr string
 
 		if streamInput, ok := conn.Streams["input"]; ok {

@@ -28,7 +28,7 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list components",
 	Long: `list the components of the Meroxa platform, including pipelines,
- resources, connections, functions etc... You may also filter by type.`,
+ resources, connectors, functions etc... You may also filter by type.`,
 }
 
 var listResourcesCmd = &cobra.Command{
@@ -44,30 +44,22 @@ var listResourcesCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		output, err := cmd.Flags().GetString("output")
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
 		rr, err := c.ListResources(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		switch output {
-		case "json":
-			prettyPrint("resources", rr)
-		default:
+		if flagRootOutputJson {
+			jsonPrint(rr)
+		} else {
 			printResourcesTable(rr)
 		}
-
 	},
 }
 
-var listConnectionsCmd = &cobra.Command{
-	Use:   "connections",
-	Short: "list connections",
+var listConnectorsCmd = &cobra.Command{
+	Use:   "connectors",
+	Short: "list connectors",
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := client()
 		if err != nil {
@@ -78,22 +70,15 @@ var listConnectionsCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		output, err := cmd.Flags().GetString("output")
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
-		connections, err := c.ListConnections(ctx)
+		connectors, err := c.ListConnectors(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		switch output {
-		case "json":
-			prettyPrint("connections", connections)
-		default:
-			printConnectionsTable(connections)
+		if flagRootOutputJson {
+			jsonPrint(connectors)
+		} else {
+			printConnectorsTable(connectors)
 		}
 	},
 }
@@ -111,21 +96,14 @@ var listResourceTypesCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		output, err := cmd.Flags().GetString("output")
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
 		resTypes, err := c.ListResourceTypes(ctx)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		switch output {
-		case "json":
-			prettyPrint("resource types", resTypes)
-		default:
+		if flagRootOutputJson {
+			jsonPrint(resTypes)
+		} else {
 			printResourceTypesTable(resTypes)
 		}
 	},
@@ -149,7 +127,11 @@ var listPipelinesCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("pipelines", rr)
+		if flagRootOutputJson {
+			jsonPrint(rr)
+		} else {
+			prettyPrint("pipelines", rr)
+		}
 	},
 }
 
@@ -157,9 +139,8 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 
 	// Subcommands
-	listCmd.PersistentFlags().StringP("output", "o", "table", "output format [json|table]")
 	listCmd.AddCommand(listResourcesCmd)
-	listCmd.AddCommand(listConnectionsCmd)
+	listCmd.AddCommand(listConnectorsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
 	listCmd.AddCommand(listPipelinesCmd)
 

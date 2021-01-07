@@ -28,7 +28,7 @@ var destroyCmd = &cobra.Command{
 	Use:   "destroy",
 	Short: "destroy a component",
 	Long: `deprovision a component of the Meroxa platform, including pipelines,
- resources, connections, functions etc...`,
+ resources, connectors, functions etc...`,
 }
 
 var destroyResourceCmd = &cobra.Command{
@@ -74,12 +74,12 @@ var destroyResourceCmd = &cobra.Command{
 	},
 }
 
-var destroyConnectionCmd = &cobra.Command{
-	Use:   "connection <name>",
-	Short: "destroy connection",
+var destroyConnectorCmd = &cobra.Command{
+	Use:   "connector <name>",
+	Short: "destroy connector",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// Connection Name
+		// Connector Name
 		conName := args[0]
 
 		c, err := client()
@@ -88,12 +88,12 @@ var destroyConnectionCmd = &cobra.Command{
 			return
 		}
 
-		// get Connection ID from name
+		// get Connector ID from name
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		con, err := c.GetConnectionByName(ctx, conName)
+		con, err := c.GetConnectorByName(ctx, conName)
 		if err != nil {
 			fmt.Println("Error: ", err)
 			return
@@ -108,12 +108,12 @@ var destroyConnectionCmd = &cobra.Command{
 		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		err = c.DeleteConnection(ctx, con.ID)
+		err = c.DeleteConnector(ctx, con.ID)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
 
-		prettyPrint("connection destroyed", con)
+		prettyPrint("connector destroyed", con)
 	},
 }
 
@@ -173,7 +173,7 @@ func init() {
 
 	// Subcommands
 	destroyCmd.AddCommand(destroyResourceCmd)
-	destroyCmd.AddCommand(destroyConnectionCmd)
+	destroyCmd.AddCommand(destroyConnectorCmd)
 	destroyCmd.AddCommand(destroyFunctionCmd)
 	destroyCmd.AddCommand(destroyPipelineCmd)
 

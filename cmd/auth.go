@@ -46,15 +46,6 @@ const PORT = 21900
 const authTimeout = 300
 const oauthStateStringContextKey = 232
 
-var oauthConfig = &oauth2.Config{
-	ClientID: ClientID, // also known as client key sometimes
-	Scopes:   []string{"email"},
-	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://tjl-meroxa.auth.us-east-1.amazoncognito.com/oauth2/authorize",
-		TokenURL: "https://tjl-meroxa.auth.us-east-1.amazoncognito.com/oauth2/token",
-	},
-	RedirectURL: CallbackURL,
-}
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
