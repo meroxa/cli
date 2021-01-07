@@ -1,19 +1,14 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/meroxa/cli/credstore"
 	"github.com/meroxa/meroxa-go"
 )
 
 func client() (*meroxa.Client, error) {
-	u, p, err := readCreds()
+	_, token, err := credstore.Get(meroxaLabel, meroxaURL)
 	if err != nil {
 		return nil, err
 	}
-	return meroxa.New(u, p, versionString())
-}
-
-func readCreds() (string, string, error) {
-	fmt.Printf("")
-	return "", "", nil
+	return meroxa.New(token, versionString())
 }
