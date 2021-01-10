@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/meroxa/meroxa-go"
@@ -45,6 +46,7 @@ var createResourceCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
+			os.Exit(1)
 		}
 
 		// Assemble resource struct from config
@@ -211,7 +213,7 @@ var createPipelineCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
-			return
+			os.Exit(1)
 		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)

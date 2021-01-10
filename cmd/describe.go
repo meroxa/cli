@@ -19,6 +19,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/meroxa/meroxa-go"
@@ -44,6 +45,7 @@ var describeResourceCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
+			os.Exit(1)
 		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -78,7 +80,10 @@ var describeConnectorCmd = &cobra.Command{
 		)
 		name := args[0]
 		c, err := client()
-
+		if err != nil {
+			fmt.Println("Error: ", err)
+			os.Exit(1)
+		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	apiURL      = "https://api.tjl.dev.meroxa.io/v1"
+	apiURL      = "https://api.meroxa.io/v1"
 	contentType = "application/json"
 )
 
@@ -19,7 +19,7 @@ const (
 type Client struct {
 	BaseURL   *url.URL
 	userAgent string
-	token string
+	token     string
 
 	httpClient *http.Client
 }
@@ -30,11 +30,11 @@ func New(token, ua string) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	c := &Client{
 		BaseURL:    u,
 		userAgent:  userAgent(ua),
-		token: token,
+		token:      token,
 		httpClient: httpClient(),
 	}
 	return c, nil
@@ -83,11 +83,14 @@ func (c *Client) newRequest(ctx context.Context, method, path string, body inter
 		return nil, err
 	}
 
-	// Set Basic Auth
+	// Set Auth
+	var bearer = "Bearer " + c.token
+
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
 	req.Header.Add("Content-Type", contentType)
 	req.Header.Add("Accept", contentType)
 	req.Header.Add("User-Agent", c.userAgent)
-	req.Header.Add("Authorization Bearer", c.token)
 	return req, nil
 }
 

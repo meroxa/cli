@@ -17,19 +17,28 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-
-	"github.com/spf13/cobra"
-
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"os"
+	"strings"
+)
+
+const (
+	// The name of our config file, without the file extension because viper supports many different config file languages.
+	defaultConfigFilename = "meroxa"
+
+	// The environment variable prefix of all environment variables bound to our command line flags.
+	envPrefix = "MEROXA"
+	apiURL    = "https://api.tjl.dev.meroxa.io/v1/"
 )
 
 var (
-	meroxaVersion string
-	cfgFile       string
-
+	meroxaVersion      string
+	cfgFile            string
 	flagRootOutputJson bool
+	cfg                *viper.Viper
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -43,6 +52,11 @@ with only a few simple commands. You can get started by listing the supported
 resource types:
 
 meroxa list resource-types`,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
+		return initConfig(cmd)
+	},
+	TraverseChildren: true,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -56,15 +70,15 @@ func Execute(version string) {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
 	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJson, "json", false, "output json")
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meroxa)")
+	//rootCmd.Flags().StringP("access_token", "t", "", "Auth token used when connecting to meroxa")
+	//rootCmd.Flags().String("api-url", apiURL, "Meroxa API url")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -72,7 +86,9 @@ func init() {
 }
 
 // initConfig reads in config file and ENV variables if set.
-func initConfig() {
+func initConfig(cmd *cobra.Command) error {
+	cfg = viper.New()
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -84,17 +100,52 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".cli" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".meroxa")
+		// Set the base name of the config file, without the file extension.
+		cfg.SetConfigName(defaultConfigFilename)
+		cfg.AddConfigPath(home)
+	}
+	viper.SetConfigType("env")
+	// Attempt to read the config file, gracefully ignoring errors
+	// caused by a config file not being found. Return an error
+	// if we cannot parse the config file.
+	if err := cfg.ReadInConfig(); err != nil {
+		// It's okay if there isn't a config file
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// When we bind flags to environment variables expect that the
+	// environment variables are prefixed, e.g. a flag like --number
+	// binds to an environment variable MEROXA_NUMBER. This helps
+	// avoid conflicts.
+	cfg.SetEnvPrefix(envPrefix)
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	// Bind to environment variables
+	// Works great for simple config names, but needs help for names
+	// like --favorite-color which we fix in the bindFlags function
+	cfg.AutomaticEnv()
 
-	viper.SetEnvPrefix("meroxa")
+	// Bind the current command's flags to viper
+	bindFlags(cmd, cfg)
+
+	return nil
+}
+
+// Bind each cobra flag to its associated viper configuration (config file and environment variable)
+func bindFlags(cmd *cobra.Command, v *viper.Viper) {
+	cmd.Flags().VisitAll(func(f *pflag.Flag) {
+		// Environment variables can't have dashes in them, so bind them to their equivalent
+		// keys with underscores, e.g. --api-url to MEROXA_API_URL
+		if strings.Contains(f.Name, "-") {
+			envVarSuffix := strings.ToUpper(strings.ReplaceAll(f.Name, "-", "_"))
+			v.BindEnv(f.Name, fmt.Sprintf("%s_%s", envPrefix, envVarSuffix))
+		}
+
+		// Apply the viper config value to the flag when the flag is not set and viper has a value
+		if !f.Changed && v.IsSet(f.Name) {
+			val := v.Get(f.Name)
+			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+		}
+	})
 }

@@ -18,6 +18,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -42,7 +43,7 @@ var destroyResourceCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
-			return
+			os.Exit(1)
 		}
 
 		// get Resource ID from name
@@ -85,7 +86,7 @@ var destroyConnectorCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
-			return
+			os.Exit(1)
 		}
 
 		// get Connector ID from name
@@ -136,7 +137,7 @@ var destroyPipelineCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
-			return
+			os.Exit(1)
 		}
 
 		// get Pipeline ID from name

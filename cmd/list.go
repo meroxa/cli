@@ -18,6 +18,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -38,6 +39,7 @@ var listResourcesCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
+			os.Exit(1)
 		}
 
 		ctx := context.Background()
@@ -64,6 +66,7 @@ var listConnectorsCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
+			os.Exit(1)
 		}
 
 		ctx := context.Background()
@@ -90,6 +93,7 @@ var listResourceTypesCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
+			os.Exit(1)
 		}
 
 		ctx := context.Background()
@@ -116,6 +120,7 @@ var listPipelinesCmd = &cobra.Command{
 		c, err := client()
 		if err != nil {
 			fmt.Println("Error: ", err)
+			os.Exit(1)
 		}
 
 		ctx := context.Background()
