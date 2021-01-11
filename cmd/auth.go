@@ -34,7 +34,7 @@ import (
 const audience = "https://api.tjl.dev.meroxa.io/v1"
 const clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
 const domain = "auth.meroxa.io"
-const scope = "user offline_access"
+const scope = "user offline_access openid"
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
@@ -122,7 +122,7 @@ func login() error {
 			break
 		}
 	}
-
+	fmt.Println(accessToken)
 	cfg.Set("ACCESS_TOKEN", accessToken)
 	cfg.Set("REFRESH_TOKEN", refreshToken)
 	err = cfg.WriteConfig()
@@ -200,13 +200,13 @@ func getAccessToken() (string, error) {
 	token, _, err := new(jwt.Parser).ParseUnverified(accessToken, jwt.MapClaims{})
 	if err != nil {
 		fmt.Println(err)
-		return "", fmt.Errorf("2please login or signup by running 'meroxa login'")
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
 	}
 
 	// check token exp
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", fmt.Errorf("3please login or signup by running 'meroxa login'")
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
 	}
 
 	var exp time.Time
@@ -218,6 +218,7 @@ func getAccessToken() (string, error) {
 	}
 
 	// access token is expire, use refresh
+	fmt.Println("using refresh_token")
 	refreshToken := cfg.GetString("REFRESH_TOKEN")
 	if refreshToken == "" {
 		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
