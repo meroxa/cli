@@ -27,7 +27,8 @@ make build
 
 ### Linting
 
-The CLI run a [GitHub action](https://github.com/golangci/golangci-lint-action) to make sure its code is correctly formated. If you want to make sure everything's correct before pushing to GitHub, you'll need to install [`golangci-lint`](https://golangci-lint.run/) and run:
+
+If you want to make sure everything's correct before pushing to GitHub, you'll need to install [`golangci-lint`](https://golangci-lint.run/) and run:
 
 ```
 $ golangci-lint run
@@ -41,6 +42,8 @@ cmd/display.go:60:6: `appendCell` is unused (deadcode)
 func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
+
+Once, the Meroxa [`go-client`](http://github.com/meroxa/meroxa-go) is open source, you'll be able to set up a GitHub action to run this for you. [Here's](https://github.com/golangci/golangci-lint-action#how-to-use) more information about it.
 
 ### Vendor
 
