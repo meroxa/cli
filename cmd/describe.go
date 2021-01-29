@@ -1,3 +1,5 @@
+package cmd
+
 /*
 Copyright © 2020 NAME HERE <EMAIL ADDRESS>
 
@@ -13,7 +15,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
 
 import (
 	"context"
@@ -54,7 +55,7 @@ var describeResourceCmd = &cobra.Command{
 			fmt.Println("Error: ", err)
 		}
 
-		if flagRootOutputJson {
+		if flagRootOutputJSON {
 			jsonPrint(res)
 		} else {
 			prettyPrint("resource", res)
@@ -89,7 +90,7 @@ var describeConnectorCmd = &cobra.Command{
 			return
 		}
 
-		if flagRootOutputJson {
+		if flagRootOutputJSON {
 			jsonPrint(conn)
 		} else {
 			prettyPrint("connector", conn)

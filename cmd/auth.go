@@ -1,3 +1,5 @@
+package cmd
+
 /*
 Copyright © 2020 NAME HERE <EMAIL ADDRESS>
 
@@ -13,7 +15,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
 
 import (
 	"bytes"
@@ -36,8 +37,8 @@ import (
 )
 
 const (
-	MeroxaDirPath  = ".config/meroxa"
-	ConfigFileName = "meroxa.config"
+	meroxaDirPath  = ".config/meroxa"
+	configFileName = "meroxa.config"
 )
 
 var (
@@ -230,7 +231,7 @@ func createOrFindMeroxaConfigDir() (string, error) {
 		return "", err
 	}
 
-	targetDirPath := home + "/" + MeroxaDirPath
+	targetDirPath := home + "/" + meroxaDirPath
 
 	// Create Meroxa Config Dir if needed
 	err = os.MkdirAll(targetDirPath, 0744)
@@ -247,7 +248,7 @@ func configFilePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return mDir + "/" + ConfigFileName, nil
+	return mDir + "/" + configFileName, nil
 }
 
 // Prompts

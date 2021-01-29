@@ -1,3 +1,5 @@
+package cmd
+
 /*
 Copyright © 2020 Meroxa Inc
 
@@ -13,7 +15,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
 
 import (
 	"fmt"
@@ -29,7 +30,7 @@ var (
 	meroxaVersion string
 	cfgFile       string
 
-	flagRootOutputJson bool
+	flagRootOutputJSON bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -58,7 +59,7 @@ func Execute(version string) {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJson, "json", false, "output json")
+	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
