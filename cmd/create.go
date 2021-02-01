@@ -1,5 +1,7 @@
+package cmd
+
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,7 +15,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
 
 import (
 	"context"
@@ -100,7 +101,7 @@ var createResourceCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		if !flagRootOutputJson {
+		if !flagRootOutputJSON {
 			fmt.Printf("Creating %s Resource...\n", resType)
 		}
 
@@ -110,7 +111,7 @@ var createResourceCmd = &cobra.Command{
 			return
 		}
 
-		if flagRootOutputJson {
+		if flagRootOutputJSON {
 			jsonPrint(res)
 		} else {
 			fmt.Println("Resource successfully created!")
@@ -174,7 +175,7 @@ var createConnectorCmd = &cobra.Command{
 			return
 		}
 
-		if !flagRootOutputJson {
+		if !flagRootOutputJSON {
 			fmt.Println("Creating connector...")
 		}
 
@@ -184,7 +185,7 @@ var createConnectorCmd = &cobra.Command{
 			return
 		}
 
-		if flagRootOutputJson {
+		if flagRootOutputJSON {
 			jsonPrint(con)
 		} else {
 			fmt.Println("Connector successfully created!")
@@ -235,7 +236,7 @@ var createPipelineCmd = &cobra.Command{
 			p.Metadata = metadata
 		}
 
-		if !flagRootOutputJson {
+		if !flagRootOutputJSON {
 			fmt.Println("Creating Pipeline...")
 		}
 
@@ -245,7 +246,7 @@ var createPipelineCmd = &cobra.Command{
 			return
 		}
 
-		if flagRootOutputJson {
+		if flagRootOutputJSON {
 			jsonPrint(res)
 		} else {
 			fmt.Println("Pipeline successfully created!")
@@ -299,7 +300,6 @@ func createConnector(connectorName string, resourceName string, config *Config, 
 	ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	//var cfg Config
 	cfg := Config{}
 	if config != nil {
 		cfg.Merge(*config)
