@@ -19,34 +19,27 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
-// Small function to that prints out the error and exit the process
-func ExitOnError(err error) {
-	fmt.Println("Error: ", err)
-	os.Exit(1)
-}
-
-func addResource(resType string, cmd *cobra.Command) {
+func addResource(resType string, cmd *cobra.Command) error {
 	c, err := client()
 
 	if err != nil {
-		ExitOnError(err)
+		return err
 	}
 
 	name, err := cmd.Flags().GetString("name")
 	if err != nil {
-		ExitOnError(err)
+		return err
 	}
 
 	u, err := cmd.Flags().GetString("url")
 	if err != nil {
-		ExitOnError(err)
+		return err
 	}
 
 	r := meroxa.Resource{
@@ -63,13 +56,13 @@ func addResource(resType string, cmd *cobra.Command) {
 	// Get credentials (expect a JSON string)
 	credsString, err := cmd.Flags().GetString("credentials")
 	if err != nil {
-		ExitOnError(err)
+		return err
 	}
 	if credsString != "" {
 		var creds meroxa.Credentials
 		err = json.Unmarshal([]byte(credsString), &creds)
 		if err != nil {
-			ExitOnError(err)
+			return err
 		}
 
 		r.Credentials = &creds
@@ -77,13 +70,13 @@ func addResource(resType string, cmd *cobra.Command) {
 
 	metadataString, err := cmd.Flags().GetString("metadata")
 	if err != nil {
-		ExitOnError(err)
+		return err
 	}
 	if metadataString != "" {
 		var metadata map[string]string
 		err = json.Unmarshal([]byte(metadataString), &metadata)
 		if err != nil {
-			ExitOnError(err)
+			return err
 		}
 
 		r.Metadata = metadata
@@ -100,7 +93,7 @@ func addResource(resType string, cmd *cobra.Command) {
 
 	res, err := c.CreateResource(ctx, &r)
 	if err != nil {
-		ExitOnError(err)
+		return err
 	}
 
 	if flagRootOutputJSON {
@@ -109,27 +102,30 @@ func addResource(resType string, cmd *cobra.Command) {
 		fmt.Println("Resource successfully created!")
 		prettyPrint("resource", res)
 	}
+
+	return nil
 }
 
 func AddResourceCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "add resource <resource-type>",
 		Short: "Add a resource to your account",
-		Run: func(cmd *cobra.Command, args []string) {
-			addResource(args[0], cmd)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return addResource(args[0], cmd)
 		},
 	}
 }
 
 func init() {
 	addResourceCmd := AddResourceCmd()
+
 	rootCmd.AddCommand(addResourceCmd)
 
 	addResourceCmd.Flags().StringP("name", "n", "", "resource name")
 	err := createConnectorCmd.MarkFlagRequired("name")
 
 	if err != nil {
-		ExitOnError(err)
+		fmt.Println("Error: ", err)
 	}
 
 	addResourceCmd.Flags().StringP("url", "u", "", "resource url")
@@ -137,7 +133,7 @@ func init() {
 	err = createConnectorCmd.MarkFlagRequired("url")
 
 	if err != nil {
-		ExitOnError(err)
+		fmt.Println("Error: ", err)
 	}
 
 	addResourceCmd.Flags().String("credentials", "", "resource credentials")
@@ -145,7 +141,7 @@ func init() {
 	err = createConnectorCmd.MarkFlagRequired("credentials")
 
 	if err != nil {
-		ExitOnError(err)
+		fmt.Println("Error: ", err)
 	}
 	addResourceCmd.Flags().StringP("metadata", "m", "", "resource metadata")
 }
