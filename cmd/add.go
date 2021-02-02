@@ -44,9 +44,11 @@ func addResource(resType string, cmd *cobra.Command) {
 	}
 
 	r := meroxa.Resource{
-		Kind:          resType,
-		Name:          name,
-		URL:           u,
+		Kind: resType,
+		Name: name,
+		URL:  u,
+		// We're not doing anything with `config` in the CLI.
+		// Maybe deprecate this altogether in the client.
 		Configuration: nil,
 		Metadata:      nil,
 	}
