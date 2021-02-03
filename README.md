@@ -4,15 +4,15 @@ All commands start with `meroxa` (the name of the binary).
 
 ### Examples
 
-* Create Resource:
+* Add a resource:
     ```
-    meroxa create resource postgres --name mypg --url postgres://user:secret@localhost:5432/db
+    meroxa add resource postgres --name mypg --url postgres://user:secret@localhost:5432/db
     ```
-* Create Connection:
+* Create a connection:
     ```
     meroxa create connection mypg --config '{"table.whitelist":"public.purchases"}'
     ```
-* List Resources:
+* List resources:
     ```
     meroxa list resources
     ```

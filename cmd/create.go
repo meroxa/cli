@@ -30,94 +30,12 @@ import (
 var createCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create meroxa pipeline components",
-	Long: `use the create command to create various Meroxa pipeline components
-including Resources, Connectors and Functions.`,
-}
+	Long: `Use the create command to create various Meroxa pipeline components
+including Connectors and Functions.
 
-var createResourceCmd = &cobra.Command{
-	Use:   "resource <resource-type>",
-	Short: "create resource",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+If you need to add a resource, try:
 
-		// Resource Type
-		resType := args[0]
-
-		c, err := client()
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-
-		// Assemble resource struct from config
-		name, err := cmd.Flags().GetString("name")
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-
-		u, err := cmd.Flags().GetString("url")
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-
-		r := meroxa.Resource{
-			Kind:          resType,
-			Name:          name,
-			URL:           u,
-			Configuration: nil,
-			Metadata:      nil,
-		}
-
-		// TODO: Figure out best way to handle creds, config and metadata
-		// Get credentials (expect a JSON string)
-		credsString, err := cmd.Flags().GetString("credentials")
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-		if credsString != "" {
-			var creds meroxa.Credentials
-			err = json.Unmarshal([]byte(credsString), &creds)
-			if err != nil {
-				fmt.Println("Error: ", err)
-			}
-
-			r.Credentials = &creds
-		}
-
-		metadataString, err := cmd.Flags().GetString("metadata")
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-		if metadataString != "" {
-			var metadata map[string]string
-			err = json.Unmarshal([]byte(metadataString), &metadata)
-			if err != nil {
-				fmt.Println("Error: ", err)
-			}
-
-			r.Metadata = metadata
-		}
-
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		defer cancel()
-
-		if !flagRootOutputJSON {
-			fmt.Printf("Creating %s Resource...\n", resType)
-		}
-
-		res, err := c.CreateResource(ctx, &r)
-		if err != nil {
-			fmt.Println("Error: ", err)
-			return
-		}
-
-		if flagRootOutputJSON {
-			jsonPrint(res)
-		} else {
-			fmt.Println("Resource successfully created!")
-			prettyPrint("resource", res)
-		}
-	},
+$ meroxa add resource <resource-type> [name]`,
 }
 
 var createConnectorCmd = &cobra.Command{
@@ -257,14 +175,6 @@ var createPipelineCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-
-	// Subcommands
-	createCmd.AddCommand(createResourceCmd)
-	createResourceCmd.Flags().StringP("name", "n", "", "resource name")
-	createResourceCmd.Flags().StringP("url", "u", "", "resource url")
-	createResourceCmd.Flags().String("credentials", "", "resource credentials")
-	createResourceCmd.Flags().StringP("config", "c", "", "resource configuration")
-	createResourceCmd.Flags().StringP("metadata", "m", "", "resource metadata")
 
 	createCmd.AddCommand(createConnectorCmd)
 	createConnectorCmd.Flags().StringP("name", "n", "", "connector name")
