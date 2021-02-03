@@ -24,6 +24,6 @@ Fixes <JIRA Issue>
 
 *Make sure that our [documentation](https://docs.meroxa.com/) is accordingly updated when necessary.*
 
-- [ ] Updated https://docs.meroxa.com/.
+- [ ] Suggested an edit to the appropiate CLI version. To see the list of edits (e.g. v1.0): https://dash.readme.com/project/meroxa/v1.0/suggested
 
 *Provide link:*
