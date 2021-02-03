@@ -19,3 +19,11 @@ Fixes <JIRA Issue>
 # Additional references
 
 *Any additional links (if appropriate)*
+
+# Documentation updated
+
+*Make sure that documentation at https://docs.meroxa.com/ is accordingly updated when necessary.*
+
+- [ ] Documentation updated 
+
+*Provide link:*
