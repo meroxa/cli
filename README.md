@@ -1,5 +1,11 @@
 ## Meroxa CLI
 
+While we document most of the internal details [in Notion](https://www.notion.so/meroxa/CLI-f0ed215de69c471aa9460832a6f17db2), here you'll also find some other details that we hope you find useful.
+
+Feel free to add an issue in this repository or simply drop a comment [in Notion](https://www.notion.so/meroxa/CLI-f0ed215de69c471aa9460832a6f17db2), and we'll take it from there!
+
+## Our commands
+
 All commands start with `meroxa` (the name of the binary).
 
 ### Examples
