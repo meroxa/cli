@@ -32,8 +32,8 @@ var resName, resURL, resCredentials, resMetadata string
 
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "add meroxa resource",
-	Long:  `Use the add command to associate various Meroxa resources to your account.`,
+	Short: "add a meroxa resource",
+	Long:  `Use the add command to add various Meroxa resources to your account.`,
 }
 
 var addResourceCmd = &cobra.Command{
