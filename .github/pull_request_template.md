@@ -24,6 +24,6 @@ Fixes <JIRA Issue>
 
 *Make sure that documentation at https://docs.meroxa.com/ is accordingly updated when necessary.*
 
-- [ ] Documentation updated 
+- [ ] Updated https://docs.meroxa.com/.
 
 *Provide link:*
