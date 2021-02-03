@@ -22,7 +22,7 @@ Fixes <JIRA Issue>
 
 # Documentation updated
 
-*Make sure that documentation at https://docs.meroxa.com/ is accordingly updated when necessary.*
+*Make sure that our [documentation](https://docs.meroxa.com/) is accordingly updated when necessary.*
 
 - [ ] Updated https://docs.meroxa.com/.
 
