@@ -60,6 +60,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
+	rootCmd.SilenceUsage = true
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
