@@ -60,9 +60,22 @@ a private repo. To update vendoring the dependency, you'll need to run the follo
 make gomod
 ```
 
+### Upgrade
+
+To make sure the CLI runs on the latest and greatest, you should update packages from time to time. To do that, run the following:
+
+```
+$ go get -u
+```
+
+Test in staging before opening a pull-request:
+
+🐝 🐝 🐝 TODO: Add instructions here 🐝 🐝 🐝 .
+
+
 ### Release
 
-A [goreleaser](https://github.com/goreleaser/goreleaser) Github Action is
+A [goreleaser](https://github.com/goreleaser/goreleaser) GitHub Action is
 configured to automatically build the CLI and cut a new release whenever a new
 git tag is pushed to the repo.
 
