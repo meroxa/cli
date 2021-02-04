@@ -49,16 +49,13 @@ var addResourceCmd = &cobra.Command{
 		}
 
 		r := meroxa.Resource{
-			Kind: resType,
-			Name: resName,
-			URL:  resURL,
-			// We're not doing anything with `config` in the CLI.
-			// Maybe deprecate this altogether in the client.
-			Configuration: nil,
-			Metadata:      nil,
+			Kind:     resType,
+			Name:     resName,
+			URL:      resURL,
+			Metadata: nil,
 		}
 
-		// TODO: Figure out best way to handle creds, config and metadata
+		// TODO: Figure out best way to handle creds and metadata
 		// Get credentials (expect a JSON string)
 		if resCredentials != "" {
 			var creds meroxa.Credentials
