@@ -2,7 +2,7 @@ SHELL=/bin/bash -o pipefail
 
 .PHONY: build
 build:
-	go build -o meroxa
+	go build -mod=vendor -o meroxa
 
 .PHONY: install
 install:
