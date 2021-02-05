@@ -39,12 +39,12 @@ var describeResourceCmd = &cobra.Command{
 	Use:   "resource <name>",
 	Short: "describe resource",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		name := args[0]
 
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -52,7 +52,7 @@ var describeResourceCmd = &cobra.Command{
 
 		res, err := c.GetResourceByName(ctx, name)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -60,6 +60,7 @@ var describeResourceCmd = &cobra.Command{
 		} else {
 			prettyPrint("resource", res)
 		}
+		return nil
 	},
 }
 
@@ -72,13 +73,16 @@ var describeConnectorCmd = &cobra.Command{
 		}
 		return nil
 	},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		var (
 			err  error
 			conn *meroxa.Connector
 		)
 		name := args[0]
 		c, err := client()
+		if err != nil {
+			return err
+		}
 
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -86,8 +90,7 @@ var describeConnectorCmd = &cobra.Command{
 
 		conn, err = c.GetConnectorByName(ctx, name)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -95,6 +98,7 @@ var describeConnectorCmd = &cobra.Command{
 		} else {
 			prettyPrint("connector", conn)
 		}
+		return nil
 	},
 }
 

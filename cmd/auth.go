@@ -48,6 +48,8 @@ var (
 
 	flagLoginUsername string
 	flagLoginPassword string
+
+	ErrNotLoggedIn = errors.New("you do not appear to be logged in to the Meroxa Platform")
 )
 
 var signupCmd = &cobra.Command{
@@ -202,8 +204,12 @@ func readCreds() (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+
 	dat, err := ioutil.ReadFile(filePath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return "", "", ErrNotLoggedIn
+		}
 		return "", "", err
 	}
 

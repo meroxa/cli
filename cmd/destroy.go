@@ -36,14 +36,13 @@ var destroyResourceCmd = &cobra.Command{
 	Use:   "resource <name>",
 	Short: "destroy resource",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Resource Name
 		resName := args[0]
 
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		// get Resource ID from name
@@ -53,13 +52,12 @@ var destroyResourceCmd = &cobra.Command{
 
 		res, err := c.GetResourceByName(ctx, resName)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		c, err = client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx = context.Background()
@@ -68,10 +66,11 @@ var destroyResourceCmd = &cobra.Command{
 
 		err = c.DeleteResource(ctx, res.ID)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		prettyPrint("resource destroyed", res)
+		return nil
 	},
 }
 
@@ -79,14 +78,13 @@ var destroyConnectorCmd = &cobra.Command{
 	Use:   "connector <name>",
 	Short: "destroy connector",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Connector Name
 		conName := args[0]
 
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		// get Connector ID from name
@@ -96,13 +94,12 @@ var destroyConnectorCmd = &cobra.Command{
 
 		con, err := c.GetConnectorByName(ctx, conName)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		c, err = client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx = context.Background()
@@ -111,10 +108,11 @@ var destroyConnectorCmd = &cobra.Command{
 
 		err = c.DeleteConnector(ctx, con.ID)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		prettyPrint("connector destroyed", con)
+		return nil
 	},
 }
 
@@ -130,14 +128,13 @@ var destroyPipelineCmd = &cobra.Command{
 	Use:   "pipeline <name>",
 	Short: "destroy pipeline",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Pipeline Name
 		pipelineName := args[0]
 
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		// get Pipeline ID from name
@@ -147,13 +144,12 @@ var destroyPipelineCmd = &cobra.Command{
 
 		pipeline, err := c.GetPipelineByName(ctx, pipelineName)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		c, err = client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx = context.Background()
@@ -162,10 +158,11 @@ var destroyPipelineCmd = &cobra.Command{
 
 		err = c.DeletePipeline(ctx, pipeline.ID)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		prettyPrint("pipeline destroyed", pipeline)
+		return nil
 	},
 }
 
