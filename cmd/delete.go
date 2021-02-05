@@ -1,5 +1,3 @@
-package cmd
-
 /*
 Copyright © 2020 Meroxa Inc
 
@@ -16,25 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+package cmd
+
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 )
 
-// destroyCmd represents the destroy command
-var destroyCmd = &cobra.Command{
-	Use:   "destroy",
-	Short: "destroy a component",
-	Long: `deprovision a component of the Meroxa platform, including pipelines,
- resources, connectors, functions etc...`,
+// deleteCmd represents the delete command
+var deleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete a component",
+	Long: `Deprovision a component of the Meroxa platform, including pipelines,
+ resources, connectors, functions, etc...`,
 }
 
-var destroyResourceCmd = &cobra.Command{
+var deleteResourceCmd = &cobra.Command{
 	Use:   "resource <name>",
-	Short: "destroy resource",
+	Short: "Delete resource",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Resource Name
@@ -69,14 +68,14 @@ var destroyResourceCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("resource destroyed", res)
+		prettyPrint("resource deleted", res)
 		return nil
 	},
 }
 
-var destroyConnectorCmd = &cobra.Command{
+var deleteConnectorCmd = &cobra.Command{
 	Use:   "connector <name>",
-	Short: "destroy connector",
+	Short: "Delete connector",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Connector Name
@@ -111,22 +110,14 @@ var destroyConnectorCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("connector destroyed", con)
+		prettyPrint("connector deleted", con)
 		return nil
 	},
 }
 
-var destroyFunctionCmd = &cobra.Command{
-	Use:   "function",
-	Short: "destroy function",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("destroy function called - Not Implemented")
-	},
-}
-
-var destroyPipelineCmd = &cobra.Command{
+var deletePipelineCmd = &cobra.Command{
 	Use:   "pipeline <name>",
-	Short: "destroy pipeline",
+	Short: "Delete pipeline",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Pipeline Name
@@ -161,27 +152,16 @@ var destroyPipelineCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("pipeline destroyed", pipeline)
+		prettyPrint("pipeline deleted", pipeline)
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(destroyCmd)
+	rootCmd.AddCommand(deleteCmd)
 
 	// Subcommands
-	destroyCmd.AddCommand(destroyResourceCmd)
-	destroyCmd.AddCommand(destroyConnectorCmd)
-	destroyCmd.AddCommand(destroyFunctionCmd)
-	destroyCmd.AddCommand(destroyPipelineCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// destroyCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// destroyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	deleteCmd.AddCommand(deleteResourceCmd)
+	deleteCmd.AddCommand(deleteConnectorCmd)
+	deleteCmd.AddCommand(deletePipelineCmd)
 }
