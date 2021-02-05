@@ -18,7 +18,6 @@ limitations under the License.
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -35,10 +34,10 @@ var listCmd = &cobra.Command{
 var listResourcesCmd = &cobra.Command{
 	Use:   "resources",
 	Short: "list resources",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx := context.Background()
@@ -47,7 +46,7 @@ var listResourcesCmd = &cobra.Command{
 
 		rr, err := c.ListResources(ctx)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -55,16 +54,17 @@ var listResourcesCmd = &cobra.Command{
 		} else {
 			printResourcesTable(rr)
 		}
+		return nil
 	},
 }
 
 var listConnectorsCmd = &cobra.Command{
 	Use:   "connectors",
 	Short: "list connectors",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx := context.Background()
@@ -73,7 +73,7 @@ var listConnectorsCmd = &cobra.Command{
 
 		connectors, err := c.ListConnectors(ctx)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -81,16 +81,17 @@ var listConnectorsCmd = &cobra.Command{
 		} else {
 			printConnectorsTable(connectors)
 		}
+		return nil
 	},
 }
 
 var listResourceTypesCmd = &cobra.Command{
 	Use:   "resource-types",
 	Short: "list resources-types",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx := context.Background()
@@ -99,7 +100,7 @@ var listResourceTypesCmd = &cobra.Command{
 
 		resTypes, err := c.ListResourceTypes(ctx)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -107,16 +108,17 @@ var listResourceTypesCmd = &cobra.Command{
 		} else {
 			printResourceTypesTable(resTypes)
 		}
+		return nil
 	},
 }
 
 var listPipelinesCmd = &cobra.Command{
 	Use:   "pipelines",
 	Short: "list pipelines",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		ctx := context.Background()
@@ -125,7 +127,7 @@ var listPipelinesCmd = &cobra.Command{
 
 		rr, err := c.ListPipelines(ctx)
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -133,6 +135,7 @@ var listPipelinesCmd = &cobra.Command{
 		} else {
 			prettyPrint("pipelines", rr)
 		}
+		return nil
 	},
 }
 

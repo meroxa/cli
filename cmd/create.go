@@ -42,55 +42,49 @@ var createConnectorCmd = &cobra.Command{
 	Use:   "connector",
 	Short: "create connector",
 	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Resource Name
 		resName := args[0]
 
 		name, err := cmd.Flags().GetString("name")
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		cfgString, err := cmd.Flags().GetString("config")
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		cfg := &Config{}
 		if cfgString != "" {
 			err = json.Unmarshal([]byte(cfgString), cfg)
 			if err != nil {
-				fmt.Println("Error: ", err)
-				return
+				return err
 			}
 		}
 
 		// Process metadata
 		metadataString, err := cmd.Flags().GetString("metadata")
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 		metadata := map[string]string{}
 		if metadataString != "" {
 			err = json.Unmarshal([]byte(metadataString), &metadata)
 			if err != nil {
-				fmt.Println("Error: ", err)
-				return
+				return err
 			}
 		}
 
 		// merge in input
 		input, err := cmd.Flags().GetString("input")
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 		err = cfg.Set("input", input)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		if !flagRootOutputJSON {
@@ -99,8 +93,7 @@ var createConnectorCmd = &cobra.Command{
 
 		con, err := createConnector(name, resName, cfg, metadata, input)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -109,6 +102,8 @@ var createConnectorCmd = &cobra.Command{
 			fmt.Println("Connector successfully created!")
 			prettyPrint("connector", con)
 		}
+
+		return nil
 	},
 }
 
