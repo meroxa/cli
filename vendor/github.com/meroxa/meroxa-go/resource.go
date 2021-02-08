@@ -27,13 +27,12 @@ type Credentials struct {
 
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
-	ID            int               `json:"id"`
-	Kind          string            `json:"kind"`
-	Name          string            `json:"name"`
-	URL           string            `json:"url"`
-	Credentials   *Credentials      `json:"credentials,omitempty"`
-	Configuration map[string]string `json:"config,omitempty"`
-	Metadata      map[string]string `json:"metadata,omitempty"`
+	ID          int               `json:"id"`
+	Kind        string            `json:"kind"`
+	Name        string            `json:"name"`
+	URL         string            `json:"url"`
+	Credentials *Credentials      `json:"credentials,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
 }
 
 // CreateResource provisions a new Resource from the given Resource struct

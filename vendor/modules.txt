@@ -36,7 +36,7 @@ github.com/mattn/go-colorable
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20201112174300-1f53e954b5fd
+# github.com/meroxa/meroxa-go v0.0.0-20210206002500-1f1bc5c61dfe
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir
