@@ -14,7 +14,7 @@ func init() {
 }
 
 var logsCmd = &cobra.Command{
-	Use:   "logs connector",
+	Use:   "logs",
 	Short: "Print logs for a component",
 }
 
@@ -39,8 +39,8 @@ var logsConnectorCmd = &cobra.Command{
 			return err
 		}
 
-		io.Copy(os.Stderr, resp.Body)
+		_, err = io.Copy(os.Stderr, resp.Body)
 
-		return nil
+		return err
 	},
 }

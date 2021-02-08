@@ -15,22 +15,20 @@ import (
 
 func TestResourcesTable(t *testing.T) {
 	resource := &meroxa.Resource{
-		ID:            0,
-		Kind:          "jdbc",
-		Name:          "my-db-jdbc-source",
-		URL:           "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
-		Credentials:   nil,
-		Configuration: nil,
-		Metadata:      nil,
+		ID:          0,
+		Kind:        "jdbc",
+		Name:        "my-db-jdbc-source",
+		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
+		Credentials: nil,
+		Metadata:    nil,
 	}
 	resIDAlign := &meroxa.Resource{
-		ID:            1000,
-		Kind:          "jdbc",
-		Name:          "my-db-jdbc-source",
-		URL:           "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
-		Credentials:   nil,
-		Configuration: nil,
-		Metadata:      nil,
+		ID:          1000,
+		Kind:        "jdbc",
+		Name:        "my-db-jdbc-source",
+		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
+		Credentials: nil,
+		Metadata:    nil,
 	}
 
 	tests := map[string][]*meroxa.Resource{

@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	apiURL      = "https://api.meroxa.io/v1"
-	contentType = "application/json"
+	apiURL          = "https://api.meroxa.io/v1"
+	jsonContentType = "application/json"
+	textContentType = "text/plain"
 )
 
 // Client represents the Meroxa API Client
@@ -89,8 +90,8 @@ func (c *Client) newRequest(ctx context.Context, method, path string, body inter
 	// Set Basic Auth
 	req.SetBasicAuth(c.username, c.password)
 
-	req.Header.Add("Content-Type", contentType)
-	req.Header.Add("Accept", contentType)
+	req.Header.Add("Content-Type", jsonContentType)
+	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", c.userAgent)
 	return req, nil
 }
