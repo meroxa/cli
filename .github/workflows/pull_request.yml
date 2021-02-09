@@ -1,0 +1,39 @@
+name: Acceptance Test
+
+# Run this workflow every time a new PR wants to merge to master/main
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+jobs:
+  acceptance:
+    name: Staging Acceptance Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        enable_data_plane: [true]
+    steps:
+      - name: Checkout Acceptance
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/acceptance
+          path: acceptance
+      # Note: the following folder layout matters for platform-dev-setup:
+      # parent_dir:
+      #   - meroxa
+      #   - merman
+      #   - platform-dev-setup
+      - name: Checkout CLI
+        uses: actions/checkout@v2
+        with:
+          path: ./acceptance/cli
+      
+      - name: Build and Run
+        working-directory: ./acceptance
+        run: |
+          MINIKUBE_PG_URL="${{ secrets.TEST_DB_URL }}"
+          MINIKUBE_API_HOST="https://staging.meroxa.io"
+          docker build -t meroxa/acceptance --build-arg=CLI_PATH=./cli .
+          docker run meroxa/acceptance -test.v -postgres-url $MINIKUBE_PG_URL -api-host $MINIKUBE_API_HOST
