@@ -49,12 +49,12 @@ var (
 	flagLoginUsername string
 	flagLoginPassword string
 
-	ErrNotLoggedIn = errors.New("you do not appear to be logged in to the Meroxa Platform")
+	ErrNotLoggedIn = errors.New("You do not appear to be logged in to the Meroxa Platform")
 )
 
 var signupCmd = &cobra.Command{
 	Use:   "signup",
-	Short: "sign up to the Meroxa platform",
+	Short: "Sign up to the Meroxa platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 
@@ -96,7 +96,7 @@ var signupCmd = &cobra.Command{
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "log into the Meroxa platform",
+	Short: "Log into the Meroxa platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var err error
 
@@ -131,27 +131,27 @@ var loginCmd = &cobra.Command{
 // logoutCmd represents the logout command
 var logoutCmd = &cobra.Command{
 	Use:   "logout",
-	Short: "logout of the Meroxa platform",
+	Short: "Logout of the Meroxa platform",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// TODO: add confirmation
 		err := clearCreds()
 		if err != nil {
 			return err
 		}
-		fmt.Println("credentials cleared")
+		fmt.Println("Credentials cleared")
 		return nil
 	},
 }
 
 var whoAmICmd = &cobra.Command{
 	Use:   "whoami",
-	Short: "retrieve currently logged in user",
+	Short: "Display effective username",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		u, _, err := readCreds()
 		if err != nil {
 			return err
 		}
-		fmt.Printf("username: %s", u)
+		fmt.Println(u)
 		return nil
 	},
 }
@@ -173,16 +173,6 @@ func init() {
 	signupCmd.PersistentFlags().StringVar(&flagSignupUsername, "username", "", "username")
 	signupCmd.PersistentFlags().StringVar(&flagSignupPassword, "password", "", "password")
 	signupCmd.PersistentFlags().StringVar(&flagSignupEmail, "email", "", "email")
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// loginCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// loginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func saveCreds(username, password string) error {
@@ -279,15 +269,15 @@ func emailValidator(input string) error {
 func usernameValidator(input string) error {
 	usernameRegexp := regexp.MustCompile(`(?i)^[a-z][a-z0-9]{2,11}$`)
 	if len(input) < 3 {
-		return errors.New("input should be at least 3 characters long")
+		return errors.New("Input should be at least 3 characters long")
 	}
 
 	if len(input) > 12 {
-		return errors.New("input should be no longer than 12 characters")
+		return errors.New("Input should be no longer than 12 characters")
 	}
 
 	if !usernameRegexp.Match([]byte(input)) {
-		return errors.New("username should start only contain alphanumeric characters and start with a letter")
+		return errors.New("Username should start only contain alphanumeric characters and start with a letter")
 	}
 
 	return nil

@@ -26,14 +26,14 @@ import (
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "list components",
-	Long: `list the components of the Meroxa platform, including pipelines,
- resources, connectors, functions etc... You may also filter by type.`,
+	Short: "List components",
+	Long: `List the components of the Meroxa platform, including pipelines,
+ resources, connectors, etc... You may also filter by type.`,
 }
 
 var listResourcesCmd = &cobra.Command{
 	Use:   "resources",
-	Short: "list resources",
+	Short: "List resources",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -60,7 +60,7 @@ var listResourcesCmd = &cobra.Command{
 
 var listConnectorsCmd = &cobra.Command{
 	Use:   "connectors",
-	Short: "list connectors",
+	Short: "List connectors",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -87,7 +87,7 @@ var listConnectorsCmd = &cobra.Command{
 
 var listResourceTypesCmd = &cobra.Command{
 	Use:   "resource-types",
-	Short: "list resources-types",
+	Short: "List resources-types",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -114,7 +114,7 @@ var listResourceTypesCmd = &cobra.Command{
 
 var listPipelinesCmd = &cobra.Command{
 	Use:   "pipelines",
-	Short: "list pipelines",
+	Short: "List pipelines",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -147,14 +147,4 @@ func init() {
 	listCmd.AddCommand(listConnectorsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
 	listCmd.AddCommand(listPipelinesCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

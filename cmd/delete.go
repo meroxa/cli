@@ -152,7 +152,7 @@ var deletePipelineCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("pipeline deleted", pipeline)
+		prettyPrint("Pipeline deleted", pipeline)
 		return nil
 	},
 }
