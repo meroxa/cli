@@ -32,84 +32,78 @@ func prettyPrint(section string, data interface{}) {
 }
 
 func printResourcesTable(resources []*meroxa.Resource) {
-	table := simpletable.New()
-
-	table.Header = &simpletable.Header{
-		Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignCenter, Text: "ID"},
-			{Align: simpletable.AlignCenter, Text: "TYPE"},
-			{Align: simpletable.AlignCenter, Text: "NAME"},
-			{Align: simpletable.AlignCenter, Text: "URL"},
-		},
-	}
-
-	for _, res := range resources {
-		r := []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
-			{Text: res.Kind},
-			{Text: res.Name},
-			{Text: res.URL},
+	if len(resources) != 0 {
+		table := simpletable.New()
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "ID"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "URL"},
+			},
 		}
 
-		table.Body.Cells = append(table.Body.Cells, r)
-	}
-	table.SetStyle(simpletable.StyleCompact)
-	fmt.Println(table.String())
-}
+		for _, res := range resources {
+			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
+				{Text: res.Kind},
+				{Text: res.Name},
+				{Text: res.URL},
+			}
 
-func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
-	cells = append(cells, &simpletable.Cell{
-		Align: simpletable.AlignCenter,
-		Text:  text,
-	})
-	return cells
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		fmt.Println(table.String())
+	}
 }
 
 func printConnectorsTable(connectors []*meroxa.Connector) {
-	table := simpletable.New()
+	if len(connectors) != 0 {
+		table := simpletable.New()
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "ID"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "STREAMS"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
+			},
+		}
 
-	table.Header = &simpletable.Header{
-		Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignCenter, Text: "ID"},
-			{Align: simpletable.AlignCenter, Text: "TYPE"},
-			{Align: simpletable.AlignCenter, Text: "NAME"},
-			{Align: simpletable.AlignCenter, Text: "STREAMS"},
-			{Align: simpletable.AlignCenter, Text: "STATE"},
-		},
-	}
+		for _, conn := range connectors {
+			var streamStr string
 
-	for _, conn := range connectors {
-		var streamStr string
+			if streamInput, ok := conn.Streams["input"]; ok {
+				streamStr += "input:\n"
 
-		if streamInput, ok := conn.Streams["input"]; ok {
-			streamStr += "input:\n"
-
-			streamInterface := streamInput.([]interface{})
-			for _, v := range streamInterface {
-				streamStr += fmt.Sprintf("%v\n", v)
+				streamInterface := streamInput.([]interface{})
+				for _, v := range streamInterface {
+					streamStr += fmt.Sprintf("%v\n", v)
+				}
 			}
-		}
 
-		if streamOutput, ok := conn.Streams["output"]; ok {
-			streamStr += "output:\n"
+			if streamOutput, ok := conn.Streams["output"]; ok {
+				streamStr += "output:\n"
 
-			streamInterface := streamOutput.([]interface{})
-			for _, v := range streamInterface {
-				streamStr += fmt.Sprintf("%v\n", v)
+				streamInterface := streamOutput.([]interface{})
+				for _, v := range streamInterface {
+					streamStr += fmt.Sprintf("%v\n", v)
+				}
 			}
-		}
-		r := []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
-			{Text: conn.Kind},
-			{Text: conn.Name},
-			{Text: streamStr},
-			{Text: conn.State},
-		}
+			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
+				{Text: conn.Kind},
+				{Text: conn.Name},
+				{Text: streamStr},
+				{Text: conn.State},
+			}
 
-		table.Body.Cells = append(table.Body.Cells, r)
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		fmt.Println(table.String())
 	}
-	table.SetStyle(simpletable.StyleCompact)
-	fmt.Println(table.String())
 }
 
 func printResourceTypesTable(types []string) {
@@ -133,23 +127,25 @@ func printResourceTypesTable(types []string) {
 }
 
 func printPipelinesTable(pipelines []*meroxa.Pipeline) {
-	table := simpletable.New()
+	if len(pipelines) != 0 {
+		table := simpletable.New()
 
-	table.Header = &simpletable.Header{
-		Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignCenter, Text: "ID"},
-			{Align: simpletable.AlignCenter, Text: "Name"},
-		},
-	}
-
-	for _, p := range pipelines {
-		r := []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
-			{Align: simpletable.AlignCenter, Text: p.Name},
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "ID"},
+				{Align: simpletable.AlignCenter, Text: "Name"},
+			},
 		}
 
-		table.Body.Cells = append(table.Body.Cells, r)
+		for _, p := range pipelines {
+			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
+				{Align: simpletable.AlignCenter, Text: p.Name},
+			}
+
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		fmt.Println(table.String())
 	}
-	table.SetStyle(simpletable.StyleCompact)
-	fmt.Println(table.String())
 }
