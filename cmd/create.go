@@ -29,18 +29,14 @@ import (
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "create meroxa pipeline components",
+	Short: "Create meroxa pipeline components",
 	Long: `Use the create command to create various Meroxa pipeline components
-including Connectors and Functions.
-
-If you need to add a resource, try:
-
-$ meroxa add resource <resource-type> [name]`,
+including Connectors.`,
 }
 
 var createConnectorCmd = &cobra.Command{
 	Use:   "connector",
-	Short: "create connector",
+	Short: "Create a connector",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Resource Name
@@ -107,17 +103,9 @@ var createConnectorCmd = &cobra.Command{
 	},
 }
 
-var createFunctionCmd = &cobra.Command{
-	Use:   "function",
-	Short: "create function",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("create function called - Not Implemented")
-	},
-}
-
 var createPipelineCmd = &cobra.Command{
 	Use:   "pipeline <name>",
-	Short: "create pipeline",
+	Short: "Create a pipeline",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		pipelineName := args[0]
@@ -177,8 +165,6 @@ func init() {
 	createConnectorCmd.Flags().StringP("metadata", "m", "", "connector metadata")
 	createConnectorCmd.Flags().String("input", "", "command delimeted list of input streams")
 	createConnectorCmd.MarkFlagRequired("input")
-
-	createCmd.AddCommand(createFunctionCmd)
 
 	createCmd.AddCommand(createPipelineCmd)
 	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")
