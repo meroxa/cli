@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"os"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // completionCmd represents the completion command
