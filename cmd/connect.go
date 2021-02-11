@@ -26,12 +26,12 @@ import (
 // connectCmd represents the connect command
 var connectCmd = &cobra.Command{
 	Use:   "connect <name> --to <name>",
-	Short: "connect two resources together",
-	Long: `use the connect commands to automatically configure the connectors
+	Short: "Connect two resources together",
+	Long: `Use the connect commands to automatically configure the connectors
 required to pull data from one resource (the source) to another
 (the target).
 
-this is essentially a shortcut for creating a connector from the
+This is essentially a shortcut for creating a connector from the
 source to Meroxa and creating a connector from Meroxa to the target`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -104,14 +104,4 @@ func init() {
 	connectCmd.Flags().String("from", "", "source resource name")
 	connectCmd.Flags().StringP("config", "c", "", "connector configuration")
 	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// connectCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// connectCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,5 +1,3 @@
-package cmd
-
 /*
 Copyright © 2020 Meroxa Inc
 
@@ -16,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+package cmd
+
 import (
 	"fmt"
 
@@ -25,7 +25,7 @@ import (
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "display the version of the Meroxa CLI",
+	Short: "Display the version of the Meroxa CLI",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("Meroxa CLI version %s\n", meroxaVersion)
 	},
@@ -36,5 +36,5 @@ func init() {
 }
 
 func versionString() string {
-	return fmt.Sprintf("meroxa cli %s", meroxaVersion)
+	return fmt.Sprintf("Meroxa CLI %s", meroxaVersion)
 }
