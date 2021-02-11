@@ -59,11 +59,39 @@ func TestResourcesTable(t *testing.T) {
 				}
 			}
 			fmt.Println(out)
-
 		})
 	}
 }
 
+func TestEmptyTables(t *testing.T) {
+	emptyResourcesList := []*meroxa.Resource{}
+	out := captureOutput(func() {
+		printResourcesTable(emptyResourcesList)
+	})
+
+	if out != "" {
+		t.Errorf("Output for resources should be blank")
+	}
+
+	emptyConnectorsList := []*meroxa.Connector{}
+	out = captureOutput(func() {
+		printConnectorsTable(emptyConnectorsList)
+	})
+
+	if out != "" {
+		t.Errorf("Output for connectors should be blank")
+	}
+
+	emptyPipelinesList := []*meroxa.Pipeline{}
+
+	out = captureOutput(func() {
+		printPipelinesTable(emptyPipelinesList)
+	})
+
+	if out != "" {
+		t.Errorf("Output for pipelines should be blank")
+	}
+}
 func TestResourceTypesTable(t *testing.T) {
 	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
 	printResourceTypesTable(types)
