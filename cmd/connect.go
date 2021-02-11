@@ -25,7 +25,7 @@ import (
 
 // connectCmd represents the connect command
 var connectCmd = &cobra.Command{
-	Use:   "connect <name> --to <name>",
+	Use:   "connect --from <resource-name> --to <resource-name>",
 	Short: "Connect two resources together",
 	Long: `Use the connect commands to automatically configure the connectors
 required to pull data from one resource (the source) to another
@@ -33,10 +33,13 @@ required to pull data from one resource (the source) to another
 
 This is essentially a shortcut for creating a connector from the
 source to Meroxa and creating a connector from Meroxa to the target`,
-	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// source name
-		sourceName := args[0]
+		sourceName, err := cmd.Flags().GetString("from")
+		if err != nil {
+		  fmt.Println("Error: ", err)
+		  return
+		}
 
 		// target name
 		targetName, err := cmd.Flags().GetString("to")
@@ -102,6 +105,7 @@ func init() {
 	connectCmd.Flags().String("to", "", "target resource name")
 	connectCmd.MarkFlagRequired("to")
 	connectCmd.Flags().String("from", "", "source resource name")
+	connectCmd.MarkFlagRequired("from")
 	connectCmd.Flags().StringP("config", "c", "", "connector configuration")
 	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
 }
