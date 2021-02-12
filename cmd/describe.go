@@ -102,7 +102,7 @@ var describeConnectorCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(describeCmd)
+	RootCmd.AddCommand(describeCmd)
 
 	// Subcommands
 	describeCmd.AddCommand(describeResourceCmd)

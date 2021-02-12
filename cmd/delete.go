@@ -158,7 +158,7 @@ var deletePipelineCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(deleteCmd)
+	RootCmd.AddCommand(deleteCmd)
 
 	// Subcommands
 	deleteCmd.AddCommand(deleteResourceCmd)

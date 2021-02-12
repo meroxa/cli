@@ -2,6 +2,8 @@
 github.com/alexeyco/simpletable
 # github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 github.com/chzyer/readline
+# github.com/cpuguy83/go-md2man/v2 v2.0.0
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/gorilla/mux v1.7.3
@@ -46,6 +48,10 @@ github.com/mitchellh/mapstructure
 github.com/pelletier/go-toml
 # github.com/rivo/uniseg v0.2.0
 github.com/rivo/uniseg
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
 # github.com/spf13/afero v1.5.1
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -53,6 +59,7 @@ github.com/spf13/afero/mem
 github.com/spf13/cast
 # github.com/spf13/cobra v1.1.1
 github.com/spf13/cobra
+github.com/spf13/cobra/doc
 # github.com/spf13/jwalterweatherman v1.1.0
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.5

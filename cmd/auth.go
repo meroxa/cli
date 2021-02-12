@@ -158,7 +158,7 @@ var whoAmICmd = &cobra.Command{
 
 func init() {
 	// Login
-	rootCmd.AddCommand(loginCmd)
+	RootCmd.AddCommand(loginCmd)
 	loginCmd.PersistentFlags().StringVar(&flagLoginUsername, "username", "", "username")
 	loginCmd.PersistentFlags().StringVar(&flagLoginPassword, "password", "", "password")
 
@@ -166,10 +166,10 @@ func init() {
 	loginCmd.AddCommand(whoAmICmd)
 
 	// Logout
-	rootCmd.AddCommand(logoutCmd)
+	RootCmd.AddCommand(logoutCmd)
 
 	// Signup
-	rootCmd.AddCommand(signupCmd)
+	RootCmd.AddCommand(signupCmd)
 	signupCmd.PersistentFlags().StringVar(&flagSignupUsername, "username", "", "username")
 	signupCmd.PersistentFlags().StringVar(&flagSignupPassword, "password", "", "password")
 	signupCmd.PersistentFlags().StringVar(&flagSignupEmail, "email", "", "email")
