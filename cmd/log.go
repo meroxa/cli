@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(logsCmd)
+	RootCmd.AddCommand(logsCmd)
 	logsCmd.AddCommand(logsConnectorCmd)
 }
 

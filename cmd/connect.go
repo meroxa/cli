@@ -96,7 +96,7 @@ source to Meroxa and creating a connector from Meroxa to the target`,
 }
 
 func init() {
-	rootCmd.AddCommand(connectCmd)
+	RootCmd.AddCommand(connectCmd)
 
 	// Subcommands
 	connectCmd.Flags().String("to", "", "target resource name")

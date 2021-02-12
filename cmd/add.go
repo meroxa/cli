@@ -102,7 +102,7 @@ var addResourceCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(addCmd)
+	RootCmd.AddCommand(addCmd)
 	addCmd.AddCommand(addResourceCmd)
 
 	addResourceCmd.Flags().StringVarP(&resName, "name", "n", "foo", "resource name")

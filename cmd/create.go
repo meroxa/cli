@@ -157,7 +157,7 @@ var createPipelineCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	RootCmd.AddCommand(createCmd)
 
 	createCmd.AddCommand(createConnectorCmd)
 	createConnectorCmd.Flags().StringP("name", "n", "", "connector name")

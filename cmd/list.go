@@ -140,7 +140,7 @@ var listPipelinesCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(listCmd)
+	RootCmd.AddCommand(listCmd)
 
 	// Subcommands
 	listCmd.AddCommand(listResourcesCmd)
