@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 
@@ -21,8 +22,10 @@ var logsCmd = &cobra.Command{
 var logsConnectorCmd = &cobra.Command{
 	Use:   "connector <name>",
 	Short: "Print logs for a connector",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires connector name\n\nUsage:\n  meroxa logs connector <name>")
+		}
 		connector := args[0]
 
 		c, err := client()

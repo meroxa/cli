@@ -4,8 +4,7 @@ Describe a component
 
 ### Synopsis
 
-Describe a component of the Meroxa data platform, including pipelines,
-resources, connectors, etc...
+Describe a component of the Meroxa data platform, including resources and connectors
 
 ### Options
 

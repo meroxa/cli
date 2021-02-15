@@ -19,11 +19,11 @@ limitations under the License.
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"time"
-
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // createCmd represents the create command
@@ -35,10 +35,13 @@ including Connectors.`,
 }
 
 var createConnectorCmd = &cobra.Command{
-	Use:   "connector",
+	Use:   "connector <custom-connector-name>",
 	Short: "Create a connector",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires a connector name\n\nUsage:\n  meroxa create connector <custom-connector-name> [flags]")
+		}
+
 		// Resource Name
 		resName := args[0]
 
@@ -106,14 +109,15 @@ var createConnectorCmd = &cobra.Command{
 var createPipelineCmd = &cobra.Command{
 	Use:   "pipeline <name>",
 	Short: "Create a pipeline",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires a pipeline name\n\nUsage:\n  meroxa create pipeline <name> [flags]")
+		}
 		pipelineName := args[0]
 
 		c, err := client()
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 		ctx := context.Background()
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -126,13 +130,13 @@ var createPipelineCmd = &cobra.Command{
 		// Process metadata
 		metadataString, err := cmd.Flags().GetString("metadata")
 		if err != nil {
-			fmt.Println("Error: ", err)
+			return err
 		}
 		if metadataString != "" {
 			var metadata map[string]string
 			err = json.Unmarshal([]byte(metadataString), &metadata)
 			if err != nil {
-				fmt.Println("Error: ", err)
+				return err
 			}
 			p.Metadata = metadata
 		}
@@ -143,8 +147,7 @@ var createPipelineCmd = &cobra.Command{
 
 		res, err := c.CreatePipeline(ctx, p)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		if flagRootOutputJSON {
@@ -153,6 +156,7 @@ var createPipelineCmd = &cobra.Command{
 			fmt.Println("Pipeline successfully created!")
 			prettyPrint("pipeline", res)
 		}
+		return nil
 	},
 }
 
