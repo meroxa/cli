@@ -33,26 +33,23 @@ required to pull data from one resource (the source) to another
 
 This is essentially a shortcut for creating a connector from the
 source to Meroxa and creating a connector from Meroxa to the target`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// source name
 		sourceName, err := cmd.Flags().GetString("from")
 		if err != nil {
-		  fmt.Println("Error: ", err)
-		  return
+			return err
 		}
 
 		// target name
 		targetName, err := cmd.Flags().GetString("to")
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		// config
 		cfgString, err := cmd.Flags().GetString("config")
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		cfg := struct {
@@ -65,24 +62,21 @@ source to Meroxa and creating a connector from Meroxa to the target`,
 		if cfgString != "" {
 			err = json.Unmarshal([]byte(cfgString), &cfg)
 			if err != nil {
-				fmt.Println("Error: ", err)
-				return
+				return err
 			}
 		}
 
 		// merge in input
 		input, err := cmd.Flags().GetString("input")
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 
 		// create connector from source to meroxa
 		fmt.Println("Creating connector from source...")
 		srcCon, err := createConnector("", sourceName, cfg.From, nil, input)
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 		fmt.Println("Connector successfully created!")
 
@@ -91,10 +85,10 @@ source to Meroxa and creating a connector from Meroxa to the target`,
 		fmt.Println("Creating connector to target...")
 		_, err = createConnector("", targetName, cfg.To, nil, inputStreams[0].(string))
 		if err != nil {
-			fmt.Println("Error: ", err)
-			return
+			return err
 		}
 		fmt.Println("Connector successfully created!")
+		return nil
 	},
 }
 
