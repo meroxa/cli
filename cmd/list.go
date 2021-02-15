@@ -18,6 +18,7 @@ limitations under the License.
 
 import (
 	"context"
+	"github.com/meroxa/cli/display"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -50,9 +51,9 @@ var listResourcesCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(rr)
+			display.JSONPrint(rr)
 		} else {
-			printResourcesTable(rr)
+			display.PrintResourcesTable(rr)
 		}
 		return nil
 	},
@@ -77,9 +78,9 @@ var listConnectorsCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(connectors)
+			display.JSONPrint(connectors)
 		} else {
-			printConnectorsTable(connectors)
+			display.PrintConnectorsTable(connectors)
 		}
 		return nil
 	},
@@ -104,9 +105,9 @@ var listResourceTypesCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(resTypes)
+			display.JSONPrint(resTypes)
 		} else {
-			printResourceTypesTable(resTypes)
+			display.PrintResourceTypesTable(resTypes)
 		}
 		return nil
 	},
@@ -131,9 +132,9 @@ var listPipelinesCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(rr)
+			display.JSONPrint(rr)
 		} else {
-			prettyPrint("pipelines", rr)
+			display.PrettyPrint("pipelines", rr)
 		}
 		return nil
 	},

@@ -19,9 +19,9 @@ package cmd
 import (
 	"context"
 	"errors"
-	"time"
-
+	"github.com/meroxa/cli/display"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // deleteCmd represents the delete command
@@ -71,7 +71,7 @@ var deleteResourceCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("resource deleted", res)
+		display.PrettyPrint("resource deleted", res)
 		return nil
 	},
 }
@@ -116,7 +116,7 @@ var deleteConnectorCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("connector deleted", con)
+		display.PrettyPrint("connector deleted", con)
 		return nil
 	},
 }
@@ -161,7 +161,7 @@ var deletePipelineCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("Pipeline deleted", pipeline)
+		display.PrettyPrint("Pipeline deleted", pipeline)
 		return nil
 	},
 }

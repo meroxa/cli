@@ -1,4 +1,4 @@
-package cmd
+package display
 
 import (
 	"bytes"
@@ -39,7 +39,7 @@ func TestResourcesTable(t *testing.T) {
 	for name, resources := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := captureOutput(func() {
-				printResourcesTable(resources)
+				PrintResourcesTable(resources)
 			})
 
 			switch name {
@@ -66,7 +66,7 @@ func TestResourcesTable(t *testing.T) {
 func TestEmptyTables(t *testing.T) {
 	emptyResourcesList := []*meroxa.Resource{}
 	out := captureOutput(func() {
-		printResourcesTable(emptyResourcesList)
+		PrintResourcesTable(emptyResourcesList)
 	})
 
 	if out != "" {
@@ -75,7 +75,7 @@ func TestEmptyTables(t *testing.T) {
 
 	emptyConnectorsList := []*meroxa.Connector{}
 	out = captureOutput(func() {
-		printConnectorsTable(emptyConnectorsList)
+		PrintConnectorsTable(emptyConnectorsList)
 	})
 
 	if out != "" {
@@ -94,7 +94,7 @@ func TestEmptyTables(t *testing.T) {
 }
 func TestResourceTypesTable(t *testing.T) {
 	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
-	printResourceTypesTable(types)
+	PrintResourceTypesTable(types)
 }
 
 func TestConnectionsTable(t *testing.T) {
@@ -135,7 +135,7 @@ func TestConnectionsTable(t *testing.T) {
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := captureOutput(func() {
-				printConnectorsTable(connections)
+				PrintConnectorsTable(connections)
 			})
 
 			switch name {

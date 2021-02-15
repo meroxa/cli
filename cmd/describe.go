@@ -19,6 +19,7 @@ package cmd
 import (
 	"context"
 	"errors"
+	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 	"time"
@@ -54,9 +55,9 @@ var describeResourceCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(res)
+			display.JSONPrint(res)
 		} else {
-			prettyPrint("resource", res)
+			display.PrettyPrint("resource", res)
 		}
 		return nil
 	},
@@ -89,9 +90,9 @@ var describeConnectorCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(conn)
+			display.JSONPrint(conn)
 		} else {
-			prettyPrint("connector", conn)
+			display.PrettyPrint("connector", conn)
 		}
 		return nil
 	},

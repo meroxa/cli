@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 	"time"
@@ -96,10 +97,10 @@ var createConnectorCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(con)
+			display.JSONPrint(con)
 		} else {
 			fmt.Println("Connector successfully created!")
-			prettyPrint("connector", con)
+			display.PrettyPrint("connector", con)
 		}
 
 		return nil
@@ -151,10 +152,10 @@ var createPipelineCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(res)
+			display.JSONPrint(res)
 		} else {
 			fmt.Println("Pipeline successfully created!")
-			prettyPrint("pipeline", res)
+			display.PrettyPrint("pipeline", res)
 		}
 		return nil
 	},
