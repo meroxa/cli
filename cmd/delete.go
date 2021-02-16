@@ -18,9 +18,10 @@ package cmd
 
 import (
 	"context"
-	"time"
-
+	"errors"
+	"github.com/meroxa/cli/display"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // deleteCmd represents the delete command
@@ -34,8 +35,10 @@ var deleteCmd = &cobra.Command{
 var deleteResourceCmd = &cobra.Command{
 	Use:   "resource <name>",
 	Short: "Delete resource",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires resource name\n\nUsage:\n  meroxa delete resource <name>")
+		}
 		// Resource Name
 		resName := args[0]
 
@@ -68,7 +71,7 @@ var deleteResourceCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("resource deleted", res)
+		display.PrettyPrint("resource deleted", res)
 		return nil
 	},
 }
@@ -76,8 +79,11 @@ var deleteResourceCmd = &cobra.Command{
 var deleteConnectorCmd = &cobra.Command{
 	Use:   "connector <name>",
 	Short: "Delete connector",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires connector name\n\nUsage:\n  meroxa delete connector <name>")
+		}
+
 		// Connector Name
 		conName := args[0]
 
@@ -110,7 +116,7 @@ var deleteConnectorCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("connector deleted", con)
+		display.PrettyPrint("connector deleted", con)
 		return nil
 	},
 }
@@ -118,8 +124,11 @@ var deleteConnectorCmd = &cobra.Command{
 var deletePipelineCmd = &cobra.Command{
 	Use:   "pipeline <name>",
 	Short: "Delete pipeline",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires pipeline name\n\nUsage:\n  meroxa delete pipeline <name>")
+		}
+
 		// Pipeline Name
 		pipelineName := args[0]
 
@@ -152,7 +161,7 @@ var deletePipelineCmd = &cobra.Command{
 			return err
 		}
 
-		prettyPrint("Pipeline deleted", pipeline)
+		display.PrettyPrint("Pipeline deleted", pipeline)
 		return nil
 	},
 }

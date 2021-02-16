@@ -1,5 +1,3 @@
-package cmd
-
 /*
 Copyright © 2020 Meroxa Inc
 
@@ -16,29 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+package cmd
+
 import (
 	"context"
 	"errors"
-	"time"
-
+	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
-
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // describeCmd represents the describe command
 var describeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "Describe a component",
-	Long: `Describe a component of the Meroxa data platform, including pipelines,
-resources, connectors, etc...`,
+	Long:  `Describe a component of the Meroxa data platform, including resources and connectors`,
 }
 
 var describeResourceCmd = &cobra.Command{
 	Use:   "resource <name>",
 	Short: "Describe resource",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires resource name\n\nUsage:\n  meroxa describe resource <name> [flags]")
+		}
 		name := args[0]
 
 		c, err := client()
@@ -55,9 +55,9 @@ var describeResourceCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(res)
+			display.JSONPrint(res)
 		} else {
-			prettyPrint("resource", res)
+			display.PrettyPrint("resource", res)
 		}
 		return nil
 	},
@@ -66,13 +66,10 @@ var describeResourceCmd = &cobra.Command{
 var describeConnectorCmd = &cobra.Command{
 	Use:   "connector [name]",
 	Short: "Describe connector",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("Requires a connector name")
-		}
-		return nil
-	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires connector name\n\nUsage:\n  meroxa describe connector <name> [flags]")
+		}
 		var (
 			err  error
 			conn *meroxa.Connector
@@ -93,9 +90,9 @@ var describeConnectorCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(conn)
+			display.JSONPrint(conn)
 		} else {
-			prettyPrint("connector", conn)
+			display.PrettyPrint("connector", conn)
 		}
 		return nil
 	},

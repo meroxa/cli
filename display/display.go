@@ -1,4 +1,4 @@
-package cmd
+package display
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
-func jsonPrint(data interface{}) {
+func JSONPrint(data interface{}) {
 	p, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -19,7 +19,7 @@ func jsonPrint(data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func prettyPrint(section string, data interface{}) {
+func PrettyPrint(section string, data interface{}) {
 	var p []byte
 	//    var err := error
 	p, err := json.MarshalIndent(data, "", "  ")
@@ -31,7 +31,7 @@ func prettyPrint(section string, data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func printResourcesTable(resources []*meroxa.Resource) {
+func PrintResourcesTable(resources []*meroxa.Resource) {
 	if len(resources) != 0 {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
@@ -58,7 +58,7 @@ func printResourcesTable(resources []*meroxa.Resource) {
 	}
 }
 
-func printConnectorsTable(connectors []*meroxa.Connector) {
+func PrintConnectorsTable(connectors []*meroxa.Connector) {
 	if len(connectors) != 0 {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
@@ -106,7 +106,7 @@ func printConnectorsTable(connectors []*meroxa.Connector) {
 	}
 }
 
-func printResourceTypesTable(types []string) {
+func PrintResourceTypesTable(types []string) {
 	table := simpletable.New()
 
 	table.Header = &simpletable.Header{

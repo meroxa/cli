@@ -18,7 +18,9 @@ package cmd
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/meroxa/cli/display"
 
 	"time"
 
@@ -39,8 +41,11 @@ var addCmd = &cobra.Command{
 var addResourceCmd = &cobra.Command{
 	Use:   "resource <resource-type>",
 	Short: "Add a resource to your account",
-	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return errors.New("requires resource type\n\nUsage:\n  meroxa add resource <resource-type> [flags]")
+		}
+
 		resType := args[0]
 		c, err := client()
 
@@ -91,10 +96,10 @@ var addResourceCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(res)
+			display.JSONPrint(res)
 		} else {
 			fmt.Println("Resource successfully added!")
-			prettyPrint("resource", res)
+			display.PrettyPrint("resource", res)
 		}
 
 		return nil
