@@ -3,7 +3,7 @@
 Create a connector
 
 ```
-meroxa create connector <custom-connector-name> [flags]
+meroxa create connector <resource-name> [flags]
 ```
 
 ### Options

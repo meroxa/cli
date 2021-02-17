@@ -36,11 +36,11 @@ including Connectors.`,
 }
 
 var createConnectorCmd = &cobra.Command{
-	Use:   "connector <custom-connector-name>",
+	Use:   "connector <resource-name>",
 	Short: "Create a connector",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires a connector name\n\nUsage:\n  meroxa create connector <custom-connector-name> [flags]")
+			return errors.New("requires a connector name\n\nUsage:\n  meroxa create connector <resource-name> [flags]")
 		}
 
 		// Resource Name
