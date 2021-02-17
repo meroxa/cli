@@ -21,6 +21,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
+	rndm "github.com/nmrshll/rndm-go"
+	"github.com/spf13/cobra"
 	"golang.org/x/oauth2"
 	"io/ioutil"
 	"log"
@@ -31,26 +33,20 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	rndm "github.com/nmrshll/rndm-go"
-	"github.com/spf13/cobra"
 )
 
-const ClientID = "780birp93au255rqsenjc2o0pu"
+const ClientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
 const CallbackURL = "http://localhost:21900/oauth/callback"
-const AuthDomain = "tjl-meroxa.auth.us-east-1.amazoncognito.com"
-const meroxaLabel = "meroxa-cli"
-const meroxaURL = "https://www.meroxa.io"
 const PORT = 21900
 const authTimeout = 300
 const oauthStateStringContextKey = 232
 
 var oauthConfig = &oauth2.Config{
 	ClientID: ClientID, // also known as client key sometimes
-	Scopes:   []string{"email"},
+	Scopes:   []string{"email", "user", "openid", "offline_access"},
 	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://tjl-meroxa.auth.us-east-1.amazoncognito.com/oauth2/authorize",
-		TokenURL: "https://tjl-meroxa.auth.us-east-1.amazoncognito.com/oauth2/token",
+		AuthURL:  "https://auth.meroxa.io/authorize",
+		TokenURL: "https://auth.meroxa.io/oauth/token",
 	},
 	RedirectURL: CallbackURL,
 }
@@ -68,53 +64,27 @@ var loginCmd = &cobra.Command{
 }
 
 // logoutCmd represents the logout command
-//var logoutCmd = &cobra.Command{
-//	Use:   "logout",
-//	Short: "logout of the Meroxa platform",
-//	RunE: func(cmd *cobra.Command, args []string) error {
-//		// TODO: add confirmation
-//		err := logout()
-//		if err != nil {
-//			return err
-//		}
-//		fmt.Println("credentials cleared")
-//		return nil
-//	},
-//}
-
-//var whoAmICmd = &cobra.Command{
-//	Use:   "whoami",
-//	Short: "retrieve currently logged in user",
-//	RunE: func(cmd *cobra.Command, args []string) error {
-//		u, _, err := readCreds()
-//		if err != nil {
-//			return err
-//		}
-//		fmt.Printf("username: %s", u)
-//		return nil
-//	},
-//}
+var logoutCmd = &cobra.Command{
+	Use:   "logout",
+	Short: "logout of the Meroxa platform",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// TODO: add confirmation
+		cfg.Set("ACCESS_TOKEN", "")
+		cfg.Set("REFRESH_TOKEN", "")
+		err := cfg.WriteConfig()
+		if err != nil {
+			return err
+		}
+		fmt.Println("credentials cleared")
+		return nil
+	},
+}
 
 func init() {
 	// Login
-	RootCmd.AddCommand(loginCmd)
-	loginCmd.PersistentFlags().StringVar(&flagLoginUsername, "username", "", "username")
-	loginCmd.PersistentFlags().StringVar(&flagLoginPassword, "password", "", "password")
-
-	// Subcommands
-	//loginCmd.AddCommand(whoAmICmd)
-	//// Logout
-	//rootCmd.AddCommand(logoutCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// loginCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// loginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(loginCmd)
+	// Logout
+	rootCmd.AddCommand(logoutCmd)
 }
 
 func login() error {
@@ -150,11 +120,6 @@ func login() error {
 		// After the callbackHandler returns a client, it's time to shutdown the server gracefully
 		stopHTTPServerChan <- struct{}{}
 		fmt.Println("debug", *label)
-		user, token, err := credstore.Get(meroxaLabel, meroxaURL)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("User: %s Token: %s", user, token)
 
 		return nil
 
@@ -254,11 +219,13 @@ func callbackHandler(ctx context.Context, oauthConfig *oauth2.Config, labelChan 
 			Expiry:       tj.expiry(),
 		}
 
-		//TODO parse token for username
-		//store token in native storage
-		err = credstore.Set(meroxaLabel, "meroxa-cli", token.AccessToken)
+		cfg.Set("ACCESS_TOKEN", token.AccessToken)
+		cfg.Set("REFRESH_TOKEN", token.RefreshToken)
+		err = cfg.WriteConfig()
 		if err != nil {
-			fmt.Printf("Cant store token: %v", err)
+			fmt.Printf("Error writing config: %v", err)
+			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			return
 		}
 		// show success page
 		successPage := `
