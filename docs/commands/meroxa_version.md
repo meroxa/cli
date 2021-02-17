@@ -1,6 +1,6 @@
 ## meroxa version
 
-Display the version of the Meroxa CLI
+Display the Meroxa CLI version
 
 ```
 meroxa version [flags]
