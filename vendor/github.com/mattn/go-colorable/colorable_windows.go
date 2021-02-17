@@ -42,15 +42,6 @@ const (
 	consoleTextmodeBuffer = 0x1
 )
 
-const (
-	genericRead  = 0x80000000
-	genericWrite = 0x40000000
-)
-
-const (
-	consoleTextmodeBuffer = 0x1
-)
-
 type wchar uint16
 type short int16
 type dword uint32
@@ -91,11 +82,8 @@ var (
 	procGetConsoleCursorInfo       = kernel32.NewProc("GetConsoleCursorInfo")
 	procSetConsoleCursorInfo       = kernel32.NewProc("SetConsoleCursorInfo")
 	procSetConsoleTitle            = kernel32.NewProc("SetConsoleTitleW")
-<<<<<<< HEAD
 	procGetConsoleMode             = kernel32.NewProc("GetConsoleMode")
 	procSetConsoleMode             = kernel32.NewProc("SetConsoleMode")
-=======
->>>>>>> 5490868 (auth init)
 	procCreateConsoleScreenBuffer  = kernel32.NewProc("CreateConsoleScreenBuffer")
 )
 
@@ -107,10 +95,7 @@ type Writer struct {
 	oldattr   word
 	oldpos    coord
 	rest      bytes.Buffer
-<<<<<<< HEAD
 	mutex     sync.Mutex
-=======
->>>>>>> 5490868 (auth init)
 }
 
 // NewColorable returns new instance of Writer which handles escape sequence from File.
