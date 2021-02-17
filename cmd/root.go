@@ -72,9 +72,11 @@ func Execute(version string) {
 
 func init() {
 
-	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meroxa)")
-	rootCmd.SilenceUsage = true
+	RootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
+	// ~/meroxa.env
+	// ~/.meroxa <- Ideal
+	RootCmd.SilenceUsage = true
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -96,13 +98,19 @@ func initConfig(cmd *cobra.Command) error {
 		cfg.SetConfigName(defaultConfigFilename)
 		cfg.AddConfigPath(home)
 	}
-	viper.SetConfigType("env")
+	cfg.SetConfigType("env")
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
 	// if we cannot parse the config file.
 	if err := cfg.ReadInConfig(); err != nil {
 		// It's okay if there isn't a config file
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return err
+		}
+
+		err := cfg.SafeWriteConfig()
+
+		if err != nil {
 			return err
 		}
 	}

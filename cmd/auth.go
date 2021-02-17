@@ -82,9 +82,9 @@ var logoutCmd = &cobra.Command{
 
 func init() {
 	// Login
-	rootCmd.AddCommand(loginCmd)
+	RootCmd.AddCommand(loginCmd)
 	// Logout
-	rootCmd.AddCommand(logoutCmd)
+	RootCmd.AddCommand(logoutCmd)
 }
 
 func login() error {
