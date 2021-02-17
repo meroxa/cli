@@ -30,8 +30,8 @@ var removeCmd = &cobra.Command{
 	Short: "Remove a component",
 	Long: `Deprovision a component of the Meroxa platform, including pipelines,
  resources, and connectors`,
-	SuggestFor: []string{"destroy"},
-	Aliases:    []string{"rm", "destroy"},
+	SuggestFor: []string{"destroy", "delete"},
+	Aliases:    []string{"rm", "delete"},
 }
 
 var removeResourceCmd = &cobra.Command{
