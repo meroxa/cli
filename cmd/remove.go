@@ -24,7 +24,7 @@ import (
 	"time"
 )
 
-// removeCmd represents the delete command
+// removeCmd represents the remove command
 var removeCmd = &cobra.Command{
 	Use:   "remove",
 	Short: "Remove a component",
