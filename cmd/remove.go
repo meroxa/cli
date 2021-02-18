@@ -24,20 +24,22 @@ import (
 	"time"
 )
 
-// deleteCmd represents the delete command
-var deleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete a component",
+// removeCmd represents the remove command
+var removeCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove a component",
 	Long: `Deprovision a component of the Meroxa platform, including pipelines,
- resources, connectors, functions, etc...`,
+ resources, and connectors`,
+	SuggestFor: []string{"destroy", "delete"},
+	Aliases:    []string{"rm", "delete"},
 }
 
-var deleteResourceCmd = &cobra.Command{
+var removeResourceCmd = &cobra.Command{
 	Use:   "resource <name>",
-	Short: "Delete resource",
+	Short: "Remove resource",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires resource name\n\nUsage:\n  meroxa delete resource <name>")
+			return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
 		}
 		// Resource Name
 		resName := args[0]
@@ -66,6 +68,7 @@ var deleteResourceCmd = &cobra.Command{
 		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
+		// TODO: Update meroxa-go to `RemoveResource` to match its implementation
 		err = c.DeleteResource(ctx, res.ID)
 		if err != nil {
 			return err
@@ -76,12 +79,12 @@ var deleteResourceCmd = &cobra.Command{
 	},
 }
 
-var deleteConnectorCmd = &cobra.Command{
+var removeConnectorCmd = &cobra.Command{
 	Use:   "connector <name>",
-	Short: "Delete connector",
+	Short: "Remove connector",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires connector name\n\nUsage:\n  meroxa delete connector <name>")
+			return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
 		}
 
 		// Connector Name
@@ -116,17 +119,17 @@ var deleteConnectorCmd = &cobra.Command{
 			return err
 		}
 
-		display.PrettyPrint("connector deleted", con)
+		display.PrettyPrint("connector removed", con)
 		return nil
 	},
 }
 
-var deletePipelineCmd = &cobra.Command{
+var removePipelineCmd = &cobra.Command{
 	Use:   "pipeline <name>",
-	Short: "Delete pipeline",
+	Short: "Remove pipeline",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires pipeline name\n\nUsage:\n  meroxa delete pipeline <name>")
+			return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>")
 		}
 
 		// Pipeline Name
@@ -161,16 +164,16 @@ var deletePipelineCmd = &cobra.Command{
 			return err
 		}
 
-		display.PrettyPrint("Pipeline deleted", pipeline)
+		display.PrettyPrint("Pipeline removed", pipeline)
 		return nil
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(deleteCmd)
+	RootCmd.AddCommand(removeCmd)
 
 	// Subcommands
-	deleteCmd.AddCommand(deleteResourceCmd)
-	deleteCmd.AddCommand(deleteConnectorCmd)
-	deleteCmd.AddCommand(deletePipelineCmd)
+	removeCmd.AddCommand(removeResourceCmd)
+	removeCmd.AddCommand(removeConnectorCmd)
+	removeCmd.AddCommand(removePipelineCmd)
 }
