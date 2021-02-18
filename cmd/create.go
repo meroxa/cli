@@ -40,7 +40,7 @@ var createConnectorCmd = &cobra.Command{
 	Short: "Create a connector",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires a connector name\n\nUsage:\n  meroxa create connector <resource-name> [flags]")
+			return errors.New("requires a resource name\n\nUsage:\n  meroxa create connector <resource-name> [flags]")
 		}
 
 		// Resource Name
