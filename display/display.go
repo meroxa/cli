@@ -62,7 +62,6 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "ID"},
 				{Align: simpletable.AlignCenter, Text: "KIND"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
@@ -73,7 +72,6 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 
 		for _, res := range transforms {
 			r := []*simpletable.Cell{
-				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
 				{Text: res.Kind},
 				{Text: res.Name},
 				{Text: strconv.FormatBool(res.Required)},
