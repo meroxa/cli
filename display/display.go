@@ -68,9 +68,7 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
 				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
-				// TODO: Work with json.RawMessage type
-				// {Align: simpletable.AlignCenter, Text: "PROPERTIES"},
-
+				{Align: simpletable.AlignCenter, Text: "PROPERTIES"},
 			},
 		}
 
@@ -79,11 +77,19 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
 				{Text: res.Kind},
 				{Text: res.Name},
-				{Text: res.Required},
+				{Text: strconv.FormatBool(res.Required)},
 				{Text: res.Description},
-				// {Text: res.Properties},
 			}
 
+			var properties []string
+			for _, p := range res.Properties {
+				properties = append(properties, p.Name)
+			}
+			var cell = &simpletable.Cell{
+				Text: strings.Join(properties, ","),
+			}
+
+			r = append(r, cell)
 			table.Body.Cells = append(table.Body.Cells, r)
 		}
 		table.SetStyle(simpletable.StyleCompact)
