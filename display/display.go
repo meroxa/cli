@@ -3,11 +3,10 @@ package display
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go"
+	"strconv"
+	"strings"
 )
 
 func JSONPrint(data interface{}) {
@@ -78,7 +77,7 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 				{Text: res.Kind},
 				{Text: res.Name},
 				{Text: strconv.FormatBool(res.Required)},
-				{Text: res.Description},
+				{Text: strings.ReplaceAll(res.Description, ". ", ". \n")},
 			}
 
 			var properties []string
