@@ -58,6 +58,39 @@ func PrintResourcesTable(resources []*meroxa.Resource) {
 	}
 }
 
+func PrintTransformsTable(transforms []*meroxa.Transform) {
+	if len(transforms) != 0 {
+		table := simpletable.New()
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "ID"},
+				{Align: simpletable.AlignCenter, Text: "KIND"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
+				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
+				// TODO: Work with json.RawMessage type
+				// {Align: simpletable.AlignCenter, Text: "PROPERTIES"},
+
+			},
+		}
+
+		for _, res := range transforms {
+			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
+				{Text: res.Kind},
+				{Text: res.Name},
+				{Text: res.Required},
+				{Text: res.Description},
+				// {Text: res.Properties},
+			}
+
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		fmt.Println(table.String())
+	}
+}
+
 func PrintConnectorsTable(connectors []*meroxa.Connector) {
 	if len(connectors) != 0 {
 		table := simpletable.New()
