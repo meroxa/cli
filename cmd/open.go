@@ -37,7 +37,7 @@ func getBillingURL() string {
 	return fmt.Sprintf("%s/account/billing", platformURL)
 }
 
-// openCmd represents the billing command
+// openBillingCmd represents the billing command
 var openBillingCmd = &cobra.Command{
 	Use:   "billing",
 	Short: "Open your billing page in a web browser",
