@@ -11,7 +11,7 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20210208213838-bfd581f2b6cb
+	github.com/meroxa/meroxa-go v0.0.0-20210219173324-9c9fc886f4f7
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect

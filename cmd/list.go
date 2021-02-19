@@ -140,6 +140,33 @@ var listPipelinesCmd = &cobra.Command{
 	},
 }
 
+var listTransformsCmd = &cobra.Command{
+	Use:   "transforms",
+	Short: "List transforms",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		c, err := client()
+		if err != nil {
+			return err
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		rr, err := c.ListTransforms(ctx)
+		if err != nil {
+			return err
+		}
+
+		if flagRootOutputJSON {
+			display.JSONPrint(rr)
+		} else {
+			display.PrintTransformsTable(rr)
+		}
+		return nil
+	},
+}
+
 func init() {
 	RootCmd.AddCommand(listCmd)
 
@@ -148,4 +175,5 @@ func init() {
 	listCmd.AddCommand(listConnectorsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
 	listCmd.AddCommand(listPipelinesCmd)
+	listCmd.AddCommand(listTransformsCmd)
 }

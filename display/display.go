@@ -3,11 +3,10 @@ package display
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go"
+	"strconv"
+	"strings"
 )
 
 func JSONPrint(data interface{}) {
@@ -51,6 +50,43 @@ func PrintResourcesTable(resources []*meroxa.Resource) {
 				{Text: res.URL},
 			}
 
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		fmt.Println(table.String())
+	}
+}
+
+func PrintTransformsTable(transforms []*meroxa.Transform) {
+	if len(transforms) != 0 {
+		table := simpletable.New()
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "KIND"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
+				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
+				{Align: simpletable.AlignCenter, Text: "PROPERTIES"},
+			},
+		}
+
+		for _, res := range transforms {
+			r := []*simpletable.Cell{
+				{Text: res.Kind},
+				{Text: res.Name},
+				{Text: strconv.FormatBool(res.Required)},
+				{Text: strings.ReplaceAll(res.Description, ". ", ". \n")},
+			}
+
+			var properties []string
+			for _, p := range res.Properties {
+				properties = append(properties, p.Name)
+			}
+			var cell = &simpletable.Cell{
+				Text: strings.Join(properties, ","),
+			}
+
+			r = append(r, cell)
 			table.Body.Cells = append(table.Body.Cells, r)
 		}
 		table.SetStyle(simpletable.StyleCompact)
