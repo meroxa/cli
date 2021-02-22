@@ -11,7 +11,7 @@ const connectorsBasePath = "/v1/connectors"
 
 type Connector struct {
 	ID            int                    `json:"id"`
-	Type          string                 `json:"type"`
+	Kind          string                 `json:"type"`
 	Name          string                 `json:"name"`
 	Configuration map[string]string      `json:"config"`
 	Metadata      map[string]string      `json:"metadata"`
@@ -41,35 +41,6 @@ func (c *Client) CreateConnector(ctx context.Context, name string, resourceID in
 	}
 
 	resp, err := c.makeRequest(ctx, http.MethodPost, connectorsBasePath, cr, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var con Connector
-	err = json.NewDecoder(resp.Body).Decode(&con)
-	if err != nil {
-		return nil, err
-	}
-
-	return &con, nil
-}
-
-// UpdateConnectorStatus updates the status of a connector
-func (c *Client) UpdateConnectorStatus(ctx context.Context, connectorKey, state string) (*Connector, error) {
-	path := fmt.Sprintf("%s/%s/status", connectorsBasePath, connectorKey)
-
-	cr := struct {
-		State string `json:"state,omitempty"`
-	}{
-		State: state,
-	}
-
-	resp, err := c.makeRequest(ctx, http.MethodPost, path, cr, nil)
 	if err != nil {
 		return nil, err
 	}

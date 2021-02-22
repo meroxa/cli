@@ -41,6 +41,8 @@ var (
 	cfgFile            string
 	source             string
 	destination        string
+	resURL             string
+	resMetadata        string
 	flagRootOutputJSON bool
 	cfg                *viper.Viper
 )
