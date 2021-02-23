@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -20,25 +21,22 @@ const (
 type Client struct {
 	BaseURL   *url.URL
 	userAgent string
-	username  string
-	password  string
+	token     string
 
 	httpClient *http.Client
 }
 
 // New returns a configured Meroxa API Client
-func New(username, password, ua string) (*Client, error) {
+func New(token, ua string) (*Client, error) {
 	u, err := url.Parse(getAPIURL())
 	if err != nil {
 		return nil, err
 	}
 
-	escapedPassword := url.QueryEscape(password)
 	c := &Client{
 		BaseURL:    u,
 		userAgent:  userAgent(ua),
-		username:   username,
-		password:   escapedPassword,
+		token:      token,
 		httpClient: httpClient(),
 	}
 	return c, nil
@@ -87,9 +85,11 @@ func (c *Client) newRequest(ctx context.Context, method, path string, body inter
 		return nil, err
 	}
 
-	// Set Basic Auth
-	req.SetBasicAuth(c.username, c.password)
+	// Set Auth
+	bearer := fmt.Sprintf("Bearer %s", c.token)
 
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", c.userAgent)

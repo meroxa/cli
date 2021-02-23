@@ -17,39 +17,31 @@ limitations under the License.
 package cmd
 
 import (
-	"context"
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/fatih/color"
-	rndm "github.com/nmrshll/rndm-go"
+	"strings"
+
+	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/cobra"
-	"golang.org/x/oauth2"
+	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
-	"os/exec"
-	"runtime"
-	"strconv"
-	"strings"
+	"os"
 	"time"
 )
 
-const ClientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
-const CallbackURL = "http://localhost:21900/oauth/callback"
-const PORT = 21900
-const authTimeout = 300
-const oauthStateStringContextKey = 232
-
-var oauthConfig = &oauth2.Config{
-	ClientID: ClientID, // also known as client key sometimes
-	Scopes:   []string{"email", "user", "openid", "offline_access"},
-	Endpoint: oauth2.Endpoint{
-		AuthURL:  "https://auth.meroxa.io/authorize",
-		TokenURL: "https://auth.meroxa.io/oauth/token",
-	},
-	RedirectURL: CallbackURL,
-}
+const clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
+const callbackURL = "http://localhost:21900/oauth/callback"
+const domain = "auth.meroxa.io"
+const audience = "https://api.tjl.dev.meroxa.io/v1"
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
@@ -88,187 +80,233 @@ func init() {
 }
 
 func login() error {
-
-	ctx := context.Background()
-
-	// Some random string, random for each request
-	oauthStateString := rndm.String(8)
-	ctx = context.WithValue(ctx, oauthStateStringContextKey, oauthStateString)
-	urlString := oauthConfig.AuthCodeURL(oauthStateString, oauth2.AccessTypeOffline)
-
-	labelChan, stopHTTPServerChan, cancelAuthentication := startHTTPServer(ctx, oauthConfig)
 	log.Println(color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
-	log.Println(color.CyanString(urlString))
-	log.Println(color.CyanString("If you are opening the url manually on a different machine you will need to curl the result url on this machine manually."))
-	time.Sleep(1000 * time.Millisecond)
-	err := openBrowser(urlString)
-	if err != nil {
-		log.Println(color.RedString("Failed to open browser, you MUST do the manual process."))
-	}
-	time.Sleep(600 * time.Millisecond)
-
-	// shutdown the server after timeout
-	go func() {
-		log.Printf("Authentication will be cancelled in %s seconds", strconv.Itoa(authTimeout))
-		time.Sleep(authTimeout * time.Second)
-		stopHTTPServerChan <- struct{}{}
-	}()
-
-	select {
-	// wait for client on clientChan
-	case label := <-labelChan:
-		// After the callbackHandler returns a client, it's time to shutdown the server gracefully
-		stopHTTPServerChan <- struct{}{}
-		fmt.Println("debug", *label)
-
-		return nil
-
-		// if authentication process is cancelled first return an error
-	case <-cancelAuthentication:
-		return fmt.Errorf("authentication timed out and was cancelled")
-	}
-
+	authorizeUser(clientID, domain, callbackURL)
 	return nil
 }
 
-func startHTTPServer(ctx context.Context, conf *oauth2.Config) (tokenChan chan *string, stopHTTPServerChan chan struct{}, cancelAuthentication chan struct{}) {
-	// init returns
-	tokenChan = make(chan *string)
-	stopHTTPServerChan = make(chan struct{})
-	cancelAuthentication = make(chan struct{})
+// AuthorizeUser implements the PKCE OAuth2 flow.
+func authorizeUser(clientID string, authDomain string, redirectURL string) {
+	// initialize the code verifier
+	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
-	http.HandleFunc("/oauth/callback", callbackHandler(ctx, conf, tokenChan))
-	srv := &http.Server{Addr: ":" + strconv.Itoa(PORT)}
+	// Create code_challenge with S256 method
+	codeChallenge := CodeVerifier.CodeChallengeS256()
 
-	// handle server shutdown signal
-	go func() {
-		// wait for signal on stopHTTPServerChan
-		<-stopHTTPServerChan
-		log.Println("Shutting down server...")
+	// construct the authorization URL (with Auth0 as the authorization provider)
+	authorizationURL := fmt.Sprintf(
+		"https://%s/authorize?audience=%s"+
+			"&scope=openid email offline_access user"+
+			"&response_type=code&client_id=%s"+
+			"&code_challenge=%s"+
+			"&code_challenge_method=S256&redirect_uri=%s",
+		authDomain, audience, clientID, codeChallenge, redirectURL)
+	log.Println(color.CyanString(authorizationURL))
 
-		// give it 5 sec to shutdown gracefully, else quit program
-		d := time.Now().Add(5 * time.Second)
-		ctx, cancel := context.WithDeadline(context.Background(), d)
-		defer cancel()
+	// start a web server to listen on a callback URL
+	server := &http.Server{Addr: redirectURL}
 
-		if err := srv.Shutdown(ctx); err != nil {
-			log.Printf(color.RedString("Auth server could not shutdown gracefully: %v"), err)
-		}
+	// define a handler that will get the authorization code, call the token endpoint, and close the HTTP server
+	http.HandleFunc("/oauth/callback", func(w http.ResponseWriter, r *http.Request) {
+		// get the authorization code
+		code := r.URL.Query().Get("code")
+		if code == "" {
+			fmt.Println("meroxa: Url Param 'code' is missing")
+			io.WriteString(w, "Error: could not find 'code' URL parameter\n")
 
-		// after server is shutdown, quit program
-		cancelAuthentication <- struct{}{}
-	}()
-
-	// handle callback request
-	go func() {
-		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-		fmt.Println("Server gracefully stopped")
-	}()
-
-	return tokenChan, stopHTTPServerChan, cancelAuthentication
-}
-
-func callbackHandler(ctx context.Context, oauthConfig *oauth2.Config, labelChan chan *string) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		requestStateString := ctx.Value(oauthStateStringContextKey).(string)
-		responseStateString := r.FormValue("state")
-		if responseStateString != requestStateString {
-			fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", requestStateString, responseStateString)
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			// close the HTTP server and return
+			cleanup(server)
 			return
 		}
 
-		code := r.FormValue("code")
-		v := url.Values{
-			"grant_type":   {"authorization_code"},
-			"code":         {code},
-			"client_id":    {oauthConfig.ClientID},
-			"redirect_uri": {oauthConfig.RedirectURL},
-		}
-		req, err := http.NewRequest("POST", oauthConfig.Endpoint.TokenURL, strings.NewReader(v.Encode()))
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-		client := &http.Client{}
-		resp, err := client.Do(req)
+		// trade the authorization code and the code verifier for an access token
+		codeVerifier := CodeVerifier.String()
+		accessToken, refreshToken, err := getAccessTokenAuth(clientID, codeVerifier, code, redirectURL)
 		if err != nil {
-			fmt.Printf("oauthoauthConfig.Exchange() failed with '%s'\n", err)
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			fmt.Println("meroxa: could not get access token")
+			io.WriteString(w, "Error: could not retrieve tokens\n")
+
+			// close the HTTP server and return
+			cleanup(server)
 			return
 		}
-
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		//body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1<<20))
-		if err != nil || resp.StatusCode != 200 {
-			fmt.Printf("cannot fetch token: %v", err)
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-			return
-		}
-
-		var tj tokenJSON
-		if err = json.Unmarshal(body, &tj); err != nil {
-			fmt.Printf("invaid token response: %v", err)
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-			return
-		}
-		token := &oauth2.Token{
-			AccessToken:  tj.AccessToken,
-			TokenType:    tj.TokenType,
-			RefreshToken: tj.RefreshToken,
-			Expiry:       tj.expiry(),
-		}
-
-		cfg.Set("ACCESS_TOKEN", token.AccessToken)
-		cfg.Set("REFRESH_TOKEN", token.RefreshToken)
+		cfg.Set("ACCESS_TOKEN", accessToken)
+		cfg.Set("REFRESH_TOKEN", refreshToken)
 		err = cfg.WriteConfig()
 		if err != nil {
-			fmt.Printf("Error writing config: %v", err)
-			http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+			fmt.Println("meroxa: could not write config file")
+			io.WriteString(w, "Error: could not store access token\n")
+
+			// close the HTTP server and return
+			cleanup(server)
 			return
 		}
-		// show success page
-		successPage := `
-		<div style="height:100px; width:100%!; display:flex; flex-direction: column; justify-content: center; align-items:center; background-color:#2ecc71; color:white; font-size:22"><div>Success!</div></div>
+
+		// return an indication of success to the caller
+		io.WriteString(w, `
+		<html>
+			<div style="height:100px; width:100%!; display:flex; flex-direction: column; justify-content: center; align-items:center; background-color:#2ecc71; color:white; font-size:22"><div>Success!</div></div>
 		<p style="margin-top:20px; font-size:18; text-align:center">You are authenticated, you can now return to the program. This will auto-close</p>
 		<script>window.onload=function(){setTimeout(this.close, 5000)}</script>
-		`
-		sm := ""
-		fmt.Fprintf(w, successPage)
-		// quitSignalChan <- quitSignal
-		labelChan <- &sm
+		</html>`)
+
+		fmt.Println("Successfully logged in.")
+
+		// close the HTTP server
+		cleanup(server)
+	})
+
+	// parse the redirect URL for the port number
+	u, err := url.Parse(redirectURL)
+	if err != nil {
+		fmt.Printf("meroxa: bad redirect URL: %s\n", err)
+		os.Exit(1)
 	}
+
+	// set up a listener on the redirect port
+	port := fmt.Sprintf(":%s", u.Port())
+	l, err := net.Listen("tcp", port)
+	if err != nil {
+		fmt.Printf("meroxa: can't listen to port %s: %s\n", port, err)
+		os.Exit(1)
+	}
+
+	// open a browser window to the authorizationURL
+	err = open.Start(authorizationURL)
+	if err != nil {
+		fmt.Printf("meroxa: can't open browser to URL %s: %s\n", authorizationURL, err)
+		os.Exit(1)
+	}
+
+	// start the blocking web server loop
+	// this will exit when the handler gets fired and calls server.Close()
+	server.Serve(l)
 }
 
-func openBrowser(url string) (err error) {
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", url).Start()
-	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "darwin":
-		err = exec.Command("open", url).Start()
-	default:
-		err = fmt.Errorf("unsupported platform")
+// getAccessToken trades the authorization code retrieved from the first OAuth2 leg for an access token
+func getAccessTokenAuth(clientID string, codeVerifier string, authorizationCode string, callbackURL string) (string, string, error) {
+	// set the url and form-encoded data for the POST to the access token endpoint
+	url := "https://auth.meroxa.io/oauth/token"
+	data := fmt.Sprintf(
+		"grant_type=authorization_code&client_id=%s"+
+			"&code_verifier=%s"+
+			"&code=%s"+
+			"&redirect_uri=%s",
+		clientID, codeVerifier, authorizationCode, callbackURL)
+	payload := strings.NewReader(data)
+
+	// create the request and execute it
+	req, _ := http.NewRequest("POST", url, payload)
+	req.Header.Add("content-type", "application/x-www-form-urlencoded")
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Printf("meroxa: HTTP error: %s", err)
+		return "", "", err
 	}
-	return
+
+	// process the response
+	defer res.Body.Close()
+	var responseData map[string]interface{}
+	body, _ := ioutil.ReadAll(res.Body)
+
+	// unmarshal the json into a string map
+	err = json.Unmarshal(body, &responseData)
+	if err != nil {
+		fmt.Printf("meroxa: JSON error: %s", err)
+		return "", "", err
+	}
+
+	// retrieve the access token out of the map, and return to caller
+	accessToken := responseData["access_token"].(string)
+	refreshToken := responseData["refresh_token"].(string)
+	return accessToken, refreshToken, nil
 }
 
-type tokenJSON struct {
-	AccessToken  string         `json:"access_token"`
-	TokenType    string         `json:"token_type"`
-	RefreshToken string         `json:"refresh_token"`
-	ExpiresIn    expirationTime `json:"expires_in"` // at least PayPal returns string, while most return number
-	Expires      expirationTime `json:"expires"`    // broken Facebook spelling of expires_in
+// cleanup closes the HTTP server
+func cleanup(server *http.Server) {
+	// we run this as a goroutine so that this function falls through and
+	// the socket to the browser gets flushed/closed before the server goes away
+	go server.Close()
 }
-type expirationTime int32
 
-func (e *tokenJSON) expiry() (t time.Time) {
-	if v := e.ExpiresIn; v != 0 {
-		return time.Now().Add(time.Duration(v) * time.Second)
+func refresh(domain string, clientID string, refreshToken string) (accessToken string, newRefreshToken string, err error) {
+	url := fmt.Sprintf("https://%s/oauth/token", domain)
+	var tokenBody = make(map[string]string)
+	tokenBody["client_id"] = clientID
+
+	if refreshToken != "" {
+		tokenBody["grant_type"] = "refresh_token"
+		tokenBody["refresh_token"] = refreshToken
+	} else {
+		return "", "", errors.New("no refresh token")
 	}
-	if v := e.Expires; v != 0 {
-		return time.Now().Add(time.Duration(v) * time.Second)
+	requestBody, err := json.Marshal(tokenBody)
+	if err != nil {
+		fmt.Println("marshal:", err)
+		return "", "", err
 	}
-	return
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		fmt.Println("request error:", err)
+		return "", "", err
+	}
+	defer resp.Body.Close()
+	responseBody, err := ioutil.ReadAll(resp.Body)
+
+	if len(responseBody) > 0 {
+		var ff interface{}
+		json.Unmarshal(responseBody, &ff)
+		result := ff.(map[string]interface{})
+		accessToken = fmt.Sprintf("%v", result["access_token"])
+		if refreshToken == "" {
+			newRefreshToken = fmt.Sprintf("%v", result["refresh_token"])
+		}
+
+		return accessToken, newRefreshToken, nil
+	}
+
+	return "", "", nil
+}
+
+func getAccessToken() (string, error) {
+	// check access token expiration
+	accessToken := cfg.GetString("ACCESS_TOKEN")
+	if accessToken == "" {
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
+	}
+
+	// check access exp and grab refresh
+	token, _, err := new(jwt.Parser).ParseUnverified(accessToken, jwt.MapClaims{})
+	if err != nil {
+		fmt.Println(err)
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
+	}
+
+	// check token exp
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
+	}
+
+	var exp time.Time
+	tokenExp := claims["exp"].(float64)
+	exp = time.Unix(int64(tokenExp), 0)
+
+	if exp.After(time.Now()) {
+		return accessToken, nil
+	}
+
+	// access token is expire, use refresh
+	refreshToken := cfg.GetString("REFRESH_TOKEN")
+	if refreshToken == "" {
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
+	}
+	accessToken, _, err = refresh(domain, clientID, refreshToken)
+	if err != nil {
+		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
+	}
+	cfg.Set("ACCESS_TOKEN", accessToken)
+
+	return accessToken, nil
 }
