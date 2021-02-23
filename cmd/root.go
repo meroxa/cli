@@ -71,9 +71,9 @@ func Execute(version string) {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meroxa)")
-	rootCmd.SilenceUsage = true
+	RootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meroxa)")
+	RootCmd.SilenceUsage = true
 }
 
 // initConfig reads in config file and ENV variables if set.
