@@ -69,6 +69,9 @@ git tag is pushed to the repo.
 * Tag - `git tag -a vX.X.X -m "<message goes here>"`
 * Push - `git push origin vX.X.X`
 
+### Documentation
+
+Our Meroxa CLI is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
 ### Test
 
 _TODO_

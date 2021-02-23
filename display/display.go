@@ -1,16 +1,15 @@
-package cmd
+package display
 
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go"
+	"strconv"
+	"strings"
 )
 
-func jsonPrint(data interface{}) {
+func JSONPrint(data interface{}) {
 	p, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		fmt.Println(err)
@@ -19,7 +18,7 @@ func jsonPrint(data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func prettyPrint(section string, data interface{}) {
+func PrettyPrint(section string, data interface{}) {
 	var p []byte
 	//    var err := error
 	p, err := json.MarshalIndent(data, "", "  ")
@@ -31,7 +30,7 @@ func prettyPrint(section string, data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func printResourcesTable(resources []*meroxa.Resource) {
+func PrintResourcesTable(resources []*meroxa.Resource) {
 	if len(resources) != 0 {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
@@ -58,7 +57,44 @@ func printResourcesTable(resources []*meroxa.Resource) {
 	}
 }
 
-func printConnectorsTable(connectors []*meroxa.Connector) {
+func PrintTransformsTable(transforms []*meroxa.Transform) {
+	if len(transforms) != 0 {
+		table := simpletable.New()
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "KIND"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
+				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
+				{Align: simpletable.AlignCenter, Text: "PROPERTIES"},
+			},
+		}
+
+		for _, res := range transforms {
+			r := []*simpletable.Cell{
+				{Text: res.Kind},
+				{Text: res.Name},
+				{Text: strconv.FormatBool(res.Required)},
+				{Text: strings.ReplaceAll(res.Description, ". ", ". \n")},
+			}
+
+			var properties []string
+			for _, p := range res.Properties {
+				properties = append(properties, p.Name)
+			}
+			var cell = &simpletable.Cell{
+				Text: strings.Join(properties, ","),
+			}
+
+			r = append(r, cell)
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		fmt.Println(table.String())
+	}
+}
+
+func PrintConnectorsTable(connectors []*meroxa.Connector) {
 	if len(connectors) != 0 {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
@@ -106,7 +142,7 @@ func printConnectorsTable(connectors []*meroxa.Connector) {
 	}
 }
 
-func printResourceTypesTable(types []string) {
+func PrintResourceTypesTable(types []string) {
 	table := simpletable.New()
 
 	table.Header = &simpletable.Header{

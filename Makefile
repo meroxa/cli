@@ -1,7 +1,7 @@
 SHELL=/bin/bash -o pipefail
 
 .PHONY: build
-build:
+build: docs
 	go build -mod=vendor -o meroxa
 
 .PHONY: install
@@ -16,3 +16,7 @@ gomod:
 .PHONY: test
 test:
 	go test -v ${GO_TEST_FLAGS} -count=1 ./...
+
+.PHONY: docs
+docs:
+	go run tools/make-docs/main.go	

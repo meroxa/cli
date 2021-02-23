@@ -18,6 +18,7 @@ limitations under the License.
 
 import (
 	"context"
+	"github.com/meroxa/cli/display"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -32,8 +33,9 @@ var listCmd = &cobra.Command{
 }
 
 var listResourcesCmd = &cobra.Command{
-	Use:   "resources",
-	Short: "List resources",
+	Use:     "resources",
+	Short:   "List resources",
+	Aliases: []string{"resource"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -50,17 +52,18 @@ var listResourcesCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(rr)
+			display.JSONPrint(rr)
 		} else {
-			printResourcesTable(rr)
+			display.PrintResourcesTable(rr)
 		}
 		return nil
 	},
 }
 
 var listConnectorsCmd = &cobra.Command{
-	Use:   "connectors",
-	Short: "List connectors",
+	Use:     "connectors",
+	Short:   "List connectors",
+	Aliases: []string{"connector"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -77,17 +80,18 @@ var listConnectorsCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(connectors)
+			display.JSONPrint(connectors)
 		} else {
-			printConnectorsTable(connectors)
+			display.PrintConnectorsTable(connectors)
 		}
 		return nil
 	},
 }
 
 var listResourceTypesCmd = &cobra.Command{
-	Use:   "resource-types",
-	Short: "List resources-types",
+	Use:     "resource-types",
+	Short:   "List resources-types",
+	Aliases: []string{"resource-type"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -104,17 +108,18 @@ var listResourceTypesCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(resTypes)
+			display.JSONPrint(resTypes)
 		} else {
-			printResourceTypesTable(resTypes)
+			display.PrintResourceTypesTable(resTypes)
 		}
 		return nil
 	},
 }
 
 var listPipelinesCmd = &cobra.Command{
-	Use:   "pipelines",
-	Short: "List pipelines",
+	Use:     "pipelines",
+	Short:   "List pipelines",
+	Aliases: []string{"pipeline"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -131,20 +136,49 @@ var listPipelinesCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			jsonPrint(rr)
+			display.JSONPrint(rr)
 		} else {
-			prettyPrint("pipelines", rr)
+			display.PrettyPrint("pipelines", rr)
+		}
+		return nil
+	},
+}
+
+var listTransformsCmd = &cobra.Command{
+	Use:     "transforms",
+	Short:   "List transforms",
+	Aliases: []string{"transform"},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		c, err := client()
+		if err != nil {
+			return err
+		}
+
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		rr, err := c.ListTransforms(ctx)
+		if err != nil {
+			return err
+		}
+
+		if flagRootOutputJSON {
+			display.JSONPrint(rr)
+		} else {
+			display.PrintTransformsTable(rr)
 		}
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(listCmd)
+	RootCmd.AddCommand(listCmd)
 
 	// Subcommands
 	listCmd.AddCommand(listResourcesCmd)
 	listCmd.AddCommand(listConnectorsCmd)
 	listCmd.AddCommand(listResourceTypesCmd)
 	listCmd.AddCommand(listPipelinesCmd)
+	listCmd.AddCommand(listTransformsCmd)
 }

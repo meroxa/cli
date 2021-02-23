@@ -1,5 +1,3 @@
-package cmd
-
 /*
 Copyright © 2020 Meroxa Inc
 
@@ -7,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+package cmd
 
 import (
 	"fmt"
@@ -44,10 +43,10 @@ var (
 	cfg                *viper.Viper
 )
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
+// RootCmd represents the base command when called without any subcommands
+var RootCmd = &cobra.Command{
 	Use:   "meroxa",
-	Short: "the Meroxa CLI",
+	Short: "The Meroxa CLI",
 	Long: `The Meroxa CLI allows quick and easy access to the Meroxa data platform.
 
 Using the CLI you are able to create and manage sophisticated data pipelines
@@ -63,16 +62,15 @@ meroxa list resource-types`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+// This is called by main.main(). It only needs to happen once to the RootCmd.
 func Execute(version string) {
 	meroxaVersion = version
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 func init() {
-
 	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meroxa)")
 	rootCmd.SilenceUsage = true

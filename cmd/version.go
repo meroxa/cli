@@ -18,23 +18,25 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/spf13/cobra"
+	"runtime"
 )
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Display the version of the Meroxa CLI",
+	Short: "Display the Meroxa CLI version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Meroxa CLI version %s\n", meroxaVersion)
+		fmt.Printf("meroxa/%s %s/%s\n", meroxaVersion, runtime.GOOS, runtime.GOARCH)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	RootCmd.AddCommand(versionCmd)
 }
 
+// Before changing this function, we'll need to update how the we're using the User-Agent when interacting with
+// Platform-API: https://git.io/JtXCG
 func versionString() string {
 	return fmt.Sprintf("Meroxa CLI %s", meroxaVersion)
 }
