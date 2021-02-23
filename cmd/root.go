@@ -26,9 +26,10 @@ import (
 )
 
 var (
-	meroxaVersion string
-	cfgFile       string
-
+	meroxaVersion      string
+	cfgFile            string
+	source             string
+	destination        string
 	flagRootOutputJSON bool
 )
 

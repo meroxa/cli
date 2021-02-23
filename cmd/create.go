@@ -21,68 +21,69 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
-	"time"
+)
+
+var (
+	con            string // connector name
+	res            string // resource name
+	cfgString      string
+	metadataString string
+	input          string
 )
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Create meroxa pipeline components",
+	Short: "Create Meroxa pipeline components",
 	Long: `Use the create command to create various Meroxa pipeline components
-including Connectors.`,
+including connectors.`,
 }
 
 var createConnectorCmd = &cobra.Command{
-	Use:   "connector <resource-name>",
+	Use:   "connector [<custom-connector-name>] [flags]",
 	Short: "Create a connector",
+	Long:  "Use create connector to create a connector from a source (--from) or to a destination (--to)",
+	Example: "\n" +
+		"meroxa create connector [<custom-connector-name>] --from pg2kafka --input accounts \n" +
+		"meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders # --input will be the desired stream",
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if source == "" && destination == "" {
+			return errors.New("requires either a source (--from) or a destination (--to)\n\nUsage:\n  meroxa create connector <custom-connector-name> [--from | --to]")
+		}
+
+		return nil
+	},
+
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("requires a resource name\n\nUsage:\n  meroxa create connector <resource-name> [flags]")
-		}
-
-		// Resource Name
-		resName := args[0]
-
-		name, err := cmd.Flags().GetString("name")
-		if err != nil {
-			return err
-		}
-
-		cfgString, err := cmd.Flags().GetString("config")
-		if err != nil {
-			return err
+		// Custom connector name (which is optional)
+		if len(args) > 0 {
+			con = args[0]
 		}
 
 		cfg := &Config{}
 		if cfgString != "" {
-			err = json.Unmarshal([]byte(cfgString), cfg)
+			err := json.Unmarshal([]byte(cfgString), cfg)
 			if err != nil {
 				return err
 			}
 		}
 
 		// Process metadata
-		metadataString, err := cmd.Flags().GetString("metadata")
-		if err != nil {
-			return err
-		}
 		metadata := map[string]string{}
 		if metadataString != "" {
-			err = json.Unmarshal([]byte(metadataString), &metadata)
+			err := json.Unmarshal([]byte(metadataString), &metadata)
 			if err != nil {
 				return err
 			}
 		}
 
 		// merge in input
-		input, err := cmd.Flags().GetString("input")
-		if err != nil {
-			return err
-		}
-		err = cfg.Set("input", input)
+		err := cfg.Set("input", input)
 		if err != nil {
 			return err
 		}
@@ -91,16 +92,17 @@ var createConnectorCmd = &cobra.Command{
 			fmt.Println("Creating connector...")
 		}
 
-		con, err := createConnector(name, resName, cfg, metadata, input)
+		// TODO: Merge metadata and send something such as `mx:connectorType` as `source` or `destination`
+		c, err := createConnector(con, res, cfg, metadata, input)
 		if err != nil {
 			return err
 		}
 
 		if flagRootOutputJSON {
-			display.JSONPrint(con)
+			display.JSONPrint(c)
 		} else {
 			fmt.Println("Connector successfully created!")
-			display.PrettyPrint("connector", con)
+			display.PrettyPrint("connector", c)
 		}
 
 		return nil
@@ -165,11 +167,15 @@ func init() {
 	RootCmd.AddCommand(createCmd)
 
 	createCmd.AddCommand(createConnectorCmd)
-	createConnectorCmd.Flags().StringP("name", "n", "", "connector name")
-	createConnectorCmd.Flags().StringP("config", "c", "", "connector configuration")
-	createConnectorCmd.Flags().StringP("metadata", "m", "", "connector metadata")
-	createConnectorCmd.Flags().String("input", "", "command delimeted list of input streams")
+	createConnectorCmd.Flags().StringVarP(&cfgString, "config", "c", "", "connector configuration")
+	createConnectorCmd.Flags().StringVarP(&metadataString, "metadata", "m", "", "connector metadata")
+	createConnectorCmd.Flags().StringVarP(&input, "input", "", "", "command delimeted list of input streams")
 	createConnectorCmd.MarkFlagRequired("input")
+	createConnectorCmd.Flags().StringVarP(&source, "from", "", "", "resource name to use as source")
+	createConnectorCmd.Flags().StringVarP(&destination, "to", "", "", "resource name to use as destination")
+
+	// Hide metadata flag for now. This could probably go away
+	createConnectorCmd.Flags().MarkHidden("metadata")
 
 	createCmd.AddCommand(createPipelineCmd)
 	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")

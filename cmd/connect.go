@@ -27,25 +27,20 @@ import (
 var connectCmd = &cobra.Command{
 	Use:   "connect --from <resource-name> --to <resource-name>",
 	Short: "Connect two resources together",
-	Long: `Use the connect commands to automatically configure the connectors
-required to pull data from one resource (the source) to another
-(the target).
+	Long: `Use the connect command to automatically configure the connectors required to pull data from one resource 
+(source) to another (destination).
 
-This is essentially a shortcut for creating a connector from the
-source to Meroxa and creating a connector from Meroxa to the target`,
+This command is equivalent to creating two connectors separately, one from the source to Meroxa and another from Meroxa 
+to the destination:
+
+meroxa connect --from <resource-name> --to <resource-name> --input <source-input>
+
+or
+
+meroxa create connector --from postgres --input accounts # Creates source connector
+meroxa create connector --to redshift --input orders # Creates destination connector
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// source name
-		sourceName, err := cmd.Flags().GetString("from")
-		if err != nil {
-			return err
-		}
-
-		// target name
-		targetName, err := cmd.Flags().GetString("to")
-		if err != nil {
-			return err
-		}
-
 		// config
 		cfgString, err := cmd.Flags().GetString("config")
 		if err != nil {
@@ -73,21 +68,27 @@ source to Meroxa and creating a connector from Meroxa to the target`,
 		}
 
 		// create connector from source to meroxa
-		fmt.Println("Creating connector from source...")
-		srcCon, err := createConnector("", sourceName, cfg.From, nil, input)
+		fmt.Printf("Creating connector from source %s...", source)
+
+		// we'll use the stream of the source as the input for the destination
+		// TODO: Merge metadata and send something such as `mx:connectorType` as `source`
+		srcCon, err := createConnector("", source, cfg.From, nil, input)
 		if err != nil {
 			return err
 		}
-		fmt.Println("Connector successfully created!")
+		fmt.Printf("Connector from source %s successfully created!", source)
 
 		inputStreams := srcCon.Streams["output"].([]interface{})
 
-		fmt.Println("Creating connector to target...")
-		_, err = createConnector("", targetName, cfg.To, nil, inputStreams[0].(string))
+		// create connector from meroxa to destination
+		fmt.Printf("Creating connector to destination %s...", destination)
+
+		// TODO: Merge metadata and send something such as `mx:connectorType` as `destination`
+		_, err = createConnector("", destination, cfg.To, nil, inputStreams[0].(string))
 		if err != nil {
 			return err
 		}
-		fmt.Println("Connector successfully created!")
+		fmt.Printf("Connector to destination %s successfully created!", destination)
 		return nil
 	},
 }
@@ -95,11 +96,11 @@ source to Meroxa and creating a connector from Meroxa to the target`,
 func init() {
 	RootCmd.AddCommand(connectCmd)
 
-	// Subcommands
-	connectCmd.Flags().String("to", "", "target resource name")
-	connectCmd.MarkFlagRequired("to")
-	connectCmd.Flags().String("from", "", "source resource name")
+	// Flags
+	connectCmd.Flags().StringVarP(&source, "from", "", "", "source resource name")
 	connectCmd.MarkFlagRequired("from")
+	connectCmd.Flags().StringVarP(&destination, "to", "", "", "destination resource name")
+	connectCmd.MarkFlagRequired("to")
 	connectCmd.Flags().StringP("config", "c", "", "connector configuration")
 	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
 }
