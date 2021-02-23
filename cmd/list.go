@@ -33,8 +33,9 @@ var listCmd = &cobra.Command{
 }
 
 var listResourcesCmd = &cobra.Command{
-	Use:   "resources",
-	Short: "List resources",
+	Use:     "resources",
+	Short:   "List resources",
+	Aliases: []string{"resource"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -60,8 +61,9 @@ var listResourcesCmd = &cobra.Command{
 }
 
 var listConnectorsCmd = &cobra.Command{
-	Use:   "connectors",
-	Short: "List connectors",
+	Use:     "connectors",
+	Short:   "List connectors",
+	Aliases: []string{"connector"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -87,8 +89,9 @@ var listConnectorsCmd = &cobra.Command{
 }
 
 var listResourceTypesCmd = &cobra.Command{
-	Use:   "resource-types",
-	Short: "List resources-types",
+	Use:     "resource-types",
+	Short:   "List resources-types",
+	Aliases: []string{"resource-type"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -114,8 +117,9 @@ var listResourceTypesCmd = &cobra.Command{
 }
 
 var listPipelinesCmd = &cobra.Command{
-	Use:   "pipelines",
-	Short: "List pipelines",
+	Use:     "pipelines",
+	Short:   "List pipelines",
+	Aliases: []string{"pipeline"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
@@ -141,8 +145,9 @@ var listPipelinesCmd = &cobra.Command{
 }
 
 var listTransformsCmd = &cobra.Command{
-	Use:   "transforms",
-	Short: "List transforms",
+	Use:     "transforms",
+	Short:   "List transforms",
+	Aliases: []string{"transform"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := client()
 		if err != nil {
