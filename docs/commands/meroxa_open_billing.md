@@ -15,7 +15,8 @@ meroxa open billing [flags]
 ### Options inherited from parent commands
 
 ```
-      --json   output json
+      --config string   config file (default is $HOME/.meroxa)
+      --json            output json
 ```
 
 ### SEE ALSO
