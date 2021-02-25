@@ -5,9 +5,10 @@ import (
 )
 
 func client() (*meroxa.Client, error) {
-	u, p, err := readCreds()
+	accessToken, err := getAccessToken()
 	if err != nil {
 		return nil, err
 	}
-	return meroxa.New(u, p, versionString())
+
+	return meroxa.New(accessToken, versionString())
 }

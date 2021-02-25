@@ -9,7 +9,6 @@ meroxa create connector <resource-name> [flags]
 ### Options
 
 ```
-  -c, --config string     connector configuration
   -h, --help              help for connector
       --input string      command delimeted list of input streams
   -m, --metadata string   connector metadata
@@ -19,7 +18,8 @@ meroxa create connector <resource-name> [flags]
 ### Options inherited from parent commands
 
 ```
-      --json   output json
+      --config string   config file (default is $HOME/.meroxa)
+      --json            output json
 ```
 
 ### SEE ALSO
