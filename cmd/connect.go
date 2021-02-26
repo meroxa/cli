@@ -70,21 +70,24 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 		// create connector from source to meroxa
 		fmt.Printf("Creating connector from source %s...", source)
 
-		// we'll use the stream of the source as the input for the destination
-		// TODO: Merge metadata and send something such as `mx:connectorType` as `source`
-		srcCon, err := createConnector("", source, cfg.From, nil, input)
+		// we indicate what type of connector we're creating using its `mx:connectorType` key
+		metadata := map[string]string{"mx:connectorType": ""}
+		metadata["mx:connectorType"] = "source"
+
+		srcCon, err := createConnector("", source, cfg.From, metadata, input)
 		if err != nil {
 			return err
 		}
 		fmt.Printf("Connector from source %s successfully created!", source)
 
+		// we use the stream of the source as the input for the destination below
 		inputStreams := srcCon.Streams["output"].([]interface{})
 
 		// create connector from meroxa to destination
 		fmt.Printf("Creating connector to destination %s...", destination)
 
-		// TODO: Merge metadata and send something such as `mx:connectorType` as `destination`
-		_, err = createConnector("", destination, cfg.To, nil, inputStreams[0].(string))
+		metadata["mx:connectorType"] = "destination"
+		_, err = createConnector("", destination, cfg.To, metadata, inputStreams[0].(string))
 		if err != nil {
 			return err
 		}

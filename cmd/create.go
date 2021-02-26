@@ -92,7 +92,12 @@ var createConnectorCmd = &cobra.Command{
 			fmt.Println("Creating connector...")
 		}
 
-		// TODO: Merge metadata and send something such as `mx:connectorType` as `source` or `destination`
+		if source != "" {
+			metadata["mx:connectorType"] = "source"
+		} else if destination != "" {
+			metadata["mx:connectorType"] = "destination"
+		}
+
 		c, err := createConnector(con, res, cfg, metadata, input)
 		if err != nil {
 			return err
