@@ -19,8 +19,7 @@ meroxa add resource <resource-type> [flags]
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.meroxa)
-      --json            output json
+      --json   output json
 ```
 
 ### SEE ALSO

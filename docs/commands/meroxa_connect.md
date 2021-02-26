@@ -18,17 +18,17 @@ meroxa connect --from <resource-name> --to <resource-name> [flags]
 ### Options
 
 ```
-      --from string    source resource name
-  -h, --help           help for connect
-      --input string   command delimeted list of input streams
-      --to string      target resource name
+  -c, --config string   connector configuration
+      --from string     source resource name
+  -h, --help            help for connect
+      --input string    command delimeted list of input streams
+      --to string       target resource name
 ```
 
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.meroxa)
-      --json            output json
+      --json   output json
 ```
 
 ### SEE ALSO

@@ -15,8 +15,7 @@ meroxa list pipelines [flags]
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/.meroxa)
-      --json            output json
+      --json   output json
 ```
 
 ### SEE ALSO
