@@ -1,6 +1,6 @@
 ## meroxa logout
 
-Logout of the Meroxa platform
+logout of the Meroxa platform
 
 ```
 meroxa logout [flags]
@@ -15,7 +15,8 @@ meroxa logout [flags]
 ### Options inherited from parent commands
 
 ```
-      --json   output json
+      --config string   config file (default is $HOME/.meroxa)
+      --json            output json
 ```
 
 ### SEE ALSO
