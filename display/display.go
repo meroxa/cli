@@ -18,16 +18,8 @@ func JSONPrint(data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func PrettyPrint(section string, data interface{}) {
-	var p []byte
-	//    var err := error
-	p, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("== %s ==\n", strings.ToTitle(section))
-	fmt.Printf("%s\n", p)
+func PrettyPrint(format string, data ...interface{}) {
+	fmt.Printf(format, data...)
 }
 
 func PrintResourcesTable(resources []*meroxa.Resource) {
@@ -162,7 +154,7 @@ func PrintResourceTypesTable(types []string) {
 	fmt.Println(table.String())
 }
 
-func printPipelinesTable(pipelines []*meroxa.Pipeline) {
+func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
 	if len(pipelines) != 0 {
 		table := simpletable.New()
 

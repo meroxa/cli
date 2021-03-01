@@ -138,7 +138,7 @@ var listPipelinesCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(rr)
 		} else {
-			display.PrettyPrint("pipelines", rr)
+			display.PrintPipelinesTable(rr)
 		}
 		return nil
 	},

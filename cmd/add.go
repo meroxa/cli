@@ -19,8 +19,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
-
 	"github.com/meroxa/cli/display"
 
 	"time"
@@ -100,7 +98,7 @@ var addResourceCmd = &cobra.Command{
 		defer cancel()
 
 		if !flagRootOutputJSON {
-			fmt.Printf("Adding %s...\n", resType)
+			display.PrettyPrint("Adding %s resource...\n", resType)
 		}
 
 		res, err := c.CreateResource(ctx, &r)
@@ -111,8 +109,7 @@ var addResourceCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(res)
 		} else {
-			fmt.Println("Resource successfully added!")
-			display.PrettyPrint("resource", res)
+			display.PrettyPrint("Resource %s successfully added!\n", res.Name)
 		}
 
 		return nil

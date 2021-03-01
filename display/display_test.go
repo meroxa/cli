@@ -13,6 +13,16 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
+func Test_PrettyPrint(t *testing.T) {
+	expected := fmt.Sprintf("this is a test\n")
+	out := captureOutput(func() {
+		PrettyPrint("this is a %s\n", "test")
+	})
+	if out != expected {
+		t.Errorf("expected %s, got %s", expected, out)
+	}
+}
+
 func TestResourcesTable(t *testing.T) {
 	resource := &meroxa.Resource{
 		ID:          0,
@@ -85,7 +95,7 @@ func TestEmptyTables(t *testing.T) {
 	emptyPipelinesList := []*meroxa.Pipeline{}
 
 	out = captureOutput(func() {
-		printPipelinesTable(emptyPipelinesList)
+		PrintPipelinesTable(emptyPipelinesList)
 	})
 
 	if out != "" {
@@ -188,7 +198,7 @@ func TestPipelinesTable(t *testing.T) {
 	for name, pipelines := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := captureOutput(func() {
-				printPipelinesTable(pipelines)
+				PrintPipelinesTable(pipelines)
 			})
 			switch name {
 			case "Base":

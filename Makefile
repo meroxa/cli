@@ -19,4 +19,4 @@ test:
 
 .PHONY: docs
 docs:
-	go run tools/make-docs/main.go	
+	go run tools/make-docs/main.go
