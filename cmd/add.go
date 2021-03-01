@@ -52,7 +52,14 @@ var addResourceCmd = &cobra.Command{
 			return errors.New("requires resource name\n\nUsage:\n  meroxa add resource <resource-name> [flags]")
 		}
 
-		resName := args[0]
+		// If using newer version of the CLI
+		if resType != "" {
+			resName = args[0]
+			fmt.Printf("Using new version, sets resName as %s with resType %s", args[0], resType)
+		} else {
+			resType = args[0]
+			fmt.Printf("Using old version, sets resType as %s with resName %s", args[0], resName)
+		}
 		c, err := client()
 
 		if err != nil {
@@ -117,7 +124,12 @@ func init() {
 	addCmd.AddCommand(addResourceCmd)
 
 	addResourceCmd.Flags().StringVarP(&resType, "type", "", "", "resource type")
-	addResourceCmd.MarkFlagRequired("type")
+	// TODO: Remove this flag as optional once we release a newer version
+	// addResourceCmd.MarkFlagRequired("type")
+
+	// TODO: Remove this flag altogether once we release a newer version
+	addResourceCmd.Flags().StringVarP(&resName, "name", "", "", "resource name")
+	addResourceCmd.Flags().MarkHidden("name")
 
 	addResourceCmd.Flags().StringVarP(&resURL, "url", "u", "", "resource url")
 	addResourceCmd.MarkFlagRequired("url")
