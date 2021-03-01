@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/meroxa/cli/display"
 
 	"time"
@@ -30,23 +31,35 @@ import (
 
 const clientTimeOut = 5 * time.Second
 
-var resName, resURL, resCredentials, resMetadata string
+var resName, resType, resURL, resCredentials, resMetadata string
 
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Add a Meroxa resource",
-	Long:  `Use the add command to add various Meroxa resources to your account.`,
+	Short: "Add a resource to your Meroxa resource catalog",
 }
 
 var addResourceCmd = &cobra.Command{
-	Use:   "resource <resource-type>",
-	Short: "Add a resource to your account",
+	Use:   "resource <resource-name> --type <resource-type>",
+	Short: "Add a resource to your Meroxa resource catalog",
+	Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
+	Example: "\n" +
+		"meroxa add resource store --type postgres -u $DATABASE_URL\n" +
+		"meroxa add resource datalake --type s3 -u \"s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos\"\n" +
+		"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
+		"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
-			return errors.New("requires resource type\n\nUsage:\n  meroxa add resource <resource-type> [flags]")
+			return errors.New("requires resource name\n\nUsage:\n  meroxa add resource <resource-name> [flags]")
 		}
 
-		resType := args[0]
+		// If using newer version of the CLI
+		if resType != "" {
+			resName = args[0]
+			fmt.Printf("Using new version, sets resName as %s with resType %s", args[0], resType)
+		} else {
+			resType = args[0]
+			fmt.Printf("Using old version, sets resType as %s with resName %s", args[0], resName)
+		}
 		c, err := client()
 
 		if err != nil {
@@ -110,8 +123,13 @@ func init() {
 	RootCmd.AddCommand(addCmd)
 	addCmd.AddCommand(addResourceCmd)
 
-	addResourceCmd.Flags().StringVarP(&resName, "name", "n", "foo", "resource name")
-	addResourceCmd.MarkFlagRequired("name")
+	addResourceCmd.Flags().StringVarP(&resType, "type", "", "", "resource type")
+	// TODO: Remove this flag as optional once we release a newer version
+	// addResourceCmd.MarkFlagRequired("type")
+
+	// TODO: Remove this flag altogether once we release a newer version
+	addResourceCmd.Flags().StringVarP(&resName, "name", "", "", "resource name")
+	addResourceCmd.Flags().MarkHidden("name")
 
 	addResourceCmd.Flags().StringVarP(&resURL, "url", "u", "", "resource url")
 	addResourceCmd.MarkFlagRequired("url")
