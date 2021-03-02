@@ -77,7 +77,7 @@ var removeResourceCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(res)
 		} else {
-			display.PrettyPrint("Resource %s removed\n", res.Name)
+			fmt.Printf("Resource %s removed\n", res.Name)
 		}
 		return nil
 	},
@@ -126,7 +126,7 @@ var removeConnectorCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(con)
 		} else {
-			display.PrettyPrint("Connection %s removed\n", con.Name)
+			fmt.Printf("Connection %s removed\n", con.Name)
 		}
 		return nil
 	},
@@ -175,7 +175,7 @@ var removePipelineCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(pipeline)
 		} else {
-			display.PrettyPrint("Pipeline %s removed\n", pipeline.Name)
+			fmt.Printf("Pipeline %s removed\n", pipeline.Name)
 		}
 
 		return nil

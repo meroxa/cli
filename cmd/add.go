@@ -99,7 +99,7 @@ var addResourceCmd = &cobra.Command{
 		defer cancel()
 
 		if !flagRootOutputJSON {
-			display.PrettyPrint("Adding %s resource...\n", resType)
+			display.PrettyPrint("Adding %s resource (%s)...\n", resName, resType)
 		}
 
 		res, err := c.CreateResource(ctx, &r)
@@ -110,7 +110,7 @@ var addResourceCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(res)
 		} else {
-			display.PrettyPrint("Resource %s successfully added!\n", res.Name)
+			fmt.Printf("Resource %s successfully added!\n", res.Name)
 		}
 
 		return nil
