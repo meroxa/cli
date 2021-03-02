@@ -52,10 +52,9 @@ var createConnectorCmd = &cobra.Command{
 		"meroxa create connector [<custom-connector-name>] --from pg2kafka --input accounts \n" +
 		"meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders # --input will be the desired stream",
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		// TODO: Uncomment once we release a new version
-		//if source == "" && destination == "" {
-		//	return errors.New("requires either a source (--from) or a destination (--to)\n\nUsage:\n  meroxa create connector <custom-connector-name> [--from | --to]")
-		//}
+		if source == "" && destination == "" {
+			return errors.New("requires either a source (--from) or a destination (--to)\n\nUsage:\n  meroxa create connector <custom-connector-name> [--from | --to]")
+		}
 
 		return nil
 	},
@@ -92,16 +91,9 @@ var createConnectorCmd = &cobra.Command{
 			metadata["mx:connectorType"] = "destination"
 		}
 
-		// New release will use connection as the argument, I check the existence of either flag to determine
-		// what version we're trying to use
+		// If user specified an optional connector name
 		if len(args) > 0 {
-			// New version
-			if source != "" || destination != "" {
-				// Custom connector name (which is optional)
-				con = args[0]
-			} else { // Old version
-				res = args[0]
-			}
+			con = args[0]
 		}
 
 		if !flagRootOutputJSON {
