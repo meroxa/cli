@@ -19,6 +19,7 @@ package cmd
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/meroxa/cli/display"
 	"github.com/spf13/cobra"
 	"time"

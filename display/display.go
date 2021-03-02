@@ -18,10 +18,6 @@ func JSONPrint(data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func PrettyPrint(format string, data ...interface{}) {
-	fmt.Printf(format, data...)
-}
-
 func PrintResourcesTable(resources []*meroxa.Resource) {
 	if len(resources) != 0 {
 		table := simpletable.New()
