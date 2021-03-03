@@ -96,7 +96,7 @@ func authorizeUser(clientID string, authDomain string, redirectURL string) {
 	// construct the authorization URL (with Auth0 as the authorization provider)
 	authorizationURL := fmt.Sprintf(
 		"https://%s/authorize?audience=%s"+
-			"&scope=openid email offline_access user"+
+			`&scope=openid%%20email%%20offline_access%%20user`+
 			"&response_type=code&client_id=%s"+
 			"&code_challenge=%s"+
 			"&code_challenge_method=S256&redirect_uri=%s",
