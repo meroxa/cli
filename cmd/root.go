@@ -29,7 +29,7 @@ import (
 
 const (
 	// The name of our config file, without the file extension because viper supports many different config file languages.
-	defaultConfigFilename = "meroxa"
+	defaultConfigFilename = "meroxa.env"
 
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix = "MEROXA"
@@ -74,7 +74,7 @@ func Execute(version string) {
 
 func init() {
 	RootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.meroxa)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
 	RootCmd.SilenceUsage = true
 }
 
@@ -84,7 +84,7 @@ func initConfig(cmd *cobra.Command) error {
 
 	if cfgFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		cfg.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
@@ -97,7 +97,8 @@ func initConfig(cmd *cobra.Command) error {
 		cfg.SetConfigName(defaultConfigFilename)
 		cfg.AddConfigPath(home)
 	}
-	viper.SetConfigType("env")
+	cfg.SetConfigType("env")
+
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
 	// if we cannot parse the config file.
