@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/fatih/color"
+	"github.com/spf13/viper"
 	"strings"
 
 	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
@@ -96,7 +97,7 @@ func authorizeUser(clientID string, authDomain string, redirectURL string) {
 	// construct the authorization URL (with Auth0 as the authorization provider)
 	authorizationURL := fmt.Sprintf(
 		"https://%s/authorize?audience=%s"+
-			"&scope=openid email offline_access user"+
+			`&scope=openid%%20email%%20offline_access%%20user`+
 			"&response_type=code&client_id=%s"+
 			"&code_challenge=%s"+
 			"&code_challenge_method=S256&redirect_uri=%s",
@@ -134,12 +135,17 @@ func authorizeUser(clientID string, authDomain string, redirectURL string) {
 		cfg.Set("REFRESH_TOKEN", refreshToken)
 		err = cfg.WriteConfig()
 		if err != nil {
-			fmt.Println("meroxa: could not write config file")
-			io.WriteString(w, "Error: could not store access token\n")
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				err = cfg.SafeWriteConfig()
+			}
+			if err != nil {
+				fmt.Printf("meroxa: could not write config file: %v", err)
+				io.WriteString(w, "Error: could not store access token\n")
 
-			// close the HTTP server and return
-			cleanup(server)
-			return
+				// close the HTTP server and return
+				cleanup(server)
+				return
+			}
 		}
 
 		// return an indication of success to the caller

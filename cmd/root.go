@@ -29,7 +29,7 @@ import (
 
 const (
 	// The name of our config file, without the file extension because viper supports many different config file languages.
-	defaultConfigFilename = "meroxa.env"
+	defaultConfigFilename = "meroxa"
 
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix = "MEROXA"
@@ -98,7 +98,6 @@ func initConfig(cmd *cobra.Command) error {
 		cfg.AddConfigPath(home)
 	}
 	cfg.SetConfigType("env")
-
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
 	// if we cannot parse the config file.
