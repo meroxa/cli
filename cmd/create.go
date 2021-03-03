@@ -116,8 +116,7 @@ var createConnectorCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(c)
 		} else {
-			fmt.Println("Connector successfully created!")
-			display.PrettyPrint("connector", c)
+			fmt.Printf("Connector %s successfully created!", c.Name)
 		}
 
 		return nil
@@ -171,8 +170,7 @@ var createPipelineCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(res)
 		} else {
-			fmt.Println("Pipeline successfully created!")
-			display.PrettyPrint("pipeline", res)
+			fmt.Printf("Pipeline %s successfully created!\n", p.Name)
 		}
 		return nil
 	},

@@ -85,7 +85,7 @@ func TestEmptyTables(t *testing.T) {
 	emptyPipelinesList := []*meroxa.Pipeline{}
 
 	out = captureOutput(func() {
-		printPipelinesTable(emptyPipelinesList)
+		PrintPipelinesTable(emptyPipelinesList)
 	})
 
 	if out != "" {
@@ -188,7 +188,7 @@ func TestPipelinesTable(t *testing.T) {
 	for name, pipelines := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := captureOutput(func() {
-				printPipelinesTable(pipelines)
+				PrintPipelinesTable(pipelines)
 			})
 			switch name {
 			case "Base":

@@ -57,7 +57,7 @@ var describeResourceCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(res)
 		} else {
-			display.PrettyPrint("resource", res)
+			display.PrintResourcesTable([]*meroxa.Resource{res})
 		}
 		return nil
 	},
@@ -92,7 +92,7 @@ var describeConnectorCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(conn)
 		} else {
-			display.PrettyPrint("connector", conn)
+			display.PrintConnectorsTable([]*meroxa.Connector{conn})
 		}
 		return nil
 	},

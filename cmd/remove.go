@@ -19,6 +19,7 @@ package cmd
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/meroxa/cli/display"
 	"github.com/spf13/cobra"
 	"time"
@@ -74,7 +75,11 @@ var removeResourceCmd = &cobra.Command{
 			return err
 		}
 
-		display.PrettyPrint("resource deleted", res)
+		if flagRootOutputJSON {
+			display.JSONPrint(res)
+		} else {
+			fmt.Printf("Resource %s removed\n", res.Name)
+		}
 		return nil
 	},
 }
@@ -119,7 +124,11 @@ var removeConnectorCmd = &cobra.Command{
 			return err
 		}
 
-		display.PrettyPrint("connector removed", con)
+		if flagRootOutputJSON {
+			display.JSONPrint(con)
+		} else {
+			fmt.Printf("Connection %s removed\n", con.Name)
+		}
 		return nil
 	},
 }
@@ -164,7 +173,12 @@ var removePipelineCmd = &cobra.Command{
 			return err
 		}
 
-		display.PrettyPrint("Pipeline removed", pipeline)
+		if flagRootOutputJSON {
+			display.JSONPrint(pipeline)
+		} else {
+			fmt.Printf("Pipeline %s removed\n", pipeline.Name)
+		}
+
 		return nil
 	},
 }
