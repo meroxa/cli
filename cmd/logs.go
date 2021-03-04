@@ -43,7 +43,12 @@ var logsConnectorCmd = &cobra.Command{
 		}
 
 		_, err = io.Copy(os.Stderr, resp.Body)
+		if err != nil {
+			return err
+		}
 
-		return err
+		os.Stderr.Write([]byte("\n"))
+
+		return nil
 	},
 }
