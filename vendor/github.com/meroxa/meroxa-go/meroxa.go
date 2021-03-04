@@ -18,14 +18,15 @@ const (
 	textContentType = "text/plain"
 )
 
-type encodeFunc func(w io.Writer, body interface{}) error
+// encodeFunc encodes v into w
+type encodeFunc func(w io.Writer, v interface{}) error
 
-func jsonEncodeFunc(w io.Writer, body interface{}) error {
-	return json.NewEncoder(w).Encode(body)
+func jsonEncodeFunc(w io.Writer, v interface{}) error {
+	return json.NewEncoder(w).Encode(v)
 }
 
-func stringEncodeFunc(w io.Writer, body interface{}) error {
-	if s, ok := body.(string); ok {
+func stringEncodeFunc(w io.Writer, v interface{}) error {
+	if s, ok := v.(string); ok {
 		_, err := w.Write([]byte(s))
 		return err
 	}
@@ -33,7 +34,7 @@ func stringEncodeFunc(w io.Writer, body interface{}) error {
 	return fmt.Errorf("Body is not a string")
 }
 
-func noopEncodeFunc(w io.Writer, body interface{}) error {
+func noopEncodeFunc(w io.Writer, v interface{}) error {
 	return nil
 }
 
