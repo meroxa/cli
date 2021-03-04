@@ -11,7 +11,7 @@ require (
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20210222215403-d08f5697ce91
+	github.com/meroxa/meroxa-go v0.0.0-20210303235531-a64eea8233c1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
