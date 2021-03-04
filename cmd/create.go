@@ -108,7 +108,7 @@ var createConnectorCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(c)
 		} else {
-			fmt.Printf("Connector %s successfully created!", c.Name)
+			fmt.Printf("Connector %s successfully created!\n", c.Name)
 		}
 
 		return nil
