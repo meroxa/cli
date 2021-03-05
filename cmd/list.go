@@ -18,8 +18,9 @@ limitations under the License.
 
 import (
 	"context"
-	"github.com/meroxa/cli/display"
 	"time"
+
+	"github.com/meroxa/cli/display"
 
 	"github.com/spf13/cobra"
 )
@@ -30,6 +31,34 @@ var listCmd = &cobra.Command{
 	Short: "List components",
 	Long: `List the components of the Meroxa platform, including pipelines,
  resources, connectors, etc... You may also filter by type.`,
+}
+
+var listEndpointsCmd = &cobra.Command{
+	Use:     "endpoint",
+	Aliases: []string{"endpoints"},
+	Short:   "List endpoints",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		c, err := client()
+		if err != nil {
+			return err
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		ends, err := c.ListEndpoints(ctx)
+		if err != nil {
+			return err
+		}
+
+		if flagRootOutputJSON {
+			display.JSONPrint(ends)
+		} else {
+			display.PrintEndpointsTable(ends)
+		}
+
+		return nil
+	},
 }
 
 var listResourcesCmd = &cobra.Command{
@@ -181,4 +210,5 @@ func init() {
 	listCmd.AddCommand(listResourceTypesCmd)
 	listCmd.AddCommand(listPipelinesCmd)
 	listCmd.AddCommand(listTransformsCmd)
+	listCmd.AddCommand(listEndpointsCmd)
 }
