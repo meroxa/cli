@@ -79,7 +79,7 @@ func PrintResourcesTable(resources []*meroxa.Resource) {
 		for _, res := range resources {
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
-				{Text: res.Kind},
+				{Text: res.Type},
 				{Text: res.Name},
 				{Text: res.URL},
 			}
@@ -96,7 +96,7 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "KIND"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
 				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
@@ -106,7 +106,7 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 
 		for _, res := range transforms {
 			r := []*simpletable.Cell{
-				{Text: res.Kind},
+				{Text: res.Type},
 				{Text: res.Name},
 				{Text: strconv.FormatBool(res.Required)},
 				{Text: strings.ReplaceAll(res.Description, ". ", ". \n")},
@@ -163,7 +163,7 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 			}
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
-				{Text: conn.Kind},
+				{Text: conn.Type},
 				{Text: conn.Name},
 				{Text: streamStr},
 				{Text: conn.State},

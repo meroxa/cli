@@ -16,7 +16,7 @@ import (
 func TestResourcesTable(t *testing.T) {
 	resource := &meroxa.Resource{
 		ID:          0,
-		Kind:        "jdbc",
+		Type:        "jdbc",
 		Name:        "my-db-jdbc-source",
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
 		Credentials: nil,
@@ -24,7 +24,7 @@ func TestResourcesTable(t *testing.T) {
 	}
 	resIDAlign := &meroxa.Resource{
 		ID:          1000,
-		Kind:        "jdbc",
+		Type:        "jdbc",
 		Name:        "my-db-jdbc-source",
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
 		Credentials: nil,
@@ -102,7 +102,7 @@ func TestConnectionsTable(t *testing.T) {
 	connectionInputOutput := &meroxa.Connector{}
 	connection := &meroxa.Connector{
 		ID:            0,
-		Kind:          "jdbc",
+		Type:          "jdbc",
 		Name:          "base",
 		Configuration: nil,
 		Metadata:      nil,
