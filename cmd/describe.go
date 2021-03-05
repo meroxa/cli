@@ -19,10 +19,12 @@ package cmd
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
+
 	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 // describeCmd represents the describe command
@@ -30,6 +32,39 @@ var describeCmd = &cobra.Command{
 	Use:   "describe",
 	Short: "Describe a component",
 	Long:  `Describe a component of the Meroxa data platform, including resources and connectors`,
+}
+
+var describeEndpointCmd = &cobra.Command{
+	Use:     "endpoint <name>",
+	Aliases: []string{"endpoints"},
+	Short:   "Describe Endpoint",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa describe endpoint <name> [flags]")
+		}
+		name := args[0]
+
+		c, err := client()
+		if err != nil {
+			return err
+		}
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		end, err := c.GetEndpoint(ctx, name)
+		if err != nil {
+			return err
+		}
+
+		if flagRootOutputJSON {
+			display.JSONPrint(end)
+		} else {
+			display.PrintEndpointsTable([]meroxa.Endpoint{*end})
+		}
+		return nil
+
+	},
 }
 
 var describeResourceCmd = &cobra.Command{
@@ -104,4 +139,5 @@ func init() {
 	// Subcommands
 	describeCmd.AddCommand(describeResourceCmd)
 	describeCmd.AddCommand(describeConnectorCmd)
+	describeCmd.AddCommand(describeEndpointCmd)
 }

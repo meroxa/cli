@@ -20,9 +20,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/meroxa/cli/display"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 // removeCmd represents the remove command
@@ -33,6 +34,28 @@ var removeCmd = &cobra.Command{
  resources, and connectors`,
 	SuggestFor: []string{"destroy", "delete"},
 	Aliases:    []string{"rm", "delete"},
+}
+
+var removeEndpointCmd = &cobra.Command{
+	Use:     "endpoint <name>",
+	Aliases: []string{"endpoints"},
+	Short:   "Remove endpoint",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
+		}
+		name := args[0]
+
+		c, err := client()
+		if err != nil {
+			return err
+		}
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		return c.DeleteEndpoint(ctx, name)
+	},
 }
 
 var removeResourceCmd = &cobra.Command{
@@ -190,4 +213,5 @@ func init() {
 	removeCmd.AddCommand(removeResourceCmd)
 	removeCmd.AddCommand(removeConnectorCmd)
 	removeCmd.AddCommand(removePipelineCmd)
+	removeCmd.AddCommand(removeEndpointCmd)
 }

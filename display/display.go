@@ -3,10 +3,12 @@ package display
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alexeyco/simpletable"
-	"github.com/meroxa/meroxa-go"
+	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/alexeyco/simpletable"
+	"github.com/meroxa/meroxa-go"
 )
 
 func JSONPrint(data interface{}) {
@@ -16,6 +18,51 @@ func JSONPrint(data interface{}) {
 		return
 	}
 	fmt.Printf("%s\n", p)
+}
+
+func PrintEndpointsTable(ends []meroxa.Endpoint) {
+	if len(ends) == 0 {
+		return
+	}
+
+	table := simpletable.New()
+	table.Header = &simpletable.Header{
+		Cells: []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: "NAME"},
+			{Align: simpletable.AlignCenter, Text: "PROTOCOL"},
+			{Align: simpletable.AlignCenter, Text: "STREAM"},
+			{Align: simpletable.AlignCenter, Text: "URL"},
+			{Align: simpletable.AlignCenter, Text: "READY"},
+		},
+	}
+
+	for _, end := range ends {
+		host, err := url.Parse(end.Host)
+		if err != nil {
+			continue
+		}
+
+		var u string
+		switch end.Protocol {
+		case "HTTP":
+			host.User = url.UserPassword(end.BasicAuthUsername, end.BasicAuthPassword)
+			u = host.String()
+		case "GRPC":
+			u = fmt.Sprintf("host=%s username=%s password=%s", host.Host, end.BasicAuthUsername, end.BasicAuthPassword)
+		}
+
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: end.Name},
+			{Text: end.Protocol},
+			{Text: end.Stream},
+			{Text: u},
+			{Text: strings.Title(strconv.FormatBool(end.Ready))},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+	table.SetStyle(simpletable.StyleCompact)
+	fmt.Println(table.String())
 }
 
 func PrintResourcesTable(resources []*meroxa.Resource) {
