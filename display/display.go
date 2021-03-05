@@ -37,18 +37,17 @@ func PrintEndpointsTable(ends []meroxa.Endpoint) {
 	}
 
 	for _, end := range ends {
-		host, err := url.Parse(end.Host)
-		if err != nil {
-			continue
-		}
-
 		var u string
 		switch end.Protocol {
 		case "HTTP":
+			host, err := url.ParseRequestURI(end.Host)
+			if err != nil {
+				continue
+			}
 			host.User = url.UserPassword(end.BasicAuthUsername, end.BasicAuthPassword)
 			u = host.String()
 		case "GRPC":
-			u = fmt.Sprintf("host=%s username=%s password=%s", host.Host, end.BasicAuthUsername, end.BasicAuthPassword)
+			u = fmt.Sprintf("host=%s username=%s password=%s", end.Host, end.BasicAuthUsername, end.BasicAuthPassword)
 		}
 
 		r := []*simpletable.Cell{
