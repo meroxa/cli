@@ -10,7 +10,7 @@ import (
 type Property struct {
 	Name     string `json:"name"`
 	Required bool   `json:"bool"`
-	Kind     string `json:"kind"`
+	Type     string `json:"type"`
 }
 
 // Transform represent the Meroxa Transform type within the Meroxa API
@@ -19,7 +19,7 @@ type Transform struct {
 	Name        string     `json:"name"`
 	Required    bool       `json:"bool"`
 	Description string     `json:"description"`
-	Kind        string     `json:"kind"`
+	Type        string     `json:"type"`
 	Properties  []Property `json:"properties"`
 }
 

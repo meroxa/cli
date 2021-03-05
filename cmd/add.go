@@ -20,10 +20,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
-
 	"time"
 
+	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -60,7 +59,7 @@ var addResourceCmd = &cobra.Command{
 		}
 
 		r := meroxa.Resource{
-			Kind:     resType,
+			Type:     resType,
 			Name:     resName,
 			URL:      resURL,
 			Metadata: nil,
