@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,6 +17,26 @@ const (
 	jsonContentType = "application/json"
 	textContentType = "text/plain"
 )
+
+// encodeFunc encodes v into w
+type encodeFunc func(w io.Writer, v interface{}) error
+
+func jsonEncodeFunc(w io.Writer, v interface{}) error {
+	return json.NewEncoder(w).Encode(v)
+}
+
+func stringEncodeFunc(w io.Writer, v interface{}) error {
+	if s, ok := v.(string); ok {
+		_, err := w.Write([]byte(s))
+		return err
+	}
+
+	return fmt.Errorf("Body is not a string")
+}
+
+func noopEncodeFunc(w io.Writer, v interface{}) error {
+	return nil
+}
 
 // Client represents the Meroxa API Client
 type Client struct {
@@ -42,8 +63,16 @@ func New(token, ua string) (*Client, error) {
 	return c, nil
 }
 
+func (c *Client) MakeRequestString(ctx context.Context, method, path string, body string) (*http.Response, error) {
+	return c.makeRequestRaw(ctx, method, path, body, nil, stringEncodeFunc)
+}
+
 func (c *Client) makeRequest(ctx context.Context, method, path string, body interface{}, params url.Values) (*http.Response, error) {
-	req, err := c.newRequest(ctx, method, path, body)
+	return c.makeRequestRaw(ctx, method, path, body, params, jsonEncodeFunc)
+}
+
+func (c *Client) makeRequestRaw(ctx context.Context, method, path string, body interface{}, params url.Values, encode encodeFunc) (*http.Response, error) {
+	req, err := c.newRequest(ctx, method, path, body, encode)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +95,7 @@ func (c *Client) makeRequest(ctx context.Context, method, path string, body inte
 	return resp, nil
 }
 
-func (c *Client) newRequest(ctx context.Context, method, path string, body interface{}) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, method, path string, body interface{}, encode encodeFunc) (*http.Request, error) {
 	u, err := c.BaseURL.Parse(path)
 	if err != nil {
 		return nil, err
@@ -74,8 +103,7 @@ func (c *Client) newRequest(ctx context.Context, method, path string, body inter
 
 	buf := new(bytes.Buffer)
 	if body != nil {
-		err = json.NewEncoder(buf).Encode(body)
-		if err != nil {
+		if err := encode(buf, body); err != nil {
 			return nil, err
 		}
 	}
