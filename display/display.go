@@ -204,6 +204,7 @@ func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
 			Cells: []*simpletable.Cell{
 				{Align: simpletable.AlignCenter, Text: "ID"},
 				{Align: simpletable.AlignCenter, Text: "Name"},
+				{Align: simpletable.AlignCenter, Text: "State"},
 			},
 		}
 
@@ -211,6 +212,7 @@ func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
 				{Align: simpletable.AlignCenter, Text: p.Name},
+				{Align: simpletable.AlignCenter, Text: p.State},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)

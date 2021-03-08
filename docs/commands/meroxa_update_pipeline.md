@@ -1,16 +1,16 @@
-## meroxa update connector
+## meroxa update pipeline
 
-Update connector state
+Update pipeline state
 
 ```
-meroxa update connector <name> --state <pause|resume|restart> [flags]
+meroxa update pipeline <name> --state <pause|resume|restart> [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help           help for connector
-      --state string   connector state
+  -h, --help           help for pipeline
+      --state string   pipeline state
 ```
 
 ### Options inherited from parent commands
