@@ -117,7 +117,7 @@ var updateResourceCmd = &cobra.Command{
 			fmt.Printf("Updating %s resource...\n", resName)
 		}
 
-		resource, err := c.UpdateResource(ctx, res.Name, res)
+		resource, err := c.UpdateResource(ctx, resName, res)
 		if err != nil {
 			return err
 		}
@@ -125,7 +125,7 @@ var updateResourceCmd = &cobra.Command{
 		if flagRootOutputJSON {
 			display.JSONPrint(resource)
 		} else {
-			fmt.Printf("Resource %s successfully updated!\n", res.Name)
+			fmt.Printf("Resource %s successfully updated!\n", resName)
 		}
 
 		return nil
