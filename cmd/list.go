@@ -18,9 +18,9 @@ limitations under the License.
 
 import (
 	"context"
-	"time"
 
 	"github.com/meroxa/cli/display"
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/spf13/cobra"
 )
@@ -43,7 +43,7 @@ var listEndpointsCmd = &cobra.Command{
 			return err
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), meroxa.ClientTimeOut)
 		defer cancel()
 
 		ends, err := c.ListEndpoints(ctx)
@@ -72,7 +72,7 @@ var listResourcesCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		rr, err := c.ListResources(ctx)
@@ -100,7 +100,7 @@ var listConnectorsCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		connectors, err := c.ListConnectors(ctx)
@@ -128,7 +128,7 @@ var listResourceTypesCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		resTypes, err := c.ListResourceTypes(ctx)
@@ -156,7 +156,7 @@ var listPipelinesCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		rr, err := c.ListPipelines(ctx)
@@ -184,7 +184,7 @@ var listTransformsCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		rr, err := c.ListTransforms(ctx)

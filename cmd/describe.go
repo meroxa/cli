@@ -20,7 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
@@ -49,7 +48,7 @@ var describeEndpointCmd = &cobra.Command{
 			return err
 		}
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		end, err := c.GetEndpoint(ctx, name)
@@ -81,7 +80,7 @@ var describeResourceCmd = &cobra.Command{
 			return err
 		}
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		res, err := c.GetResourceByName(ctx, name)
@@ -116,7 +115,7 @@ var describeConnectorCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		conn, err = c.GetConnectorByName(ctx, name)

@@ -166,7 +166,7 @@ var updatePipelineCmd = &cobra.Command{
 
 		// get pipeline id from name
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		pipeline, err := c.GetPipelineByName(ctx, pipelineName)
@@ -175,7 +175,7 @@ var updatePipelineCmd = &cobra.Command{
 		}
 
 		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel = context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		// call meroxa-go to update pipeline status with name

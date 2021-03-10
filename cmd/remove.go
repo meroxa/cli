@@ -20,9 +20,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/meroxa/cli/display"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
@@ -51,7 +51,7 @@ var removeEndpointCmd = &cobra.Command{
 			return err
 		}
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		return c.DeleteEndpoint(ctx, name)
@@ -75,7 +75,7 @@ var removeResourceCmd = &cobra.Command{
 
 		// get Resource ID from name
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		res, err := c.GetResourceByName(ctx, resName)
@@ -89,7 +89,7 @@ var removeResourceCmd = &cobra.Command{
 		}
 
 		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel = context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		// TODO: Update meroxa-go to `RemoveResource` to match its implementation
@@ -125,7 +125,7 @@ var removeConnectorCmd = &cobra.Command{
 
 		// get Connector ID from name
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		con, err := c.GetConnectorByName(ctx, conName)
@@ -139,7 +139,7 @@ var removeConnectorCmd = &cobra.Command{
 		}
 
 		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel = context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		err = c.DeleteConnector(ctx, con.ID)
@@ -174,7 +174,7 @@ var removePipelineCmd = &cobra.Command{
 
 		// get Pipeline ID from name
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		pipeline, err := c.GetPipelineByName(ctx, pipelineName)
@@ -188,7 +188,7 @@ var removePipelineCmd = &cobra.Command{
 		}
 
 		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel = context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		err = c.DeletePipeline(ctx, pipeline.ID)
