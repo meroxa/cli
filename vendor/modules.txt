@@ -31,7 +31,11 @@ github.com/mattn/go-colorable
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 github.com/mattn/go-runewidth
+<<<<<<< HEAD
 # github.com/meroxa/meroxa-go v0.0.0-20210310192144-e8c597791043
+=======
+# github.com/meroxa/meroxa-go v0.0.0-20210310150243-5bd65f67d274
+>>>>>>> a787b73 (chore(cli): Uses meroxa.ClientTimeOut)
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/go-homedir v1.1.0
 github.com/mitchellh/go-homedir

@@ -20,14 +20,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/meroxa/cli/display"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
-
-const clientTimeOut = 5 * time.Second
 
 var resName, resType string
 
@@ -88,7 +85,7 @@ var addResourceCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		if !flagRootOutputJSON {

@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 
+	"github.com/meroxa/meroxa-go"
+
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +36,7 @@ var logsConnectorCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
 		defer cancel()
 
 		resp, err := c.GetConnectorLogs(ctx, connector)
