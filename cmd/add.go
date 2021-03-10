@@ -29,7 +29,7 @@ import (
 
 const clientTimeOut = 5 * time.Second
 
-var resName, resType, resCredentials string
+var resName, resType string
 
 var addCmd = &cobra.Command{
 	Use:   "add",

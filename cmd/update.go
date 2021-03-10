@@ -76,8 +76,8 @@ var updateResourceCmd = &cobra.Command{
 	// TODO: Change the design so a new name for the resource could be set
 	// meroxa update resource <old-resource-name> --name <new-resource-name>
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 || (resURL == "" && resMetadata == "") {
-			return errors.New("requires a resource name and either `--metadata` or `--url` to update the resource \n\nUsage:\n  meroxa update resource <resource-name> [--url <url> | --metadata <metadata>]")
+		if len(args) < 1 || (resURL == "" && resMetadata == "" && resCredentials == "") {
+			return errors.New("requires a resource name and either `--metadata`, `--url` or `--credentials` to update the resource \n\nUsage:\n  meroxa update resource <resource-name> [--url <url> | --metadata <metadata> | --credentials <credentials>]")
 		}
 
 		return nil
@@ -99,6 +99,18 @@ var updateResourceCmd = &cobra.Command{
 		// If url was provided, update it
 		if resURL != "" {
 			res.URL = resURL
+		}
+
+		// TODO: Figure out best way to handle creds and metadata
+		// Get credentials (expect a JSON string)
+		if resCredentials != "" {
+			var creds meroxa.Credentials
+			err = json.Unmarshal([]byte(resCredentials), &creds)
+			if err != nil {
+				return err
+			}
+
+			res.Credentials = &creds
 		}
 
 		// If metadata was provided, update it
@@ -203,4 +215,5 @@ func init() {
 
 	updateResourceCmd.Flags().StringVarP(&resURL, "url", "u", "", "resource url")
 	updateResourceCmd.Flags().StringVarP(&resMetadata, "metadata", "m", "", "resource metadata")
+	updateResourceCmd.Flags().StringVarP(&resCredentials, "credentials", "", "", "resource credentials")
 }

@@ -13,9 +13,10 @@ meroxa update resource <resource-name> [flags]
 ### Options
 
 ```
-  -h, --help              help for resource
-  -m, --metadata string   resource metadata
-  -u, --url string        resource url
+      --credentials string   resource credentials
+  -h, --help                 help for resource
+  -m, --metadata string      resource metadata
+  -u, --url string           resource url
 ```
 
 ### Options inherited from parent commands
