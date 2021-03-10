@@ -146,6 +146,8 @@ github.com/meroxa/meroxa-go v0.0.0-20210310110921-bbd1a6045180 h1:9/Zi6yjEI11evW
 github.com/meroxa/meroxa-go v0.0.0-20210310110921-bbd1a6045180/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/meroxa/meroxa-go v0.0.0-20210310111217-25506b3fff85 h1:0ulO5q5wNEx21rSq/GdojzqoFytE+DVqBneUW4VGmQg=
 github.com/meroxa/meroxa-go v0.0.0-20210310111217-25506b3fff85/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20210310192144-e8c597791043 h1:kzCaObyQltuIByPUguvReWtUGwC10WPI0g6QB0Auzsc=
+github.com/meroxa/meroxa-go v0.0.0-20210310192144-e8c597791043/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

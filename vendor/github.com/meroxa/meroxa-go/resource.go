@@ -50,7 +50,7 @@ type UpdateResourceInput struct {
 	Name        string            `json:"name,omitempty"` // TODO: Update this via CLI
 	URL         string            `json:"url,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`
-	Credentials *Credentials      `json:"credentials,omitempty"` // TODO: Update this via CLI
+	Credentials *Credentials      `json:"credentials,omitempty"`
 }
 
 // CreateResource provisions a new Resource from the given CreateResourceInput struct
