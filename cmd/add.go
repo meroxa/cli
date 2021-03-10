@@ -58,7 +58,7 @@ var addResourceCmd = &cobra.Command{
 			return err
 		}
 
-		r := meroxa.Resource{
+		r := meroxa.CreateResourceInput{
 			Type:     resType,
 			Name:     resName,
 			URL:      resURL,

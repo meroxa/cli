@@ -25,6 +25,16 @@ type Credentials struct {
 	UseSSL        bool   `json:"ssl"`
 }
 
+// CreateResourceInput represents the input for a Meroxa Resource type we're creating within the Meroxa API
+type CreateResourceInput struct {
+	ID          int               `json:"id"`
+	Type        string            `json:"type"`
+	Name        string            `json:"name"`
+	URL         string            `json:"url"`
+	Credentials *Credentials      `json:"credentials,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
+}
+
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
 	ID          int               `json:"id"`
@@ -37,13 +47,14 @@ type Resource struct {
 
 // UpdateResourceInput represents the Meroxa Resource we're updating in the Meroxa API
 type UpdateResourceInput struct {
-	Name     string            `json:"name,omitempty"`
-	URL      string            `json:"url,omitempty"`
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Name        string            `json:"name,omitempty"` // TODO: Update this via CLI
+	URL         string            `json:"url,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty"`
+	Credentials *Credentials      `json:"credentials,omitempty"` // TODO: Update this via CLI
 }
 
-// CreateResource provisions a new Resource from the given Resource struct
-func (c *Client) CreateResource(ctx context.Context, resource *Resource) (*Resource, error) {
+// CreateResource provisions a new Resource from the given CreateResourceInput struct
+func (c *Client) CreateResource(ctx context.Context, resource *CreateResourceInput) (*Resource, error) {
 	// url encode url username/password if needed
 	var err error
 	resource.URL, err = encodeURLCreds(resource.URL)
@@ -71,6 +82,17 @@ func (c *Client) CreateResource(ctx context.Context, resource *Resource) (*Resou
 }
 
 func (c *Client) UpdateResource(ctx context.Context, key string, resourceToUpdate UpdateResourceInput) (*Resource, error) {
+	// url encode url username/password if needed
+	var err error
+
+	if resourceToUpdate.URL != "" {
+		resourceToUpdate.URL, err = encodeURLCreds(resourceToUpdate.URL)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	resp, err := c.makeRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s", ResourcesBasePath, key), resourceToUpdate, nil)
 	if err != nil {
 		return nil, err
