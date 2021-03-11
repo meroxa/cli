@@ -17,6 +17,7 @@ jobs:
       AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
       AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
       AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
+      MINIKUBE_PG_URL: ${{ secrets.TEST_DB_URL }}
     strategy:
       matrix:
         enable_data_plane: [true]
