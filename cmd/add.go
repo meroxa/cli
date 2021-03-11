@@ -29,7 +29,7 @@ import (
 
 const clientTimeOut = 5 * time.Second
 
-var resName, resType, resURL, resCredentials, resMetadata string
+var resName, resType string
 
 var addCmd = &cobra.Command{
 	Use:   "add",
@@ -58,7 +58,7 @@ var addResourceCmd = &cobra.Command{
 			return err
 		}
 
-		r := meroxa.Resource{
+		r := meroxa.CreateResourceInput{
 			Type:     resType,
 			Name:     resName,
 			URL:      resURL,

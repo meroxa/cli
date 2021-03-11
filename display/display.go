@@ -70,8 +70,8 @@ func PrintResourcesTable(resources []*meroxa.Resource) {
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
 				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "URL"},
 			},
 		}
@@ -79,8 +79,8 @@ func PrintResourcesTable(resources []*meroxa.Resource) {
 		for _, res := range resources {
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
-				{Text: res.Type},
 				{Text: res.Name},
+				{Text: res.Type},
 				{Text: res.URL},
 			}
 

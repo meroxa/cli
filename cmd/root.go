@@ -17,9 +17,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/pflag"
 	"os"
 	"strings"
+
+	"github.com/spf13/pflag"
 
 	"github.com/spf13/cobra"
 
@@ -41,6 +42,9 @@ var (
 	cfgFile            string
 	source             string
 	destination        string
+	resURL             string
+	resMetadata        string
+	resCredentials     string
 	flagRootOutputJSON bool
 	cfg                *viper.Viper
 )

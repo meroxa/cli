@@ -33,7 +33,7 @@ func parseErrorFromBody(resp *http.Response) (error, error) {
 	if err != nil {
 		// In cases we didn't receive a proper JSON response
 		if _, ok := err.(*json.SyntaxError); ok {
-			return  nil, errors.New(fmt.Sprintf("error: %s %s", resp.Proto, resp.Status))
+			return nil, errors.New(fmt.Sprintf("%s %s", resp.Proto, resp.Status))
 		}
 
 		return nil, err
