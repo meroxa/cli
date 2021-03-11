@@ -1,27 +1,8 @@
 ## Meroxa CLI
 
-While we document most of the internal details [in Notion](https://www.notion.so/meroxa/CLI-f0ed215de69c471aa9460832a6f17db2), here you'll also find some other details that we hope you find useful.
-
-Feel free to add an issue in this repository or simply drop a comment [in Notion](https://www.notion.so/meroxa/CLI-f0ed215de69c471aa9460832a6f17db2), and we'll take it from there!
-
 ## Our commands
 
 All commands start with `meroxa` (the name of the binary).
-
-### Examples
-
-* Add a resource:
-    ```
-    meroxa add resource postgres --name mypg --url postgres://user:secret@localhost:5432/db
-    ```
-* Create a connection:
-    ```
-    meroxa create connection mypg --config '{"table.whitelist":"public.purchases"}'
-    ```
-* List resources:
-    ```
-    meroxa list resources
-    ```
 
 ### Build
 
@@ -32,7 +13,6 @@ make build
 ```
 
 ### Linting
-
 
 If you want to make sure everything's correct before pushing to GitHub, you'll need to install [`golangci-lint`](https://golangci-lint.run/) and run:
 
@@ -48,8 +28,6 @@ cmd/display.go:60:6: `appendCell` is unused (deadcode)
 func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
-
-Once, the Meroxa [`go-client`](http://github.com/meroxa/meroxa-go) is open source, you'll be able to set up a GitHub action to run this for you. [Here's](https://github.com/golangci/golangci-lint-action#how-to-use) more information about it.
 
 ### Vendor
 
@@ -72,8 +50,3 @@ git tag is pushed to the repo.
 ### Documentation
 
 Our Meroxa CLI is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
-### Test
-
-_TODO_
-
-
