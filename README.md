@@ -1,9 +1,5 @@
 ## Meroxa CLI
 
-While we document most of the internal details [in Notion](https://www.notion.so/meroxa/CLI-f0ed215de69c471aa9460832a6f17db2), here you'll also find some other details that we hope you find useful.
-
-Feel free to add an issue in this repository or simply drop a comment [in Notion](https://www.notion.so/meroxa/CLI-f0ed215de69c471aa9460832a6f17db2), and we'll take it from there!
-
 ## Our commands
 
 All commands start with `meroxa` (the name of the binary).
@@ -72,8 +68,3 @@ git tag is pushed to the repo.
 ### Documentation
 
 Our Meroxa CLI is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
-### Test
-
-_TODO_
-
-
