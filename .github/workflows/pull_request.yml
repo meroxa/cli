@@ -41,7 +41,7 @@ jobs:
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
         run: |
           MINIKUBE_PG_URL="${{ secrets.TEST_DB_URL }}"
-          MINIKUBE_API_HOST="${{ secrets.API_HOST }}"
+          MINIKUBE_API_HOST="http://api.staging.meroxa.io/"
           docker build -t meroxa/acceptance --build-arg=CLI_PATH=./cli .
           docker run \
             -e AUTH0_DOMAIN=${AUTH0_DOMAIN} \
