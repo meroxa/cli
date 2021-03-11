@@ -42,7 +42,7 @@ import (
 const clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
 const callbackURL = "http://localhost:21900/oauth/callback"
 const domain = "auth.meroxa.io"
-const audience = "https://api.tjl.dev.meroxa.io/v1"
+const audience = "https://api.meroxa.io/v1"
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
