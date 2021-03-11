@@ -61,7 +61,7 @@ meroxa create endpoint my-endpoint --protocol http --stream my-stream`,
 			return err
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), meroxa.ClientTimeOut)
+		ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
 		defer cancel()
 
 		var name string
@@ -158,7 +158,7 @@ var createPipelineCmd = &cobra.Command{
 			return err
 		}
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
+		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 		defer cancel()
 
 		p := &meroxa.Pipeline{
@@ -229,7 +229,7 @@ func createConnector(connectorName string, resourceName string, config *Config, 
 
 	// get resource ID from name
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
+	ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 	defer cancel()
 
 	res, err := c.GetResourceByName(ctx, resourceName)
@@ -239,7 +239,7 @@ func createConnector(connectorName string, resourceName string, config *Config, 
 
 	// create connector
 	ctx = context.Background()
-	ctx, cancel = context.WithTimeout(ctx, meroxa.ClientTimeOut)
+	ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
 	defer cancel()
 
 	cfg := Config{}

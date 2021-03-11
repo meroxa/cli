@@ -85,7 +85,7 @@ var addResourceCmd = &cobra.Command{
 		}
 
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, meroxa.ClientTimeOut)
+		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 		defer cancel()
 
 		if !flagRootOutputJSON {
