@@ -134,7 +134,6 @@ github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Ky
 github.com/mattn/go-runewidth v0.0.10 h1:CoZ3S2P7pvtP45xOtBw+/mDL2z0RKI576gSkzRRpdGg=
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-<<<<<<< HEAD
 github.com/meroxa/meroxa-go v0.0.0-20210309114201-3ed87e1ff88b h1:4CNeZ1/4OiNfeUhDT21MRGiXWgOmRjJdfyZZhqYDa+k=
 github.com/meroxa/meroxa-go v0.0.0-20210309114201-3ed87e1ff88b/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/meroxa/meroxa-go v0.0.0-20210309125454-78b90cd6af61 h1:stfeTt0418Xw0OflxIVlxOD25Dz423E41wCkqjeNBLQ=
@@ -149,12 +148,10 @@ github.com/meroxa/meroxa-go v0.0.0-20210310111217-25506b3fff85 h1:0ulO5q5wNEx21r
 github.com/meroxa/meroxa-go v0.0.0-20210310111217-25506b3fff85/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/meroxa/meroxa-go v0.0.0-20210310192144-e8c597791043 h1:kzCaObyQltuIByPUguvReWtUGwC10WPI0g6QB0Auzsc=
 github.com/meroxa/meroxa-go v0.0.0-20210310192144-e8c597791043/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
-=======
-github.com/meroxa/meroxa-go v0.0.0-20210305201333-97108881ba68 h1:4mqC6rk0qnILN7g5exZn0+Hk0aM47ZvViEN5ftOzwXk=
-github.com/meroxa/meroxa-go v0.0.0-20210305201333-97108881ba68/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
-github.com/meroxa/meroxa-go v0.0.0-20210310150243-5bd65f67d274 h1:s4y+bowICn9SOtXXPU1u9YNE4PfUSeytK219rmZfWP0=
-github.com/meroxa/meroxa-go v0.0.0-20210310150243-5bd65f67d274/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
->>>>>>> a787b73 (chore(cli): Uses meroxa.ClientTimeOut)
+github.com/meroxa/meroxa-go v0.0.0-20210311115235-15b98ce6c01e h1:CM5rPsb4FUnA1JrOPN67MC9/2i9G6e2ecfO+8dNI8xY=
+github.com/meroxa/meroxa-go v0.0.0-20210311115235-15b98ce6c01e/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
+github.com/meroxa/meroxa-go v0.0.0-20210311203439-20d2d68042fb h1:Itr4hSHiZm6b38+VHZYzFDE5IN7pHImmWGn2wQn0TOc=
+github.com/meroxa/meroxa-go v0.0.0-20210311203439-20d2d68042fb/go.mod h1:yzdHMk8vDvV8iODTBDpkhpGoZed2aB+WR7y7fIN88pc=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

@@ -16,7 +16,7 @@ const (
 	apiURL          = "https://api.meroxa.io/v1"
 	jsonContentType = "application/json"
 	textContentType = "text/plain"
-	ClientTimeOut   = 5 * time.Second
+	clientTimeOut   = 5 * time.Second
 )
 
 // encodeFunc encodes v into w
@@ -49,26 +49,23 @@ type Client struct {
 }
 
 // New returns a configured Meroxa API Client
-func New(token, ua string) (*Client, error) {
-	var client *http.Client
-
+func New(token, ua string, debugMode bool) (*Client, error) {
 	u, err := url.Parse(getAPIURL())
 	if err != nil {
 		return nil, err
-	}
-
-	if isDebugEnabled() {
-		client = httpDebugClient()
-	} else {
-		client = httpClient()
 	}
 
 	c := &Client{
 		BaseURL:    u,
 		userAgent:  userAgent(ua),
 		token:      token,
-		httpClient: client,
+		httpClient: httpClient(),
 	}
+
+	if debugMode {
+		c.httpClient.Transport = &DumpTransport{http.DefaultTransport}
+	}
+
 	return c, nil
 }
 
@@ -140,7 +137,7 @@ func (c *Client) do(ctx context.Context, req *http.Request) (*http.Response, err
 
 func httpClient() *http.Client {
 	return &http.Client{
-		Timeout: ClientTimeOut,
+		Timeout: clientTimeOut,
 	}
 }
 
@@ -150,16 +147,6 @@ func getAPIURL() string {
 	}
 
 	return apiURL
-}
-
-func isDebugEnabled() bool {
-	if val, ok := os.LookupEnv("MEROXA_DEBUG"); ok {
-		if val == "1" {
-			return true
-		}
-	}
-
-	return false
 }
 
 func userAgent(ua string) string {
