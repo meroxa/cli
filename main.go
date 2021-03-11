@@ -15,7 +15,9 @@ limitations under the License.
 */
 package main
 
-import "github.com/meroxa/cli/cmd"
+import (
+	"github.com/meroxa/cli/cmd"
+)
 
 var version = "dev"
 

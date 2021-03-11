@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/pflag"
 
@@ -33,8 +34,8 @@ const (
 	defaultConfigFilename = "meroxa"
 
 	// The environment variable prefix of all environment variables bound to our command line flags.
-	envPrefix = "MEROXA"
-	apiURL    = "https://api.tjl.dev.meroxa.io/v1/"
+	envPrefix     = "MEROXA"
+	clientTimeOut = 5 * time.Second
 )
 
 var (

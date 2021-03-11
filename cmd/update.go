@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/meroxa/meroxa-go"
-
 	"github.com/meroxa/cli/display"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
@@ -166,7 +165,7 @@ var updatePipelineCmd = &cobra.Command{
 
 		// get pipeline id from name
 		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 		defer cancel()
 
 		pipeline, err := c.GetPipelineByName(ctx, pipelineName)
@@ -175,7 +174,7 @@ var updatePipelineCmd = &cobra.Command{
 		}
 
 		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
 		defer cancel()
 
 		// call meroxa-go to update pipeline status with name

@@ -16,6 +16,7 @@ const (
 	apiURL          = "https://api.meroxa.io/v1"
 	jsonContentType = "application/json"
 	textContentType = "text/plain"
+	clientTimeOut   = 5 * time.Second
 )
 
 // encodeFunc encodes v into w
@@ -48,7 +49,7 @@ type Client struct {
 }
 
 // New returns a configured Meroxa API Client
-func New(token, ua string) (*Client, error) {
+func New(token, ua string, debugMode bool) (*Client, error) {
 	u, err := url.Parse(getAPIURL())
 	if err != nil {
 		return nil, err
@@ -60,6 +61,11 @@ func New(token, ua string) (*Client, error) {
 		token:      token,
 		httpClient: httpClient(),
 	}
+
+	if debugMode {
+		c.httpClient.Transport = &DumpTransport{http.DefaultTransport}
+	}
+
 	return c, nil
 }
 
@@ -88,6 +94,7 @@ func (c *Client) makeRequestRaw(ctx context.Context, method, path string, body i
 		}
 	}
 	resp, err := c.do(ctx, req)
+
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +130,6 @@ func (c *Client) newRequest(ctx context.Context, method, path string, body inter
 	req.Header.Add("User-Agent", c.userAgent)
 	return req, nil
 }
-
 func (c *Client) do(ctx context.Context, req *http.Request) (*http.Response, error) {
 	req = req.WithContext(ctx)
 	return c.httpClient.Do(req)
@@ -131,7 +137,7 @@ func (c *Client) do(ctx context.Context, req *http.Request) (*http.Response, err
 
 func httpClient() *http.Client {
 	return &http.Client{
-		Timeout: 5 * time.Second,
+		Timeout: clientTimeOut,
 	}
 }
 
