@@ -23,8 +23,6 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/spf13/pflag"
-
 	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -37,7 +35,6 @@ const (
 
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix     = "MEROXA"
-	apiURL        = "https://api.tjl.dev.meroxa.io/v1/"
 	clientTimeOut = 5 * time.Second
 )
 

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/meroxa/cli/display"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
