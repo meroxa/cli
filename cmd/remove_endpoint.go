@@ -13,19 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package cmd
 
 import (
+	"context"
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
-var resName, resType string
+var removeEndpointCmd = &cobra.Command{
+	Use:     "endpoint <name>",
+	Aliases: []string{"endpoints"},
+	Short:   "Remove endpoint",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
+		}
+		name := args[0]
 
-var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a resource to your Meroxa resource catalog",
+		c, err := client()
+		if err != nil {
+			return err
+		}
+		ctx := context.Background()
+		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+		defer cancel()
+
+		return c.DeleteEndpoint(ctx, name)
+	},
 }
 
 func init() {
-	RootCmd.AddCommand(addCmd)
+	removeCmd.AddCommand(removeEndpointCmd)
 }
