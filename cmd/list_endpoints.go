@@ -13,19 +13,45 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package cmd
 
 import (
+	"context"
+
+	"github.com/meroxa/cli/display"
+
 	"github.com/spf13/cobra"
 )
 
-var resName, resType string
+var listEndpointsCmd = &cobra.Command{
+	Use:     "endpoint",
+	Aliases: []string{"endpoints"},
+	Short:   "List endpoints",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		c, err := client()
+		if err != nil {
+			return err
+		}
 
-var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a resource to your Meroxa resource catalog",
+		ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
+		defer cancel()
+
+		ends, err := c.ListEndpoints(ctx)
+		if err != nil {
+			return err
+		}
+
+		if flagRootOutputJSON {
+			display.JSONPrint(ends)
+		} else {
+			display.PrintEndpointsTable(ends)
+		}
+
+		return nil
+	},
 }
 
 func init() {
-	RootCmd.AddCommand(addCmd)
+	listCmd.AddCommand(listEndpointsCmd)
 }
