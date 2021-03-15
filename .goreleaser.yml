@@ -18,20 +18,21 @@ archives:
     386: i386
     amd64: x86_64
 brews:
-  name: meroxa
-  tap:
-    owner: meroxa
-    name: homebrew-taps
-  homepage: https://meroxa.io
-  description: The Meroxa CLI
-  folder: Formula
-  license: "Apache 2.0"
-  custom_block: |
-    head "https://github.com/meroxa/cli.git"
-  install: |
-    bin.install "meroxa"
-  test: |
-    system bin/"meroxa", "version"
+  -
+    name: meroxa
+    tap:
+      owner: meroxa
+      name: homebrew-taps
+    homepage: https://meroxa.io
+    description: The Meroxa CLI
+    folder: Formula
+    license: "Apache 2.0"
+    custom_block: |
+      head "https://github.com/meroxa/cli.git"
+    install: |
+      bin.install "meroxa"
+    test: |
+      assert_match(shell_output("#{bin}/meroxa version"), "meroxa/{{ .Tag }} {{ .Env.Os }}/{{ .Env.Arch }}")
 checksum:
   name_template: 'checksums.txt'
 snapshot:
