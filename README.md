@@ -1,4 +1,4 @@
-<img src="https://files.readme.io/29ef4f4-small-meroxaLogo2x.png" alt="Meroxa" width="300">  
+<img src="https://meroxa-public-assets.s3.us-east-2.amazonaws.com/MeroxaTransparent%402x.png" alt="Meroxa" width="300">  
 
 We believe that anyone should be empowered to leverage real-time data. Using the Meroxa CLI, you can build data infrastructure in minutes not months.
 
