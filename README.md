@@ -27,7 +27,7 @@ See [Releases](https://github.com/meroxa/cli/releases).
 * [Git](https://git-scm.com/)
 * [Go](https://golang.org/dl/)
 
-### Vendor
+#### Vendor
 
 The CLI depends on [meroxa-go](github.com/meroxa/meroxa-go) (which is currently a private repo). To update vendoring the dependency, you'll need to run the following:
 
