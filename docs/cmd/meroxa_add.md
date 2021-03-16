@@ -1,0 +1,22 @@
+## meroxa add
+
+Add a resource to your Meroxa resource catalog
+
+### Options
+
+```
+  -h, --help   help for add
+```
+
+### Options inherited from parent commands
+
+```
+      --config string   config file (default is $HOME/meroxa.env)
+      --json            output json
+```
+
+### SEE ALSO
+
+* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa add resource](meroxa_add_resource.md)	 - Add a resource to your Meroxa resource catalog
+

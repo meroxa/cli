@@ -1,8 +1,13 @@
-## Meroxa CLI
+# Meroxa CLI
+
+
+## Documentation
+
+Our Meroxa CLI is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check them out at [docs/commands/meroxa](docs/commands/meroxa.md).
 
 ## Our commands
 
-All commands start with `meroxa` (the name of the binary).
+All commands start with `meroxa` which is the name of the binary.
 
 ### Build
 
@@ -12,7 +17,7 @@ Build CLI as `meroxa` binary:
 make build
 ```
 
-### Linting
+## Linting
 
 If you want to make sure everything's correct before pushing to GitHub, you'll need to install [`golangci-lint`](https://golangci-lint.run/) and run:
 
@@ -29,7 +34,7 @@ func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
 
-### Vendor
+## Vendor
 
 The CLI depends on [meroxa-go](github.com/meroxa/meroxa-go) which is currently
 a private repo. To update vendoring the dependency, you'll need to run the following:
@@ -38,7 +43,7 @@ a private repo. To update vendoring the dependency, you'll need to run the follo
 make gomod
 ```
 
-### Release
+## Release
 
 A [goreleaser](https://github.com/goreleaser/goreleaser) GitHub Action is
 configured to automatically build the CLI and cut a new release whenever a new
@@ -47,6 +52,6 @@ git tag is pushed to the repo.
 * Tag - `git tag -a vX.X.X -m "<message goes here>"`
 * Push - `git push origin vX.X.X`
 
-### Documentation
+## Contributing
 
-Our Meroxa CLI is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
+See [CONTRIBUTING.md](/CONTRIBUTING.md).
