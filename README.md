@@ -8,6 +8,9 @@ We believe that anyone should be empowered to leverage real-time data. Using the
 [Contribution Guide](CONTRIBUTING.md) |
 [Twitter](https://twitter.com/meroxadata)
 
+## Documentation
+
+Meroxa is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
 
 ## Installation Guide
 
@@ -56,10 +59,6 @@ cmd/display.go:60:6: `appendCell` is unused (deadcode)
 func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
-
-### Documentation
-
-Our Meroxa CLI is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
 
 ## Contributing
 For a complete guide to contributing to the Meroxa CLI, see the [Contribution Guide](CONTRIBUTING.md).
