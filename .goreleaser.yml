@@ -32,7 +32,7 @@ brews:
     install: |
       bin.install "meroxa"
     test: |
-      assert_match(shell_output("#{bin}/meroxa version"), "meroxa/{{ .Tag }} {{ .Env.Os }}/{{ .Env.Arch }}")
+      shell_output("#{bin}/meroxa version").match(/{{ .Tag }}/)
 checksum:
   name_template: 'checksums.txt'
 snapshot:
