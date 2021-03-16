@@ -16,20 +16,23 @@ limitations under the License.
 
 package cmd
 
-import (
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 // removeCmd represents the remove command
-var removeCmd = &cobra.Command{
-	Use:   "remove",
-	Short: "Remove a component",
-	Long: `Deprovision a component of the Meroxa platform, including pipelines,
+func RemoveCmd() *cobra.Command {
+	removeCmd := &cobra.Command{
+		Use:   "remove",
+		Short: "Remove a component",
+		Long: `Deprovision a component of the Meroxa platform, including pipelines,
  resources, and connectors`,
-	SuggestFor: []string{"destroy", "delete"},
-	Aliases:    []string{"rm", "delete"},
-}
+		SuggestFor: []string{"destroy", "delete"},
+		Aliases:    []string{"rm", "delete"},
+	}
 
-func init() {
-	RootCmd.AddCommand(removeCmd)
+	removeCmd.AddCommand(RemoveConnectorCmd())
+	removeCmd.AddCommand(RemoveEndpointCmd())
+	removeCmd.AddCommand(RemovePipelineCmd())
+	removeCmd.AddCommand(RemoveResourceCmd())
+
+	return removeCmd
 }

@@ -24,34 +24,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var listResourcesCmd = &cobra.Command{
-	Use:     "resources",
-	Short:   "List resources",
-	Aliases: []string{"resource"},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := client()
-		if err != nil {
-			return err
-		}
+func ListResourcesCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "resources",
+		Short:   "List resources",
+		Aliases: []string{"resource"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		rr, err := c.ListResources(ctx)
-		if err != nil {
-			return err
-		}
+			rr, err := c.ListResources(ctx)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(rr)
-		} else {
-			display.PrintResourcesTable(rr)
-		}
-		return nil
-	},
-}
-
-func init() {
-	listCmd.AddCommand(listResourcesCmd)
+			if flagRootOutputJSON {
+				display.JSONPrint(rr)
+			} else {
+				display.PrintResourcesTable(rr)
+			}
+			return nil
+		},
+	}
 }

@@ -23,16 +23,14 @@ import (
 )
 
 // versionCmd represents the version command
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Display the Meroxa CLI version",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("meroxa/%s %s/%s\n", meroxaVersion, runtime.GOOS, runtime.GOARCH)
-	},
-}
-
-func init() {
-	RootCmd.AddCommand(versionCmd)
+func VersionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "version",
+		Short: "Display the Meroxa CLI version",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("meroxa/%s %s/%s\n", meroxaVersion, runtime.GOOS, runtime.GOARCH)
+		},
+	}
 }
 
 // Before changing this function, we'll need to update how the we're using the User-Agent when interacting with

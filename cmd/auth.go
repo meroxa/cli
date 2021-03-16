@@ -44,40 +44,42 @@ const callbackURL = "http://localhost:21900/oauth/callback"
 const domain = "auth.meroxa.io"
 const audience = "https://api.meroxa.io/v1"
 
-var loginCmd = &cobra.Command{
-	Use:   "login",
-	Short: "login or sign up to the Meroxa platform",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		err := login()
-		if err != nil {
-			return err
-		}
-		return nil
-	},
+func LoginCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "login",
+		Short: "login or sign up to the Meroxa platform",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			err := login()
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+	}
 }
 
 // logoutCmd represents the logout command
-var logoutCmd = &cobra.Command{
-	Use:   "logout",
-	Short: "logout of the Meroxa platform",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// TODO: add confirmation
-		cfg.Set("ACCESS_TOKEN", "")
-		cfg.Set("REFRESH_TOKEN", "")
-		err := cfg.WriteConfig()
-		if err != nil {
-			return err
-		}
-		fmt.Println("credentials cleared")
-		return nil
-	},
+func LogoutCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "logout",
+		Short: "logout of the Meroxa platform",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// TODO: add confirmation
+			cfg.Set("ACCESS_TOKEN", "")
+			cfg.Set("REFRESH_TOKEN", "")
+			err := cfg.WriteConfig()
+			if err != nil {
+				return err
+			}
+			fmt.Println("credentials cleared")
+			return nil
+		},
+	}
 }
 
 func init() {
 	// Login
-	RootCmd.AddCommand(loginCmd)
-	// Logout
-	RootCmd.AddCommand(logoutCmd)
+
 }
 
 func login() error {

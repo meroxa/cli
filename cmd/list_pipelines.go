@@ -23,34 +23,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var listPipelinesCmd = &cobra.Command{
-	Use:     "pipelines",
-	Short:   "List pipelines",
-	Aliases: []string{"pipeline"},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := client()
-		if err != nil {
-			return err
-		}
+func ListPipelinesCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "pipelines",
+		Short:   "List pipelines",
+		Aliases: []string{"pipeline"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		rr, err := c.ListPipelines(ctx)
-		if err != nil {
-			return err
-		}
+			rr, err := c.ListPipelines(ctx)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(rr)
-		} else {
-			display.PrintPipelinesTable(rr)
-		}
-		return nil
-	},
-}
-
-func init() {
-	listCmd.AddCommand(listPipelinesCmd)
+			if flagRootOutputJSON {
+				display.JSONPrint(rr)
+			} else {
+				display.PrintPipelinesTable(rr)
+			}
+			return nil
+		},
+	}
 }

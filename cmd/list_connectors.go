@@ -24,34 +24,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var listConnectorsCmd = &cobra.Command{
-	Use:     "connectors",
-	Short:   "List connectors",
-	Aliases: []string{"connector"},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := client()
-		if err != nil {
-			return err
-		}
+func ListConnectorsCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "connectors",
+		Short:   "List connectors",
+		Aliases: []string{"connector"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		connectors, err := c.ListConnectors(ctx)
-		if err != nil {
-			return err
-		}
+			connectors, err := c.ListConnectors(ctx)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(connectors)
-		} else {
-			display.PrintConnectorsTable(connectors)
-		}
-		return nil
-	},
+			if flagRootOutputJSON {
+				display.JSONPrint(connectors)
+			} else {
+				display.PrintConnectorsTable(connectors)
+			}
+			return nil
+		},
+	}
 }
 
-func init() {
-	listCmd.AddCommand(listConnectorsCmd)
-}

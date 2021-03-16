@@ -22,22 +22,20 @@ import (
 )
 
 // billingCmd represents the billing command
-var billingCmd = &cobra.Command{
-	Use:   "billing",
-	Short: "Open your billing page in a web browser",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("meroxa open billing")
-		err := openBillingCmd.RunE(cmd, args)
+// TODO: Check how to disable parent flags (e.g.: --json)
+func BillingCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "billing",
+		Short: "Open your billing page in a web browser",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			fmt.Println("meroxa open billing")
+			err := OpenBillingCmd().RunE(cmd, args)
 
-		if err != nil {
-			return err
-		}
+			if err != nil {
+				return err
+			}
 
-		return nil
-	},
-}
-
-func init() {
-	// TODO: Check how to disable parent flags (e.g.: --json)
-	RootCmd.AddCommand(billingCmd)
+			return nil
+		},
+	}
 }

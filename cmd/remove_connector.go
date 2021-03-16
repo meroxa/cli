@@ -24,55 +24,53 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var removeConnectorCmd = &cobra.Command{
-	Use:   "connector <name>",
-	Short: "Remove connector",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
-		}
+func RemoveConnectorCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "connector <name>",
+		Short: "Remove connector",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
+			}
 
-		// Connector Name
-		conName := args[0]
+			// Connector Name
+			conName := args[0]
 
-		c, err := client()
-		if err != nil {
-			return err
-		}
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		// get Connector ID from name
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			// get Connector ID from name
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		con, err := c.GetConnectorByName(ctx, conName)
-		if err != nil {
-			return err
-		}
+			con, err := c.GetConnectorByName(ctx, conName)
+			if err != nil {
+				return err
+			}
 
-		c, err = client()
-		if err != nil {
-			return err
-		}
+			c, err = client()
+			if err != nil {
+				return err
+			}
 
-		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx = context.Background()
+			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		err = c.DeleteConnector(ctx, con.ID)
-		if err != nil {
-			return err
-		}
+			err = c.DeleteConnector(ctx, con.ID)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(con)
-		} else {
-			fmt.Printf("Connection %s removed\n", con.Name)
-		}
-		return nil
-	},
-}
-
-func init() {
-	removeCmd.AddCommand(removeConnectorCmd)
+			if flagRootOutputJSON {
+				display.JSONPrint(con)
+			} else {
+				fmt.Printf("Connection %s removed\n", con.Name)
+			}
+			return nil
+		},
+	}
 }

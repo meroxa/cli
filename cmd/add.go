@@ -21,11 +21,13 @@ import (
 
 var resName, resType string
 
-var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a resource to your Meroxa resource catalog",
-}
+func AddCmd() *cobra.Command {
+	addCmd := &cobra.Command{
+		Use:   "add",
+		Short: "Add a resource to your Meroxa resource catalog",
+	}
 
-func init() {
-	RootCmd.AddCommand(addCmd)
+	addCmd.AddCommand(AddResourceCmd())
+
+	return addCmd
 }

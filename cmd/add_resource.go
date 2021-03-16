@@ -27,82 +27,80 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var addResourceCmd = &cobra.Command{
-	Use:   "resource <resource-name> --type <resource-type>",
-	Short: "Add a resource to your Meroxa resource catalog",
-	Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
-	Example: "\n" +
-		"meroxa add resource store --type postgres -u $DATABASE_URL\n" +
-		"meroxa add resource datalake --type s3 -u \"s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos\"\n" +
-		"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
-		"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("requires resource name\n\nUsage:\n  meroxa add resource <resource-name> [flags]")
-		}
+func AddResourceCmd() *cobra.Command {
+	addResourceCmd := &cobra.Command{
+		Use:   "resource <resource-name> --type <resource-type>",
+		Short: "Add a resource to your Meroxa resource catalog",
+		Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
+		Example: "\n" +
+			"meroxa add resource store --type postgres -u $DATABASE_URL\n" +
+			"meroxa add resource datalake --type s3 -u \"s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos\"\n" +
+			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
+			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("requires resource name\n\nUsage:\n  meroxa add resource <resource-name> [flags]")
+			}
 
-		resName = args[0]
+			resName = args[0]
 
-		c, err := client()
+			c, err := client()
 
-		if err != nil {
-			return err
-		}
-
-		r := meroxa.CreateResourceInput{
-			Type:     resType,
-			Name:     resName,
-			URL:      resURL,
-			Metadata: nil,
-		}
-
-		// TODO: Figure out best way to handle creds and metadata
-		// Get credentials (expect a JSON string)
-		if resCredentials != "" {
-			var creds meroxa.Credentials
-			err = json.Unmarshal([]byte(resCredentials), &creds)
 			if err != nil {
 				return err
 			}
 
-			r.Credentials = &creds
-		}
+			r := meroxa.CreateResourceInput{
+				Type:     resType,
+				Name:     resName,
+				URL:      resURL,
+				Metadata: nil,
+			}
 
-		if resMetadata != "" {
-			var metadata map[string]string
-			err = json.Unmarshal([]byte(resMetadata), &metadata)
+			// TODO: Figure out best way to handle creds and metadata
+			// Get credentials (expect a JSON string)
+			if resCredentials != "" {
+				var creds meroxa.Credentials
+				err = json.Unmarshal([]byte(resCredentials), &creds)
+				if err != nil {
+					return err
+				}
+
+				r.Credentials = &creds
+			}
+
+			if resMetadata != "" {
+				var metadata map[string]string
+				err = json.Unmarshal([]byte(resMetadata), &metadata)
+				if err != nil {
+					return err
+				}
+
+				r.Metadata = metadata
+			}
+
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
+
+			if !flagRootOutputJSON {
+				fmt.Printf("Adding %s resource (%s)...\n", resName, resType)
+			}
+
+			res, err := c.CreateResource(ctx, &r)
 			if err != nil {
 				return err
 			}
 
-			r.Metadata = metadata
-		}
+			if flagRootOutputJSON {
+				display.JSONPrint(res)
+			} else {
+				fmt.Printf("Resource %s successfully added!\n", res.Name)
+			}
 
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
-
-		if !flagRootOutputJSON {
-			fmt.Printf("Adding %s resource (%s)...\n", resName, resType)
-		}
-
-		res, err := c.CreateResource(ctx, &r)
-		if err != nil {
-			return err
-		}
-
-		if flagRootOutputJSON {
-			display.JSONPrint(res)
-		} else {
-			fmt.Printf("Resource %s successfully added!\n", res.Name)
-		}
-
-		return nil
-	},
-}
-
-func init() {
-	addCmd.AddCommand(addResourceCmd)
+			return nil
+		},
+	}
 
 	addResourceCmd.Flags().StringVarP(&resType, "type", "", "", "resource type")
 	addResourceCmd.MarkFlagRequired("type")
@@ -112,4 +110,6 @@ func init() {
 
 	addResourceCmd.Flags().StringVarP(&resCredentials, "credentials", "", "", "resource credentials")
 	addResourceCmd.Flags().StringVarP(&resMetadata, "metadata", "m", "", "resource metadata")
+
+	return addResourceCmd
 }

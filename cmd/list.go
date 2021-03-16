@@ -21,13 +21,20 @@ import (
 )
 
 // listCmd represents the list command
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List components",
-	Long: `List the components of the Meroxa platform, including pipelines,
+func ListCmd() *cobra.Command {
+	listCmd := &cobra.Command{
+		Use:   "list",
+		Short: "List components",
+		Long: `List the components of the Meroxa platform, including pipelines,
  resources, connectors, etc... You may also filter by type.`,
-}
+	}
 
-func init() {
-	RootCmd.AddCommand(listCmd)
+	listCmd.AddCommand(ListConnectorsCmd())
+	listCmd.AddCommand(ListEndpointsCmd())
+	listCmd.AddCommand(ListResourceTypesCmd())
+	listCmd.AddCommand(ListPipelinesCmd())
+	listCmd.AddCommand(ListResourcesCmd())
+	listCmd.AddCommand(ListTransformsCmd())
+	
+	return listCmd
 }
