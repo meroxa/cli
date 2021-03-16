@@ -81,6 +81,7 @@ func init() {
 	RootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
 	RootCmd.SilenceUsage = true
+	RootCmd.DisableAutoGenTag = true
 }
 
 // initConfig reads in config file and ENV variables if set.
