@@ -5,10 +5,40 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type errResponse struct {
-	Error string `json:"error"` // { "error" : "API error message" }
+	ErrorDeprecated string              `json:"error,omitempty"` // { "error" : "API error message" }
+	Code            string              `json:"code,omitempty"`
+	Message         string              `json:"message,omitempty"`
+	Details         map[string][]string `json:"details,omitempty"`
+}
+
+func (err *errResponse) Error() string {
+	if err.ErrorDeprecated != "" {
+		return err.ErrorDeprecated
+	}
+
+	msg := fmt.Sprintf("\ncode: %q\nmessage: %q",
+		err.Code,
+		err.Message,
+	)
+	if len(err.Details) > 0 {
+		msg = fmt.Sprintf("%s\ndetails: %s",
+			msg,
+			mapToString(err.Details),
+		)
+	}
+	return msg
+}
+
+func mapToString(m map[string][]string) string {
+	s := ""
+	for k, v := range m {
+		s = fmt.Sprintf("%s\n\t%q: [\"%s\"]", s, k, strings.Join(v, `", "`))
+	}
+	return s
 }
 
 func handleAPIErrors(resp *http.Response) error {
@@ -39,5 +69,5 @@ func parseErrorFromBody(resp *http.Response) (error, error) {
 		return nil, err
 	}
 
-	return errors.New(er.Error), nil
+	return &er, nil
 }
