@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"errors"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -36,9 +36,9 @@ func DescribeConnectorCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(conn)
+				utils.JSONPrint(conn)
 			} else {
-				display.PrintConnectorsTable([]*meroxa.Connector{conn})
+				utils.PrintConnectorsTable([]*meroxa.Connector{conn})
 			}
 			return nil
 		},

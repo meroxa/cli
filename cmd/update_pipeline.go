@@ -20,7 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -74,7 +74,7 @@ func UpdatePipelineCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(p)
+				utils.JSONPrint(p)
 			} else {
 				fmt.Printf("Pipeline %s successfully updated!\n", p.Name)
 			}

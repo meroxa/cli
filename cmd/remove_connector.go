@@ -20,7 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -66,7 +66,7 @@ func RemoveConnectorCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(con)
+				utils.JSONPrint(con)
 			} else {
 				fmt.Printf("Connection %s removed\n", con.Name)
 			}

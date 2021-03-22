@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"errors"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -32,9 +32,9 @@ func DescribeResourceCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(res)
+				utils.JSONPrint(res)
 			} else {
-				display.PrintResourcesTable([]*meroxa.Resource{res})
+				utils.PrintResourcesTable([]*meroxa.Resource{res})
 			}
 			return nil
 		},

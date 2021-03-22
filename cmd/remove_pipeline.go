@@ -20,7 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -66,7 +66,7 @@ func RemovePipelineCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(pipeline)
+				utils.JSONPrint(pipeline)
 			} else {
 				fmt.Printf("Pipeline %s removed\n", pipeline.Name)
 			}

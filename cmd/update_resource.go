@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -96,7 +96,7 @@ func UpdateResourceCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(resource)
+				utils.JSONPrint(resource)
 			} else {
 				fmt.Printf("Resource %s successfully updated!\n", resName)
 			}

@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -33,9 +33,9 @@ func DescribeEndpointCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(end)
+				utils.JSONPrint(end)
 			} else {
-				display.PrintEndpointsTable([]meroxa.Endpoint{*end})
+				utils.PrintEndpointsTable([]meroxa.Endpoint{*end})
 			}
 			return nil
 

@@ -19,7 +19,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -45,9 +45,9 @@ func ListResourceTypesCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(resTypes)
+				utils.JSONPrint(resTypes)
 			} else {
-				display.PrintResourceTypesTable(resTypes)
+				utils.PrintResourceTypesTable(resTypes)
 			}
 			return nil
 		},

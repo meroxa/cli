@@ -1,4 +1,4 @@
-package display
+package utils
 
 import (
 	"encoding/json"

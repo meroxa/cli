@@ -20,7 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -66,7 +66,7 @@ func RemoveResourceCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(res)
+				utils.JSONPrint(res)
 			} else {
 				fmt.Printf("Resource %s removed\n", res.Name)
 			}

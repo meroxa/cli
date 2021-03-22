@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -88,7 +88,7 @@ var createConnectorCmd = &cobra.Command{
 		}
 
 		if flagRootOutputJSON {
-			display.JSONPrint(c)
+			utils.JSONPrint(c)
 		} else {
 			fmt.Printf("Connector %s successfully created!\n", c.Name)
 		}

@@ -18,7 +18,7 @@ package cmd
 
 import (
 	"context"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -43,9 +43,9 @@ func ListTransformsCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(rr)
+				utils.JSONPrint(rr)
 			} else {
-				display.PrintTransformsTable(rr)
+				utils.PrintTransformsTable(rr)
 			}
 			return nil
 		},

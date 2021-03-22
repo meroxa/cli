@@ -22,7 +22,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
@@ -93,7 +93,7 @@ func AddResourceCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(res)
+				utils.JSONPrint(res)
 			} else {
 				fmt.Printf("Resource %s successfully added!\n", res.Name)
 			}

@@ -19,7 +19,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -45,9 +45,9 @@ func ListConnectorsCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(connectors)
+				utils.JSONPrint(connectors)
 			} else {
-				display.PrintConnectorsTable(connectors)
+				utils.PrintConnectorsTable(connectors)
 			}
 			return nil
 		},

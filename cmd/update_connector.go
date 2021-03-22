@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -62,7 +62,7 @@ func UpdateConnectorCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(con)
+				utils.JSONPrint(con)
 			} else {
 				fmt.Printf("Connector %s successfully updated!\n", con.Name)
 			}

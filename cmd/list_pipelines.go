@@ -18,7 +18,7 @@ package cmd
 import (
 	"context"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -44,9 +44,9 @@ func ListPipelinesCmd() *cobra.Command {
 			}
 
 			if flagRootOutputJSON {
-				display.JSONPrint(rr)
+				utils.JSONPrint(rr)
 			} else {
-				display.PrintPipelinesTable(rr)
+				utils.PrintPipelinesTable(rr)
 			}
 			return nil
 		},
