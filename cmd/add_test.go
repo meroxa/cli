@@ -7,18 +7,17 @@ import (
 	"testing"
 )
 
-func TestCreateCmd(t *testing.T) {
+func TestAddCmd(t *testing.T) {
 	tests := []struct {
 		expected string
 	}{
-		{"Use the create command to create various Meroxa pipeline components\n" +
-			"including connectors."},
-		{"Usage:\n  meroxa create [command]"},
+		{"Add a resource to your Meroxa resource catalog"},
+		{"Usage:\n" +
+			"  meroxa add [command]"},
 		{"Available Commands:"},
-		{"connector   Create a connector"},
-		{"endpoint    Create an endpoint"},
-		{"pipeline    Create a pipeline"},
-		{"Flags:\n  -h, --help   help for create\n"},
+		{"resource    Add a resource to your Meroxa resource catalog"},
+		{"Flags:\n" +
+			"  -h, --help   help for add"},
 	}
 
 	rootCmd := RootCmd()
@@ -27,7 +26,7 @@ func TestCreateCmd(t *testing.T) {
 
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
-	rootCmd.SetArgs([]string{"create"})
+	rootCmd.SetArgs([]string{"add"})
 	rootCmd.Execute()
 
 	out, err := ioutil.ReadAll(b)

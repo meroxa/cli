@@ -22,10 +22,6 @@ func TestListCmd(t *testing.T) {
 		{"resources      List resources"},
 		{"transforms     List transforms"},
 		{"Flags:\n  -h, --help   help for list\n"},
-		{"Global Flags:\n" +
-			"      --config string   config file (default is $HOME/meroxa.env)\n" +
-			"      --json            output json\n"},
-		{"Use \"meroxa list [command] --help\" for more information about a command.\n"},
 	}
 
 	rootCmd := RootCmd()
