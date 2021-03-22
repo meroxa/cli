@@ -7,25 +7,26 @@ import (
 	"testing"
 )
 
-func TestAddResourceCmd(t *testing.T) {
+func TestConnectCmd(t *testing.T) {
 	tests := []struct {
 		expected string
 		args []string
 	}{
 		{
-			"Error: required flag(s) \"type\", \"url\" not set",
-			[]string{"add", "resource"},
+			"Error: required flag(s) \"from\", \"to\" not set",
+			[]string{"connect"},
 		},
 		{
-			"Error: required flag(s) \"type\" not set",
-			[]string{"add", "resource", "--url", "myUrl"},
+			"Error: required flag(s) \"to\" not set",
+			[]string{"connect", "--from", "resource-name"},
 		},
 		{
-			"Error: requires resource name",
-			[]string{"add", "resource", "--url", "myUrl", "--type", "postgres"},
+			"Error: required flag(s) \"from\" not set",
+			[]string{"connect", "--to", "resource-name"},
 		},
-		// TODO: Add a test with resource name as argument and mocking the call
+		// TODO: Add a test with connect --to and --from mocking the call
 	}
+
 
 	for _, tt := range tests {
 		rootCmd := RootCmd()
