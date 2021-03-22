@@ -26,59 +26,60 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var createPipelineCmd = &cobra.Command{
-	Use:   "pipeline <name>",
-	Short: "Create a pipeline",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("requires a pipeline name\n\nUsage:\n  meroxa create pipeline <name> [flags]")
-		}
-		pipelineName := args[0]
+func CreatePipelineCmd() *cobra.Command {
+	createPipelineCmd := &cobra.Command{
+		Use:   "pipeline <name>",
+		Short: "Create a pipeline",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("requires a pipeline name\n\nUsage:\n  meroxa create pipeline <name> [flags]")
+			}
+			pipelineName := args[0]
 
-		c, err := client()
-		if err != nil {
-			return err
-		}
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
-
-		p := &meroxa.Pipeline{
-			Name: pipelineName,
-		}
-
-		// Process metadata
-		metadataString, err := cmd.Flags().GetString("metadata")
-		if err != nil {
-			return err
-		}
-		if metadataString != "" {
-			var metadata map[string]string
-			err = json.Unmarshal([]byte(metadataString), &metadata)
+			c, err := client()
 			if err != nil {
 				return err
 			}
-			p.Metadata = metadata
-		}
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		if !flagRootOutputJSON {
-			fmt.Println("Creating Pipeline...")
-		}
+			p := &meroxa.Pipeline{
+				Name: pipelineName,
+			}
 
-		res, err := c.CreatePipeline(ctx, p)
-		if err != nil {
-			return err
-		}
+			// Process metadata
+			metadataString, err := cmd.Flags().GetString("metadata")
+			if err != nil {
+				return err
+			}
+			if metadataString != "" {
+				var metadata map[string]string
+				err = json.Unmarshal([]byte(metadataString), &metadata)
+				if err != nil {
+					return err
+				}
+				p.Metadata = metadata
+			}
 
-		if flagRootOutputJSON {
-			utils.JSONPrint(res)
-		} else {
-			fmt.Printf("Pipeline %s successfully created!\n", p.Name)
-		}
-		return nil
-	},
-}
+			if !flagRootOutputJSON {
+				fmt.Println("Creating Pipeline...")
+			}
 
-func init() {
+			res, err := c.CreatePipeline(ctx, p)
+			if err != nil {
+				return err
+			}
+
+			if flagRootOutputJSON {
+				utils.JSONPrint(res)
+			} else {
+				fmt.Printf("Pipeline %s successfully created!\n", p.Name)
+			}
+			return nil
+		},
+	}
+
 	createPipelineCmd.Flags().StringP("metadata", "m", "", "pipeline metadata")
+	return createPipelineCmd
 }

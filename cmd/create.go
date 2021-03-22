@@ -37,9 +37,9 @@ func CreateCmd() *cobra.Command {
 including connectors.`,
 	}
 
-	createCmd.AddCommand(createConnectorCmd)
-	createCmd.AddCommand(createPipelineCmd)
-	createCmd.AddCommand(createEndpointCmd)
+	createCmd.AddCommand(CreateConnectorCmd())
+	createCmd.AddCommand(CreatePipelineCmd())
+	createCmd.AddCommand(CreateEndpointCmd())
 
 	return createCmd
 }
