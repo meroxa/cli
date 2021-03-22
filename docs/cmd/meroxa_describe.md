@@ -23,6 +23,6 @@ Describe a component of the Meroxa data platform, including resources and connec
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
 * [meroxa describe connector](meroxa_describe_connector.md)	 - Describe connector
-* [meroxa describe endpoint](meroxa_describe_endpoint.md)	 - Describe Endpoint
+* [meroxa describe endpoint](meroxa_describe_endpoint.md)	 - Describe endpoint
 * [meroxa describe resource](meroxa_describe_resource.md)	 - Describe resource
 

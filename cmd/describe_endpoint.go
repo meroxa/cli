@@ -12,7 +12,7 @@ func DescribeEndpointCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint <name>",
 		Aliases: []string{"endpoints"},
-		Short:   "Describe Endpoint",
+		Short:   "Describe endpoint",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa describe endpoint <name> [flags]")
