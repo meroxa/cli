@@ -7,23 +7,23 @@ import (
 	"testing"
 )
 
-func TestAddCmd(t *testing.T) {
+func TestOpenCmd(t *testing.T) {
 	tests := []struct {
 		expected string
 	}{
-		{"Add a resource to your Meroxa resource catalog"},
+		{"Open in a web browser"},
 		{"Usage:\n" +
-			"  meroxa add [command]"},
+			"  meroxa open [command]"},
 		{"Available Commands:"},
-		{"resource    Add a resource to your Meroxa resource catalog"},
+		{"billing     Open your billing page in a web browser"},
 		{"Flags:\n" +
-			"  -h, --help   help for add"},
+			"  -h, --help   help for open"},
 	}
 
 	rootCmd := RootCmd()
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
-	rootCmd.SetArgs([]string{"add"})
+	rootCmd.SetArgs([]string{"open"})
 	rootCmd.Execute()
 
 	out, err := ioutil.ReadAll(b)
