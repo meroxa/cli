@@ -15,12 +15,8 @@ gomod:
 
 .PHONY: test
 test:
-	go test -v ${GO_TEST_FLAGS} -count=1 ./...
+	go test -v ${GO_TEST_FLAGS} -count=1 -timeout 5m ./...
 
 .PHONY: docs
 docs:
 	go run gen-docs/main.go
-
-.PHONY: test
-test:
-	go test -v ${GO_TEST_FLAGS} -count=1 -timeout 5m ./...
