@@ -18,7 +18,7 @@ func TestListCmd(t *testing.T) {
 		{"connectors     List connectors"},
 		{"endpoint       List endpoints"},
 		{"pipelines      List pipelines"},
-		{"resource-types List resources-types"},
+		{"resource-types List resource-types"},
 		{"resources      List resources"},
 		{"transforms     List transforms"},
 		{"Flags:\n  -h, --help   help for list\n"},

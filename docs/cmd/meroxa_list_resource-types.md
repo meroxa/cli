@@ -1,6 +1,6 @@
 ## meroxa list resource-types
 
-List resources-types
+List resource-types
 
 ```
 meroxa list resource-types [flags]
