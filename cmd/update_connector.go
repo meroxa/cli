@@ -71,6 +71,7 @@ func UpdateConnectorCmd() *cobra.Command {
 		},
 	}
 
+	// TODO: Validate state has to be either of pause|resume|restart
 	updateConnectorCmd.Flags().StringVarP(&state, "state", "", "", "connector state")
 	updateConnectorCmd.MarkFlagRequired("state")
 
