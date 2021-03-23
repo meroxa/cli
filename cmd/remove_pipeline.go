@@ -20,60 +20,59 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
-var removePipelineCmd = &cobra.Command{
-	Use:   "pipeline <name>",
-	Short: "Remove pipeline",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>")
-		}
+// RemovePipelineCmd represents the `meroxa remove pipeline` command
+func RemovePipelineCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "pipeline <name>",
+		Short: "Remove pipeline",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>")
+			}
 
-		// Pipeline Name
-		pipelineName := args[0]
+			// Pipeline Name
+			pipelineName := args[0]
 
-		c, err := client()
-		if err != nil {
-			return err
-		}
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		// get Pipeline ID from name
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			// get Pipeline ID from name
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		pipeline, err := c.GetPipelineByName(ctx, pipelineName)
-		if err != nil {
-			return err
-		}
+			pipeline, err := c.GetPipelineByName(ctx, pipelineName)
+			if err != nil {
+				return err
+			}
 
-		c, err = client()
-		if err != nil {
-			return err
-		}
+			c, err = client()
+			if err != nil {
+				return err
+			}
 
-		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx = context.Background()
+			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		err = c.DeletePipeline(ctx, pipeline.ID)
-		if err != nil {
-			return err
-		}
+			err = c.DeletePipeline(ctx, pipeline.ID)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(pipeline)
-		} else {
-			fmt.Printf("Pipeline %s removed\n", pipeline.Name)
-		}
+			if flagRootOutputJSON {
+				utils.JSONPrint(pipeline)
+			} else {
+				fmt.Printf("Pipeline %s removed\n", pipeline.Name)
+			}
 
-		return nil
-	},
-}
-
-func init() {
-	removeCmd.AddCommand(removePipelineCmd)
+			return nil
+		},
+	}
 }

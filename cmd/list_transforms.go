@@ -18,40 +18,37 @@ package cmd
 
 import (
 	"context"
-
-	"github.com/meroxa/cli/display"
-
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
-var listTransformsCmd = &cobra.Command{
-	Use:     "transforms",
-	Short:   "List transforms",
-	Aliases: []string{"transform"},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := client()
-		if err != nil {
-			return err
-		}
+// ListTransformsCmd represents the `meroxa list transforms` command
+func ListTransformsCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "transforms",
+		Short:   "List transforms",
+		Aliases: []string{"transform"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		rr, err := c.ListTransforms(ctx)
-		if err != nil {
-			return err
-		}
+			rr, err := c.ListTransforms(ctx)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(rr)
-		} else {
-			display.PrintTransformsTable(rr)
-		}
-		return nil
-	},
-}
-
-func init() {
-	listCmd.AddCommand(listTransformsCmd)
+			if flagRootOutputJSON {
+				utils.JSONPrint(rr)
+			} else {
+				utils.PrintTransformsTable(rr)
+			}
+			return nil
+		},
+	}
 }

@@ -22,28 +22,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var removeEndpointCmd = &cobra.Command{
-	Use:     "endpoint <name>",
-	Aliases: []string{"endpoints"},
-	Short:   "Remove endpoint",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
-		}
-		name := args[0]
+// RemoveEndpointCmd represents the `meroxa remove endpoint` command
+func RemoveEndpointCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "endpoint <name>",
+		Aliases: []string{"endpoints"},
+		Short:   "Remove endpoint",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
+			}
+			name := args[0]
 
-		c, err := client()
-		if err != nil {
-			return err
-		}
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			c, err := client()
+			if err != nil {
+				return err
+			}
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		return c.DeleteEndpoint(ctx, name)
-	},
-}
-
-func init() {
-	removeCmd.AddCommand(removeEndpointCmd)
+			return c.DeleteEndpoint(ctx, name)
+		},
+	}
 }

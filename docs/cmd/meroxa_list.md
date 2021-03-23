@@ -26,7 +26,7 @@ List the components of the Meroxa platform, including pipelines,
 * [meroxa list connectors](meroxa_list_connectors.md)	 - List connectors
 * [meroxa list endpoint](meroxa_list_endpoint.md)	 - List endpoints
 * [meroxa list pipelines](meroxa_list_pipelines.md)	 - List pipelines
-* [meroxa list resource-types](meroxa_list_resource-types.md)	 - List resources-types
+* [meroxa list resource-types](meroxa_list_resource-types.md)	 - List resource-types
 * [meroxa list resources](meroxa_list_resources.md)	 - List resources
 * [meroxa list transforms](meroxa_list_transforms.md)	 - List transforms
 

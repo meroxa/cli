@@ -1,6 +1,6 @@
 ## meroxa describe endpoint
 
-Describe Endpoint
+Describe endpoint
 
 ```
 meroxa describe endpoint <name> [flags]

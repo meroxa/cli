@@ -17,49 +17,16 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
-	"os"
 )
 
-const (
-	DashboardProductionURL = "https://dashboard.meroxa.io"
-	DashboardStagingURL    = "https://dashboard.staging.meroxa.io"
-)
-
-func getBillingURL() string {
-	platformURL := DashboardProductionURL
-
-	if os.Getenv("ENV") == "staging" {
-		platformURL = DashboardStagingURL
+// OpenCmd represents the `meroxa open` command
+func OpenCmd() *cobra.Command {
+	openCmd := &cobra.Command{
+		Use:   "open",
+		Short: "Open in a web browser",
 	}
-	return fmt.Sprintf("%s/account/billing", platformURL)
-}
 
-// openBillingCmd represents the billing command
-var openBillingCmd = &cobra.Command{
-	Use:   "billing",
-	Short: "Open your billing page in a web browser",
-	RunE: func(cmd *cobra.Command, args []string) error {
-
-		err := browser.OpenURL(getBillingURL())
-
-		if err != nil {
-			return err
-		}
-
-		return nil
-	},
-}
-
-// openCmd represents the billing command
-var openCmd = &cobra.Command{
-	Use:   "open",
-	Short: "Open in a web browser",
-}
-
-func init() {
-	openCmd.AddCommand(openBillingCmd)
-	RootCmd.AddCommand(openCmd)
+	openCmd.AddCommand(OpenBillingCmd())
+	return openCmd
 }

@@ -20,59 +20,58 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 )
 
-var removeResourceCmd = &cobra.Command{
-	Use:   "resource <name>",
-	Short: "Remove resource",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
-		}
-		// Resource Name
-		resName := args[0]
+// RemoveResourceCmd represents the `meroxa remove resource` command
+func RemoveResourceCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "resource <name>",
+		Short: "Remove resource",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(args) < 1 {
+				return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
+			}
+			// Resource Name
+			resName := args[0]
 
-		c, err := client()
-		if err != nil {
-			return err
-		}
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		// get Resource ID from name
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			// get Resource ID from name
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		res, err := c.GetResourceByName(ctx, resName)
-		if err != nil {
-			return err
-		}
+			res, err := c.GetResourceByName(ctx, resName)
+			if err != nil {
+				return err
+			}
 
-		c, err = client()
-		if err != nil {
-			return err
-		}
+			c, err = client()
+			if err != nil {
+				return err
+			}
 
-		ctx = context.Background()
-		ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx = context.Background()
+			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		// TODO: Update meroxa-go to `RemoveResource` to match its implementation
-		err = c.DeleteResource(ctx, res.ID)
-		if err != nil {
-			return err
-		}
+			// TODO: Update meroxa-go to `RemoveResource` to match its implementation
+			err = c.DeleteResource(ctx, res.ID)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(res)
-		} else {
-			fmt.Printf("Resource %s removed\n", res.Name)
-		}
-		return nil
-	},
-}
-
-func init() {
-	removeCmd.AddCommand(removeResourceCmd)
+			if flagRootOutputJSON {
+				utils.JSONPrint(res)
+			} else {
+				fmt.Printf("Resource %s removed\n", res.Name)
+			}
+			return nil
+		},
+	}
 }
