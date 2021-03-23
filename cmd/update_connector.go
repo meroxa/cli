@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// UpdateConnectorCmd represents the `meroxa update connector` command
 func UpdateConnectorCmd() *cobra.Command {
 	updateConnectorCmd := &cobra.Command{
 		Use:     "connector <name> --state <pause|resume|restart>",

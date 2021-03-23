@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// describeCmd represents the describe command
+// DescribeCmd represents the `meroxa describe` command
 func DescribeCmd() *cobra.Command {
 	describeCmd := &cobra.Command{
 		Use:   "describe",

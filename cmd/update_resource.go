@@ -28,6 +28,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// UpdateResourceCmd represents the `meroxa update resource` command
 func UpdateResourceCmd() *cobra.Command {
 	updateResourceCmd := &cobra.Command{
 		Use:     "resource <resource-name>",

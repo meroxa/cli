@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// RemovePipelineCmd represents the `meroxa remove pipeline` command
 func RemovePipelineCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "pipeline <name>",

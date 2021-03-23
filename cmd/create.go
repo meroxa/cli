@@ -28,7 +28,7 @@ var (
 	input          string
 )
 
-// createCmd represents the create command
+// CreateCmd represents the `meroxa create` command
 func CreateCmd() *cobra.Command {
 	createCmd := &cobra.Command{
 		Use:   "create",

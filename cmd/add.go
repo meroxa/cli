@@ -21,6 +21,7 @@ import (
 
 var resName, resType string
 
+// AddCmd represents the `meroxa add` command
 func AddCmd() *cobra.Command {
 	addCmd := &cobra.Command{
 		Use:   "add",

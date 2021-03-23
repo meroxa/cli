@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ApiCmd represents the `meroxa api` command
 func ApiCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "api <method> <path> [body]",

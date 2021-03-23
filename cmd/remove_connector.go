@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// RemoveConnectorCmd represents the `meroxa remove connector` command
 func RemoveConnectorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "connector <name>",

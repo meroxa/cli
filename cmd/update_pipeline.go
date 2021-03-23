@@ -28,6 +28,7 @@ var (
 	state string // connector state
 )
 
+// UpdatePipelineCmd represents the `meroxa update pipeline` command
 func UpdatePipelineCmd() *cobra.Command {
 	updatePipelineCmd := &cobra.Command{
 		Use:     "pipeline <name> --state <pause|resume|restart>",

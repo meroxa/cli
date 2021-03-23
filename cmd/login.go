@@ -192,6 +192,7 @@ func getAccessTokenAuth(clientID string, codeVerifier string, authorizationCode 
 	return accessToken, refreshToken, nil
 }
 
+// LoginCmd represents the `meroxa login` command
 func LoginCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "login",

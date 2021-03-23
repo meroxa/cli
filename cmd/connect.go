@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// connectCmd represents the connect command
+// ConnectCmd represents the `meroxa connect` command
 func ConnectCmd() *cobra.Command {
 	connectCmd := &cobra.Command{
 		Use:   "connect --from <resource-name> --to <resource-name>",

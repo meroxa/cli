@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// updateCmd represents the update command
+// UpdateCmd represents the `meroxa update` command
 func UpdateCmd() *cobra.Command {
 	updateCmd := &cobra.Command{
 		Use:   "update",

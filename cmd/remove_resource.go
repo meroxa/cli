@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// RemoveResourceCmd represents the `meroxa remove resource` command
 func RemoveResourceCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "resource <name>",

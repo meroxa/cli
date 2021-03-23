@@ -53,6 +53,7 @@ func (c Config) Merge(cfg Config) error {
 	return nil
 }
 
+// CreateConnectorCmd represents the `meroxa create connector` command
 func CreateConnectorCmd() *cobra.Command {
 	createConnectorCmd := &cobra.Command{
 		Use:   "connector [<custom-connector-name>] [flags]",

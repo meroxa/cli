@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// logoutCmd represents the logout command
+// LogoutCmd represents the `meroxa logout` command
 func LogoutCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "logout",

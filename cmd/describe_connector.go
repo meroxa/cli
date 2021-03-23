@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// DescribeConnectorCmd represents the `meroxa describe connector` command
 func DescribeConnectorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "connector [name]",

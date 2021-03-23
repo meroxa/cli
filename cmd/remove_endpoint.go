@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// RemoveEndpointCmd represents the `meroxa remove endpoint` command
 func RemoveEndpointCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint <name>",

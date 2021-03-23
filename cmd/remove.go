@@ -18,7 +18,7 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-// removeCmd represents the remove command
+// RemoveCmd represents the `meroxa remove` command
 func RemoveCmd() *cobra.Command {
 	removeCmd := &cobra.Command{
 		Use:   "remove",

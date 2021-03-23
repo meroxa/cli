@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listCmd represents the list command
+// ListCmd represents the `meroxa list` command
 func ListCmd() *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "list",

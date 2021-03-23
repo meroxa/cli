@@ -24,10 +24,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ListResourceTypesCmd represents the `meroxa list resource-types` command
 func ListResourceTypesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "resource-types",
-		Short:   "List resources-types",
+		Short:   "List resource-types",
 		Aliases: []string{"resource-type"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, err := client()

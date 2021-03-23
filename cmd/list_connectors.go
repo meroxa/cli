@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ListConnectorsCmd represents the `meroxa list connectors` command
 func ListConnectorsCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "connectors",

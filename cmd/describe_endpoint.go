@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// DescribeEndpointCmd represents the `meroxa describe endpoint` command
 func DescribeEndpointCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint <name>",

@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// AddResourceCmd represents the `meroxa add resource` command
 func AddResourceCmd() *cobra.Command {
 	addResourceCmd := &cobra.Command{
 		Use:   "resource <resource-name> --type <resource-type>",

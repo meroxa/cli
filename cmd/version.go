@@ -22,7 +22,7 @@ import (
 	"runtime"
 )
 
-// versionCmd represents the version command
+// VersionCmd represents the `meroxa version` command
 func VersionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",

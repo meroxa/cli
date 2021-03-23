@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ListResourcesCmd represents the `meroxa list resources` command
 func ListResourcesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "resources",

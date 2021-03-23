@@ -26,6 +26,7 @@ var (
 	flagEndpointCmdStream   string
 )
 
+// CreateEndpointCmd represents the `meroxa create endpoint` command
 func CreateEndpointCmd() *cobra.Command {
 	createEndpointCmd := &cobra.Command{
 		Use:     "endpoint [<custom-endpoint-name>] [flags]",

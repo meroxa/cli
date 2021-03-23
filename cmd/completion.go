@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-// completionCmd represents the completion command
+// CompletionCmd represents the completion command
 func CompletionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "completion [bash|zsh|fish|powershell]",

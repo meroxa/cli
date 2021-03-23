@@ -37,7 +37,7 @@ func getBillingURL() string {
 	return fmt.Sprintf("%s/account/billing", platformURL)
 }
 
-// openBillingCmd represents the billing command
+// OpenBillingCmd represents the `meroxa open billing` command
 func OpenBillingCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "billing",
