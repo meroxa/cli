@@ -25,9 +25,6 @@ func TestListCmd(t *testing.T) {
 	}
 
 	rootCmd := RootCmd()
-	listCmd := ListCmd()
-	rootCmd.AddCommand(listCmd)
-
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
 	rootCmd.SetArgs([]string{"list"})
