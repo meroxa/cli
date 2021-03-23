@@ -27,7 +27,6 @@ func TestConnectCmd(t *testing.T) {
 		// TODO: Add a test with connect --to and --from mocking the call
 	}
 
-
 	for _, tt := range tests {
 		rootCmd := RootCmd()
 		b := bytes.NewBufferString("")

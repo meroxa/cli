@@ -47,7 +47,7 @@ var (
 	resMetadata        string
 	resCredentials     string
 	flagRootOutputJSON bool
-	rootCmd				*cobra.Command
+	meroxaCmd		   *cobra.Command
 	cfg                *viper.Viper
 )
 
@@ -75,8 +75,7 @@ meroxa list resource-types`,
 	rootCmd.SilenceUsage = true
 	rootCmd.DisableAutoGenTag = true
 
-	// Commands
-
+	// Subcommands
 	rootCmd.AddCommand(AddCmd())
 	rootCmd.AddCommand(ApiCmd())
 	rootCmd.AddCommand(BillingCmd())
@@ -101,13 +100,13 @@ meroxa list resource-types`,
 func Execute(version string) {
 	meroxaVersion = version
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := meroxaCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 func init() {
-	rootCmd = RootCmd()
+	meroxaCmd = RootCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.
