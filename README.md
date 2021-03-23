@@ -52,6 +52,12 @@ git tag is pushed to the repo.
 * Tag - `git tag -a vX.X.X -m "<message goes here>"`
 * Push - `git push origin vX.X.X`
 
+## Tests
+
+```
+make test
+```
+
 ## Contributing
 
 See [CONTRIBUTING.md](/CONTRIBUTING.md).
