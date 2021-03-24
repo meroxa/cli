@@ -19,7 +19,6 @@ package cmd
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/meroxa/cli/utils"
@@ -39,11 +38,9 @@ func AddResourceCmd() *cobra.Command {
 			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
 			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires resource name\n\nUsage:\n  meroxa add resource <resource-name> [flags]")
+			if len(args) > 1 {
+				resName = args[0]
 			}
-
-			resName = args[0]
 
 			c, err := client()
 

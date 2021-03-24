@@ -20,11 +20,7 @@ func TestAddResourceCmd(t *testing.T) {
 			"Error: required flag(s) \"type\" not set",
 			[]string{"add", "resource", "--url", "myUrl"},
 		},
-		{
-			"Error: requires resource name",
-			[]string{"add", "resource", "--url", "myUrl", "--type", "postgres"},
-		},
-		// TODO: Add a test with resource name as argument and mocking the call
+		// TODO: Add a test adding the resource mocking the call
 	}
 
 	for _, tt := range tests {
