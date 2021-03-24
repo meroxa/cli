@@ -19,39 +19,38 @@ package cmd
 import (
 	"context"
 
-	"github.com/meroxa/cli/display"
+	"github.com/meroxa/cli/utils"
 
 	"github.com/spf13/cobra"
 )
 
-var listResourceTypesCmd = &cobra.Command{
-	Use:     "resource-types",
-	Short:   "List resources-types",
-	Aliases: []string{"resource-type"},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := client()
-		if err != nil {
-			return err
-		}
+// ListResourceTypesCmd represents the `meroxa list resource-types` command
+func ListResourceTypesCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:     "resource-types",
+		Short:   "List resource-types",
+		Aliases: []string{"resource-type"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		ctx := context.Background()
-		ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-		defer cancel()
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
-		resTypes, err := c.ListResourceTypes(ctx)
-		if err != nil {
-			return err
-		}
+			resTypes, err := c.ListResourceTypes(ctx)
+			if err != nil {
+				return err
+			}
 
-		if flagRootOutputJSON {
-			display.JSONPrint(resTypes)
-		} else {
-			display.PrintResourceTypesTable(resTypes)
-		}
-		return nil
-	},
-}
-
-func init() {
-	listCmd.AddCommand(listResourceTypesCmd)
+			if flagRootOutputJSON {
+				utils.JSONPrint(resTypes)
+			} else {
+				utils.PrintResourceTypesTable(resTypes)
+			}
+			return nil
+		},
+	}
 }

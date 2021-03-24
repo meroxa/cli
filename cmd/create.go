@@ -28,20 +28,18 @@ var (
 	input          string
 )
 
-// createCmd represents the create command
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "Create Meroxa pipeline components",
-	Long: `Use the create command to create various Meroxa pipeline components
+// CreateCmd represents the `meroxa create` command
+func CreateCmd() *cobra.Command {
+	createCmd := &cobra.Command{
+		Use:   "create",
+		Short: "Create Meroxa pipeline components",
+		Long: `Use the create command to create various Meroxa pipeline components
 including connectors.`,
+	}
+
+	createCmd.AddCommand(CreateConnectorCmd())
+	createCmd.AddCommand(CreatePipelineCmd())
+	createCmd.AddCommand(CreateEndpointCmd())
+
+	return createCmd
 }
-
-
-func init() {
-	RootCmd.AddCommand(createCmd)
-
-	createCmd.AddCommand(createConnectorCmd)
-	createCmd.AddCommand(createPipelineCmd)
-	createCmd.AddCommand(createEndpointCmd)
-}
-

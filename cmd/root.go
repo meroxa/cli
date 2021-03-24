@@ -47,40 +47,66 @@ var (
 	resMetadata        string
 	resCredentials     string
 	flagRootOutputJSON bool
+	meroxaCmd		   *cobra.Command
 	cfg                *viper.Viper
 )
 
 // RootCmd represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
-	Use:   "meroxa",
-	Short: "The Meroxa CLI",
-	Long: `The Meroxa CLI allows quick and easy access to the Meroxa data platform.
+func RootCmd() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:   "meroxa",
+		Short: "The Meroxa CLI",
+		Long: `The Meroxa CLI allows quick and easy access to the Meroxa data platform.
 
 Using the CLI you are able to create and manage sophisticated data pipelines
 with only a few simple commands. You can get started by listing the supported
 resource types:
 
 meroxa list resource-types`,
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
-		return initConfig(cmd)
-	},
-	TraverseChildren: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
+			return initConfig(cmd)
+		},
+		TraverseChildren: true,
+	}
+
+	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
+	rootCmd.SilenceUsage = true
+	rootCmd.DisableAutoGenTag = true
+
+	// Subcommands
+	rootCmd.AddCommand(AddCmd())
+	rootCmd.AddCommand(ApiCmd())
+	rootCmd.AddCommand(BillingCmd())
+	rootCmd.AddCommand(CompletionCmd())
+	rootCmd.AddCommand(ConnectCmd())
+	rootCmd.AddCommand(CreateCmd())
+	rootCmd.AddCommand(DescribeCmd())
+	rootCmd.AddCommand(ListCmd())
+	rootCmd.AddCommand(LoginCmd())
+	rootCmd.AddCommand(LogoutCmd())
+	rootCmd.AddCommand(LogsCmd())
+	rootCmd.AddCommand(OpenCmd())
+	rootCmd.AddCommand(RemoveCmd())
+	rootCmd.AddCommand(UpdateCmd())
+	rootCmd.AddCommand(VersionCmd())
+
+	return rootCmd
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the RootCmd.
+// Execute fills in the version based on main.version by goreleaser.
+// This is called by main.main()
 func Execute(version string) {
 	meroxaVersion = version
-	if err := RootCmd.Execute(); err != nil {
+
+	if err := meroxaCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
 
 func init() {
-	RootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
-	RootCmd.SilenceUsage = true
+	meroxaCmd = RootCmd()
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -26,34 +26,36 @@ var (
 	flagEndpointCmdStream   string
 )
 
-var createEndpointCmd = &cobra.Command{
-	Use:     "endpoint [<custom-endpoint-name>] [flags]",
-	Aliases: []string{"endpoints"},
-	Short:   "Create an endpoint",
-	Long:    "Use create endpoint to expose an endpoint to a connector stream",
-	Example: `
+// CreateEndpointCmd represents the `meroxa create endpoint` command
+func CreateEndpointCmd() *cobra.Command {
+	createEndpointCmd := &cobra.Command{
+		Use:     "endpoint [<custom-endpoint-name>] [flags]",
+		Aliases: []string{"endpoints"},
+		Short:   "Create an endpoint",
+		Long:    "Use create endpoint to expose an endpoint to a connector stream",
+		Example: `
 meroxa create endpoint my-endpoint --protocol http --stream my-stream`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		c, err := client()
-		if err != nil {
-			return err
-		}
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := client()
+			if err != nil {
+				return err
+			}
 
-		ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
-		defer cancel()
+			ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
+			defer cancel()
 
-		var name string
-		if len(args) > 0 {
-			name = args[0]
-		}
+			var name string
+			if len(args) > 0 {
+				name = args[0]
+			}
 
-		return c.CreateEndpoint(ctx, name, flagEndpointCmdProtocol, flagEndpointCmdStream)
-	},
-}
+			return c.CreateEndpoint(ctx, name, flagEndpointCmdProtocol, flagEndpointCmdStream)
+		},
+	}
 
-func init() {
 	createEndpointCmd.Flags().StringVarP(&flagEndpointCmdProtocol, "protocol", "p", "", "protocol, value can be http or grpc (required)")
 	createEndpointCmd.Flags().StringVarP(&flagEndpointCmdStream, "stream", "s", "", "stream name (required)")
-	cobra.MarkFlagRequired(createEndpointCmd.Flags(), "protocol")
-	cobra.MarkFlagRequired(createEndpointCmd.Flags(), "stream")
+	createEndpointCmd.MarkFlagRequired("protocol")
+	createEndpointCmd.MarkFlagRequired("stream")
+	return createEndpointCmd
 }

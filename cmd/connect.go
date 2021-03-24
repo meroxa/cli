@@ -23,11 +23,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// connectCmd represents the connect command
-var connectCmd = &cobra.Command{
-	Use:   "connect --from <resource-name> --to <resource-name>",
-	Short: "Connect two resources together",
-	Long: `Use the connect command to automatically configure the connectors required to pull data from one resource 
+// ConnectCmd represents the `meroxa connect` command
+func ConnectCmd() *cobra.Command {
+	connectCmd := &cobra.Command{
+		Use:   "connect --from <resource-name> --to <resource-name>",
+		Short: "Connect two resources together",
+		Long: `Use the connect command to automatically configure the connectors required to pull data from one resource 
 (source) to another (destination).
 
 This command is equivalent to creating two connectors separately, one from the source to Meroxa and another from Meroxa 
@@ -40,70 +41,69 @@ or
 meroxa create connector --from postgres --input accounts # Creates source connector
 meroxa create connector --to redshift --input orders # Creates destination connector
 `,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// config
-		cfgString, err := cmd.Flags().GetString("config")
-		if err != nil {
-			return err
-		}
-
-		cfg := struct {
-			From *Config `json:"from"`
-			To   *Config `json:"to"`
-		}{
-			From: &Config{},
-			To:   &Config{},
-		}
-		if cfgString != "" {
-			err = json.Unmarshal([]byte(cfgString), &cfg)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// config
+			cfgString, err := cmd.Flags().GetString("config")
 			if err != nil {
 				return err
 			}
-		}
 
-		// merge in input
-		input, err := cmd.Flags().GetString("input")
-		if err != nil {
-			return err
-		}
+			cfg := struct {
+				From *Config `json:"from"`
+				To   *Config `json:"to"`
+			}{
+				From: &Config{},
+				To:   &Config{},
+			}
+			if cfgString != "" {
+				err = json.Unmarshal([]byte(cfgString), &cfg)
+				if err != nil {
+					return err
+				}
+			}
 
-		// create connector from source to meroxa
-		fmt.Printf("Creating connector from source %s...", source)
+			// merge in input
+			input, err := cmd.Flags().GetString("input")
+			if err != nil {
+				return err
+			}
 
-		// we indicate what type of connector we're creating using its `mx:connectorType` key
-		metadata := map[string]string{"mx:connectorType": ""}
-		metadata["mx:connectorType"] = "source"
+			// create connector from source to meroxa
+			fmt.Printf("Creating connector from source %s...\n", source)
 
-		srcCon, err := createConnector("", source, cfg.From, metadata, input)
-		if err != nil {
-			return err
-		}
-		fmt.Printf("Connector from source %s successfully created!", source)
+			// we indicate what type of connector we're creating using its `mx:connectorType` key
+			metadata := map[string]string{"mx:connectorType": ""}
+			metadata["mx:connectorType"] = "source"
 
-		// we use the stream of the source as the input for the destination below
-		inputStreams := srcCon.Streams["output"].([]interface{})
+			srcCon, err := createConnector("", source, cfg.From, metadata, input)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Connector from source %s successfully created!\n", source)
 
-		// create connector from meroxa to destination
-		fmt.Printf("Creating connector to destination %s...", destination)
+			// we use the stream of the source as the input for the destination below
+			inputStreams := srcCon.Streams["output"].([]interface{})
 
-		metadata["mx:connectorType"] = "destination"
-		_, err = createConnector("", destination, cfg.To, metadata, inputStreams[0].(string))
-		if err != nil {
-			return err
-		}
-		fmt.Printf("Connector to destination %s successfully created!", destination)
-		return nil
-	},
-}
+			// create connector from meroxa to destination
+			fmt.Printf("Creating connector to destination %s...\n", destination)
 
-func init() {
-	RootCmd.AddCommand(connectCmd)
+			metadata["mx:connectorType"] = "destination"
+			_, err = createConnector("", destination, cfg.To, metadata, inputStreams[0].(string))
+			if err != nil {
+				return err
+			}
+			fmt.Printf("Connector to destination %s successfully created!\n", destination)
+			return nil
+		},
+	}
 
-	// Flags
 	connectCmd.Flags().StringVarP(&source, "from", "", "", "source resource name")
 	connectCmd.MarkFlagRequired("from")
 	connectCmd.Flags().StringVarP(&destination, "to", "", "", "destination resource name")
 	connectCmd.MarkFlagRequired("to")
 	connectCmd.Flags().StringP("config", "c", "", "connector configuration")
 	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
+
+	return connectCmd
 }
+

@@ -5,11 +5,12 @@ import (
 	"os"
 )
 
-// completionCmd represents the completion command
-var completionCmd = &cobra.Command{
-	Use:   "completion [bash|zsh|fish|powershell]",
-	Short: "Generate completion script",
-	Long: `To load completions:
+// CompletionCmd represents the completion command
+func CompletionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "completion [bash|zsh|fish|powershell]",
+		Short: "Generate completion script",
+		Long: `To load completions:
 
 	Bash:
 	
@@ -40,23 +41,20 @@ var completionCmd = &cobra.Command{
 	# To load completions for each session, execute once:
 	$ meroxa completion fish > ~/.config/fish/completions/meroxa.fish
 	`,
-	DisableFlagsInUseLine: true,
-	ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
-	Args:                  cobra.ExactValidArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		switch args[0] {
-		case "bash":
-			cmd.Root().GenBashCompletion(os.Stdout)
-		case "zsh":
-			cmd.Root().GenZshCompletion(os.Stdout)
-		case "fish":
-			cmd.Root().GenFishCompletion(os.Stdout, true)
-		case "powershell":
-			cmd.Root().GenPowerShellCompletion(os.Stdout)
-		}
-	},
-}
-
-func init() {
-	RootCmd.AddCommand(completionCmd)
+		DisableFlagsInUseLine: true,
+		ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
+		Args:                  cobra.ExactValidArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			switch args[0] {
+			case "bash":
+				cmd.Root().GenBashCompletion(os.Stdout)
+			case "zsh":
+				cmd.Root().GenZshCompletion(os.Stdout)
+			case "fish":
+				cmd.Root().GenFishCompletion(os.Stdout, true)
+			case "powershell":
+				cmd.Root().GenPowerShellCompletion(os.Stdout)
+			}
+		},
+	}
 }
