@@ -34,7 +34,7 @@ func LogoutCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println("credentials cleared")
+			fmt.Println("Successfully logged out.")
 			return nil
 		},
 	}
