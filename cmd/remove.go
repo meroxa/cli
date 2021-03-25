@@ -18,6 +18,8 @@ package cmd
 
 import "github.com/spf13/cobra"
 
+var forceFlag bool
+
 // RemoveCmd represents the `meroxa remove` command
 func RemoveCmd() *cobra.Command {
 	removeCmd := &cobra.Command{
@@ -34,10 +36,6 @@ func RemoveCmd() *cobra.Command {
 	removeCmd.AddCommand(RemovePipelineCmd())
 	removeCmd.AddCommand(RemoveResourceCmd())
 
-	// This is to make acceptance tests happy
-	var force bool
-	removeCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "force delete without confirmation prompt")
-	removeCmd.PersistentFlags().MarkHidden("force")
-
+	removeCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "force delete without confirmation prompt")
 	return removeCmd
 }
