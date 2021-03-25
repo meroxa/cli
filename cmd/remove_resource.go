@@ -24,6 +24,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+
 // RemoveResourceCmd represents the `meroxa remove resource` command
 func RemoveResourceCmd() *cobra.Command {
 	return &cobra.Command{
@@ -60,17 +61,21 @@ func RemoveResourceCmd() *cobra.Command {
 			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
 			defer cancel()
 
-			// TODO: Update meroxa-go to `RemoveResource` to match its implementation
-			err = c.DeleteResource(ctx, res.ID)
-			if err != nil {
-				return err
+
+			if confirmRemoved() {
+				// TODO: Update meroxa-go to `RemoveResource` to match its implementation
+				err = c.DeleteResource(ctx, res.ID)
+				if err != nil {
+					return err
+				}
+
+				if flagRootOutputJSON {
+					utils.JSONPrint(res)
+				} else {
+					fmt.Printf("Resource %s removed\n", res.Name)
+				}
 			}
 
-			if flagRootOutputJSON {
-				utils.JSONPrint(res)
-			} else {
-				fmt.Printf("Resource %s removed\n", res.Name)
-			}
 			return nil
 		},
 	}

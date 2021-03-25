@@ -20,6 +20,16 @@ import "github.com/spf13/cobra"
 
 var forceFlag bool
 
+
+// confirmRemoved will prompt for confirmation or will check the `--force` flag value
+func confirmRemoved () bool {
+	if forceFlag {
+		return true
+	}
+
+	return false
+}
+
 // RemoveCmd represents the `meroxa remove` command
 func RemoveCmd() *cobra.Command {
 	removeCmd := &cobra.Command{
