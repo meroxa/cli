@@ -1,8 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
+	utils "github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -29,15 +33,6 @@ func TestAddResourceArgs(t *testing.T) {
 	}
 }
 
-func isFlagRequired(flag *pflag.Flag) bool{
-	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
-
-	if len(flag.Annotations[requiredAnnotation]) > 0 && flag.Annotations[requiredAnnotation][0] == "true" {
-		return true
-	}
-
-	return false
-}
 
 func TestAddResourceFlags(t *testing.T) {
 	expectedFlags := []struct {
@@ -63,15 +58,43 @@ func TestAddResourceFlags(t *testing.T) {
 			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
 		}
 
-		if f.required && !isFlagRequired(cf) {
+		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
 		}
 	}
 }
 
-// TODO: Test adddResource
+func TestAddResourceOutput(t *testing.T) {
+	r := utils.GenerateResource()
 
-// TODO Test printOutResource
-// given a resource Type, you get "successfully added" when not --json
+	output := utils.CaptureOutput(func() {
+		addResourceOutput(&r)
+	})
+
+	expected := "Resource resource-name successfully added!"
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestAddResourceJSONOutput(t *testing.T) {
+	r := utils.GenerateResource()
+	flagRootOutputJSON = true
+
+	output := utils.CaptureOutput(func() {
+		addResourceOutput(&r)
+	})
+
+	var parsedOutput meroxa.Resource
+	json.Unmarshal([]byte(output), &parsedOutput)
+
+
+	if !reflect.DeepEqual(r, parsedOutput) {
+		t.Fatalf("not expected output, got \"%s\"", output)
+	}
+}
+
+// TODO: Test adddResource
 
 

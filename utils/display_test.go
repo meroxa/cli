@@ -1,16 +1,12 @@
 package utils
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"os"
+	"github.com/meroxa/meroxa-go"
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/meroxa/meroxa-go"
 )
 
 func TestResourcesTable(t *testing.T) {
@@ -38,7 +34,7 @@ func TestResourcesTable(t *testing.T) {
 
 	for name, resources := range tests {
 		t.Run(name, func(t *testing.T) {
-			out := captureOutput(func() {
+			out :=  CaptureOutput(func() {
 				PrintResourcesTable(resources)
 			})
 
@@ -65,7 +61,7 @@ func TestResourcesTable(t *testing.T) {
 
 func TestEmptyTables(t *testing.T) {
 	emptyResourcesList := []*meroxa.Resource{}
-	out := captureOutput(func() {
+	out := CaptureOutput(func() {
 		PrintResourcesTable(emptyResourcesList)
 	})
 
@@ -74,7 +70,7 @@ func TestEmptyTables(t *testing.T) {
 	}
 
 	emptyConnectorsList := []*meroxa.Connector{}
-	out = captureOutput(func() {
+	out = CaptureOutput(func() {
 		PrintConnectorsTable(emptyConnectorsList)
 	})
 
@@ -84,7 +80,7 @@ func TestEmptyTables(t *testing.T) {
 
 	emptyPipelinesList := []*meroxa.Pipeline{}
 
-	out = captureOutput(func() {
+	out = CaptureOutput(func() {
 		PrintPipelinesTable(emptyPipelinesList)
 	})
 
@@ -134,7 +130,7 @@ func TestConnectionsTable(t *testing.T) {
 
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
-			out := captureOutput(func() {
+			out := CaptureOutput(func() {
 				PrintConnectorsTable(connections)
 			})
 
@@ -187,7 +183,7 @@ func TestPipelinesTable(t *testing.T) {
 
 	for name, pipelines := range tests {
 		t.Run(name, func(t *testing.T) {
-			out := captureOutput(func() {
+			out := CaptureOutput(func() {
 				PrintPipelinesTable(pipelines)
 			})
 			switch name {
@@ -216,25 +212,4 @@ func deepCopy(a, b interface{}) {
 	json.Unmarshal(byt, b)
 }
 
-func captureOutput(f func()) string {
-	old := os.Stdout // keep backup of the real stdout
-	r, w, _ := os.Pipe()
-	os.Stdout = w
 
-	print()
-
-	outC := make(chan string)
-	// copy the output in a separate goroutine so printing can't block indefinitely
-	go func() {
-		var buf bytes.Buffer
-		io.Copy(&buf, r)
-		outC <- buf.String()
-	}()
-	f()
-
-	// back to normal state
-	w.Close()
-	os.Stdout = old // restoring the real stdout
-	out := <-outC
-	return out
-}

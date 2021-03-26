@@ -21,10 +21,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/meroxa/cli/utils"
-
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
+
+type addResourceCmd struct {
+
+}
 
 type AddResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
