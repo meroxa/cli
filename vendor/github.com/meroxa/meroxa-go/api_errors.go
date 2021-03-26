@@ -9,21 +9,14 @@ import (
 )
 
 type errResponse struct {
-	ErrorDeprecated string              `json:"error,omitempty"` // { "error" : "API error message" }
 	Code            string              `json:"code,omitempty"`
 	Message         string              `json:"message,omitempty"`
 	Details         map[string][]string `json:"details,omitempty"`
 }
 
 func (err *errResponse) Error() string {
-	if err.ErrorDeprecated != "" {
-		return err.ErrorDeprecated
-	}
+	msg := err.Message
 
-	msg := fmt.Sprintf("\ncode: %q\nmessage: %q",
-		err.Code,
-		err.Message,
-	)
 	if len(err.Details) > 0 {
 		msg = fmt.Sprintf("%s\ndetails: %s",
 			msg,
