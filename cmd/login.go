@@ -101,11 +101,20 @@ func authorizeUser(clientID string, authDomain string, redirectURL string) {
 
 		// return an indication of success to the caller
 		io.WriteString(w, `
-		<html>
-			<div style="height:100px; width:100%!; display:flex; flex-direction: column; justify-content: center; align-items:center; background-color:#2ecc71; color:white; font-size:22"><div>Success!</div></div>
-		<p style="margin-top:20px; font-size:18; text-align:center">You are authenticated, you can now return to the program. This will auto-close</p>
-		<script>window.onload=function(){setTimeout(this.close, 5000)}</script>
-		</html>`)
+			<html>
+				<div style="width:100%!; color:#282D39; display:flex; flex-direction: column; justify-content: center; align-items:center;">
+					<img src="https://meroxa-public-assets.s3.us-east-2.amazonaws.com/MeroxaTransparent%402x.png" alt="Meroxa"
+						 width="150" padding="2000px">
+					<h1 style="margin-top:40px; font-size:43px; text-align:left; color: #282D39; font-family: Arial; font-weight: bold;">
+						Successfully logged in</h1>
+					<p style="margin-top:17px; font-size:18px; text-align:left; color: #282D39; font-family: Arial;">You can now return
+						to the CLI. This will auto-close.</p></div>
+				<script>
+					window.onload = function () {
+						setTimeout(this.close, 5000)
+					}
+				</script>
+			</html>`)
 
 		fmt.Println("Successfully logged in.")
 
