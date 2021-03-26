@@ -29,7 +29,7 @@ type Credentials struct {
 type CreateResourceInput struct {
 	ID          int               `json:"id"`
 	Type        string            `json:"type"`
-	Name        string            `json:"name,omitempty"`
+	Name        string            `json:"name"`
 	URL         string            `json:"url"`
 	Credentials *Credentials      `json:"credentials,omitempty"`
 	Metadata    map[string]string `json:"metadata,omitempty"`

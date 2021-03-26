@@ -25,15 +25,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type addResourceCmd struct {
-
-}
-
-type AddResourceClient interface {
+type addResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
-func addResourceArgs (args []string) (string, error) {
+type AddResource struct{}
+
+func (AddResource) checkArgs (args []string) (string, error) {
 	if len(args) > 0 {
 		return args[0], nil
 	}
@@ -41,7 +39,7 @@ func addResourceArgs (args []string) (string, error) {
 	return "", nil
 }
 
-func addResourceFlags (cmd *cobra.Command) *cobra.Command{
+func (AddResource) setFlags (cmd *cobra.Command) *cobra.Command{
 	cmd.Flags().StringVarP(&resType, "type", "", "", "resource type")
 	cmd.MarkFlagRequired("type")
 
@@ -54,7 +52,7 @@ func addResourceFlags (cmd *cobra.Command) *cobra.Command{
 	return cmd
 }
 
-func addResource (c AddResourceClient, rType, rName, rURL string) (*meroxa.Resource, error) {
+func (AddResource) execute (client addResourceClient, rType, rName, rURL string) (*meroxa.Resource, error) {
 	var err error
 
 	r := meroxa.CreateResourceInput{
@@ -94,10 +92,10 @@ func addResource (c AddResourceClient, rType, rName, rURL string) (*meroxa.Resou
 		fmt.Printf("Adding %s resource (%s)...\n", resName, resType)
 	}
 
-	return c.CreateResource(ctx, &r)
+	return client.CreateResource(ctx, &r)
 }
 
-func addResourceOutput(r *meroxa.Resource) {
+func (AddResource) output(r *meroxa.Resource) {
 	if flagRootOutputJSON {
 		utils.JSONPrint(r)
 	} else {
@@ -106,7 +104,7 @@ func addResourceOutput(r *meroxa.Resource) {
 }
 
 // AddResourceCmd represents the `meroxa add resource` command
-func AddResourceCmd() *cobra.Command {
+func (c AddResource) command() *cobra.Command {
 	addResourceCmd := &cobra.Command{
 		Use:   "resource <resource-name> --type <resource-type>",
 		Short: "Add a resource to your Meroxa resource catalog",
@@ -119,31 +117,32 @@ func AddResourceCmd() *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			var err error
 
-			resName, err = addResourceArgs(args)
+			resName, err = c.checkArgs(args)
 
 			if err != nil {
 				cmd.PrintErr(err)
 			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client()
+			client, err := client()
 
 			if err != nil {
 				return err
 			}
 
-			res, err := addResource(c, resType, resName, resURL)
+			res, err := c.execute(client, resType, resName, resURL)
 
 			if err != nil {
 				return err
 			}
 
-			addResourceOutput(res)
+			c.output(res)
+
 			return nil
 		},
 	}
 
-	addResourceCmd = addResourceFlags(addResourceCmd)
+	addResourceCmd = c.setFlags(addResourceCmd)
 
 	return addResourceCmd
 }

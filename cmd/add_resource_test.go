@@ -21,7 +21,7 @@ func TestAddResourceArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		name, err := addResourceArgs(tt.args)
+		name, err := AddResource{}.checkArgs(tt.args)
 
 		if tt.err != err {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
@@ -46,7 +46,7 @@ func TestAddResourceFlags(t *testing.T) {
 		{"metadata", false, "m"},
 	}
 
-	c := addResourceFlags(&cobra.Command{})
+	c := AddResource{}.setFlags(&cobra.Command{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -68,7 +68,7 @@ func TestAddResourceOutput(t *testing.T) {
 	r := utils.GenerateResource()
 
 	output := utils.CaptureOutput(func() {
-		addResourceOutput(&r)
+		AddResource{}.output(&r)
 	})
 
 	expected := "Resource resource-name successfully added!"
@@ -83,7 +83,7 @@ func TestAddResourceJSONOutput(t *testing.T) {
 	flagRootOutputJSON = true
 
 	output := utils.CaptureOutput(func() {
-		addResourceOutput(&r)
+		AddResource{}.output(&r)
 	})
 
 	var parsedOutput meroxa.Resource
