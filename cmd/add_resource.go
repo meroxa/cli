@@ -30,11 +30,12 @@ type AddResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
-
-func addResourceArgs (args []string) {
-	if len(args) > 1 {
-		resName = args[0]
+func addResourceArgs (args []string) (string, error) {
+	if len(args) > 0 {
+		return args[0], nil
 	}
+
+	return "", nil
 }
 
 func addResourceFlags (cmd *cobra.Command) *cobra.Command{
@@ -93,7 +94,7 @@ func addResource (c AddResourceClient, rType, rName, rURL string) (*meroxa.Resou
 	return c.CreateResource(ctx, &r)
 }
 
-func printOutResource(r *meroxa.Resource) {
+func addResourceOutput(r *meroxa.Resource) {
 	if flagRootOutputJSON {
 		utils.JSONPrint(r)
 	} else {
@@ -113,7 +114,13 @@ func AddResourceCmd() *cobra.Command {
 			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
 			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			addResourceArgs(args)
+			var err error
+
+			resName, err = addResourceArgs(args)
+
+			if err != nil {
+				cmd.PrintErr(err)
+			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, err := client()
@@ -128,7 +135,7 @@ func AddResourceCmd() *cobra.Command {
 				return err
 			}
 
-			printOutResource(res)
+			addResourceOutput(res)
 			return nil
 		},
 	}
