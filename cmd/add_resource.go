@@ -29,7 +29,9 @@ type addResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
-type AddResource struct{}
+type AddResource struct{
+	resName, resType string
+}
 
 func (AddResource) checkArgs (args []string) (string, error) {
 	if len(args) > 0 {
@@ -39,8 +41,8 @@ func (AddResource) checkArgs (args []string) (string, error) {
 	return "", nil
 }
 
-func (AddResource) setFlags (cmd *cobra.Command) *cobra.Command{
-	cmd.Flags().StringVarP(&resType, "type", "", "", "resource type")
+func (c AddResource) setFlags (cmd *cobra.Command) *cobra.Command{
+	cmd.Flags().StringVarP(&c.resType, "type", "", "", "resource type")
 	cmd.MarkFlagRequired("type")
 
 	cmd.Flags().StringVarP(&resURL, "url", "u", "", "resource url")
@@ -52,7 +54,7 @@ func (AddResource) setFlags (cmd *cobra.Command) *cobra.Command{
 	return cmd
 }
 
-func (AddResource) execute (client addResourceClient, rType, rName, rURL string) (*meroxa.Resource, error) {
+func (c AddResource) execute (ctx context.Context, client addResourceClient, rType, rName, rURL string) (*meroxa.Resource, error) {
 	var err error
 
 	r := meroxa.CreateResourceInput{
@@ -84,12 +86,8 @@ func (AddResource) execute (client addResourceClient, rType, rName, rURL string)
 		r.Metadata = metadata
 	}
 
-	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-	defer cancel()
-
 	if !flagRootOutputJSON {
-		fmt.Printf("Adding %s resource (%s)...\n", resName, resType)
+		fmt.Printf("Adding %s resource (%s)...\n", rName, rType)
 	}
 
 	return client.CreateResource(ctx, &r)
@@ -117,20 +115,24 @@ func (c AddResource) command() *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			var err error
 
-			resName, err = c.checkArgs(args)
+			c.resName, err = c.checkArgs(args)
 
 			if err != nil {
 				cmd.PrintErr(err)
 			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			client, err := client()
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
+
+			cl, err := client()
 
 			if err != nil {
 				return err
 			}
 
-			res, err := c.execute(client, resType, resName, resURL)
+			res, err := c.execute(ctx, cl, c.resType, c.resName, resURL)
 
 			if err != nil {
 				return err

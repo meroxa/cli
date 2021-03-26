@@ -28,8 +28,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type UpdateResource struct {
+	resName, resType string
+}
+
 // UpdateResourceCmd represents the `meroxa update resource` command
-func UpdateResourceCmd() *cobra.Command {
+func (c UpdateResource) command() *cobra.Command {
 	updateResourceCmd := &cobra.Command{
 		Use:     "resource <resource-name>",
 		Short:   "Update a resource",
@@ -46,8 +50,8 @@ func UpdateResourceCmd() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Resource Name
-			resName = args[0]
-			c, err := client()
+			c.resName = args[0]
+			cl, err := client()
 
 			if err != nil {
 				return err
@@ -88,10 +92,10 @@ func UpdateResourceCmd() *cobra.Command {
 
 			// call meroxa-go to update resource
 			if !flagRootOutputJSON {
-				fmt.Printf("Updating %s resource...\n", resName)
+				fmt.Printf("Updating %s resource...\n", c.resName)
 			}
 
-			resource, err := c.UpdateResource(ctx, resName, res)
+			resource, err := cl.UpdateResource(ctx, c.resName, res)
 			if err != nil {
 				return err
 			}
@@ -99,7 +103,7 @@ func UpdateResourceCmd() *cobra.Command {
 			if flagRootOutputJSON {
 				utils.JSONPrint(resource)
 			} else {
-				fmt.Printf("Resource %s successfully updated!\n", resName)
+				fmt.Printf("Resource %s successfully updated!\n", c.resName)
 			}
 
 			return nil

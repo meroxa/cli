@@ -95,6 +95,9 @@ func TestAddResourceJSONOutput(t *testing.T) {
 	}
 }
 
+func TestAddResourceExecution(t *testing.T) {
+	
+}
 // TODO: Test adddResource
 
 
