@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type addResourceClient interface {
+type AddResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
@@ -54,7 +54,7 @@ func (AddResource) setFlags (cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&addResourceCmd.metadata, "metadata", "m", "", "resource metadata")
 }
 
-func (AddResource) execute (ctx context.Context, c addResourceClient, r meroxa.CreateResourceInput) (*meroxa.Resource, error) {
+func (AddResource) execute (ctx context.Context, c AddResourceClient, r meroxa.CreateResourceInput) (*meroxa.Resource, error) {
 	var err error
 
 	// TODO: Figure out best way to handle creds and metadata
