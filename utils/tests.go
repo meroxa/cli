@@ -12,7 +12,7 @@ func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
 		ID: 1,
 		Type: "postgres",
-		Name: "resource-name",
+		Name: "resource-1234",
 		URL: "https://user:password",
 		Metadata: nil,
 	}

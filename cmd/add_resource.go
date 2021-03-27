@@ -30,7 +30,7 @@ type addResourceClient interface {
 }
 
 type AddResource struct{
-	resName, resType string
+	name, rType, url, metadata, credentials string
 }
 
 func (AddResource) checkArgs (args []string) (string, error) {
@@ -41,34 +41,25 @@ func (AddResource) checkArgs (args []string) (string, error) {
 	return "", nil
 }
 
-func (c AddResource) setFlags (cmd *cobra.Command) *cobra.Command{
-	cmd.Flags().StringVarP(&c.resType, "type", "", "", "resource type")
+func (c AddResource) setFlags (cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&c.rType, "type", "", "", "resource type")
 	cmd.MarkFlagRequired("type")
 
-	cmd.Flags().StringVarP(&resURL, "url", "u", "", "resource url")
+	cmd.Flags().StringVarP(&c.url, "url", "u", "", "resource url")
 	cmd.MarkFlagRequired("url")
 
-	cmd.Flags().StringVarP(&resCredentials, "credentials", "", "", "resource credentials")
-	cmd.Flags().StringVarP(&resMetadata, "metadata", "m", "", "resource metadata")
-
-	return cmd
+	cmd.Flags().StringVarP(&c.credentials, "credentials", "", "", "resource credentials")
+	cmd.Flags().StringVarP(&c.metadata, "metadata", "m", "", "resource metadata")
 }
 
-func (c AddResource) execute (ctx context.Context, client addResourceClient, rType, rName, rURL string) (*meroxa.Resource, error) {
+func (c AddResource) execute (ctx context.Context, client addResourceClient, r meroxa.CreateResourceInput) (*meroxa.Resource, error) {
 	var err error
-
-	r := meroxa.CreateResourceInput{
-		Type:     rType,
-		Name:     rName,
-		URL:      rURL,
-		Metadata: nil,
-	}
 
 	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
 	if resCredentials != "" {
 		var creds meroxa.Credentials
-		err = json.Unmarshal([]byte(resCredentials), &creds)
+		err = json.Unmarshal([]byte(c.credentials), &creds)
 		if err != nil {
 			return nil, err
 		}
@@ -76,9 +67,9 @@ func (c AddResource) execute (ctx context.Context, client addResourceClient, rTy
 		r.Credentials = &creds
 	}
 
-	if resMetadata != "" {
+	if c.metadata != "" {
 		var metadata map[string]string
-		err = json.Unmarshal([]byte(resMetadata), &metadata)
+		err = json.Unmarshal([]byte(c.metadata), &metadata)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +78,7 @@ func (c AddResource) execute (ctx context.Context, client addResourceClient, rTy
 	}
 
 	if !flagRootOutputJSON {
-		fmt.Printf("Adding %s resource (%s)...\n", rName, rType)
+		fmt.Printf("Adding %s resource...\n", r.Type)
 	}
 
 	return client.CreateResource(ctx, &r)
@@ -115,7 +106,7 @@ func (c AddResource) command() *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			var err error
 
-			c.resName, err = c.checkArgs(args)
+			c.name, err = c.checkArgs(args)
 
 			if err != nil {
 				cmd.PrintErr(err)
@@ -132,7 +123,14 @@ func (c AddResource) command() *cobra.Command {
 				return err
 			}
 
-			res, err := c.execute(ctx, cl, c.resType, c.resName, resURL)
+			r := meroxa.CreateResourceInput{
+				Type:     c.rType,
+				Name:     c.name,
+				URL:      c.url,
+				Metadata: nil,
+			}
+
+			res, err := c.execute(ctx, cl, r)
 
 			if err != nil {
 				return err
@@ -144,7 +142,7 @@ func (c AddResource) command() *cobra.Command {
 		},
 	}
 
-	addResourceCmd = c.setFlags(addResourceCmd)
+	c.setFlags(addResourceCmd)
 
 	return addResourceCmd
 }

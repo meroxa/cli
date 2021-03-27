@@ -12,6 +12,9 @@ github.com/fatih/color
 # github.com/fsnotify/fsnotify v1.4.9
 ## explicit
 github.com/fsnotify/fsnotify
+# github.com/golang/mock v1.3.1
+## explicit
+github.com/golang/mock/gomock
 # github.com/gorilla/mux v1.7.3
 ## explicit
 github.com/gorilla/mux
