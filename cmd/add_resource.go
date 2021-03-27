@@ -35,7 +35,7 @@ type AddResource struct{
 
 var addResourceCmd AddResource
 
-func (AddResource) checkArgs (args []string) (string, error) {
+func (AddResource) getArgs (args []string) (string, error) {
 	if len(args) > 0 {
 		return args[0], nil
 	}
@@ -108,7 +108,7 @@ func (AddResource) command() *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			var err error
 
-			addResourceCmd.name, err = addResourceCmd.checkArgs(args)
+			addResourceCmd.name, err = addResourceCmd.getArgs(args)
 
 			if err != nil {
 				cmd.PrintErr(err)

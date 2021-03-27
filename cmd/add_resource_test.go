@@ -25,7 +25,7 @@ func TestAddResourceArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		name, err := AddResource{}.checkArgs(tt.args)
+		name, err := AddResource{}.getArgs(tt.args)
 
 		if tt.err != err {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
