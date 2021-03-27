@@ -117,7 +117,7 @@ func TestAddResourceOutput(t *testing.T) {
 		AddResource{}.output(&r)
 	})
 
-	expected := fmt.Sprintf("Resource %s successfully added!", r.Name)
+	expected := fmt.Sprintf("%s resource with name %s successfully added!", r.Type, r.Name)
 
 	if !strings.Contains(output, expected) {
 		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)

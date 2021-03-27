@@ -90,7 +90,7 @@ func (AddResource) output(r *meroxa.Resource) {
 	if flagRootOutputJSON {
 		utils.JSONPrint(r)
 	} else {
-		fmt.Printf("Resource %s successfully added!\n", r.Name)
+		fmt.Printf("%s resource with name %s successfully added!\n", r.Type, r.Name)
 	}
 }
 
