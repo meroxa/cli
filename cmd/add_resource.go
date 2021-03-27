@@ -33,6 +33,8 @@ type AddResource struct{
 	name, rType, url, metadata, credentials string
 }
 
+var addResourceCmd AddResource
+
 func (AddResource) checkArgs (args []string) (string, error) {
 	if len(args) > 0 {
 		return args[0], nil
@@ -41,25 +43,25 @@ func (AddResource) checkArgs (args []string) (string, error) {
 	return "", nil
 }
 
-func (c AddResource) setFlags (cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&c.rType, "type", "", "", "resource type")
+func (AddResource) setFlags (cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&addResourceCmd.rType, "type", "", "", "resource type")
 	cmd.MarkFlagRequired("type")
 
-	cmd.Flags().StringVarP(&c.url, "url", "u", "", "resource url")
+	cmd.Flags().StringVarP(&addResourceCmd.url, "url", "u", "", "resource url")
 	cmd.MarkFlagRequired("url")
 
-	cmd.Flags().StringVarP(&c.credentials, "credentials", "", "", "resource credentials")
-	cmd.Flags().StringVarP(&c.metadata, "metadata", "m", "", "resource metadata")
+	cmd.Flags().StringVarP(&addResourceCmd.credentials, "credentials", "", "", "resource credentials")
+	cmd.Flags().StringVarP(&addResourceCmd.metadata, "metadata", "m", "", "resource metadata")
 }
 
-func (c AddResource) execute (ctx context.Context, client addResourceClient, r meroxa.CreateResourceInput) (*meroxa.Resource, error) {
+func (AddResource) execute (ctx context.Context, c addResourceClient, r meroxa.CreateResourceInput) (*meroxa.Resource, error) {
 	var err error
 
 	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
 	if resCredentials != "" {
 		var creds meroxa.Credentials
-		err = json.Unmarshal([]byte(c.credentials), &creds)
+		err = json.Unmarshal([]byte(addResourceCmd.credentials), &creds)
 		if err != nil {
 			return nil, err
 		}
@@ -67,9 +69,9 @@ func (c AddResource) execute (ctx context.Context, client addResourceClient, r m
 		r.Credentials = &creds
 	}
 
-	if c.metadata != "" {
+	if addResourceCmd.metadata != "" {
 		var metadata map[string]string
-		err = json.Unmarshal([]byte(c.metadata), &metadata)
+		err = json.Unmarshal([]byte(addResourceCmd.metadata), &metadata)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +83,7 @@ func (c AddResource) execute (ctx context.Context, client addResourceClient, r m
 		fmt.Printf("Adding %s resource...\n", r.Type)
 	}
 
-	return client.CreateResource(ctx, &r)
+	return c.CreateResource(ctx, &r)
 }
 
 func (AddResource) output(r *meroxa.Resource) {
@@ -93,8 +95,8 @@ func (AddResource) output(r *meroxa.Resource) {
 }
 
 // AddResourceCmd represents the `meroxa add resource` command
-func (c AddResource) command() *cobra.Command {
-	addResourceCmd := &cobra.Command{
+func (AddResource) command() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "resource <resource-name> --type <resource-type>",
 		Short: "Add a resource to your Meroxa resource catalog",
 		Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
@@ -106,7 +108,7 @@ func (c AddResource) command() *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			var err error
 
-			c.name, err = c.checkArgs(args)
+			addResourceCmd.name, err = addResourceCmd.checkArgs(args)
 
 			if err != nil {
 				cmd.PrintErr(err)
@@ -117,32 +119,33 @@ func (c AddResource) command() *cobra.Command {
 			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 			defer cancel()
 
-			cl, err := client()
+			c, err := client()
 
 			if err != nil {
 				return err
 			}
 
+			fmt.Printf("type %s name: %s url %s", addResourceCmd.rType, addResourceCmd.name, addResourceCmd.url)
 			r := meroxa.CreateResourceInput{
-				Type:     c.rType,
-				Name:     c.name,
-				URL:      c.url,
+				Type:     addResourceCmd.rType,
+				Name:     addResourceCmd.name,
+				URL:      addResourceCmd.url,
 				Metadata: nil,
 			}
 
-			res, err := c.execute(ctx, cl, r)
+			res, err := addResourceCmd.execute(ctx, c, r)
 
 			if err != nil {
 				return err
 			}
 
-			c.output(res)
+			addResourceCmd.output(res)
 
 			return nil
 		},
 	}
 
-	c.setFlags(addResourceCmd)
+	addResourceCmd.setFlags(cmd)
 
-	return addResourceCmd
+	return cmd
 }
