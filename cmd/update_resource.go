@@ -53,7 +53,7 @@ func (UpdateResource) command() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Resource Name
 			updateResourceCmd.name = args[0]
-			cl, err := client()
+			c, err := client()
 
 			if err != nil {
 				return err
@@ -97,7 +97,7 @@ func (UpdateResource) command() *cobra.Command {
 				fmt.Printf("Updating %s resource...\n", updateResourceCmd.name)
 			}
 
-			resource, err := cl.UpdateResource(ctx, updateResourceCmd.name, res)
+			resource, err := c.UpdateResource(ctx, updateResourceCmd.name, res)
 			if err != nil {
 				return err
 			}
