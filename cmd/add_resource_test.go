@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/golang/mock/gomock"
-	utils "github.com/meroxa/cli/utils"
 	mock "github.com/meroxa/cli/mock-cmd"
+	utils "github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 	"reflect"
@@ -68,6 +68,48 @@ func TestAddResourceFlags(t *testing.T) {
 	}
 }
 
+func TestAddResourceExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockAddResourceClient(ctrl)
+
+	r := meroxa.CreateResourceInput{
+		Type:        "postgres",
+		Name:        "",
+		URL:         "https://foo.url",
+		Credentials: nil,
+		Metadata:    nil,
+	}
+
+	cr := utils.GenerateResource()
+
+	client.
+		EXPECT().
+		CreateResource(
+			ctx,
+			&r,
+		).
+		Return(&cr, nil)
+
+	output := utils.CaptureOutput(func() {
+		got, err := AddResource{}.execute(ctx, client, r)
+
+		if !reflect.DeepEqual(got, &cr) {
+			t.Fatalf("expected \"%v\", got \"%v\"", &cr, got)
+		}
+
+		if err != nil {
+			t.Fatalf("not expected error, got \"%s\"", err.Error())
+		}
+	})
+
+	expected := fmt.Sprintf("Adding %s resource...", r.Type)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
 func TestAddResourceOutput(t *testing.T) {
 	r := utils.GenerateResource()
 
@@ -99,37 +141,3 @@ func TestAddResourceJSONOutput(t *testing.T) {
 	}
 }
 
-func TestAddResourceExecution(t *testing.T) {
-	ctx := context.Background()
-
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockAddResourceClient(ctrl)
-
-	r := meroxa.CreateResourceInput{
-		Type:        "postgres",
-		Name:        "",
-		URL:         "https://foo.url",
-		Credentials: nil,
-		Metadata:    nil,
-	}
-
-	client.
-		EXPECT().
-		CreateResource(
-			ctx,
-			gomock.Eq(&r),
-		).
-		DoAndReturn(func() (*meroxa.Resource, error) {
-			nr := utils.GenerateResource()
-			return &nr, nil
-		})
-
-	got, err := AddResource{}.execute(ctx, client, r)
-
-	if got != nil {
-		t.Fatal("not good")
-	}
-	if err == nil {
-		t.Fatal("not good")
-	}
-}
