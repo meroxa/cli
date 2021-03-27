@@ -59,7 +59,7 @@ func (AddResource) execute (ctx context.Context, c AddResourceClient, r meroxa.C
 
 	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
-	if resCredentials != "" {
+	if addResourceCmd.credentials != "" {
 		var creds meroxa.Credentials
 		err = json.Unmarshal([]byte(addResourceCmd.credentials), &creds)
 		if err != nil {

@@ -43,9 +43,6 @@ var (
 	cfgFile            string
 	source             string
 	destination        string
-	resURL             string
-	resMetadata        string
-	resCredentials     string
 	flagRootOutputJSON bool
 	meroxaCmd		   *cobra.Command
 	cfg                *viper.Viper
