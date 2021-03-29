@@ -105,14 +105,12 @@ func (AddResource) command() *cobra.Command {
 			"meroxa add resource datalake --type s3 -u \"s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos\"\n" +
 			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
 			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 
 			addResourceCmd.name, err = addResourceCmd.getArgs(args)
 
-			if err != nil {
-				cmd.PrintErr(err)
-			}
+			return err
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
