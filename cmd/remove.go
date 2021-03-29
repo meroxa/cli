@@ -16,15 +16,27 @@ limitations under the License.
 
 package cmd
 
-import "github.com/spf13/cobra"
-
+import (
+	"bufio"
+	"fmt"
+	"github.com/spf13/cobra"
+	"os"
+	"strings"
+)
 
 type Remove struct {
 	force bool
 }
 
 // confirmRemoved will prompt for confirmation or will check the `--force` flag value
-func (r *Remove) confirmRemoved () bool {
+func (r *Remove) confirmRemove(val string) bool {
+	if !r.force {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("To proceed, type %s or re-run this command with --force\n▸ ", val)
+		input, _ := reader.ReadString('\n')
+		return val == strings.TrimSuffix(input, "\n")
+	}
+
 	return r.force
 }
 
@@ -43,7 +55,7 @@ func (r *Remove) command() *cobra.Command {
 	cmd.AddCommand(RemoveEndpointCmd())
 	cmd.AddCommand(RemovePipelineCmd())
 
-	rr := RemoveResource{ removeCmd: r }
+	rr := RemoveResource{removeCmd: r}
 	cmd.AddCommand(rr.command())
 
 	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")

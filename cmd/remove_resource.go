@@ -57,11 +57,14 @@ func (rr *RemoveResource) execute(ctx context.Context, c RemoveResourceClient) (
 		return nil, err
 	}
 
-	if !rr.removeCmd.force {
-		return nil, errors.New("removing resource not confirmed")
+	canRemove := rr.removeCmd.confirmRemove(rr.name)
+
+	if canRemove {
+		//return res, c.DeleteResource(ctx, res.ID)
+		return res, nil
 	}
 
-	return res, c.DeleteResource(ctx, res.ID)
+	return res, errors.New("removing resource not confirmed")
 }
 
 func (rr *RemoveResource) output(r *meroxa.Resource) {
