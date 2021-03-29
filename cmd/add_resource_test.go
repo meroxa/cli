@@ -25,14 +25,15 @@ func TestAddResourceArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		err := AddResource{}.setArgs(tt.args)
+		ar := &AddResource{}
+		err := ar.setArgs(tt.args)
 
 		if tt.err != err {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != addResourceCmd.name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, addResourceCmd.name)
+		if tt.name != ar.name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.name)
 		}
 	}
 }
@@ -50,7 +51,8 @@ func TestAddResourceFlags(t *testing.T) {
 	}
 
 	c := &cobra.Command{}
-	AddResource{}.setFlags(c)
+	ar := &AddResource{}
+	ar.setFlags(c)
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -92,7 +94,8 @@ func TestAddResourceExecution(t *testing.T) {
 		Return(&cr, nil)
 
 	output := utils.CaptureOutput(func() {
-		got, err := AddResource{}.execute(ctx, client, r)
+		ar := &AddResource{}
+		got, err := ar.execute(ctx, client, r)
 
 		if !reflect.DeepEqual(got, &cr) {
 			t.Fatalf("expected \"%v\", got \"%v\"", &cr, got)
@@ -114,7 +117,8 @@ func TestAddResourceOutput(t *testing.T) {
 	r := utils.GenerateResource()
 
 	output := utils.CaptureOutput(func() {
-		AddResource{}.output(&r)
+		ar := &AddResource{}
+		ar.output(&r)
 	})
 
 	expected := fmt.Sprintf("%s resource with name %s successfully added!", r.Type, r.Name)
@@ -129,7 +133,8 @@ func TestAddResourceJSONOutput(t *testing.T) {
 	flagRootOutputJSON = true
 
 	output := utils.CaptureOutput(func() {
-		AddResource{}.output(&r)
+		ar := &AddResource{}
+		ar.output(&r)
 	})
 
 	var parsedOutput meroxa.Resource

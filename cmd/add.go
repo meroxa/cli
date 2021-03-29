@@ -26,7 +26,8 @@ func AddCmd() *cobra.Command {
 		Short: "Add a resource to your Meroxa resource catalog",
 	}
 
-	addCmd.AddCommand(AddResource{}.command())
+	addResourceCmd := &AddResource{}
+	addCmd.AddCommand(addResourceCmd.command())
 
 	return addCmd
 }
