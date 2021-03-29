@@ -44,7 +44,7 @@ var (
 	source             string
 	destination        string
 	flagRootOutputJSON bool
-	meroxaCmd		   *cobra.Command
+	meroxaCmd          *cobra.Command
 	cfg                *viper.Viper
 )
 

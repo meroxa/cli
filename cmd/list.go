@@ -35,6 +35,6 @@ func ListCmd() *cobra.Command {
 	listCmd.AddCommand(ListPipelinesCmd())
 	listCmd.AddCommand(ListResourcesCmd())
 	listCmd.AddCommand(ListTransformsCmd())
-	
+
 	return listCmd
 }

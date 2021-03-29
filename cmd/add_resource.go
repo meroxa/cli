@@ -29,7 +29,7 @@ type AddResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
-type AddResource struct{
+type AddResource struct {
 	name, rType, url, metadata, credentials string
 }
 
@@ -41,7 +41,7 @@ func (ar *AddResource) setArgs(args []string) error {
 	return nil
 }
 
-func (ar *AddResource) setFlags (cmd *cobra.Command) {
+func (ar *AddResource) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&ar.rType, "type", "", "", "resource type")
 	cmd.MarkFlagRequired("type")
 
@@ -52,7 +52,7 @@ func (ar *AddResource) setFlags (cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&ar.metadata, "metadata", "m", "", "resource metadata")
 }
 
-func (ar *AddResource) execute (ctx context.Context, c AddResourceClient, res meroxa.CreateResourceInput) (*meroxa.Resource, error) {
+func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res meroxa.CreateResourceInput) (*meroxa.Resource, error) {
 	var err error
 
 	// TODO: Figure out best way to handle creds and metadata

@@ -10,7 +10,7 @@ import (
 func TestDescribeConnectorCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: requires connector name",

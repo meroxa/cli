@@ -78,4 +78,3 @@ func UpdateConnectorCmd() *cobra.Command {
 
 	return updateConnectorCmd
 }
-

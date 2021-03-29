@@ -10,7 +10,7 @@ import (
 func TestDescribeEndpointCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: requires endpoint name",

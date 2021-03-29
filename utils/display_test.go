@@ -34,7 +34,7 @@ func TestResourcesTable(t *testing.T) {
 
 	for name, resources := range tests {
 		t.Run(name, func(t *testing.T) {
-			out :=  CaptureOutput(func() {
+			out := CaptureOutput(func() {
 				PrintResourcesTable(resources)
 			})
 
@@ -211,5 +211,3 @@ func deepCopy(a, b interface{}) {
 	byt, _ := json.Marshal(a)
 	json.Unmarshal(byt, b)
 }
-
-

@@ -10,7 +10,7 @@ import (
 func TestCreateEndpointCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: required flag(s) \"protocol\", \"stream\" not set",

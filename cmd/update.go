@@ -34,4 +34,3 @@ func UpdateCmd() *cobra.Command {
 
 	return updateCmd
 }
-

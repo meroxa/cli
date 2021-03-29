@@ -106,4 +106,3 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 
 	return connectCmd
 }
-

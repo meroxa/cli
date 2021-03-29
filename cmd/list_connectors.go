@@ -54,4 +54,3 @@ func ListConnectorsCmd() *cobra.Command {
 		},
 	}
 }
-

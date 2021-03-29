@@ -17,11 +17,11 @@ import (
 func TestAddResourceArgs(t *testing.T) {
 	tests := []struct {
 		args []string
-		err error
+		err  error
 		name string
 	}{
-		{[]string{""},nil, ""},
-		{[]string{"resName"},nil, "resName"},
+		{[]string{""}, nil, ""},
+		{[]string{"resName"}, nil, "resName"},
 	}
 
 	for _, tt := range tests {
@@ -40,8 +40,8 @@ func TestAddResourceArgs(t *testing.T) {
 
 func TestAddResourceFlags(t *testing.T) {
 	expectedFlags := []struct {
-		name string
-		required bool
+		name      string
+		required  bool
 		shorthand string
 	}{
 		{"type", true, ""},
@@ -140,9 +140,7 @@ func TestAddResourceJSONOutput(t *testing.T) {
 	var parsedOutput meroxa.Resource
 	json.Unmarshal([]byte(output), &parsedOutput)
 
-
 	if !reflect.DeepEqual(r, parsedOutput) {
 		t.Fatalf("not expected output, got \"%s\"", output)
 	}
 }
-

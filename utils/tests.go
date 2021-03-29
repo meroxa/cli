@@ -10,15 +10,15 @@ import (
 
 func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
-		ID: 1,
-		Type: "postgres",
-		Name: "resource-1234",
-		URL: "https://user:password",
+		ID:       1,
+		Type:     "postgres",
+		Name:     "resource-1234",
+		URL:      "https://user:password",
 		Metadata: nil,
 	}
 }
 
-func IsFlagRequired(flag *pflag.Flag) bool{
+func IsFlagRequired(flag *pflag.Flag) bool {
 	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
 
 	if len(flag.Annotations[requiredAnnotation]) > 0 && flag.Annotations[requiredAnnotation][0] == "true" {
