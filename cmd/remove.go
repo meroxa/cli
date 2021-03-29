@@ -40,6 +40,10 @@ func (r *Remove) confirmRemove(val string) bool {
 	return r.force
 }
 
+func (r *Remove) setFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
+}
+
 // RemoveCmd represents the `meroxa remove` command
 func (r *Remove) command() *cobra.Command {
 	cmd := &cobra.Command{
@@ -58,6 +62,6 @@ func (r *Remove) command() *cobra.Command {
 	rr := RemoveResource{removeCmd: r}
 	cmd.AddCommand(rr.command())
 
-	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
+	r.setFlags(cmd)
 	return cmd
 }
