@@ -85,7 +85,7 @@ meroxa list resource-types`,
 	rootCmd.AddCommand(LogoutCmd())
 	rootCmd.AddCommand(LogsCmd())
 	rootCmd.AddCommand(OpenCmd())
-	rootCmd.AddCommand(RemoveCmd())
+	rootCmd.AddCommand(Remove{}.command())
 	rootCmd.AddCommand(UpdateCmd())
 	rootCmd.AddCommand(VersionCmd())
 

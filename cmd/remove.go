@@ -18,21 +18,21 @@ package cmd
 
 import "github.com/spf13/cobra"
 
-var forceFlag bool
 
+type Remove struct {
+	force bool
+}
+
+var removeCmd Remove
 
 // confirmRemoved will prompt for confirmation or will check the `--force` flag value
-func confirmRemoved () bool {
-	if forceFlag {
-		return true
-	}
-
-	return false
+func (Remove) confirmRemoved () bool {
+	return removeCmd.force
 }
 
 // RemoveCmd represents the `meroxa remove` command
-func RemoveCmd() *cobra.Command {
-	removeCmd := &cobra.Command{
+func (Remove) command() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "remove",
 		Short: "Remove a component",
 		Long: `Deprovision a component of the Meroxa platform, including pipelines,
@@ -41,11 +41,11 @@ func RemoveCmd() *cobra.Command {
 		Aliases:    []string{"rm", "delete"},
 	}
 
-	removeCmd.AddCommand(RemoveConnectorCmd())
-	removeCmd.AddCommand(RemoveEndpointCmd())
-	removeCmd.AddCommand(RemovePipelineCmd())
-	removeCmd.AddCommand(RemoveResourceCmd())
+	cmd.AddCommand(RemoveConnectorCmd())
+	cmd.AddCommand(RemoveEndpointCmd())
+	cmd.AddCommand(RemovePipelineCmd())
+	cmd.AddCommand(RemoveResource{}.command())
 
-	removeCmd.PersistentFlags().BoolVarP(&forceFlag, "force", "f", false, "force delete without confirmation prompt")
-	return removeCmd
+	cmd.PersistentFlags().BoolVarP(&removeCmd.force, "force", "f", false, "force delete without confirmation prompt")
+	return cmd
 }
