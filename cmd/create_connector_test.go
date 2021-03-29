@@ -10,7 +10,7 @@ import (
 func TestCreateConnectorCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: requires either a source (--from) or a destination (--to)",

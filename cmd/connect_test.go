@@ -10,7 +10,7 @@ import (
 func TestConnectCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: required flag(s) \"from\", \"to\" not set",

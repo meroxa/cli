@@ -10,7 +10,7 @@ import (
 func TestUpdateResourceCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: requires a resource name and either `--metadata`, `--url` or `--credentials` to update the resource",

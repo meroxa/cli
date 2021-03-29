@@ -10,7 +10,7 @@ import (
 func TestDescribeResourceCmd(t *testing.T) {
 	tests := []struct {
 		expected string
-		args []string
+		args     []string
 	}{
 		{
 			"Error: requires resource name",

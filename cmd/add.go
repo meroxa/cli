@@ -19,8 +19,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var resName, resType string
-
 // AddCmd represents the `meroxa add` command
 func AddCmd() *cobra.Command {
 	addCmd := &cobra.Command{
@@ -28,7 +26,8 @@ func AddCmd() *cobra.Command {
 		Short: "Add a resource to your Meroxa resource catalog",
 	}
 
-	addCmd.AddCommand(AddResourceCmd())
+	addResourceCmd := &AddResource{}
+	addCmd.AddCommand(addResourceCmd.command())
 
 	return addCmd
 }

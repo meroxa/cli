@@ -28,9 +28,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type UpdateResource struct {
+	name, rType, metadata, credentials, url string
+}
+
+var updateResourceCmd UpdateResource
+
 // UpdateResourceCmd represents the `meroxa update resource` command
-func UpdateResourceCmd() *cobra.Command {
-	updateResourceCmd := &cobra.Command{
+func (UpdateResource) command() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:     "resource <resource-name>",
 		Short:   "Update a resource",
 		Long:    `Use the update command to update various Meroxa resources.`,
@@ -38,7 +44,7 @@ func UpdateResourceCmd() *cobra.Command {
 		// TODO: Change the design so a new name for the resource could be set
 		// meroxa update resource <old-resource-name> --name <new-resource-name>
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 || (resURL == "" && resMetadata == "" && resCredentials == "") {
+			if len(args) < 1 || (updateResourceCmd.url == "" && updateResourceCmd.metadata == "" && updateResourceCmd.credentials == "") {
 				return errors.New("requires a resource name and either `--metadata`, `--url` or `--credentials` to update the resource \n\nUsage:\n  meroxa update resource <resource-name> [--url <url> | --metadata <metadata> | --credentials <credentials>]")
 			}
 
@@ -46,7 +52,7 @@ func UpdateResourceCmd() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Resource Name
-			resName = args[0]
+			updateResourceCmd.name = args[0]
 			c, err := client()
 
 			if err != nil {
@@ -59,15 +65,15 @@ func UpdateResourceCmd() *cobra.Command {
 			var res meroxa.UpdateResourceInput
 
 			// If url was provided, update it
-			if resURL != "" {
-				res.URL = resURL
+			if updateResourceCmd.url != "" {
+				res.URL = updateResourceCmd.url
 			}
 
 			// TODO: Figure out best way to handle creds and metadata
 			// Get credentials (expect a JSON string)
-			if resCredentials != "" {
+			if updateResourceCmd.credentials != "" {
 				var creds meroxa.Credentials
-				err = json.Unmarshal([]byte(resCredentials), &creds)
+				err = json.Unmarshal([]byte(updateResourceCmd.credentials), &creds)
 				if err != nil {
 					return err
 				}
@@ -76,9 +82,9 @@ func UpdateResourceCmd() *cobra.Command {
 			}
 
 			// If metadata was provided, update it
-			if resMetadata != "" {
+			if updateResourceCmd.metadata != "" {
 				var metadata map[string]string
-				err = json.Unmarshal([]byte(resMetadata), &metadata)
+				err = json.Unmarshal([]byte(updateResourceCmd.metadata), &metadata)
 				if err != nil {
 					return err
 				}
@@ -88,10 +94,10 @@ func UpdateResourceCmd() *cobra.Command {
 
 			// call meroxa-go to update resource
 			if !flagRootOutputJSON {
-				fmt.Printf("Updating %s resource...\n", resName)
+				fmt.Printf("Updating %s resource...\n", updateResourceCmd.name)
 			}
 
-			resource, err := c.UpdateResource(ctx, resName, res)
+			resource, err := c.UpdateResource(ctx, updateResourceCmd.name, res)
 			if err != nil {
 				return err
 			}
@@ -99,16 +105,16 @@ func UpdateResourceCmd() *cobra.Command {
 			if flagRootOutputJSON {
 				utils.JSONPrint(resource)
 			} else {
-				fmt.Printf("Resource %s successfully updated!\n", resName)
+				fmt.Printf("Resource %s successfully updated!\n", updateResourceCmd.name)
 			}
 
 			return nil
 		},
 	}
 
-	updateResourceCmd.Flags().StringVarP(&resURL, "url", "u", "", "resource url")
-	updateResourceCmd.Flags().StringVarP(&resMetadata, "metadata", "m", "", "resource metadata")
-	updateResourceCmd.Flags().StringVarP(&resCredentials, "credentials", "", "", "resource credentials")
+	cmd.Flags().StringVarP(&updateResourceCmd.url, "url", "u", "", "resource url")
+	cmd.Flags().StringVarP(&updateResourceCmd.metadata, "metadata", "m", "", "resource metadata")
+	cmd.Flags().StringVarP(&updateResourceCmd.credentials, "credentials", "", "", "resource credentials")
 
-	return updateResourceCmd
+	return cmd
 }

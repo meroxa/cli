@@ -61,4 +61,3 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 		},
 	}
 }
-
