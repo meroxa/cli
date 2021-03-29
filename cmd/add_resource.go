@@ -35,12 +35,12 @@ type AddResource struct{
 
 var addResourceCmd AddResource
 
-func (AddResource) getArgs (args []string) (string, error) {
+func (AddResource) setArgs(args []string) error {
 	if len(args) > 0 {
-		return args[0], nil
+		addResourceCmd.name = args[0]
 	}
 
-	return "", nil
+	return nil
 }
 
 func (AddResource) setFlags (cmd *cobra.Command) {
@@ -106,11 +106,7 @@ func (AddResource) command() *cobra.Command {
 			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
 			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			var err error
-
-			addResourceCmd.name, err = addResourceCmd.getArgs(args)
-
-			return err
+			return addResourceCmd.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
