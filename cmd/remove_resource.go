@@ -45,6 +45,10 @@ func (rr *RemoveResource) setArgs(args []string) error {
 }
 
 func (rr *RemoveResource) execute(ctx context.Context, c RemoveResourceClient) (*meroxa.Resource, error) {
+	if !flagRootOutputJSON {
+		fmt.Printf("Removing resource %s...\n", rr.name)
+	}
+
 	// get Resource ID from name
 	res, err := c.GetResourceByName(ctx, rr.name)
 	if err != nil {
@@ -71,7 +75,7 @@ func (rr *RemoveResource) output(r *meroxa.Resource) {
 	if flagRootOutputJSON {
 		utils.JSONPrint(r)
 	} else {
-		fmt.Printf("Resource %s removed\n", r.Name)
+		fmt.Printf("resource %s successfully removed\n", r.Name)
 	}
 }
 

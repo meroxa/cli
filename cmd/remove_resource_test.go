@@ -1,7 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -27,5 +32,37 @@ func TestRemoveResourceArgs(t *testing.T) {
 		if tt.name != rr.name {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rr.name)
 		}
+	}
+}
+
+func TestRemoveResourceOutput(t *testing.T) {
+	r := utils.GenerateResource()
+
+	output := utils.CaptureOutput(func() {
+		rr := &RemoveResource{}
+		rr.output(&r)
+	})
+
+	expected := fmt.Sprintf("resource %s successfully removed", r.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestRemoveResourceJSONOutput(t *testing.T) {
+	r := utils.GenerateResource()
+	flagRootOutputJSON = true
+
+	output := utils.CaptureOutput(func() {
+		rr := &RemoveResource{}
+		rr.output(&r)
+	})
+
+	var parsedOutput meroxa.Resource
+	json.Unmarshal([]byte(output), &parsedOutput)
+
+	if !reflect.DeepEqual(r, parsedOutput) {
+		t.Fatalf("not expected output, got \"%s\"", output)
 	}
 }
