@@ -26,7 +26,8 @@ import (
 )
 
 type RemoveResource struct {
-	name string
+	name      string
+	removeCmd *Remove
 }
 
 type RemoveResourceClient interface {
@@ -34,20 +35,18 @@ type RemoveResourceClient interface {
 	DeleteResource(ctx context.Context, id int) error
 }
 
-var removeResourceCmd RemoveResource
-
-func (RemoveResource) setArgs (args []string) error {
+func (rr *RemoveResource) setArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
 	}
 	// Resource Name
-	removeResourceCmd.name = args[0]
+	rr.name = args[0]
 	return nil
 }
 
-func (RemoveResource) execute (ctx context.Context, c RemoveResourceClient) (*meroxa.Resource, error) {
+func (rr *RemoveResource) execute(ctx context.Context, c RemoveResourceClient) (*meroxa.Resource, error) {
 	// get Resource ID from name
-	res, err := c.GetResourceByName(ctx, resName)
+	res, err := c.GetResourceByName(ctx, rr.name)
 	if err != nil {
 		return nil, err
 	}
@@ -58,14 +57,14 @@ func (RemoveResource) execute (ctx context.Context, c RemoveResourceClient) (*me
 		return nil, err
 	}
 
-	if !removeCmd.force {
+	if !rr.removeCmd.force {
 		return nil, errors.New("removing resource not confirmed")
 	}
 
 	return res, c.DeleteResource(ctx, res.ID)
 }
 
-func (RemoveResource) output(r *meroxa.Resource) {
+func (rr *RemoveResource) output(r *meroxa.Resource) {
 	if flagRootOutputJSON {
 		utils.JSONPrint(r)
 	} else {
@@ -74,12 +73,12 @@ func (RemoveResource) output(r *meroxa.Resource) {
 }
 
 // RemoveResource represents the `meroxa remove resource` command
-func (RemoveResource) command() *cobra.Command {
+func (rr *RemoveResource) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "resource <name>",
 		Short: "Remove resource",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return removeResourceCmd.setArgs(args)
+			return rr.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
@@ -93,13 +92,13 @@ func (RemoveResource) command() *cobra.Command {
 			}
 
 			var r *meroxa.Resource
-			r, err = removeResourceCmd.execute(ctx, c)
+			r, err = rr.execute(ctx, c)
 
 			if err != nil {
 				return err
 			}
 
-			removeResourceCmd.output(r)
+			rr.output(r)
 
 			return nil
 		},

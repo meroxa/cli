@@ -23,15 +23,13 @@ type Remove struct {
 	force bool
 }
 
-var removeCmd Remove
-
 // confirmRemoved will prompt for confirmation or will check the `--force` flag value
-func (Remove) confirmRemoved () bool {
-	return removeCmd.force
+func (r *Remove) confirmRemoved () bool {
+	return r.force
 }
 
 // RemoveCmd represents the `meroxa remove` command
-func (Remove) command() *cobra.Command {
+func (r *Remove) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove",
 		Short: "Remove a component",
@@ -44,8 +42,10 @@ func (Remove) command() *cobra.Command {
 	cmd.AddCommand(RemoveConnectorCmd())
 	cmd.AddCommand(RemoveEndpointCmd())
 	cmd.AddCommand(RemovePipelineCmd())
-	cmd.AddCommand(RemoveResource{}.command())
 
-	cmd.PersistentFlags().BoolVarP(&removeCmd.force, "force", "f", false, "force delete without confirmation prompt")
+	rr := RemoveResource{ removeCmd: r }
+	cmd.AddCommand(rr.command())
+
+	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
 	return cmd
 }

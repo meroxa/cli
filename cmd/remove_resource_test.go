@@ -1,39 +1,31 @@
 package cmd
 
 import (
-	"bytes"
-	"io/ioutil"
+	"errors"
 	"strings"
 	"testing"
 )
 
-func TestRemoveResourceCmd(t *testing.T) {
+func TestRemoveResourceArgs(t *testing.T) {
 	tests := []struct {
-		expected string
-		args     []string
+		args []string
+		err  error
+		name string
 	}{
-		{
-			"Error: requires resource name",
-			[]string{"remove", "resource"},
-		},
-		// TODO: Add a test mocking the call when specifying resource name as argument
+		{nil, errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>"), ""},
+		{[]string{"resName"}, nil, "resName"},
 	}
 
 	for _, tt := range tests {
-		rootCmd := RootCmd()
-		b := bytes.NewBufferString("")
-		rootCmd.SetOut(b)
-		rootCmd.SetErr(b)
-		rootCmd.SetArgs(tt.args)
-		rootCmd.Execute()
-		output, err := ioutil.ReadAll(b)
+		rr := RemoveResource{}
+		err := rr.setArgs(tt.args)
 
-		if err != nil {
-			t.Fatal(err)
+		if tt.err != nil && !strings.Contains(err.Error(), tt.err.Error()) {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if !strings.Contains(string(output), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(output))
+		if tt.name != rr.name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rr.name)
 		}
 	}
 }
