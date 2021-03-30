@@ -19,9 +19,10 @@ package cmd
 import (
 	"context"
 	"errors"
-	"github.com/spf13/cobra"
 	"io"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 // LogsConnectorCmd represents the `meroxa logs connector` command
@@ -49,12 +50,12 @@ func LogsConnectorCmd() *cobra.Command {
 				return err
 			}
 
-			_, err = io.Copy(os.Stderr, resp.Body)
+			_, err = io.Copy(os.Stdout, resp.Body)
 			if err != nil {
 				return err
 			}
 
-			os.Stderr.Write([]byte("\n"))
+			os.Stdout.Write([]byte("\n"))
 
 			return nil
 		},
