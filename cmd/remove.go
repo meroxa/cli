@@ -32,7 +32,7 @@ type Remove struct {
 	force           bool
 }
 
-// confirmRemoved will prompt for confirmation
+// confirmRemove will prompt for confirmation
 func (r *Remove) confirmRemove(stdin io.Reader, val string) error {
 	reader := bufio.NewReader(stdin)
 	fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", val)
@@ -52,7 +52,7 @@ func (r *Remove) setFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
 }
 
-// RemoveCmd represents the `meroxa remove` command
+// command represents the `meroxa remove` command
 func (r *Remove) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove",

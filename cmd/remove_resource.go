@@ -30,6 +30,7 @@ type RemoveResource struct {
 	removeCmd *Remove
 }
 
+// RemoveResourceClient represents the interface for meroxa client
 type RemoveResourceClient interface {
 	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
 	DeleteResource(ctx context.Context, id int) error
@@ -64,7 +65,7 @@ func (rr *RemoveResource) output(r *meroxa.Resource) {
 	}
 }
 
-// RemoveResource represents the `meroxa remove resource` command
+// command represents the `meroxa remove resource` command
 func (rr *RemoveResource) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "resource <name>",

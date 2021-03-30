@@ -31,6 +31,7 @@ type RemoveConnector struct {
 	removeCmd *Remove
 }
 
+// RemoveConnectorClient represents the interface for meroxa client
 type RemoveConnectorClient interface {
 	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
 	DeleteConnector(ctx context.Context, id int) error
@@ -62,6 +63,7 @@ func (rc *RemoveConnector) output(c *meroxa.Connector) {
 	}
 }
 
+// command represents the `meroxa remove connector` command
 func (rc *RemoveConnector) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "connector <name>",
