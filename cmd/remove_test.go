@@ -51,27 +51,33 @@ func TestConfirmationPrompt(t *testing.T) {
 	expectedValue := "correct-value"
 
 	tests := []struct {
-		value string
+		value           string
+		confirmableName string
+		componentType   string
 	}{
-		{expectedValue},
-		{"incorrect-value"},
+		{expectedValue, expectedValue, "resource"},
+		{"incorrect-value", expectedValue, "connector"},
+		{"incorrect-value", expectedValue, ""},
 	}
 
 	// Force flag to false
 	r := &Remove{}
-	r.confirmableName = expectedValue
 
 	for _, tt := range tests {
+		var err error
+		r.confirmableName = tt.confirmableName
+		r.componentType = tt.componentType
+
 		output := utils.CaptureOutput(func() {
 			var stdin bytes.Buffer
 			stdin.Write([]byte(fmt.Sprintf("%s\n", expectedValue)))
-			confirmed := r.confirmRemove(&stdin, tt.value)
+			err = r.confirmRemove(&stdin, tt.value)
 
-			if confirmed && !strings.Contains(expectedValue, tt.value) {
+			if err == nil && !strings.Contains(expectedValue, tt.value) {
 				t.Fatalf("for value \"%s\", it shouldn't have been confirmed", tt.value)
 			}
 
-			if !confirmed && strings.Contains(expectedValue, tt.value) {
+			if err != nil && strings.Contains(expectedValue, tt.value) {
 				t.Fatalf("for value \"%s\", it should have been confirmed", tt.value)
 			}
 		})
@@ -80,6 +86,18 @@ func TestConfirmationPrompt(t *testing.T) {
 
 		if !strings.Contains(output, expected) {
 			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+		}
+
+		if err != nil {
+			if r.componentType != "" {
+				expected = fmt.Sprintf("removing %s not confirmed", r.componentType)
+			} else {
+				expected = "removing value not confirmed"
+			}
+
+			if err.Error() != expected {
+				t.Fatalf("not expected error, got \"%s\"", err.Error())
+			}
 		}
 	}
 }

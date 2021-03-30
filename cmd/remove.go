@@ -33,11 +33,19 @@ type Remove struct {
 }
 
 // confirmRemoved will prompt for confirmation
-func (r *Remove) confirmRemove(stdin io.Reader, val string) bool {
+func (r *Remove) confirmRemove(stdin io.Reader, val string) error {
 	reader := bufio.NewReader(stdin)
 	fmt.Printf("To proceed, type %s or re-run this command with --force\n▸ ", val)
 	input, _ := reader.ReadString('\n')
-	return val == strings.TrimSuffix(input, "\n")
+
+	if val != strings.TrimSuffix(input, "\n") {
+		if r.componentType != "" {
+			return errors.New(fmt.Sprintf("removing %s not confirmed", r.componentType))
+		} else {
+			return errors.New("removing value not confirmed")
+		}
+	}
+	return nil
 }
 
 func (r *Remove) setFlags(cmd *cobra.Command) {
@@ -86,11 +94,9 @@ func (r *Remove) addConfirmation(subCmd *cobra.Command) {
 			fmt.Printf("Removing %s...\n", r.confirmableName)
 		}
 
-		// Either if uses --force or prompts for confirmation
-		canRemove := r.force || r.confirmRemove(os.Stdin, r.confirmableName)
-
-		if !canRemove {
-			return errors.New(fmt.Sprintf("removing %s not confirmed", r.componentType))
+		// prompts for confirmation when --force is not set
+		if !r.force {
+			return r.confirmRemove(os.Stdin, r.confirmableName)
 		}
 
 		return nil
