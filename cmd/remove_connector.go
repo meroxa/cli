@@ -23,12 +23,18 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 // RemoveConnectorCmd represents the `meroxa remove connector` command
 type RemoveConnector struct {
 	name      string
 	removeCmd *Remove
+}
+
+type RemoveConnectorClient interface {
+	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
+	DeleteConnector(ctx context.Context, id int) error
 }
 
 func (rc *RemoveConnector) setArgs(args []string) error {
@@ -38,6 +44,25 @@ func (rc *RemoveConnector) setArgs(args []string) error {
 	// Resource Name
 	rc.name = args[0]
 	return nil
+}
+
+func (rc *RemoveConnector) execute(ctx context.Context, c RemoveConnectorClient) (*meroxa.Connector, error) {
+	if !flagRootOutputJSON {
+		fmt.Printf("Removing connector %s...\n", rc.name)
+	}
+
+	con, err := c.GetConnectorByName(ctx, rc.name)
+	if err != nil {
+		return nil, err
+	}
+
+	canRemove := rc.removeCmd.confirmRemove(os.Stdin, rc.name)
+
+	if canRemove {
+		return con, c.DeleteConnector(ctx, con.ID)
+	}
+
+	return con, errors.New("removing connector not confirmed")
 }
 
 func (rc *RemoveConnector) output(c *meroxa.Connector) {
@@ -65,14 +90,8 @@ func (rc *RemoveConnector) command() *cobra.Command {
 				return err
 			}
 
-			// get Connector ID from name
+			con, err := rc.execute(ctx, c)
 
-			con, err := c.GetConnectorByName(ctx, rc.name)
-			if err != nil {
-				return err
-			}
-
-			err = c.DeleteConnector(ctx, con.ID)
 			if err != nil {
 				return err
 			}

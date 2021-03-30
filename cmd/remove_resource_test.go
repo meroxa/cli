@@ -38,7 +38,7 @@ func TestRemoveResourceArgs(t *testing.T) {
 	}
 }
 
-func TestRemoveResourceExecutionForceFlag(t *testing.T) {
+func TestRemoveResourceExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockRemoveResourceClient(ctrl)

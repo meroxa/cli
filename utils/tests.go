@@ -20,10 +20,9 @@ func GenerateResource() meroxa.Resource {
 
 func GenerateConnector() meroxa.Connector {
 	return meroxa.Connector{
-		ID:       1,
-		Type:     "postgres",
-		Name:     "resource-1234",
-		Metadata: nil,
+		ID:   1,
+		Type: "postgres",
+		Name: "connector-1234",
 	}
 }
 

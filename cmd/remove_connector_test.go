@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang/mock/gomock"
+	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"reflect"
@@ -31,6 +34,64 @@ func TestRemoveConnectorArgs(t *testing.T) {
 
 		if tt.name != rc.name {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rc.name)
+		}
+	}
+}
+
+func TestRemoveConnectorExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockRemoveConnectorClient(ctrl)
+
+	c := utils.GenerateConnector()
+
+	client.
+		EXPECT().
+		GetConnectorByName(ctx, c.Name).
+		Return(&c, nil).
+		MaxTimes(2)
+
+	client.
+		EXPECT().
+		DeleteConnector(ctx, c.ID).
+		Return(nil).
+		MaxTimes(2)
+
+	tests := []struct {
+		force bool
+	}{
+		{false},
+		{false},
+	}
+
+	for _, tt := range tests {
+		// Set force flag to true
+		r := &Remove{tt.force}
+
+		output := utils.CaptureOutput(func() {
+			rc := &RemoveConnector{
+				name:      c.Name,
+				removeCmd: r,
+			}
+			got, err := rc.execute(ctx, client)
+
+			if !reflect.DeepEqual(got, &c) {
+				t.Fatalf("expected \"%v\", got \"%v\"", &c, got)
+			}
+
+			if err != nil {
+				expected := "removing connector not confirmed"
+
+				if tt.force && !strings.Contains(err.Error(), expected) {
+					t.Fatalf("not expected error, got \"%s\"", err.Error())
+				}
+			}
+		})
+
+		expected := fmt.Sprintf("Removing connector %s...", c.Name)
+
+		if !strings.Contains(output, expected) {
+			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 		}
 	}
 }
