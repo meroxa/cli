@@ -23,7 +23,6 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 type RemoveResource struct {
@@ -42,27 +41,19 @@ func (rr *RemoveResource) setArgs(args []string) error {
 	}
 	// Resource Name
 	rr.name = args[0]
+	rr.removeCmd.confirmableName = rr.name
+	rr.removeCmd.componentType = "resource"
 	return nil
 }
 
 func (rr *RemoveResource) execute(ctx context.Context, c RemoveResourceClient) (*meroxa.Resource, error) {
-	if !flagRootOutputJSON {
-		fmt.Printf("Removing resource %s...\n", rr.name)
-	}
-
 	// get Resource ID from name
 	res, err := c.GetResourceByName(ctx, rr.name)
 	if err != nil {
 		return nil, err
 	}
 
-	canRemove := rr.removeCmd.confirmRemove(os.Stdin, rr.name)
-
-	if canRemove {
-		return res, c.DeleteResource(ctx, res.ID)
-	}
-
-	return res, errors.New("removing resource not confirmed")
+	return res, c.DeleteResource(ctx, res.ID)
 }
 
 func (rr *RemoveResource) output(r *meroxa.Resource) {

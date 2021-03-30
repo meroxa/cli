@@ -86,7 +86,7 @@ meroxa list resource-types`,
 	rootCmd.AddCommand(LogsCmd())
 	rootCmd.AddCommand(OpenCmd())
 
-	r := Remove{}
+	r := &Remove{}
 	rootCmd.AddCommand(r.command())
 	rootCmd.AddCommand(UpdateCmd())
 	rootCmd.AddCommand(VersionCmd())

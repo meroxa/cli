@@ -58,7 +58,8 @@ func TestConfirmationPrompt(t *testing.T) {
 	}
 
 	// Force flag to false
-	r := Remove{false}
+	r := &Remove{}
+	r.confirmableName = expectedValue
 
 	for _, tt := range tests {
 		output := utils.CaptureOutput(func() {
@@ -78,6 +79,30 @@ func TestConfirmationPrompt(t *testing.T) {
 		expected := fmt.Sprintf("To proceed, type %s or re-run this command with --force\n", tt.value)
 
 		if !strings.Contains(output, expected) {
+			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+		}
+	}
+}
+
+func TestAddConfirmation(t *testing.T) {
+	r := &Remove{}
+	cmd := r.command()
+	r.force = true
+
+	r.confirmableName = "argument-name"
+
+	for _, c := range cmd.Commands() {
+		output := utils.CaptureOutput(func() {
+			err := c.PreRunE(c, []string{r.confirmableName})
+
+			if err != nil {
+				t.Fatalf("not expected error, got \"%s\"", err.Error())
+			}
+		})
+
+		expected := fmt.Sprintf("Removing %s...\n", r.confirmableName)
+
+		if !strings.Contains(expected, output) {
 			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 		}
 	}

@@ -24,8 +24,9 @@ func TestRemoveResourceArgs(t *testing.T) {
 		{[]string{"resName"}, nil, "resName"},
 	}
 
+	r := &Remove{}
 	for _, tt := range tests {
-		rr := RemoveResource{}
+		rr := &RemoveResource{removeCmd: r}
 		err := rr.setArgs(tt.args)
 
 		if tt.err != nil && !strings.Contains(err.Error(), tt.err.Error()) {
@@ -34,6 +35,17 @@ func TestRemoveResourceArgs(t *testing.T) {
 
 		if tt.name != rr.name {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rr.name)
+		}
+
+		if err == nil {
+			componentType := "resource"
+			if rr.removeCmd.componentType != componentType {
+				t.Fatalf("expected type to be set to %q", componentType)
+			}
+
+			if rr.removeCmd.confirmableName != rr.name {
+				t.Fatalf("expected \"confirmableName\" to be set to %q", rr.name)
+			}
 		}
 	}
 }
@@ -48,51 +60,27 @@ func TestRemoveResourceExecution(t *testing.T) {
 	client.
 		EXPECT().
 		GetResourceByName(ctx, r.Name).
-		Return(&r, nil).
-		MaxTimes(2)
+		Return(&r, nil)
 
 	client.
 		EXPECT().
 		DeleteResource(ctx, r.ID).
-		Return(nil).
-		MaxTimes(2)
+		Return(nil)
 
-	tests := []struct {
-		force bool
-	}{
-		{true},
-		{false},
+	rc := &Remove{}
+
+	rr := &RemoveResource{
+		name:      r.Name,
+		removeCmd: rc,
+	}
+	got, err := rr.execute(ctx, client)
+
+	if !reflect.DeepEqual(got, &r) {
+		t.Fatalf("expected \"%v\", got \"%v\"", &r, got)
 	}
 
-	for _, tt := range tests {
-		// Set force flag to true
-		rc := &Remove{tt.force}
-
-		output := utils.CaptureOutput(func() {
-			rr := &RemoveResource{
-				name:      r.Name,
-				removeCmd: rc,
-			}
-			got, err := rr.execute(ctx, client)
-
-			if !reflect.DeepEqual(got, &r) {
-				t.Fatalf("expected \"%v\", got \"%v\"", &r, got)
-			}
-
-			if err != nil {
-				expected := "removing resource not confirmed"
-
-				if tt.force && !strings.Contains(err.Error(), expected) {
-					t.Fatalf("not expected error, got \"%s\"", err.Error())
-				}
-			}
-		})
-
-		expected := fmt.Sprintf("Removing resource %s...", r.Name)
-
-		if !strings.Contains(output, expected) {
-			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
-		}
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
 }
 

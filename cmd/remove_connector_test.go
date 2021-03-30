@@ -57,42 +57,20 @@ func TestRemoveConnectorExecution(t *testing.T) {
 		Return(nil).
 		MaxTimes(2)
 
-	tests := []struct {
-		force bool
-	}{
-		{false},
-		{false},
+	r := &Remove{}
+
+	rc := &RemoveConnector{
+		name:      c.Name,
+		removeCmd: r,
+	}
+	got, err := rc.execute(ctx, client)
+
+	if !reflect.DeepEqual(got, &c) {
+		t.Fatalf("expected \"%v\", got \"%v\"", &c, got)
 	}
 
-	for _, tt := range tests {
-		// Set force flag to true
-		r := &Remove{tt.force}
-
-		output := utils.CaptureOutput(func() {
-			rc := &RemoveConnector{
-				name:      c.Name,
-				removeCmd: r,
-			}
-			got, err := rc.execute(ctx, client)
-
-			if !reflect.DeepEqual(got, &c) {
-				t.Fatalf("expected \"%v\", got \"%v\"", &c, got)
-			}
-
-			if err != nil {
-				expected := "removing connector not confirmed"
-
-				if tt.force && !strings.Contains(err.Error(), expected) {
-					t.Fatalf("not expected error, got \"%s\"", err.Error())
-				}
-			}
-		})
-
-		expected := fmt.Sprintf("Removing connector %s...", c.Name)
-
-		if !strings.Contains(output, expected) {
-			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
-		}
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
 }
 

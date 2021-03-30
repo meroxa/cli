@@ -23,7 +23,6 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // RemoveConnectorCmd represents the `meroxa remove connector` command
@@ -47,22 +46,12 @@ func (rc *RemoveConnector) setArgs(args []string) error {
 }
 
 func (rc *RemoveConnector) execute(ctx context.Context, c RemoveConnectorClient) (*meroxa.Connector, error) {
-	if !flagRootOutputJSON {
-		fmt.Printf("Removing connector %s...\n", rc.name)
-	}
-
 	con, err := c.GetConnectorByName(ctx, rc.name)
 	if err != nil {
 		return nil, err
 	}
 
-	canRemove := rc.removeCmd.confirmRemove(os.Stdin, rc.name)
-
-	if canRemove {
-		return con, c.DeleteConnector(ctx, con.ID)
-	}
-
-	return con, errors.New("removing connector not confirmed")
+	return con, c.DeleteConnector(ctx, con.ID)
 }
 
 func (rc *RemoveConnector) output(c *meroxa.Connector) {

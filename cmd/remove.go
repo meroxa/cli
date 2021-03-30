@@ -18,26 +18,26 @@ package cmd
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	"io"
+	"os"
 	"strings"
 )
 
 type Remove struct {
-	force bool
+	confirmableName string
+	componentType   string
+	force           bool
 }
 
-// confirmRemoved will prompt for confirmation or will check the `--force` flag value
+// confirmRemoved will prompt for confirmation
 func (r *Remove) confirmRemove(stdin io.Reader, val string) bool {
-	if !r.force {
-		reader := bufio.NewReader(stdin)
-		fmt.Printf("To proceed, type %s or re-run this command with --force\n▸ ", val)
-		input, _ := reader.ReadString('\n')
-		return val == strings.TrimSuffix(input, "\n")
-	}
-
-	return r.force
+	reader := bufio.NewReader(stdin)
+	fmt.Printf("To proceed, type %s or re-run this command with --force\n▸ ", val)
+	input, _ := reader.ReadString('\n')
+	return val == strings.TrimSuffix(input, "\n")
 }
 
 func (r *Remove) setFlags(cmd *cobra.Command) {
@@ -58,11 +58,41 @@ func (r *Remove) command() *cobra.Command {
 	cmd.AddCommand(RemoveEndpointCmd())
 	cmd.AddCommand(RemovePipelineCmd())
 
-	rc := RemoveConnector{removeCmd: r}
+	rc := &RemoveConnector{removeCmd: r}
 	cmd.AddCommand(rc.command())
-	rr := RemoveResource{removeCmd: r}
+	rr := &RemoveResource{removeCmd: r}
 	cmd.AddCommand(rr.command())
+
+	// Make sure all subcommands will have a confirmation prompt or make use of --force
+	for _, c := range cmd.Commands() {
+		r.addConfirmation(c)
+	}
 
 	r.setFlags(cmd)
 	return cmd
+}
+
+func (r *Remove) addConfirmation(subCmd *cobra.Command) {
+	preRunE := subCmd.PreRunE
+
+	subCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		err := preRunE(cmd, args)
+		if err != nil {
+			return err
+		}
+
+		// print and confirm
+		if !flagRootOutputJSON {
+			fmt.Printf("Removing %s...\n", r.confirmableName)
+		}
+
+		// Either if uses --force or prompts for confirmation
+		canRemove := r.force || r.confirmRemove(os.Stdin, r.confirmableName)
+
+		if !canRemove {
+			return errors.New(fmt.Sprintf("removing %s not confirmed", r.componentType))
+		}
+
+		return nil
+	}
 }
