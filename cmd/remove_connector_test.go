@@ -1,39 +1,68 @@
 package cmd
 
 import (
-	"bytes"
-	"io/ioutil"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
+	"reflect"
 	"strings"
 	"testing"
 )
 
-func TestRemoveConnectorCmd(t *testing.T) {
+func TestRemoveConnectorArgs(t *testing.T) {
 	tests := []struct {
-		expected string
-		args     []string
+		args []string
+		err  error
+		name string
 	}{
-		{
-			"Error: requires connector name",
-			[]string{"remove", "connector"},
-		},
-		// TODO: Add a test mocking the call when specifying connector name as argument
+		{nil, errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>"), ""},
+		{[]string{"resName"}, nil, "resName"},
 	}
 
 	for _, tt := range tests {
-		rootCmd := RootCmd()
-		b := bytes.NewBufferString("")
-		rootCmd.SetOut(b)
-		rootCmd.SetErr(b)
-		rootCmd.SetArgs(tt.args)
-		rootCmd.Execute()
-		output, err := ioutil.ReadAll(b)
+		rc := RemoveConnector{}
+		err := rc.setArgs(tt.args)
 
-		if err != nil {
-			t.Fatal(err)
+		if tt.err != nil && !strings.Contains(err.Error(), tt.err.Error()) {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if !strings.Contains(string(output), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(output))
+		if tt.name != rc.name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rc.name)
 		}
+	}
+}
+
+func TestRemoveConnectorOutput(t *testing.T) {
+	c := utils.GenerateConnector()
+
+	output := utils.CaptureOutput(func() {
+		rc := &RemoveConnector{}
+		rc.output(&c)
+	})
+
+	expected := fmt.Sprintf("connector %s successfully removed", c.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestRemoveConnectorJSONOutput(t *testing.T) {
+	c := utils.GenerateConnector()
+	flagRootOutputJSON = true
+
+	output := utils.CaptureOutput(func() {
+		rc := &RemoveConnector{}
+		rc.output(&c)
+	})
+
+	var parsedOutput meroxa.Connector
+	json.Unmarshal([]byte(output), &parsedOutput)
+
+	if !reflect.DeepEqual(c, parsedOutput) {
+		t.Fatalf("not expected output, got \"%s\"", output)
 	}
 }

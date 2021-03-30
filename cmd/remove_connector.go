@@ -21,21 +21,44 @@ import (
 	"errors"
 	"fmt"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
 // RemoveConnectorCmd represents the `meroxa remove connector` command
-func RemoveConnectorCmd() *cobra.Command {
+type RemoveConnector struct {
+	name      string
+	removeCmd *Remove
+}
+
+func (rc *RemoveConnector) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
+	}
+	// Resource Name
+	rc.name = args[0]
+	return nil
+}
+
+func (rc *RemoveConnector) output(c *meroxa.Connector) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(c)
+	} else {
+		fmt.Printf("connector %s successfully removed\n", c.Name)
+	}
+}
+
+func (rc *RemoveConnector) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "connector <name>",
 		Short: "Remove connector",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return rc.setArgs(args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
-			}
-
-			// Connector Name
-			conName := args[0]
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
 			c, err := client()
 			if err != nil {
@@ -43,34 +66,18 @@ func RemoveConnectorCmd() *cobra.Command {
 			}
 
 			// get Connector ID from name
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
 
-			con, err := c.GetConnectorByName(ctx, conName)
+			con, err := c.GetConnectorByName(ctx, rc.name)
 			if err != nil {
 				return err
 			}
-
-			c, err = client()
-			if err != nil {
-				return err
-			}
-
-			ctx = context.Background()
-			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
 
 			err = c.DeleteConnector(ctx, con.ID)
 			if err != nil {
 				return err
 			}
 
-			if flagRootOutputJSON {
-				utils.JSONPrint(con)
-			} else {
-				fmt.Printf("Connection %s removed\n", con.Name)
-			}
+			rc.output(con)
 			return nil
 		},
 	}

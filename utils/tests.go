@@ -18,6 +18,15 @@ func GenerateResource() meroxa.Resource {
 	}
 }
 
+func GenerateConnector() meroxa.Connector {
+	return meroxa.Connector{
+		ID:       1,
+		Type:     "postgres",
+		Name:     "resource-1234",
+		Metadata: nil,
+	}
+}
+
 func IsFlagRequired(flag *pflag.Flag) bool {
 	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
 
