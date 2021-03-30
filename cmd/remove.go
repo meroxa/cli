@@ -34,5 +34,10 @@ func RemoveCmd() *cobra.Command {
 	removeCmd.AddCommand(RemovePipelineCmd())
 	removeCmd.AddCommand(RemoveResourceCmd())
 
+	// This is to make acceptance tests happy
+	var force bool
+	removeCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "force delete without confirmation prompt")
+	removeCmd.PersistentFlags().MarkHidden("force")
+
 	return removeCmd
 }
