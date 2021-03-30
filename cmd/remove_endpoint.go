@@ -18,31 +18,71 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 )
 
+type RemoveEndpoint struct {
+	name      string
+	removeCmd *Remove
+}
+
+type RemoveEndpointClient interface {
+	DeleteEndpoint(ctx context.Context, name string) error
+}
+
+func (re *RemoveEndpoint) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
+	}
+	// endpoint name
+	re.name = args[0]
+
+	re.removeCmd.componentType = "endpoint"
+	re.removeCmd.confirmableName = re.name
+
+	return nil
+}
+
+func (re *RemoveEndpoint) execute(ctx context.Context, c RemoveEndpointClient) error {
+	return c.DeleteEndpoint(ctx, re.name)
+}
+
+func (re *RemoveEndpoint) output() {
+	fmt.Printf("endpoint %s successfully removed\n", re.name)
+}
+
 // RemoveEndpointCmd represents the `meroxa remove endpoint` command
-func RemoveEndpointCmd() *cobra.Command {
+func (re *RemoveEndpoint) command() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint <name>",
 		Aliases: []string{"endpoints"},
 		Short:   "Remove endpoint",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return re.setArgs(args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return fmt.Errorf("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
-			}
-			name := args[0]
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
 			c, err := client()
 			if err != nil {
 				return err
 			}
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
 
-			return c.DeleteEndpoint(ctx, name)
+			// TODO: To be consistent with other commands, execute should return
+			// also the component being removed
+			err = re.execute(ctx, c)
+
+			if err != nil {
+				return err
+			}
+
+			// TODO: This usually send a component so it's shown in json format
+			re.output()
+			return nil
 		},
 	}
 }

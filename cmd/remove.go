@@ -63,7 +63,8 @@ func (r *Remove) command() *cobra.Command {
 		Aliases:    []string{"rm", "delete"},
 	}
 
-	cmd.AddCommand(RemoveEndpointCmd())
+	re := &RemoveEndpoint{removeCmd: r}
+	cmd.AddCommand(re.command())
 	cmd.AddCommand(RemovePipelineCmd())
 
 	rc := &RemoveConnector{removeCmd: r}
