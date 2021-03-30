@@ -8,6 +8,15 @@ import (
 	"os"
 )
 
+func GeneratePipeline() meroxa.Pipeline {
+	return meroxa.Pipeline{
+		ID:       1,
+		Name:     "pipeline-name",
+		Metadata: nil,
+		State:    "healthy",
+	}
+}
+
 func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
 		ID:       1,
@@ -15,6 +24,14 @@ func GenerateResource() meroxa.Resource {
 		Name:     "resource-1234",
 		URL:      "https://user:password",
 		Metadata: nil,
+	}
+}
+
+func GenerateConnector() meroxa.Connector {
+	return meroxa.Connector{
+		ID:   1,
+		Type: "postgres",
+		Name: "connector-1234",
 	}
 }
 

@@ -21,56 +21,77 @@ import (
 	"errors"
 	"fmt"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
-// RemoveResourceCmd represents the `meroxa remove resource` command
-func RemoveResourceCmd() *cobra.Command {
+type RemoveResource struct {
+	name      string
+	removeCmd *Remove
+}
+
+// RemoveResourceClient represents the interface for meroxa client
+type RemoveResourceClient interface {
+	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
+	DeleteResource(ctx context.Context, id int) error
+}
+
+func (rr *RemoveResource) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
+	}
+	// Resource Name
+	rr.name = args[0]
+	rr.removeCmd.confirmableName = rr.name
+	rr.removeCmd.componentType = "resource"
+	return nil
+}
+
+func (rr *RemoveResource) execute(ctx context.Context, c RemoveResourceClient) (*meroxa.Resource, error) {
+	// get Resource ID from name
+	res, err := c.GetResourceByName(ctx, rr.name)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, c.DeleteResource(ctx, res.ID)
+}
+
+func (rr *RemoveResource) output(r *meroxa.Resource) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(r)
+	} else {
+		fmt.Printf("resource %s successfully removed\n", r.Name)
+	}
+}
+
+// command represents the `meroxa remove resource` command
+func (rr *RemoveResource) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "resource <name>",
 		Short: "Remove resource",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return rr.setArgs(args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
-			}
-			// Resource Name
-			resName := args[0]
-
-			c, err := client()
-			if err != nil {
-				return err
-			}
-
-			// get Resource ID from name
 			ctx := context.Background()
 			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 			defer cancel()
 
-			res, err := c.GetResourceByName(ctx, resName)
+			c, err := client()
+
 			if err != nil {
 				return err
 			}
 
-			c, err = client()
+			r, err := rr.execute(ctx, c)
+
 			if err != nil {
 				return err
 			}
 
-			ctx = context.Background()
-			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
+			rr.output(r)
 
-			// TODO: Update meroxa-go to `RemoveResource` to match its implementation
-			err = c.DeleteResource(ctx, res.ID)
-			if err != nil {
-				return err
-			}
-
-			if flagRootOutputJSON {
-				utils.JSONPrint(res)
-			} else {
-				fmt.Printf("Resource %s removed\n", res.Name)
-			}
 			return nil
 		},
 	}

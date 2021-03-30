@@ -16,11 +16,45 @@ limitations under the License.
 
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"bufio"
+	"errors"
+	"fmt"
+	"github.com/spf13/cobra"
+	"io"
+	"os"
+	"strings"
+)
 
-// RemoveCmd represents the `meroxa remove` command
-func RemoveCmd() *cobra.Command {
-	removeCmd := &cobra.Command{
+type Remove struct {
+	confirmableName string
+	componentType   string
+	force           bool
+}
+
+// confirmRemove will prompt for confirmation
+func (r *Remove) confirmRemove(stdin io.Reader, val string) error {
+	reader := bufio.NewReader(stdin)
+	fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", val)
+	input, _ := reader.ReadString('\n')
+
+	if val != strings.TrimSuffix(input, "\n") {
+		if r.componentType != "" {
+			return errors.New(fmt.Sprintf("removing %s not confirmed", r.componentType))
+		} else {
+			return errors.New("removing value not confirmed")
+		}
+	}
+	return nil
+}
+
+func (r *Remove) setFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
+}
+
+// command represents the `meroxa remove` command
+func (r *Remove) command() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "remove",
 		Short: "Remove a component",
 		Long: `Deprovision a component of the Meroxa platform, including pipelines,
@@ -29,15 +63,43 @@ func RemoveCmd() *cobra.Command {
 		Aliases:    []string{"rm", "delete"},
 	}
 
-	removeCmd.AddCommand(RemoveConnectorCmd())
-	removeCmd.AddCommand(RemoveEndpointCmd())
-	removeCmd.AddCommand(RemovePipelineCmd())
-	removeCmd.AddCommand(RemoveResourceCmd())
+	re := &RemoveEndpoint{removeCmd: r}
+	cmd.AddCommand(re.command())
+	rp := &RemovePipeline{removeCmd: r}
+	cmd.AddCommand(rp.command())
+	rc := &RemoveConnector{removeCmd: r}
+	cmd.AddCommand(rc.command())
+	rr := &RemoveResource{removeCmd: r}
+	cmd.AddCommand(rr.command())
 
-	// This is to make acceptance tests happy
-	var force bool
-	removeCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "force delete without confirmation prompt")
-	removeCmd.PersistentFlags().MarkHidden("force")
+	// Make sure all subcommands will have a confirmation prompt or make use of --force
+	for _, c := range cmd.Commands() {
+		r.addConfirmation(c)
+	}
 
-	return removeCmd
+	r.setFlags(cmd)
+	return cmd
+}
+
+func (r *Remove) addConfirmation(subCmd *cobra.Command) {
+	preRunE := subCmd.PreRunE
+
+	subCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		err := preRunE(cmd, args)
+		if err != nil {
+			return err
+		}
+
+		// print and confirm
+		if !flagRootOutputJSON {
+			fmt.Printf("Removing %s...\n", r.confirmableName)
+		}
+
+		// prompts for confirmation when --force is not set
+		if !r.force {
+			return r.confirmRemove(os.Stdin, r.confirmableName)
+		}
+
+		return nil
+	}
 }

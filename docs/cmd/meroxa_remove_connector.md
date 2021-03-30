@@ -16,6 +16,7 @@ meroxa remove connector <name> [flags]
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+  -f, --force           force delete without confirmation prompt
       --json            output json
 ```
 

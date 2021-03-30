@@ -1,39 +1,87 @@
 package cmd
 
 import (
-	"bytes"
-	"io/ioutil"
+	"context"
+	"errors"
+	"fmt"
+	"github.com/golang/mock/gomock"
+	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/cli/utils"
 	"strings"
 	"testing"
 )
 
-func TestRemoveEndpointCmd(t *testing.T) {
+func TestRemoveEndpointArgs(t *testing.T) {
 	tests := []struct {
-		expected string
-		args     []string
+		args []string
+		err  error
+		name string
 	}{
-		{
-			"Error: requires endpoint name",
-			[]string{"remove", "endpoint"},
-		},
-		// TODO: Add a test mocking the call when specifying endpoint name as argument
+		{nil, errors.New("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]"), ""},
+		{[]string{"endpoint-name"}, nil, "endpoint-name"},
 	}
 
+	r := &Remove{}
 	for _, tt := range tests {
-		rootCmd := RootCmd()
-		b := bytes.NewBufferString("")
-		rootCmd.SetOut(b)
-		rootCmd.SetErr(b)
-		rootCmd.SetArgs(tt.args)
-		rootCmd.Execute()
-		output, err := ioutil.ReadAll(b)
+		rr := &RemoveEndpoint{removeCmd: r}
+		err := rr.setArgs(tt.args)
 
-		if err != nil {
-			t.Fatal(err)
+		if tt.err != nil && !strings.Contains(err.Error(), tt.err.Error()) {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if !strings.Contains(string(output), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(output))
+		if tt.name != rr.name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rr.name)
 		}
+
+		if err == nil {
+			componentType := "endpoint"
+			if rr.removeCmd.componentType != componentType {
+				t.Fatalf("expected type to be set to %q", componentType)
+			}
+
+			if rr.removeCmd.confirmableName != rr.name {
+				t.Fatalf("expected \"confirmableName\" to be set to %q", rr.name)
+			}
+		}
+	}
+}
+
+func TestRemoveEndpointExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockRemoveEndpointClient(ctrl)
+
+	endpointName := "my-endpoint"
+
+	client.
+		EXPECT().
+		DeleteEndpoint(ctx, endpointName).
+		Return(nil)
+
+	rc := &Remove{}
+
+	re := &RemoveEndpoint{
+		name:      endpointName,
+		removeCmd: rc,
+	}
+	err := re.execute(ctx, client)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+}
+
+func TestRemoveEndpointOutput(t *testing.T) {
+	re := &RemoveEndpoint{name: "endpoint-name"}
+
+	output := utils.CaptureOutput(func() {
+		re.output()
+	})
+
+	expected := fmt.Sprintf("endpoint %s successfully removed", re.name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 	}
 }

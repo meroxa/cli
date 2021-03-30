@@ -10,7 +10,8 @@ Deprovision a component of the Meroxa platform, including pipelines,
 ### Options
 
 ```
-  -h, --help   help for remove
+  -f, --force   force delete without confirmation prompt
+  -h, --help    help for remove
 ```
 
 ### Options inherited from parent commands
