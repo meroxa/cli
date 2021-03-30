@@ -83,8 +83,7 @@ func (rr *RemoveResource) command() *cobra.Command {
 				return err
 			}
 
-			var r *meroxa.Resource
-			r, err = rr.execute(ctx, c)
+			r, err := rr.execute(ctx, c)
 
 			if err != nil {
 				return err

@@ -35,7 +35,7 @@ type Remove struct {
 // confirmRemoved will prompt for confirmation
 func (r *Remove) confirmRemove(stdin io.Reader, val string) error {
 	reader := bufio.NewReader(stdin)
-	fmt.Printf("To proceed, type %s or re-run this command with --force\n▸ ", val)
+	fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", val)
 	input, _ := reader.ReadString('\n')
 
 	if val != strings.TrimSuffix(input, "\n") {
@@ -65,8 +65,8 @@ func (r *Remove) command() *cobra.Command {
 
 	re := &RemoveEndpoint{removeCmd: r}
 	cmd.AddCommand(re.command())
-	cmd.AddCommand(RemovePipelineCmd())
-
+	rp := &RemovePipeline{removeCmd: r}
+	cmd.AddCommand(rp.command())
 	rc := &RemoveConnector{removeCmd: r}
 	cmd.AddCommand(rc.command())
 	rr := &RemoveResource{removeCmd: r}

@@ -21,56 +21,71 @@ import (
 	"errors"
 	"fmt"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
+type RemovePipeline struct {
+	name      string
+	removeCmd *Remove
+}
+
+type RemovePipelineClient interface {
+	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
+	DeletePipeline(ctx context.Context, id int) error
+}
+
+func (rp *RemovePipeline) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>")
+	}
+	// endpoint name
+	rp.name = args[0]
+
+	rp.removeCmd.componentType = "pipeline"
+	rp.removeCmd.confirmableName = rp.name
+
+	return nil
+}
+
+func (rp *RemovePipeline) execute(ctx context.Context, c RemovePipelineClient) (*meroxa.Pipeline, error) {
+	p, err := c.GetPipelineByName(ctx, rp.name)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, c.DeletePipeline(ctx, p.ID)
+}
+
+func (rp *RemovePipeline) output(p *meroxa.Pipeline) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(p)
+	} else {
+		fmt.Printf("pipeline %s successfully removed\n", p.Name)
+	}
+}
+
 // RemovePipelineCmd represents the `meroxa remove pipeline` command
-func RemovePipelineCmd() *cobra.Command {
+func (rp *RemovePipeline) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "pipeline <name>",
 		Short: "Remove pipeline",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return rp.setArgs(args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>")
-			}
-
-			// Pipeline Name
-			pipelineName := args[0]
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
 			c, err := client()
 			if err != nil {
 				return err
 			}
 
-			// get Pipeline ID from name
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
+			p, err := rp.execute(ctx, c)
 
-			pipeline, err := c.GetPipelineByName(ctx, pipelineName)
-			if err != nil {
-				return err
-			}
-
-			c, err = client()
-			if err != nil {
-				return err
-			}
-
-			ctx = context.Background()
-			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
-
-			err = c.DeletePipeline(ctx, pipeline.ID)
-			if err != nil {
-				return err
-			}
-
-			if flagRootOutputJSON {
-				utils.JSONPrint(pipeline)
-			} else {
-				fmt.Printf("Pipeline %s removed\n", pipeline.Name)
-			}
+			rp.output(p)
 
 			return nil
 		},

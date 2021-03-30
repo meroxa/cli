@@ -86,6 +86,7 @@ func TestRemoveResourceExecution(t *testing.T) {
 
 func TestRemoveResourceOutput(t *testing.T) {
 	r := utils.GenerateResource()
+	flagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
 		rr := &RemoveResource{}

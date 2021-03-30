@@ -82,7 +82,7 @@ func TestConfirmationPrompt(t *testing.T) {
 			}
 		})
 
-		expected := fmt.Sprintf("To proceed, type %s or re-run this command with --force\n", tt.value)
+		expected := fmt.Sprintf("To proceed, type %q or re-run this command with --force\n", tt.value)
 
 		if !strings.Contains(output, expected) {
 			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)

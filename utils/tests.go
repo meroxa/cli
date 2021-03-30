@@ -8,6 +8,15 @@ import (
 	"os"
 )
 
+func GeneratePipeline() meroxa.Pipeline {
+	return meroxa.Pipeline{
+		ID:       1,
+		Name:     "pipeline-name",
+		Metadata: nil,
+		State:    "healthy",
+	}
+}
+
 func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
 		ID:       1,

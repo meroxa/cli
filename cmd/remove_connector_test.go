@@ -76,6 +76,7 @@ func TestRemoveConnectorExecution(t *testing.T) {
 
 func TestRemoveConnectorOutput(t *testing.T) {
 	c := utils.GenerateConnector()
+	flagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
 		rc := &RemoveConnector{}
