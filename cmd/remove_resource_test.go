@@ -38,7 +38,7 @@ func TestRemoveResourceArgs(t *testing.T) {
 	}
 }
 
-func TestRemoveResourceExecution(t *testing.T) {
+func TestRemoveResourceExecutionForceFlag(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockRemoveResourceClient(ctrl)
@@ -47,9 +47,15 @@ func TestRemoveResourceExecution(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetResourceByName(ctx, r.Name).Return(&r, nil).AnyTimes()
+		GetResourceByName(ctx, r.Name).
+		Return(&r, nil).
+		MaxTimes(2)
 
-	client.EXPECT().DeleteResource(ctx, r.ID).Return(nil).AnyTimes()
+	client.
+		EXPECT().
+		DeleteResource(ctx, r.ID).
+		Return(nil).
+		MaxTimes(2)
 
 	tests := []struct {
 		force bool
@@ -88,7 +94,6 @@ func TestRemoveResourceExecution(t *testing.T) {
 			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 		}
 	}
-
 }
 
 func TestRemoveResourceOutput(t *testing.T) {

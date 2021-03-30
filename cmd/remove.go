@@ -20,7 +20,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
+	"io"
 	"strings"
 )
 
@@ -29,9 +29,9 @@ type Remove struct {
 }
 
 // confirmRemoved will prompt for confirmation or will check the `--force` flag value
-func (r *Remove) confirmRemove(val string) bool {
+func (r *Remove) confirmRemove(stdin io.Reader, val string) bool {
 	if !r.force {
-		reader := bufio.NewReader(os.Stdin)
+		reader := bufio.NewReader(stdin)
 		fmt.Printf("To proceed, type %s or re-run this command with --force\n▸ ", val)
 		input, _ := reader.ReadString('\n')
 		return val == strings.TrimSuffix(input, "\n")

@@ -2,91 +2,13 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
-
-var tests = []struct {
-	expected string
-}{
-	{"Deprovision a component of the Meroxa platform, including pipelines,\n" +
-		" resources, and connectors"},
-	{"Usage:\n" +
-		"  meroxa remove [command]"},
-	{"Aliases:\n" +
-		"  remove, rm, delete"},
-	{"Available Commands:"},
-	{"connector   Remove connector"},
-	{"endpoint    Remove endpoint"},
-	{"pipeline    Remove pipeline"},
-	{"resource    Remove resource"},
-	{"Flags:\n" +
-		"  -h, --help   help for remove"},
-}
-
-func TestRemoveCmd(t *testing.T) {
-	rootCmd := RootCmd()
-	b := bytes.NewBufferString("")
-	rootCmd.SetOut(b)
-	rootCmd.SetArgs([]string{"remove"})
-	rootCmd.Execute()
-
-	out, err := ioutil.ReadAll(b)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, tt := range tests {
-		if !strings.Contains(string(out), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(out))
-		}
-	}
-}
-
-func TestRemoveCmdWithRmAlias(t *testing.T) {
-	rootCmd := RootCmd()
-	b := bytes.NewBufferString("")
-	rootCmd.SetOut(b)
-	rootCmd.SetArgs([]string{"rm"})
-	rootCmd.Execute()
-
-	out, err := ioutil.ReadAll(b)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, tt := range tests {
-		if !strings.Contains(string(out), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(out))
-		}
-	}
-}
-
-func TestRemoveCmdWithDeleteAlias(t *testing.T) {
-	rootCmd := RootCmd()
-	b := bytes.NewBufferString("")
-	rootCmd.SetOut(b)
-	rootCmd.SetArgs([]string{"delete"})
-	rootCmd.Execute()
-
-	out, err := ioutil.ReadAll(b)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	for _, tt := range tests {
-		if !strings.Contains(string(out), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(out))
-		}
-	}
-}
 
 func TestRemoveFlags(t *testing.T) {
 	expectedFlags := []struct {
@@ -121,6 +43,42 @@ func TestRemoveFlags(t *testing.T) {
 
 		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
+		}
+	}
+}
+
+func TestConfirmationPrompt(t *testing.T) {
+	expectedValue := "correct-value"
+
+	tests := []struct {
+		value string
+	}{
+		{expectedValue},
+		{"incorrect-value"},
+	}
+
+	// Force flag to false
+	r := Remove{false}
+
+	for _, tt := range tests {
+		output := utils.CaptureOutput(func() {
+			var stdin bytes.Buffer
+			stdin.Write([]byte(fmt.Sprintf("%s\n", expectedValue)))
+			confirmed := r.confirmRemove(&stdin, tt.value)
+
+			if confirmed && !strings.Contains(expectedValue, tt.value) {
+				t.Fatalf("for value \"%s\", it shouldn't have been confirmed", tt.value)
+			}
+
+			if !confirmed && strings.Contains(expectedValue, tt.value) {
+				t.Fatalf("for value \"%s\", it should have been confirmed", tt.value)
+			}
+		})
+
+		expected := fmt.Sprintf("To proceed, type %s or re-run this command with --force\n", tt.value)
+
+		if !strings.Contains(output, expected) {
+			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 		}
 	}
 }

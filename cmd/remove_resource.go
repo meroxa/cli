@@ -23,6 +23,7 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 type RemoveResource struct {
@@ -55,7 +56,7 @@ func (rr *RemoveResource) execute(ctx context.Context, c RemoveResourceClient) (
 		return nil, err
 	}
 
-	canRemove := rr.removeCmd.confirmRemove(rr.name)
+	canRemove := rr.removeCmd.confirmRemove(os.Stdin, rr.name)
 
 	if canRemove {
 		return res, c.DeleteResource(ctx, res.ID)
