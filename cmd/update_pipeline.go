@@ -28,7 +28,6 @@ import (
 
 type UpdatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
-	// TODO: Try to unify UpdatePipelineStatus with UpdatePipeline in meroxa-go
 	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
 	UpdatePipeline(ctx context.Context, pipelineID int, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
 }
@@ -44,7 +43,6 @@ func (up *UpdatePipeline) setArgs(args []string) error {
 
 	up.name = args[0]
 
-	// TODO: Depending on what's been updated, set values here so execute knows what to update
 	return nil
 }
 
