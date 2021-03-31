@@ -41,7 +41,7 @@ func (rc *RemoveConnector) setArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
 	}
-	// Resource Name
+	// Connector Name
 	rc.name = args[0]
 
 	rc.removeCmd.componentType = "connector"
