@@ -25,17 +25,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	state string // connector state
-)
-
 type UpdatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
 }
 
 type UpdatePipeline struct {
-	name string
+	name  string
+	state string // connector state
 }
 
 func (up *UpdatePipeline) setArgs(args []string) error {
@@ -50,7 +47,7 @@ func (up *UpdatePipeline) setArgs(args []string) error {
 }
 
 func (up *UpdatePipeline) setFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&state, "state", "", "", "pipeline state")
+	cmd.Flags().StringVarP(&up.state, "state", "", "", "pipeline state")
 	cmd.MarkFlagRequired("state")
 }
 
@@ -67,7 +64,7 @@ func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (
 	}
 
 	// call meroxa-go to update pipeline status with name
-	p, err = c.UpdatePipelineStatus(ctx, p.ID, state)
+	p, err = c.UpdatePipelineStatus(ctx, p.ID, up.state)
 	if err != nil {
 		return p, err
 	}
