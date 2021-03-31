@@ -21,7 +21,7 @@ func TestUpdatePipelineArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{nil, errors.New("requires pipeline name\n\nUsage:\n  meroxa update pipeline <name> --state <pause|resume|restart>"), ""},
+		{nil, errors.New("requires pipeline name"), ""},
 		{[]string{"pipelineName"}, nil, "pipelineName"},
 	}
 
@@ -45,7 +45,9 @@ func TestUpdatePipelineFlags(t *testing.T) {
 		required  bool
 		shorthand string
 	}{
-		{"state", true, ""},
+		{"state", false, ""},
+		{"name", false, ""},
+		{"metadata", false, "m"},
 	}
 
 	c := &cobra.Command{}
@@ -65,6 +67,21 @@ func TestUpdatePipelineFlags(t *testing.T) {
 		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
 		}
+	}
+}
+
+func TestUpdatePipelineExecutionNoFlags(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdatePipelineClient(ctrl)
+
+	up := &UpdatePipeline{}
+	_, err := up.execute(ctx, client)
+
+	expected := "requires either --name, --state or --metadata"
+
+	if err != nil && err.Error() != expected {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
 }
 

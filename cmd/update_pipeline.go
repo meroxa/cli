@@ -33,13 +33,12 @@ type UpdatePipelineClient interface {
 }
 
 type UpdatePipeline struct {
-	name  string
-	state string
+	name, newName, metadata, state string
 }
 
 func (up *UpdatePipeline) setArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires pipeline name\n\nUsage:\n  meroxa update pipeline <name> --state <pause|resume|restart>")
+		return errors.New("requires pipeline name")
 	}
 
 	up.name = args[0]
@@ -49,11 +48,16 @@ func (up *UpdatePipeline) setArgs(args []string) error {
 }
 
 func (up *UpdatePipeline) setFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&up.state, "state", "", "", "pipeline state")
-	cmd.MarkFlagRequired("state")
+	cmd.Flags().StringVarP(&up.state, "state", "", "", "new pipeline state")
+	cmd.Flags().StringVarP(&up.newName, "name", "", "", "new pipeline name")
+	cmd.Flags().StringVarP(&up.metadata, "metadata", "m", "", "new pipeline metadata")
 }
 
 func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (*meroxa.Pipeline, error) {
+	if up.newName == "" && up.metadata == "" && up.state == "" {
+		return nil, errors.New("requires either --name, --state or --metadata")
+	}
+
 	if !flagRootOutputJSON {
 		fmt.Printf("Updating %s pipeline...\n", up.name)
 	}
@@ -85,12 +89,15 @@ func (up *UpdatePipeline) output(p *meroxa.Pipeline) {
 // command represents the `meroxa update pipeline` command
 func (up *UpdatePipeline) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "pipeline <name> --state <pause|resume|restart>",
+		Use:     "pipeline <name>",
 		Aliases: []string{"pipelines"},
 		Short:   "Update pipeline state",
+		Example: "\n" +
+			"meroxa update pipeline old-name --name new-name\n" +
+			"meroxa update pipeline pipeline-name --state pause\n" +
+			"meroxa update pipeline pipeline-name --metadata '{\"key\":\"value\"}'",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			up.setArgs(args)
-			return nil
+			return up.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
