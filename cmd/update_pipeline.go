@@ -32,7 +32,7 @@ type UpdatePipelineClient interface {
 
 type UpdatePipeline struct {
 	name  string
-	state string // connector state
+	state string
 }
 
 func (up *UpdatePipeline) setArgs(args []string) error {
@@ -107,7 +107,6 @@ func (up *UpdatePipeline) command() *cobra.Command {
 			}
 
 			up.output(p)
-
 			return nil
 		},
 	}

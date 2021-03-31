@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang/mock/gomock"
+	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
@@ -62,6 +65,47 @@ func TestUpdatePipelineFlags(t *testing.T) {
 		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
 		}
+	}
+}
+
+func TestUpdatePipelineExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdatePipelineClient(ctrl)
+
+	p := utils.GeneratePipeline()
+	newState := "pause"
+
+	client.
+		EXPECT().
+		GetPipelineByName(ctx, p.Name).
+		Return(&p, nil)
+
+	client.
+		EXPECT().
+		UpdatePipelineStatus(ctx, p.ID, newState).
+		Return(&p, nil)
+
+	output := utils.CaptureOutput(func() {
+		up := &UpdatePipeline{}
+		up.name = p.Name
+		up.state = newState
+
+		got, err := up.execute(ctx, client)
+
+		if !reflect.DeepEqual(got, &p) {
+			t.Fatalf("expected \"%v\", got \"%v\"", &p, got)
+		}
+
+		if err != nil {
+			t.Fatalf("not expected error, got \"%s\"", err.Error())
+		}
+	})
+
+	expected := fmt.Sprintf("Updating %s pipeline...", p.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 	}
 }
 
