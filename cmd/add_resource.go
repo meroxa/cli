@@ -118,7 +118,6 @@ func (ar *AddResource) command() *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("type %s name: %s url %s", ar.rType, ar.name, ar.url)
 			ri := meroxa.CreateResourceInput{
 				Type:     ar.rType,
 				Name:     ar.name,
