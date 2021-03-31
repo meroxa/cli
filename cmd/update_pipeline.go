@@ -18,72 +18,134 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
-var (
-	state string // connector state
-)
+type UpdatePipelineClient interface {
+	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
+	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
+	UpdatePipeline(ctx context.Context, pipelineID int, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
+}
 
-// UpdatePipelineCmd represents the `meroxa update pipeline` command
-func UpdatePipelineCmd() *cobra.Command {
-	updatePipelineCmd := &cobra.Command{
-		Use:     "pipeline <name> --state <pause|resume|restart>",
-		Aliases: []string{"pipelines"},
-		Short:   "Update pipeline state",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires pipeline name\n\nUsage:\n  meroxa update pipeline <name> --state <pause|resume|restart>")
+type UpdatePipeline struct {
+	name, newName, metadata, state string
+}
+
+func (up *UpdatePipeline) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires pipeline name")
+	}
+
+	up.name = args[0]
+
+	return nil
+}
+
+func (up *UpdatePipeline) setFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&up.state, "state", "", "", "new pipeline state")
+	cmd.Flags().StringVarP(&up.newName, "name", "", "", "new pipeline name")
+	cmd.Flags().StringVarP(&up.metadata, "metadata", "m", "", "new pipeline metadata")
+}
+
+func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (*meroxa.Pipeline, error) {
+	if up.newName == "" && up.metadata == "" && up.state == "" {
+		return nil, errors.New("requires either --name, --state or --metadata")
+	}
+
+	if !flagRootOutputJSON {
+		fmt.Printf("Updating %s pipeline...\n", up.name)
+	}
+
+	// get pipeline id from name
+	p, err := c.GetPipelineByName(ctx, up.name)
+
+	if err != nil {
+		return p, err
+	}
+
+	// call meroxa-go to update pipeline state
+	if up.state != "" {
+		p, err = c.UpdatePipelineStatus(ctx, p.ID, up.state)
+		if err != nil {
+			return p, err
+		}
+	}
+
+	// call meroxa-go to update either name or metadata
+	if up.newName != "" || up.metadata != "" {
+		var pi meroxa.UpdatePipelineInput
+
+		if up.newName != "" {
+			pi.Name = up.newName
+		}
+
+		if up.metadata != "" {
+			metadata := map[string]string{}
+
+			err := json.Unmarshal([]byte(up.metadata), &metadata)
+			if err != nil {
+				return p, err
 			}
 
-			return nil
+			pi.Metadata = metadata
+		}
+
+		p, err = c.UpdatePipeline(ctx, p.ID, pi)
+		if err != nil {
+			return p, err
+		}
+	}
+
+	return p, nil
+}
+
+func (up *UpdatePipeline) output(p *meroxa.Pipeline) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(p)
+	} else {
+		fmt.Printf("pipeline %s successfully updated!\n", p.Name)
+	}
+}
+
+// command represents the `meroxa update pipeline` command
+func (up *UpdatePipeline) command() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "pipeline <name>",
+		Aliases: []string{"pipelines"},
+		Short:   "Update pipeline state",
+		Example: "\n" +
+			"meroxa update pipeline old-name --name new-name\n" +
+			"meroxa update pipeline pipeline-name --state pause\n" +
+			"meroxa update pipeline pipeline-name --metadata '{\"key\":\"value\"}'",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return up.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Pipeline Name
-			pipelineName := args[0]
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
 			c, err := client()
 			if err != nil {
 				return err
 			}
 
-			// get pipeline id from name
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
+			p, err := up.execute(ctx, c)
 
-			pipeline, err := c.GetPipelineByName(ctx, pipelineName)
 			if err != nil {
 				return err
 			}
 
-			ctx = context.Background()
-			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
-
-			// call meroxa-go to update pipeline status with name
-			if !flagRootOutputJSON {
-				fmt.Printf("Updating %s pipeline...\n", pipelineName)
-			}
-
-			p, err := c.UpdatePipelineStatus(ctx, pipeline.ID, state)
-			if err != nil {
-				return err
-			}
-
-			if flagRootOutputJSON {
-				utils.JSONPrint(p)
-			} else {
-				fmt.Printf("Pipeline %s successfully updated!\n", p.Name)
-			}
-
+			up.output(p)
 			return nil
 		},
 	}
-	updatePipelineCmd.Flags().StringVarP(&state, "state", "", "", "pipeline state")
-	updatePipelineCmd.MarkFlagRequired("state")
-	return updatePipelineCmd
+
+	up.setFlags(cmd)
+	return cmd
 }

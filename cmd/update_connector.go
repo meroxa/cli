@@ -28,6 +28,8 @@ import (
 
 // UpdateConnectorCmd represents the `meroxa update connector` command
 func UpdateConnectorCmd() *cobra.Command {
+	var state string
+
 	updateConnectorCmd := &cobra.Command{
 		Use:     "connector <name> --state <pause|resume|restart>",
 		Aliases: []string{"connectors"},

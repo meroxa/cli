@@ -20,7 +20,7 @@ func TestAddResourceArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{[]string{""}, nil, ""},
+		{nil, nil, ""},
 		{[]string{"resName"}, nil, "resName"},
 	}
 
@@ -115,6 +115,7 @@ func TestAddResourceExecution(t *testing.T) {
 
 func TestAddResourceOutput(t *testing.T) {
 	r := utils.GenerateResource()
+	flagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
 		ar := &AddResource{}
