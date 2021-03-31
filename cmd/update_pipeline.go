@@ -27,7 +27,9 @@ import (
 
 type UpdatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
+	// TODO: Try to unify UpdatePipelineStatus with UpdatePipeline in meroxa-go
 	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
+	UpdatePipeline(ctx context.Context, key string, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
 }
 
 type UpdatePipeline struct {

@@ -18,6 +18,13 @@ type Pipeline struct {
 	State    string            `json:"state"`
 }
 
+type UpdatePipelineInput struct {
+	Name     string            `json:"name"`
+	Metadata map[string]string `json:"metadata"`
+	// We're updating State via a different endpoint, but I'd like to propose only one endpoint for updating pipelines
+	State string `json:"state"`
+}
+
 // ComponentKind enum for Component "kinds" within Pipeline stages
 type ComponentKind int
 
@@ -40,6 +47,29 @@ type PipelineStage struct {
 // CreatePipeline provisions a new Pipeline
 func (c *Client) CreatePipeline(ctx context.Context, pipeline *Pipeline) (*Pipeline, error) {
 	resp, err := c.makeRequest(ctx, http.MethodPost, pipelinesBasePath, pipeline, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var p Pipeline
+	err = json.NewDecoder(resp.Body).Decode(&p)
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
+
+// UpdatePipeline updates a pipeline
+func (c *Client) UpdatePipeline(ctx context.Context, key string, pipelineToUpdate UpdatePipelineInput) (*Pipeline, error) {
+	path := fmt.Sprintf("%s/%s", pipelinesBasePath, key)
+
+	resp, err := c.makeRequest(ctx, http.MethodPatch, path, pipelineToUpdate, nil)
 	if err != nil {
 		return nil, err
 	}
