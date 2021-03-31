@@ -51,18 +51,18 @@ func (mr *MockUpdatePipelineClientMockRecorder) GetPipelineByName(ctx, name inte
 }
 
 // UpdatePipeline mocks base method.
-func (m *MockUpdatePipelineClient) UpdatePipeline(ctx context.Context, key string, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error) {
+func (m *MockUpdatePipelineClient) UpdatePipeline(ctx context.Context, pipelineID int, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePipeline", ctx, key, pipeline)
+	ret := m.ctrl.Call(m, "UpdatePipeline", ctx, pipelineID, pipeline)
 	ret0, _ := ret[0].(*meroxa.Pipeline)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdatePipeline indicates an expected call of UpdatePipeline.
-func (mr *MockUpdatePipelineClientMockRecorder) UpdatePipeline(ctx, key, pipeline interface{}) *gomock.Call {
+func (mr *MockUpdatePipelineClientMockRecorder) UpdatePipeline(ctx, pipelineID, pipeline interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePipeline", reflect.TypeOf((*MockUpdatePipelineClient)(nil).UpdatePipeline), ctx, key, pipeline)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePipeline", reflect.TypeOf((*MockUpdatePipelineClient)(nil).UpdatePipeline), ctx, pipelineID, pipeline)
 }
 
 // UpdatePipelineStatus mocks base method.

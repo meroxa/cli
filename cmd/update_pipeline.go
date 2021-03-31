@@ -18,6 +18,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/meroxa/cli/utils"
@@ -29,7 +30,7 @@ type UpdatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 	// TODO: Try to unify UpdatePipelineStatus with UpdatePipeline in meroxa-go
 	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
-	UpdatePipeline(ctx context.Context, key string, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
+	UpdatePipeline(ctx context.Context, pipelineID int, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
 }
 
 type UpdatePipeline struct {
@@ -69,10 +70,37 @@ func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (
 		return p, err
 	}
 
-	// call meroxa-go to update pipeline status with name
-	p, err = c.UpdatePipelineStatus(ctx, p.ID, up.state)
-	if err != nil {
-		return p, err
+	// call meroxa-go to update pipeline state
+	if up.state != "" {
+		p, err = c.UpdatePipelineStatus(ctx, p.ID, up.state)
+		if err != nil {
+			return p, err
+		}
+	}
+
+	// call meroxa-go to update either name or metadata
+	if up.newName != "" || up.metadata != "" {
+		var pi meroxa.UpdatePipelineInput
+
+		if up.newName != "" {
+			pi.Name = up.newName
+		}
+
+		if up.metadata != "" {
+			metadata := map[string]string{}
+
+			err := json.Unmarshal([]byte(up.metadata), &metadata)
+			if err != nil {
+				return p, err
+			}
+
+			pi.Metadata = metadata
+		}
+
+		p, err = c.UpdatePipeline(ctx, p.ID, pi)
+		if err != nil {
+			return p, err
+		}
 	}
 
 	return p, nil

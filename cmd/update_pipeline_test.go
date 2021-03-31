@@ -85,7 +85,7 @@ func TestUpdatePipelineExecutionNoFlags(t *testing.T) {
 	}
 }
 
-func TestUpdatePipelineExecution(t *testing.T) {
+func TestUpdatePipelineExecutionWithNewState(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockUpdatePipelineClient(ctrl)
@@ -107,6 +107,97 @@ func TestUpdatePipelineExecution(t *testing.T) {
 		up := &UpdatePipeline{}
 		up.name = p.Name
 		up.state = newState
+
+		got, err := up.execute(ctx, client)
+
+		if !reflect.DeepEqual(got, &p) {
+			t.Fatalf("expected \"%v\", got \"%v\"", &p, got)
+		}
+
+		if err != nil {
+			t.Fatalf("not expected error, got \"%s\"", err.Error())
+		}
+	})
+
+	expected := fmt.Sprintf("Updating %s pipeline...", p.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestUpdatePipelineExecutionWithNewName(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdatePipelineClient(ctrl)
+
+	p := utils.GeneratePipeline()
+	var pi meroxa.UpdatePipelineInput
+
+	newName := "new-pipeline-name"
+	pi.Name = newName
+
+	client.
+		EXPECT().
+		GetPipelineByName(ctx, p.Name).
+		Return(&p, nil)
+
+	client.
+		EXPECT().
+		UpdatePipeline(ctx, p.ID, pi).
+		Return(&p, nil)
+
+	output := utils.CaptureOutput(func() {
+		up := &UpdatePipeline{}
+		up.name = p.Name
+
+		// What we're trying to update
+		up.newName = newName
+
+		got, err := up.execute(ctx, client)
+
+		if !reflect.DeepEqual(got, &p) {
+			t.Fatalf("expected \"%v\", got \"%v\"", &p, got)
+		}
+
+		if err != nil {
+			t.Fatalf("not expected error, got \"%s\"", err.Error())
+		}
+	})
+
+	expected := fmt.Sprintf("Updating %s pipeline...", p.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdatePipelineClient(ctrl)
+
+	p := utils.GeneratePipeline()
+	var pi meroxa.UpdatePipelineInput
+
+	pi.Metadata = map[string]string{"key": "value"}
+
+	client.
+		EXPECT().
+		GetPipelineByName(ctx, p.Name).
+		Return(&p, nil)
+
+	client.
+		EXPECT().
+		UpdatePipeline(ctx, p.ID, pi).
+		Return(&p, nil)
+
+	output := utils.CaptureOutput(func() {
+		up := &UpdatePipeline{}
+		up.name = p.Name
+
+		// What we're trying to update
+		up.metadata = "{\"key\": \"value\"}"
 
 		got, err := up.execute(ctx, client)
 

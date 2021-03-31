@@ -66,8 +66,8 @@ func (c *Client) CreatePipeline(ctx context.Context, pipeline *Pipeline) (*Pipel
 }
 
 // UpdatePipeline updates a pipeline
-func (c *Client) UpdatePipeline(ctx context.Context, key string, pipelineToUpdate UpdatePipelineInput) (*Pipeline, error) {
-	path := fmt.Sprintf("%s/%s", pipelinesBasePath, key)
+func (c *Client) UpdatePipeline(ctx context.Context, pipelineID int, pipelineToUpdate UpdatePipelineInput) (*Pipeline, error) {
+	path := fmt.Sprintf("%s/%d", pipelinesBasePath, pipelineID)
 
 	resp, err := c.makeRequest(ctx, http.MethodPatch, path, pipelineToUpdate, nil)
 	if err != nil {
