@@ -29,9 +29,11 @@ func GenerateResource() meroxa.Resource {
 
 func GenerateConnector() meroxa.Connector {
 	return meroxa.Connector{
-		ID:   1,
-		Type: "postgres",
-		Name: "connector-1234",
+		ID:         1,
+		Type:       "postgres",
+		Name:       "connector-1234",
+		State:      "running",
+		PipelineID: 1234,
 	}
 }
 

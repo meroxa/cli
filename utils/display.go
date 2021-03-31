@@ -134,10 +134,11 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
 				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "STREAMS"},
 				{Align: simpletable.AlignCenter, Text: "STATE"},
+				{Align: simpletable.AlignCenter, Text: "PIPELINE"},
 			},
 		}
 
@@ -163,10 +164,11 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 			}
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
-				{Text: conn.Type},
 				{Text: conn.Name},
+				{Text: conn.Type},
 				{Text: streamStr},
 				{Text: conn.State},
+				{Text: fmt.Sprintf("%d", conn.PipelineID)},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)

@@ -18,6 +18,7 @@ type Connector struct {
 	Streams       map[string]interface{} `json:"streams"`
 	State         string                 `json:"state"`
 	Trace         string                 `json:"trace,omitempty"`
+	PipelineID    int                    `json:"pipeline_id"`
 }
 
 // CreateConnector provisions a connector between the Resource and the Meroxa

@@ -18,14 +18,32 @@ package cmd
 
 import (
 	"context"
-
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/spf13/cobra"
 )
 
+type ListConnectorsClient interface {
+	ListConnectors(ctx context.Context) ([]*meroxa.Connector, error)
+}
+
+type ListConnectors struct{}
+
+func (lc *ListConnectors) execute(ctx context.Context, c ListConnectorsClient) ([]*meroxa.Connector, error) {
+	return c.ListConnectors(ctx)
+}
+
+func (lc *ListConnectors) output(connectors []*meroxa.Connector) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(connectors)
+	} else {
+		utils.PrintConnectorsTable(connectors)
+	}
+}
+
 // ListConnectorsCmd represents the `meroxa list connectors` command
-func ListConnectorsCmd() *cobra.Command {
+func (lc *ListConnectors) command() *cobra.Command {
 	return &cobra.Command{
 		Use:     "connectors",
 		Short:   "List connectors",
@@ -40,16 +58,13 @@ func ListConnectorsCmd() *cobra.Command {
 			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 			defer cancel()
 
-			connectors, err := c.ListConnectors(ctx)
+			connectors, err := lc.execute(ctx, c)
 			if err != nil {
 				return err
 			}
 
-			if flagRootOutputJSON {
-				utils.JSONPrint(connectors)
-			} else {
-				utils.PrintConnectorsTable(connectors)
-			}
+			lc.output(connectors)
+
 			return nil
 		},
 	}
