@@ -43,6 +43,10 @@ func (rc *RemoveConnector) setArgs(args []string) error {
 	}
 	// Resource Name
 	rc.name = args[0]
+
+	rc.removeCmd.componentType = "connector"
+	rc.removeCmd.confirmableName = rc.name
+
 	return nil
 }
 

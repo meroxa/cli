@@ -24,8 +24,9 @@ func TestRemoveConnectorArgs(t *testing.T) {
 		{[]string{"resName"}, nil, "resName"},
 	}
 
+	r := &Remove{}
 	for _, tt := range tests {
-		rc := RemoveConnector{}
+		rc := &RemoveConnector{removeCmd: r}
 		err := rc.setArgs(tt.args)
 
 		if tt.err != nil && !strings.Contains(err.Error(), tt.err.Error()) {
@@ -34,6 +35,17 @@ func TestRemoveConnectorArgs(t *testing.T) {
 
 		if tt.name != rc.name {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, rc.name)
+		}
+
+		if err == nil {
+			componentType := "connector"
+			if rc.removeCmd.componentType != componentType {
+				t.Fatalf("expected type to be set to %q", componentType)
+			}
+
+			if rc.removeCmd.confirmableName != rc.name {
+				t.Fatalf("expected \"confirmableName\" to be set to %q", rc.name)
+			}
 		}
 	}
 }
