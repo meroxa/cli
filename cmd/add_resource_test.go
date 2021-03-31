@@ -20,7 +20,7 @@ func TestAddResourceArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{[]string{""}, nil, ""},
+		{nil, nil, ""},
 		{[]string{"resName"}, nil, "resName"},
 	}
 

@@ -53,6 +53,10 @@ func (ar *AddResource) setFlags(cmd *cobra.Command) {
 }
 
 func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res meroxa.CreateResourceInput) (*meroxa.Resource, error) {
+	if !flagRootOutputJSON {
+		fmt.Printf("Adding %s resource...\n", res.Type)
+	}
+
 	var err error
 
 	// TODO: Figure out best way to handle creds and metadata
@@ -75,10 +79,6 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 		}
 
 		res.Metadata = metadata
-	}
-
-	if !flagRootOutputJSON {
-		fmt.Printf("Adding %s resource...\n", res.Type)
 	}
 
 	resource, err := c.CreateResource(ctx, &res)

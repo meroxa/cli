@@ -1,43 +1,31 @@
 package cmd
 
 import (
-	"bytes"
-	"io/ioutil"
+	"errors"
 	"strings"
 	"testing"
 )
 
-func TestUpdatePipelineCmd(t *testing.T) {
+func TestUpdatePipelineArgs(t *testing.T) {
 	tests := []struct {
-		expected string
-		args     []string
+		args []string
+		err  error
+		name string
 	}{
-		{
-			"Error: requires pipeline name",
-			[]string{"update", "pipeline"},
-		},
-		{
-			"Error: required flag(s) \"state\" not set",
-			[]string{"update", "pipeline", "name"},
-		},
-		// TODO: Add a test mocking the call when specifying --state
+		{nil, errors.New("requires pipeline name\n\nUsage:\n  meroxa update pipeline <name> --state <pause|resume|restart>"), ""},
+		{[]string{"pipelineName"}, nil, "pipelineName"},
 	}
 
 	for _, tt := range tests {
-		rootCmd := RootCmd()
-		b := bytes.NewBufferString("")
-		rootCmd.SetOut(b)
-		rootCmd.SetErr(b)
-		rootCmd.SetArgs(tt.args)
-		rootCmd.Execute()
-		output, err := ioutil.ReadAll(b)
+		up := &UpdatePipeline{}
+		err := up.setArgs(tt.args)
 
-		if err != nil {
-			t.Fatal(err)
+		if err != nil && !strings.Contains(err.Error(), tt.err.Error()) {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err.Error(), err.Error())
 		}
 
-		if !strings.Contains(string(output), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(output))
+		if tt.name != up.name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, up.name)
 		}
 	}
 }

@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
@@ -28,62 +29,92 @@ var (
 	state string // connector state
 )
 
-// UpdatePipelineCmd represents the `meroxa update pipeline` command
-func UpdatePipelineCmd() *cobra.Command {
-	updatePipelineCmd := &cobra.Command{
+type UpdatePipelineClient interface {
+	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
+	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
+}
+
+type UpdatePipeline struct {
+	name string
+}
+
+func (up *UpdatePipeline) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires pipeline name\n\nUsage:\n  meroxa update pipeline <name> --state <pause|resume|restart>")
+	}
+
+	up.name = args[0]
+
+	// TODO: Depending on what's been updated, set values here so execute knows what to update
+	return nil
+}
+
+func (up *UpdatePipeline) setFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&state, "state", "", "", "pipeline state")
+	cmd.MarkFlagRequired("state")
+}
+
+func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (*meroxa.Pipeline, error) {
+	if !flagRootOutputJSON {
+		fmt.Printf("Updating %s pipeline...\n", up.name)
+	}
+
+	// get pipeline id from name
+	p, err := c.GetPipelineByName(ctx, up.name)
+
+	if err != nil {
+		return p, err
+	}
+
+	// call meroxa-go to update pipeline status with name
+	p, err = c.UpdatePipelineStatus(ctx, p.ID, state)
+	if err != nil {
+		return p, err
+	}
+
+	return p, nil
+}
+
+func (up *UpdatePipeline) output(p *meroxa.Pipeline) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(p)
+	} else {
+		fmt.Printf("pipeline %s successfully updated!\n", p.Name)
+	}
+}
+
+// command represents the `meroxa update pipeline` command
+func (up *UpdatePipeline) command() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:     "pipeline <name> --state <pause|resume|restart>",
 		Aliases: []string{"pipelines"},
 		Short:   "Update pipeline state",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 {
-				return errors.New("requires pipeline name\n\nUsage:\n  meroxa update pipeline <name> --state <pause|resume|restart>")
-			}
-
+			up.setArgs(args)
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Pipeline Name
-			pipelineName := args[0]
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
 
 			c, err := client()
 			if err != nil {
 				return err
 			}
 
-			// get pipeline id from name
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
+			p, err := up.execute(ctx, c)
 
-			pipeline, err := c.GetPipelineByName(ctx, pipelineName)
 			if err != nil {
 				return err
 			}
 
-			ctx = context.Background()
-			ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
-			defer cancel()
-
-			// call meroxa-go to update pipeline status with name
-			if !flagRootOutputJSON {
-				fmt.Printf("Updating %s pipeline...\n", pipelineName)
-			}
-
-			p, err := c.UpdatePipelineStatus(ctx, pipeline.ID, state)
-			if err != nil {
-				return err
-			}
-
-			if flagRootOutputJSON {
-				utils.JSONPrint(p)
-			} else {
-				fmt.Printf("Pipeline %s successfully updated!\n", p.Name)
-			}
+			up.output(p)
 
 			return nil
 		},
 	}
-	updatePipelineCmd.Flags().StringVarP(&state, "state", "", "", "pipeline state")
-	updatePipelineCmd.MarkFlagRequired("state")
-	return updatePipelineCmd
+
+	up.setFlags(cmd)
+	return cmd
 }

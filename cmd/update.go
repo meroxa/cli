@@ -29,7 +29,9 @@ func UpdateCmd() *cobra.Command {
 	}
 
 	updateCmd.AddCommand(UpdateConnectorCmd())
-	updateCmd.AddCommand(UpdatePipelineCmd())
+
+	up := &UpdatePipeline{}
+	updateCmd.AddCommand(up.command())
 	updateCmd.AddCommand(UpdateResource{}.command())
 
 	return updateCmd
