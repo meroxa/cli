@@ -21,8 +21,7 @@ type Pipeline struct {
 type UpdatePipelineInput struct {
 	Name     string            `json:"name"`
 	Metadata map[string]string `json:"metadata"`
-	// We're updating State via a different endpoint, but I'd like to propose only one endpoint for updating pipelines
-	State string `json:"state"`
+	State    string            `json:"state"`
 }
 
 // ComponentKind enum for Component "kinds" within Pipeline stages
