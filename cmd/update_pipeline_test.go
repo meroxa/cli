@@ -1,9 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -58,5 +62,38 @@ func TestUpdatePipelineFlags(t *testing.T) {
 		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
 		}
+	}
+}
+
+func TestUpdatePipelineOutput(t *testing.T) {
+	p := utils.GeneratePipeline()
+	flagRootOutputJSON = false
+
+	output := utils.CaptureOutput(func() {
+		up := &UpdatePipeline{}
+		up.output(&p)
+	})
+
+	expected := fmt.Sprintf("pipeline %s successfully updated!", p.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestUpdatePipelineJSONOutput(t *testing.T) {
+	r := utils.GeneratePipeline()
+	flagRootOutputJSON = true
+
+	output := utils.CaptureOutput(func() {
+		ar := &UpdatePipeline{}
+		ar.output(&r)
+	})
+
+	var parsedOutput meroxa.Pipeline
+	json.Unmarshal([]byte(output), &parsedOutput)
+
+	if !reflect.DeepEqual(r, parsedOutput) {
+		t.Fatalf("not expected output, got \"%s\"", output)
 	}
 }

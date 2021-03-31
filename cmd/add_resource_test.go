@@ -115,6 +115,7 @@ func TestAddResourceExecution(t *testing.T) {
 
 func TestAddResourceOutput(t *testing.T) {
 	r := utils.GenerateResource()
+	flagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
 		ar := &AddResource{}
