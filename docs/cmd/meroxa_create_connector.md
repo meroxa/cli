@@ -23,7 +23,8 @@ meroxa create connector [<custom-connector-name>] --to pg2redshift --input order
 ```
       --from string    resource name to use as source
   -h, --help           help for connector
-      --input string   command delimeted list of input streams
+      --input string   command delimited list of input streams
+      --pipeline int   ID of pipeline to attach connector to
       --to string      resource name to use as destination
 ```
 

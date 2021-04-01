@@ -17,9 +17,11 @@ limitations under the License.
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
+	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
@@ -48,12 +50,9 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 				return err
 			}
 
-			cfg := struct {
-				From *Config `json:"from"`
-				To   *Config `json:"to"`
-			}{
-				From: &Config{},
-				To:   &Config{},
+			var cfg struct {
+				From map[string]string `json:"from"`
+				To   map[string]string `json:"to"`
 			}
 			if cfgString != "" {
 				err = json.Unmarshal([]byte(cfgString), &cfg)
@@ -72,8 +71,7 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 			fmt.Printf("Creating connector from source %s...\n", source)
 
 			// we indicate what type of connector we're creating using its `mx:connectorType` key
-			metadata := map[string]string{"mx:connectorType": ""}
-			metadata["mx:connectorType"] = "source"
+			metadata := map[string]string{"mx:connectorType": "source"}
 
 			srcCon, err := createConnector("", source, cfg.From, metadata, input)
 			if err != nil {
@@ -105,4 +103,44 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 	connectCmd.Flags().String("input", "", "command delimeted list of input streams")
 
 	return connectCmd
+}
+
+func createConnector(connectorName string, resourceName string, config map[string]string, metadata map[string]string, input string) (*meroxa.Connector, error) {
+	c, err := client()
+	if err != nil {
+		return nil, err
+	}
+
+	// get resource ID from name
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+	defer cancel()
+
+	res, err := c.GetResourceByName(ctx, resourceName)
+	if err != nil {
+		return nil, err
+	}
+
+	// create connector
+	ctx = context.Background()
+	ctx, cancel = context.WithTimeout(ctx, clientTimeOut)
+	defer cancel()
+
+	// merge in input
+	if input != "" {
+		config["input"] = input
+	}
+
+	con, err := c.CreateConnector(ctx, meroxa.CreateConnectorInput{
+		Name:          connectorName,
+		ResourceID:    res.ID,
+		PipelineID:    0,
+		Configuration: config,
+		Metadata:      metadata,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return con, nil
 }
