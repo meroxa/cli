@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
-	"reflect"
-	"strings"
-	"testing"
 )
 
 func getConnectors() []*meroxa.Connector {

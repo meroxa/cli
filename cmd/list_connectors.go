@@ -18,9 +18,9 @@ package cmd
 
 import (
 	"context"
+
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
-
 	"github.com/spf13/cobra"
 )
 
