@@ -1,48 +1,170 @@
 package cmd
 
 import (
-	"bytes"
-	"io/ioutil"
+	"context"
+	"encoding/json"
+	"fmt"
+	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
+	"github.com/spf13/cobra"
 )
 
-func TestCreateConnectorCmd(t *testing.T) {
+func TestCreateConnectorArgs(t *testing.T) {
 	tests := []struct {
-		expected string
-		args     []string
+		args []string
+		err  error
+		name string
 	}{
-		{
-			"Error: requires either a source (--from) or a destination (--to)",
-			[]string{"create", "connector"},
-		},
-		{
-			"Error: required flag(s) \"input\" not set",
-			[]string{"create", "connector", "--to", "pg2redshift"},
-		},
-		{
-			"Error: required flag(s) \"input\" not set",
-			[]string{"create", "connector", "--from", "pg2kafka"},
-		},
-		// TODO: Add a test with "--input" and mocking the call
-		// TODO: Add a test with connector name as argument and mocking the call
+		{nil, nil, ""},
+		{[]string{"conName"}, nil, "conName"},
 	}
 
 	for _, tt := range tests {
-		rootCmd := RootCmd()
-		b := bytes.NewBufferString("")
-		rootCmd.SetOut(b)
-		rootCmd.SetErr(b)
-		rootCmd.SetArgs(tt.args)
-		rootCmd.Execute()
-		output, err := ioutil.ReadAll(b)
+		cc := &CreateConnector{source: "source or destination is required"}
+		err := cc.setArgs(tt.args)
+
+		if tt.err != err {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		}
+
+		if tt.name != cc.name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.name)
+		}
+	}
+}
+
+func TestCreateConnectorFlags(t *testing.T) {
+	expectedFlags := []struct {
+		name      string
+		required  bool
+		shorthand string
+	}{
+		{"input", true, ""},
+		{"config", false, "c"},
+		{"from", false, ""},
+		{"to", false, ""},
+		{"pipeline", false, ""},
+		{"metadata", false, "m"},
+	}
+
+	c := &cobra.Command{}
+	cc := &CreateConnector{}
+	cc.setFlags(c)
+
+	for _, f := range expectedFlags {
+		cf := c.Flags().Lookup(f.name)
+		if cf == nil {
+			t.Fatalf("expected flag \"%s\" to be present", f.name)
+		}
+
+		if f.shorthand != cf.Shorthand {
+			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+		}
+
+		if f.required && !utils.IsFlagRequired(cf) {
+			t.Fatalf("expected flag \"%s\" to be required", f.name)
+		}
+	}
+}
+
+func TestCreateConnectorExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockCreateConnectorClient(ctrl)
+
+	cc := &CreateConnector{
+		input:       "foo",
+		config:      `{"key":"value"}`,
+		metadata:    `{"metakey":"metavalue"}`,
+		source:      "my-resource",
+		destination: "",
+		name:        "connector-name",
+		pipelineID:  5,
+	}
+
+	cr := utils.GenerateConnector()
+
+	client.
+		EXPECT().
+		GetResourceByName(
+			ctx,
+			"my-resource",
+		).
+		Return(&meroxa.Resource{ID: 123}, nil)
+
+	client.
+		EXPECT().
+		CreateConnector(
+			ctx,
+			meroxa.CreateConnectorInput{
+				Name:       "connector-name",
+				ResourceID: 123,
+				PipelineID: 5,
+				Configuration: map[string]string{
+					"key":   "value",
+					"input": "foo",
+				},
+				Metadata: map[string]string{
+					"metakey":          "metavalue",
+					"mx:connectorType": "source",
+				},
+			},
+		).
+		Return(&cr, nil)
+
+	output := utils.CaptureOutput(func() {
+		got, err := cc.execute(ctx, client)
+
+		if !reflect.DeepEqual(got, &cr) {
+			t.Fatalf("expected \"%v\", got \"%v\"", &cr, got)
+		}
 
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("not expected error, got \"%s\"", err.Error())
 		}
+	})
 
-		if !strings.Contains(string(output), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(output))
-		}
+	expected := "Creating connector..."
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestCreateConnectorOutput(t *testing.T) {
+	c := utils.GenerateConnector()
+	flagRootOutputJSON = false
+
+	output := utils.CaptureOutput(func() {
+		cc := &CreateConnector{}
+		cc.output(&c)
+	})
+
+	expected := fmt.Sprintf("Connector %s successfully created!", c.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	}
+}
+
+func TestCreateConnectorJSONOutput(t *testing.T) {
+	c := utils.GenerateConnector()
+	flagRootOutputJSON = true
+
+	output := utils.CaptureOutput(func() {
+		cc := &CreateConnector{}
+		cc.output(&c)
+	})
+
+	var parsedOutput meroxa.Connector
+	json.Unmarshal([]byte(output), &parsedOutput)
+
+	if !reflect.DeepEqual(c, parsedOutput) {
+		t.Fatalf("not expected output, got \"%s\"", output)
 	}
 }

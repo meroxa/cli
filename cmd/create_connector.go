@@ -58,20 +58,18 @@ func (cc *CreateConnector) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&cc.metadata, "metadata", "m", "", "connector metadata")
 	cmd.Flags().StringVarP(&cc.source, "from", "", "", "resource name to use as source")
 	cmd.Flags().StringVarP(&cc.destination, "to", "", "", "resource name to use as destination")
-	cmd.Flags().IntVarP(&cc.pipelineID, "pipeline", "", 0, "ID of pipeline to attach connector to")
+	cmd.Flags().IntVarP(&cc.pipelineID, "pipeline", "", 0, "ID of pipeline to attach connector to") // TODO accept name once we display it in `list connectors` command
 
 	// Hide metadata flag for now. This could probably go away
 	cmd.Flags().MarkHidden("metadata")
 }
 
-func (cc *CreateConnector) parseJSONMap(str string) (map[string]string, error) {
-	if str == "" {
-		return nil, nil
+func (cc *CreateConnector) parseJSONMap(str string) (out map[string]string, err error) {
+	out = make(map[string]string)
+	if str != "" {
+		err = json.Unmarshal([]byte(str), &out)
 	}
-
-	var m map[string]string
-	err := json.Unmarshal([]byte(str), &m)
-	return m, err
+	return out, err
 }
 
 func (cc *CreateConnector) execute(ctx context.Context, c CreateConnectorClient) (*meroxa.Connector, error) {
@@ -90,10 +88,10 @@ func (cc *CreateConnector) execute(ctx context.Context, c CreateConnectorClient)
 
 	// merge in connector type
 	var resourceName string
-	if source != "" {
+	if cc.source != "" {
 		resourceName = cc.source
 		metadata["mx:connectorType"] = "source"
-	} else if destination != "" {
+	} else if cc.destination != "" {
 		resourceName = cc.destination
 		metadata["mx:connectorType"] = "destination"
 	}
