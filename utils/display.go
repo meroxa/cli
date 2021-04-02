@@ -96,8 +96,8 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
 				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
 				{Align: simpletable.AlignCenter, Text: "PROPERTIES"},
@@ -106,8 +106,8 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 
 		for _, res := range transforms {
 			r := []*simpletable.Cell{
-				{Text: res.Type},
 				{Text: res.Name},
+				{Text: res.Type},
 				{Text: strconv.FormatBool(res.Required)},
 				{Text: strings.ReplaceAll(res.Description, ". ", ". \n")},
 			}
@@ -134,8 +134,8 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
 				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "STREAMS"},
 				{Align: simpletable.AlignCenter, Text: "STATE"},
 			},
@@ -163,8 +163,8 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 			}
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
-				{Text: conn.Type},
 				{Text: conn.Name},
+				{Text: conn.Type},
 				{Text: streamStr},
 				{Text: conn.State},
 			}
@@ -203,8 +203,8 @@ func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
 				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "Name"},
-				{Align: simpletable.AlignCenter, Text: "State"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
 			},
 		}
 
