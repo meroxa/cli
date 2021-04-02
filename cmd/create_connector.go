@@ -130,7 +130,7 @@ func (cc *CreateConnector) output(con *meroxa.Connector) {
 	}
 }
 
-// CreateConnectorCmd represents the `meroxa add resource` command
+// command returns the cobra Command for `create connector`
 func (cc *CreateConnector) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "connector [<custom-connector-name>] [flags]",
