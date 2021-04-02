@@ -79,7 +79,7 @@ meroxa list resource-types`,
 	rootCmd.AddCommand(ApiCmd())
 	rootCmd.AddCommand(BillingCmd())
 	rootCmd.AddCommand(CompletionCmd())
-	rootCmd.AddCommand(ConnectCmd())
+	rootCmd.AddCommand((&Connect{}).command())
 	rootCmd.AddCommand(CreateCmd())
 	rootCmd.AddCommand(DescribeCmd())
 	rootCmd.AddCommand(ListCmd())

@@ -88,12 +88,15 @@ func (cc *CreateConnector) execute(ctx context.Context, c CreateConnectorClient)
 
 	// merge in connector type
 	var resourceName string
-	if cc.source != "" {
+	switch {
+	case cc.source != "":
 		resourceName = cc.source
 		metadata["mx:connectorType"] = "source"
-	} else if cc.destination != "" {
+	case cc.destination != "":
 		resourceName = cc.destination
 		metadata["mx:connectorType"] = "destination"
+	default:
+		return nil, errors.New("requires either a source (--from) or a destination (--to)")
 	}
 
 	res, err := c.GetResourceByName(ctx, resourceName)
@@ -102,7 +105,12 @@ func (cc *CreateConnector) execute(ctx context.Context, c CreateConnectorClient)
 	}
 
 	if !flagRootOutputJSON {
-		fmt.Println("Creating connector...")
+		switch {
+		case cc.source != "":
+			fmt.Printf("Creating connector from source %s...\n", resourceName)
+		case cc.destination != "":
+			fmt.Printf("Creating connector to destination %s...\n", resourceName)
+		}
 	}
 
 	return c.CreateConnector(ctx, meroxa.CreateConnectorInput{

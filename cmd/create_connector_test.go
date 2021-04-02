@@ -130,7 +130,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 		}
 	})
 
-	expected := "Creating connector..."
+	expected := "Creating connector from source my-resource..."
 	if !strings.Contains(output, expected) {
 		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 	}
