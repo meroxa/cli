@@ -106,8 +106,9 @@ func TestConnectionsTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State: "running",
-		Trace: "",
+		State:      "running",
+		Trace:      "",
+		PipelineID: 1,
 	}
 
 	deepCopy(connection, connectionIDAlign)
