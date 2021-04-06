@@ -79,13 +79,13 @@ func TestCreateConnectorExecution(t *testing.T) {
 	client := mock.NewMockCreateConnectorClient(ctrl)
 
 	cc := &CreateConnector{
-		input:       "foo",
-		config:      `{"key":"value"}`,
-		metadata:    `{"metakey":"metavalue"}`,
-		source:      "my-resource",
-		destination: "",
-		name:        "connector-name",
-		pipelineID:  5,
+		input:        "foo",
+		config:       `{"key":"value"}`,
+		metadata:     `{"metakey":"metavalue"}`,
+		source:       "my-resource",
+		destination:  "",
+		name:         "connector-name",
+		pipelineName: "my-pipeline",
 	}
 
 	cr := utils.GenerateConnector()
@@ -103,9 +103,9 @@ func TestCreateConnectorExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			meroxa.CreateConnectorInput{
-				Name:       "connector-name",
-				ResourceID: 123,
-				PipelineID: 5,
+				Name:         "connector-name",
+				ResourceID:   123,
+				PipelineName: "my-pipeline",
 				Configuration: map[string]string{
 					"key":   "value",
 					"input": "foo",

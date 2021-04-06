@@ -33,8 +33,7 @@ type CreateConnectorClient interface {
 }
 
 type CreateConnector struct {
-	input, config, metadata, source, destination, name string
-	pipelineID                                         int
+	input, config, metadata, source, destination, name, pipelineName string
 }
 
 func (cc *CreateConnector) setArgs(args []string) error {
@@ -58,7 +57,7 @@ func (cc *CreateConnector) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&cc.metadata, "metadata", "m", "", "connector metadata")
 	cmd.Flags().StringVarP(&cc.source, "from", "", "", "resource name to use as source")
 	cmd.Flags().StringVarP(&cc.destination, "to", "", "", "resource name to use as destination")
-	cmd.Flags().IntVarP(&cc.pipelineID, "pipeline", "", 0, "ID of pipeline to attach connector to") // TODO accept name once we display it in `list connectors` command
+	cmd.Flags().StringVarP(&cc.pipelineName, "pipeline", "", "", "pipeline name to attach connector to")
 
 	// Hide metadata flag for now. This could probably go away
 	cmd.Flags().MarkHidden("metadata")
@@ -116,7 +115,7 @@ func (cc *CreateConnector) execute(ctx context.Context, c CreateConnectorClient)
 	return c.CreateConnector(ctx, meroxa.CreateConnectorInput{
 		Name:          cc.name,
 		ResourceID:    res.ID,
-		PipelineID:    cc.pipelineID,
+		PipelineName:  cc.pipelineName,
 		Configuration: config,
 		Metadata:      metadata,
 	})
