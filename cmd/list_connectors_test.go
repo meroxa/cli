@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/spf13/cobra"
 	"reflect"
 	"strings"
 	"testing"
@@ -14,11 +15,40 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
-func getConnectors() []*meroxa.Connector {
+func getConnectors(pipelineID int) []*meroxa.Connector {
 	var connectors []*meroxa.Connector
-	c := utils.GenerateConnector()
+	c := utils.GenerateConnector(pipelineID)
 	connectors = append(connectors, &c)
 	return connectors
+}
+
+func TestListConnectorsFlags(t *testing.T) {
+	expectedFlags := []struct {
+		name      string
+		required  bool
+		shorthand string
+	}{
+		{"pipeline", false, ""},
+	}
+
+	c := &cobra.Command{}
+	lc := &ListConnectors{}
+	lc.setFlags(c)
+
+	for _, f := range expectedFlags {
+		cf := c.Flags().Lookup(f.name)
+		if cf == nil {
+			t.Fatalf("expected flag \"%s\" to be present", f.name)
+		}
+
+		if f.shorthand != cf.Shorthand {
+			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+		}
+
+		if f.required && !utils.IsFlagRequired(cf) {
+			t.Fatalf("expected flag \"%s\" to be required", f.name)
+		}
+	}
 }
 
 func TestListConnectorsExecution(t *testing.T) {
@@ -26,7 +56,7 @@ func TestListConnectorsExecution(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockListConnectorsClient(ctrl)
 
-	connectors := getConnectors()
+	connectors := getConnectors(1)
 
 	client.
 		EXPECT().
@@ -45,17 +75,49 @@ func TestListConnectorsExecution(t *testing.T) {
 	}
 }
 
+func TestListPipelineConnectorsExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockListConnectorsClient(ctrl)
+
+	pipeline := utils.GeneratePipeline()
+	connectors := getConnectors(pipeline.ID)
+
+	lc := &ListConnectors{}
+	lc.pipeline = pipeline.Name
+
+	client.
+		EXPECT().
+		GetPipelineByName(ctx, lc.pipeline).
+		Return(&pipeline, nil)
+
+	client.
+		EXPECT().
+		ListPipelineConnectors(ctx, pipeline.ID).
+		Return(connectors, nil)
+
+	got, err := lc.execute(ctx, client)
+
+	if !reflect.DeepEqual(got, connectors) {
+		t.Fatalf("expected \"%v\", got \"%v\"", connectors, got)
+	}
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+}
+
 func TestListConnectorsOutput(t *testing.T) {
 	flagRootOutputJSON = false
-	connectors := getConnectors()
+	connectors := getConnectors(1)
 
 	output := utils.CaptureOutput(func() {
 		ar := &ListConnectors{}
 		ar.output(connectors)
 	})
 
-	connectorID := fmt.Sprintf("%d", connectors[0].ID)
 	pipelineID := fmt.Sprintf("%d", connectors[0].PipelineID)
+	connectorID := fmt.Sprintf("%d", connectors[0].ID)
 
 	if !strings.Contains(output, connectorID) {
 		t.Fatalf("expected output \"%s\" got \"%s\"", connectorID, output)
@@ -76,7 +138,7 @@ func TestListConnectorsOutput(t *testing.T) {
 
 func TestListConnectorsJSONOutput(t *testing.T) {
 	flagRootOutputJSON = true
-	connectors := getConnectors()
+	connectors := getConnectors(1)
 
 	output := utils.CaptureOutput(func() {
 		ar := &ListConnectors{}

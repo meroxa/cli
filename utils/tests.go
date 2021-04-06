@@ -5,6 +5,7 @@ import (
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/pflag"
 	"io"
+	"math/rand"
 	"os"
 )
 
@@ -27,13 +28,17 @@ func GenerateResource() meroxa.Resource {
 	}
 }
 
-func GenerateConnector() meroxa.Connector {
+func GenerateConnector(pipelineID int) meroxa.Connector {
+	if pipelineID == 0 {
+		pipelineID = rand.Intn(10000)
+	}
+
 	return meroxa.Connector{
 		ID:         1,
 		Type:       "postgres",
 		Name:       "connector-1234",
 		State:      "running",
-		PipelineID: 1234,
+		PipelineID: pipelineID,
 	}
 }
 

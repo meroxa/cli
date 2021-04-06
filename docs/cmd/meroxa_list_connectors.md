@@ -9,7 +9,8 @@ meroxa list connectors [flags]
 ### Options
 
 ```
-  -h, --help   help for connectors
+  -h, --help              help for connectors
+      --pipeline string   filter connectors by pipeline name
 ```
 
 ### Options inherited from parent commands
