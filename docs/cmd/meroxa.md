@@ -16,6 +16,7 @@ meroxa list resource-types
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
   -h, --help            help for meroxa
       --json            output json
 ```

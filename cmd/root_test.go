@@ -36,6 +36,7 @@ func TestRootCmd(t *testing.T) {
 		{"version     Display the Meroxa CLI version"},
 		{"Flags:\n" +
 			"      --config string   config file (default is $HOME/meroxa.env)\n" +
+			"      --debug           display any debugging information\n" +
 			"  -h, --help            help for meroxa\n" +
 			"      --json            output json\n\n"},
 		{"Use \"meroxa [command] --help\" for more information about a command."},

@@ -23,6 +23,7 @@ meroxa update resource <resource-name> [flags]
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 

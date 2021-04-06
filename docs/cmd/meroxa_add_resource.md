@@ -35,6 +35,7 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 

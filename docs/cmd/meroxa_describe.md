@@ -16,6 +16,7 @@ Describe a component of the Meroxa data platform, including resources and connec
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 
