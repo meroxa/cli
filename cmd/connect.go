@@ -24,7 +24,7 @@ import (
 )
 
 type Connect struct {
-	input, config, source, destination string
+	input, config, source, destination, pipelineName string
 }
 
 func (conn *Connect) setFlags(cmd *cobra.Command) {
@@ -34,13 +34,15 @@ func (conn *Connect) setFlags(cmd *cobra.Command) {
 	cmd.MarkFlagRequired("to")
 	cmd.Flags().StringVarP(&conn.config, "config", "c", "", "connector configuration")
 	cmd.Flags().StringVarP(&conn.input, "input", "", "", "command delimeted list of input streams")
+	cmd.Flags().StringVarP(&conn.pipelineName, "pipeline", "", "", "pipeline name to attach connectors to")
 }
 
 func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*meroxa.Connector, *meroxa.Connector, error) {
 	srcCc := &CreateConnector{
-		input:  conn.input,
-		config: conn.config,
-		source: conn.source,
+		input:        conn.input,
+		config:       conn.config,
+		source:       conn.source,
+		pipelineName: conn.pipelineName,
 	}
 
 	srcCon, err := srcCc.execute(ctx, c)
@@ -53,9 +55,10 @@ func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*mer
 	inputStreams := srcCon.Streams["output"].([]interface{})
 
 	destCc := &CreateConnector{
-		input:       inputStreams[0].(string),
-		config:      conn.config,
-		destination: conn.destination,
+		input:        inputStreams[0].(string),
+		config:       conn.config,
+		destination:  conn.destination,
+		pipelineName: conn.pipelineName,
 	}
 
 	destCon, err := destCc.execute(ctx, c)
@@ -67,7 +70,7 @@ func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*mer
 	return srcCon, destCon, nil
 }
 
-// ConnectCmd represents the `meroxa add resource` command
+// command returns the cobra Command for `connect`
 func (conn *Connect) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "connect --from <resource-name> --to <resource-name>",
