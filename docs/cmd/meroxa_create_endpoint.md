@@ -29,6 +29,7 @@ meroxa create endpoint my-endpoint --protocol http --stream my-stream
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 

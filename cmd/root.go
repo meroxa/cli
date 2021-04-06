@@ -39,13 +39,13 @@ const (
 )
 
 var (
-	meroxaVersion      string
-	cfgFile            string
-	source             string
-	destination        string
-	flagRootOutputJSON bool
-	meroxaCmd          *cobra.Command
-	cfg                *viper.Viper
+	meroxaVersion                 string
+	cfgFile                       string
+	source                        string
+	destination                   string
+	flagRootOutputJSON, flagDebug bool
+	meroxaCmd                     *cobra.Command
+	cfg                           *viper.Viper
 )
 
 // RootCmd represents the base command when called without any subcommands
@@ -69,6 +69,8 @@ meroxa list resource-types`,
 
 	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
+	rootCmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
+
 	rootCmd.SilenceUsage = true
 	rootCmd.DisableAutoGenTag = true
 
@@ -85,9 +87,7 @@ meroxa list resource-types`,
 	rootCmd.AddCommand(LogoutCmd())
 	rootCmd.AddCommand(LogsCmd())
 	rootCmd.AddCommand(OpenCmd())
-
-	r := &Remove{}
-	rootCmd.AddCommand(r.command())
+	rootCmd.AddCommand((&Remove{}).command())
 	rootCmd.AddCommand(UpdateCmd())
 	rootCmd.AddCommand(VersionCmd())
 

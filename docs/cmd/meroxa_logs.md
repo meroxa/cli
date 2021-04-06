@@ -12,6 +12,7 @@ Print logs for a component
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 

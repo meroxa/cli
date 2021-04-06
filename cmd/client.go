@@ -116,13 +116,8 @@ func getAccessToken() (string, error) {
 }
 
 func isDebugEnabled() bool {
-	if val, ok := os.LookupEnv("MEROXA_DEBUG"); ok {
-		if val == "1" {
-			return true
-		}
-	}
-
-	return false
+	val, ok := os.LookupEnv("MEROXA_DEBUG")
+	return flagDebug || (ok && val == "1")
 }
 
 func client() (*meroxa.Client, error) {

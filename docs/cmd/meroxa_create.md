@@ -17,6 +17,7 @@ including connectors.
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 

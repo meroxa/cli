@@ -24,6 +24,7 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 
 ```
       --config string   config file (default is $HOME/meroxa.env)
+      --debug           display any debugging information
       --json            output json
 ```
 
