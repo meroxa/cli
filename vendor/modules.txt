@@ -42,7 +42,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20210405085506-449d4f2e5eb1
+# github.com/meroxa/meroxa-go v0.0.0-20210406130411-9627322a2abb
 ## explicit
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/go-homedir v1.1.0

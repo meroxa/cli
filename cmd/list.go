@@ -29,8 +29,7 @@ func ListCmd() *cobra.Command {
  resources, connectors, etc... You may also filter by type.`,
 	}
 
-	lc := &ListConnectors{}
-	listCmd.AddCommand(lc.command())
+	listCmd.AddCommand((&ListConnectors{}).command())
 	listCmd.AddCommand(ListEndpointsCmd())
 	listCmd.AddCommand(ListResourceTypesCmd())
 	listCmd.AddCommand(ListPipelinesCmd())

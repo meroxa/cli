@@ -26,12 +26,30 @@ import (
 
 type ListConnectorsClient interface {
 	ListConnectors(ctx context.Context) ([]*meroxa.Connector, error)
+	ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*meroxa.Connector, error)
+	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 }
 
-type ListConnectors struct{}
+type ListConnectors struct {
+	pipeline string
+}
 
 func (lc *ListConnectors) execute(ctx context.Context, c ListConnectorsClient) ([]*meroxa.Connector, error) {
+	if lc.pipeline != "" {
+		p, err := c.GetPipelineByName(ctx, lc.pipeline)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return c.ListPipelineConnectors(ctx, p.ID)
+	}
+
 	return c.ListConnectors(ctx)
+}
+
+func (lc *ListConnectors) setFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&lc.pipeline, "pipeline", "", "", "filter connectors by pipeline name")
 }
 
 func (lc *ListConnectors) output(connectors []*meroxa.Connector) {
@@ -44,7 +62,7 @@ func (lc *ListConnectors) output(connectors []*meroxa.Connector) {
 
 // ListConnectorsCmd represents the `meroxa list connectors` command
 func (lc *ListConnectors) command() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "connectors",
 		Short:   "List connectors",
 		Aliases: []string{"connector"},
@@ -68,4 +86,7 @@ func (lc *ListConnectors) command() *cobra.Command {
 			return nil
 		},
 	}
+
+	lc.setFlags(cmd)
+	return cmd
 }

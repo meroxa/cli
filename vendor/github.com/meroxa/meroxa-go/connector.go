@@ -89,6 +89,29 @@ func (c *Client) UpdateConnectorStatus(ctx context.Context, connectorKey, state 
 	return &con, nil
 }
 
+// ListPipelineConnectors returns an array of Connectors (scoped to the calling user)
+func (c *Client) ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*Connector, error) {
+	path := fmt.Sprintf("/v1/pipelines/%d/connectors", pipelineID)
+
+	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var rr []*Connector
+	err = json.NewDecoder(resp.Body).Decode(&rr)
+	if err != nil {
+		return nil, err
+	}
+
+	return rr, nil
+}
+
 // ListConnectors returns an array of Connectors (scoped to the calling user)
 func (c *Client) ListConnectors(ctx context.Context) ([]*Connector, error) {
 	resp, err := c.makeRequest(ctx, http.MethodGet, connectorsBasePath, nil, nil)
