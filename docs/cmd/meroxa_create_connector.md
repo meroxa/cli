@@ -15,16 +15,19 @@ meroxa create connector [<custom-connector-name>] [flags]
 ```
 
 meroxa create connector [<custom-connector-name>] --from pg2kafka --input accounts 
-meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders # --input will be the desired stream
+meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders # --input will be the desired stream 
+meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders --pipeline my-pipeline
+
 ```
 
 ### Options
 
 ```
-      --from string    resource name to use as source
-  -h, --help           help for connector
-      --input string   command delimeted list of input streams
-      --to string      resource name to use as destination
+      --from string       resource name to use as source
+  -h, --help              help for connector
+      --input string      command delimited list of input streams
+      --pipeline string   pipeline name to attach connector to
+      --to string         resource name to use as destination
 ```
 
 ### Options inherited from parent commands

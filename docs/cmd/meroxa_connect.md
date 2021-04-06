@@ -25,10 +25,11 @@ meroxa connect --from <resource-name> --to <resource-name> [flags]
 ### Options
 
 ```
-      --from string    source resource name
-  -h, --help           help for connect
-      --input string   command delimeted list of input streams
-      --to string      destination resource name
+      --from string       source resource name
+  -h, --help              help for connect
+      --input string      command delimeted list of input streams
+      --pipeline string   pipeline name to attach connectors to
+      --to string         destination resource name
 ```
 
 ### Options inherited from parent commands

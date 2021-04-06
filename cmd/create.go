@@ -20,14 +20,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	con            string // connector name
-	res            string // resource name
-	cfgString      string
-	metadataString string
-	input          string
-)
-
 // CreateCmd represents the `meroxa create` command
 func CreateCmd() *cobra.Command {
 	createCmd := &cobra.Command{
@@ -37,7 +29,7 @@ func CreateCmd() *cobra.Command {
 including connectors.`,
 	}
 
-	createCmd.AddCommand(CreateConnectorCmd())
+	createCmd.AddCommand((&CreateConnector{}).command())
 	createCmd.AddCommand(CreatePipelineCmd())
 	createCmd.AddCommand(CreateEndpointCmd())
 

@@ -21,27 +21,19 @@ type Connector struct {
 	PipelineID    int                    `json:"pipeline_id"`
 }
 
+type CreateConnectorInput struct {
+	Name          string            `json:"name,omitempty"`
+	ResourceID    int               `json:"resource_id"`
+	PipelineID    int               `json:"pipeline_id,omitempty"`
+	PipelineName  string            `json:"pipeline_name,omitempty"`
+	Configuration map[string]string `json:"config,omitempty"`
+	Metadata      map[string]string `json:"metadata,omitempty"`
+}
+
 // CreateConnector provisions a connector between the Resource and the Meroxa
 // platform
-func (c *Client) CreateConnector(ctx context.Context, name string, resourceID int, config map[string]string, metadata map[string]string) (*Connector, error) {
-	type connectorRequest struct {
-		Name          string            `json:"name,omitempty"`
-		Configuration map[string]string `json:"config,omitempty"`
-		ResourceID    int               `json:"resource_id"`
-		Metadata      map[string]string `json:"metadata,omitempty"`
-	}
-
-	cr := connectorRequest{
-		Configuration: config,
-		ResourceID:    resourceID,
-		Metadata:      metadata,
-	}
-
-	if name != "" {
-		cr.Name = name
-	}
-
-	resp, err := c.makeRequest(ctx, http.MethodPost, connectorsBasePath, cr, nil)
+func (c *Client) CreateConnector(ctx context.Context, input CreateConnectorInput) (*Connector, error) {
+	resp, err := c.makeRequest(ctx, http.MethodPost, connectorsBasePath, input, nil)
 	if err != nil {
 		return nil, err
 	}
