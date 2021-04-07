@@ -45,9 +45,10 @@ func TestUpdateResourceFlags(t *testing.T) {
 		required  bool
 		shorthand string
 	}{
-		{"url", false, "u"},
 		{"credentials", false, ""},
 		{"metadata", false, "m"},
+		{"name", false, ""},
+		{"url", false, "u"},
 	}
 
 	c := &cobra.Command{}
@@ -67,6 +68,50 @@ func TestUpdateResourceFlags(t *testing.T) {
 		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
 		}
+	}
+}
+
+func TestUpdateResourceExecutionWithNewName(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdateResourceClient(ctrl)
+
+	flagRootOutputJSON = false
+
+	r := utils.GenerateResource()
+
+	newName := "my-new-resource-name"
+	nr := meroxa.UpdateResourceInput{
+		Name: newName,
+	}
+
+	client.
+		EXPECT().
+		UpdateResource(ctx, r.Name, nr).
+		Return(&r, nil)
+
+	output := utils.CaptureOutput(func() {
+		ur := &UpdateResource{
+			name:    r.Name,
+			newName: newName,
+		}
+
+		got, err := ur.execute(ctx, client)
+
+		if err != nil {
+			t.Fatalf("not expected error, got \"%s\"", err.Error())
+		}
+
+		if !reflect.DeepEqual(got, &r) {
+			t.Fatalf("expected \"%v\", got \"%v\"", &r, got)
+		}
+
+	})
+
+	expected := fmt.Sprintf("Updating %s resource...", r.Name)
+
+	if !strings.Contains(output, expected) {
+		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
 	}
 }
 
@@ -208,7 +253,7 @@ func TestUpdateResourceExecutionNoFlags(t *testing.T) {
 	ur := &UpdateResource{}
 	_, err := ur.execute(ctx, client)
 
-	expected := "requires either `--metadata`, `--url` or `--credentials` to update the resource"
+	expected := "requires either `--credentials`, `--name`, `--metadata` or `--url` to update the resource"
 
 	if err != nil && err.Error() != expected {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())

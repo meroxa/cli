@@ -31,7 +31,7 @@ type UpdateResourceClient interface {
 }
 
 type UpdateResource struct {
-	name, metadata, credentials, url string
+	name, newName, metadata, credentials, url string
 }
 
 func (ur *UpdateResource) setArgs(args []string) error {
@@ -45,14 +45,15 @@ func (ur *UpdateResource) setArgs(args []string) error {
 }
 
 func (ur *UpdateResource) setFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&ur.url, "url", "u", "", "resource url")
-	cmd.Flags().StringVarP(&ur.metadata, "metadata", "m", "", "resource metadata")
-	cmd.Flags().StringVarP(&ur.credentials, "credentials", "", "", "resource credentials")
+	cmd.Flags().StringVarP(&ur.credentials, "credentials", "", "", "new resource credentials")
+	cmd.Flags().StringVarP(&ur.newName, "name", "", "", "new resource name")
+	cmd.Flags().StringVarP(&ur.metadata, "metadata", "m", "", "new resource metadata")
+	cmd.Flags().StringVarP(&ur.url, "url", "u", "", "new resource url")
 }
 
 func (ur *UpdateResource) execute(ctx context.Context, c UpdateResourceClient) (*meroxa.Resource, error) {
-	if ur.url == "" && ur.metadata == "" && ur.credentials == "" {
-		return nil, errors.New("requires either `--metadata`, `--url` or `--credentials` to update the resource")
+	if ur.newName == "" && ur.url == "" && ur.metadata == "" && ur.credentials == "" {
+		return nil, errors.New("requires either `--credentials`, `--name`, `--metadata` or `--url` to update the resource")
 	}
 
 	if !flagRootOutputJSON {
@@ -60,6 +61,11 @@ func (ur *UpdateResource) execute(ctx context.Context, c UpdateResourceClient) (
 	}
 
 	var res meroxa.UpdateResourceInput
+
+	// If name was provided, update it
+	if ur.newName != "" {
+		res.Name = ur.newName
+	}
 
 	// If url was provided, update it
 	if ur.url != "" {
