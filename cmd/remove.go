@@ -27,9 +27,8 @@ import (
 )
 
 type Remove struct {
-	confirmableName string
-	componentType   string
-	force           bool
+	componentType, confirmableName string
+	force, yolo                    bool
 }
 
 // confirmRemove will prompt for confirmation
@@ -50,6 +49,8 @@ func (r *Remove) confirmRemove(stdin io.Reader, val string) error {
 
 func (r *Remove) setFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
+	cmd.PersistentFlags().BoolVarP(&r.yolo, "yolo", "", false, "alias to --force")
+	cmd.PersistentFlags().MarkHidden("yolo")
 }
 
 // command represents the `meroxa remove` command
@@ -63,14 +64,10 @@ func (r *Remove) command() *cobra.Command {
 		Aliases:    []string{"rm", "delete"},
 	}
 
-	re := &RemoveEndpoint{removeCmd: r}
-	cmd.AddCommand(re.command())
-	rp := &RemovePipeline{removeCmd: r}
-	cmd.AddCommand(rp.command())
-	rc := &RemoveConnector{removeCmd: r}
-	cmd.AddCommand(rc.command())
-	rr := &RemoveResource{removeCmd: r}
-	cmd.AddCommand(rr.command())
+	cmd.AddCommand((&RemoveEndpoint{removeCmd: r}).command())
+	cmd.AddCommand((&RemovePipeline{removeCmd: r}).command())
+	cmd.AddCommand((&RemoveConnector{removeCmd: r}).command())
+	cmd.AddCommand((&RemoveResource{removeCmd: r}).command())
 
 	// Make sure all subcommands will have a confirmation prompt or make use of --force
 	for _, c := range cmd.Commands() {
@@ -95,8 +92,8 @@ func (r *Remove) addConfirmation(subCmd *cobra.Command) {
 			fmt.Printf("Removing %s...\n", r.confirmableName)
 		}
 
-		// prompts for confirmation when --force is not set
-		if !r.force {
+		// prompts for confirmation when --force (or --yolo 😜) is not set
+		if !r.force && !r.yolo {
 			return r.confirmRemove(os.Stdin, r.confirmableName)
 		}
 
