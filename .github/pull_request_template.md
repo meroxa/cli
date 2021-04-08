@@ -14,7 +14,17 @@ Fixes <JIRA Issue>
 # How was this tested?
 
 - [ ]  Unit Tests
-- [ ]  Deployed to staging
+- [ ]  Tested in staging
+
+# Demo
+
+**Before this pull-request**
+
+_Include how it looked before_
+
+**After this pull-request**
+
+_Include how it looks now_
 
 # Additional references
 
