@@ -3,7 +3,7 @@
 Print logs for a connector
 
 ```
-meroxa logs connector <name> [flags]
+meroxa logs connector NAME [flags]
 ```
 
 ### Options

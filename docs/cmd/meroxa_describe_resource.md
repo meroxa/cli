@@ -3,7 +3,7 @@
 Describe resource
 
 ```
-meroxa describe resource <name> [flags]
+meroxa describe resource NAME [flags]
 ```
 
 ### Options

@@ -3,7 +3,7 @@
 Remove endpoint
 
 ```
-meroxa remove endpoint <name> [flags]
+meroxa remove endpoint NAME [flags]
 ```
 
 ### Options

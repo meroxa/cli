@@ -20,7 +20,7 @@ func TestRemoveConnectorArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{nil, errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>"), ""},
+		{nil, errors.New("requires connector name\n\nUsage:\n  meroxa remove connector NAME"), ""},
 		{[]string{"resName"}, nil, "resName"},
 	}
 

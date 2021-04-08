@@ -37,7 +37,7 @@ var updateResourceCmd UpdateResource
 // UpdateResourceCmd represents the `meroxa update resource` command
 func (UpdateResource) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "resource <resource-name>",
+		Use:     "resource NAME",
 		Short:   "Update a resource",
 		Long:    `Use the update command to update various Meroxa resources.`,
 		Aliases: []string{"resources"},
@@ -45,7 +45,7 @@ func (UpdateResource) command() *cobra.Command {
 		// meroxa update resource <old-resource-name> --name <new-resource-name>
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 || (updateResourceCmd.url == "" && updateResourceCmd.metadata == "" && updateResourceCmd.credentials == "") {
-				return errors.New("requires a resource name and either `--metadata`, `--url` or `--credentials` to update the resource \n\nUsage:\n  meroxa update resource <resource-name> [--url <url> | --metadata <metadata> | --credentials <credentials>]")
+				return errors.New("requires a resource name and either `--metadata`, `--url` or `--credentials` to update the resource \n\nUsage:\n  meroxa update resource NAME [--url URL | --metadata <metadata> | --credentials <credentials>]")
 			}
 
 			return nil

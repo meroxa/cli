@@ -1,0 +1,54 @@
+.nh
+.TH "Meroxa" "1" "Apr 2021" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-api \- Invoke Meroxa API
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa api METHOD PATH [body] [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Invoke Meroxa API
+
+
+.SH OPTIONS
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for api
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-config\fP=""
+	config file (default is $HOME/meroxa.env)
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+
+meroxa api GET /v1/endpoints
+meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource\-2\-499379\-public.accounts", "name": "1234"}'
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa(1)\fP

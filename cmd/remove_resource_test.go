@@ -20,7 +20,7 @@ func TestRemoveResourceArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{nil, errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>"), ""},
+		{nil, errors.New("requires resource name\n\nUsage:\n  meroxa remove resource NAME"), ""},
 		{[]string{"resName"}, nil, "resName"},
 	}
 

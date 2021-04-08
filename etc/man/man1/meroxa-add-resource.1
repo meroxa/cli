@@ -1,0 +1,73 @@
+.nh
+.TH "Meroxa" "1" "Apr 2021" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-add\-resource \- Add a resource to your Meroxa resource catalog
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa add resource [NAME] \-\-type TYPE [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Use the add command to add resources to your Meroxa resource catalog.
+
+
+.SH OPTIONS
+.PP
+\fB\-\-credentials\fP=""
+	resource credentials
+
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for resource
+
+.PP
+\fB\-m\fP, \fB\-\-metadata\fP=""
+	resource metadata
+
+.PP
+\fB\-\-type\fP=""
+	resource type
+
+.PP
+\fB\-u\fP, \fB\-\-url\fP=""
+	resource url
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-config\fP=""
+	config file (default is $HOME/meroxa.env)
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+
+meroxa add resource store \-\-type postgres \-u $DATABASE\_URL
+meroxa add resource datalake \-\-type s3 \-u "s3://$AWS\_ACCESS\_KEY\_ID:$AWS\_ACCESS\_KEY\_SECRET@us\-east\-1/meroxa\-demos"
+meroxa add resource warehouse \-\-type redshift \-u $REDSHIFT\_URL
+meroxa add resource slack \-\-type url \-u $WEBHOOK\_URL
+
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa\-add(1)\fP

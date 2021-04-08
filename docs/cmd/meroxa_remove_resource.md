@@ -3,7 +3,7 @@
 Remove resource
 
 ```
-meroxa remove resource <name> [flags]
+meroxa remove resource NAME [flags]
 ```
 
 ### Options

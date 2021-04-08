@@ -96,7 +96,7 @@ func (ar *AddResource) output(res *meroxa.Resource) {
 // AddResourceCmd represents the `meroxa add resource` command
 func (ar *AddResource) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resource <resource-name> --type <resource-type>",
+		Use:   "resource [NAME] --type TYPE",
 		Short: "Add a resource to your Meroxa resource catalog",
 		Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
 		Example: "\n" +

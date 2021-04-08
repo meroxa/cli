@@ -3,7 +3,7 @@
 Describe endpoint
 
 ```
-meroxa describe endpoint <name> [flags]
+meroxa describe endpoint NAME [flags]
 ```
 
 ### Options

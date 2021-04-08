@@ -10,7 +10,7 @@ Use the connect command to automatically configure the connectors required to pu
 This command is equivalent to creating two connectors separately, one from the source to Meroxa and another from Meroxa 
 to the destination:
 
-meroxa connect --from <resource-name> --to <resource-name> --input <source-input>
+meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT
 
 or
 
@@ -19,7 +19,7 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 
 
 ```
-meroxa connect --from <resource-name> --to <resource-name> [flags]
+meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
 ```
 
 ### Options

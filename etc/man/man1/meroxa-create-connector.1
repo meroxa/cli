@@ -1,0 +1,72 @@
+.nh
+.TH "Meroxa" "1" "Apr 2021" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-create\-connector \- Create a connector
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa create connector [NAME] [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Use create connector to create a connector from a source (\-\-from) or to a destination (\-\-to)
+
+
+.SH OPTIONS
+.PP
+\fB\-\-from\fP=""
+	resource name to use as source
+
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for connector
+
+.PP
+\fB\-\-input\fP=""
+	command delimited list of input streams
+
+.PP
+\fB\-\-pipeline\fP=""
+	pipeline name to attach connector to
+
+.PP
+\fB\-\-to\fP=""
+	resource name to use as destination
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-config\fP=""
+	config file (default is $HOME/meroxa.env)
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+
+meroxa create connector [NAME] \-\-from pg2kafka \-\-input accounts 
+meroxa create connector [NAME] \-\-to pg2redshift \-\-input orders # \-\-input will be the desired stream 
+meroxa create connector [NAME] \-\-to pg2redshift \-\-input orders \-\-pipeline my\-pipeline
+
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa\-create(1)\fP

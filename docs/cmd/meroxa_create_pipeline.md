@@ -3,7 +3,7 @@
 Create a pipeline
 
 ```
-meroxa create pipeline <name> [flags]
+meroxa create pipeline NAME [flags]
 ```
 
 ### Options

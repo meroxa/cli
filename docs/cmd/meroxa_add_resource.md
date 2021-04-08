@@ -7,7 +7,7 @@ Add a resource to your Meroxa resource catalog
 Use the add command to add resources to your Meroxa resource catalog.
 
 ```
-meroxa add resource <resource-name> --type <resource-type> [flags]
+meroxa add resource [NAME] --type TYPE [flags]
 ```
 
 ### Examples

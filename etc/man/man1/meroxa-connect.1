@@ -1,0 +1,72 @@
+.nh
+.TH "Meroxa" "1" "Apr 2021" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-connect \- Connect two resources together
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa connect \-\-from RESOURCE\-NAME \-\-to RESOURCE\-NAME [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Use the connect command to automatically configure the connectors required to pull data from one resource
+(source) to another (destination).
+
+.PP
+This command is equivalent to creating two connectors separately, one from the source to Meroxa and another from Meroxa
+to the destination:
+
+.PP
+meroxa connect \-\-from RESOURCE\-NAME \-\-to RESOURCE\-NAME \-\-input SOURCE\-INPUT
+
+.PP
+or
+
+.PP
+meroxa create connector \-\-from postgres \-\-input accounts # Creates source connector
+meroxa create connector \-\-to redshift \-\-input orders # Creates destination connector
+
+
+.SH OPTIONS
+.PP
+\fB\-\-from\fP=""
+	source resource name
+
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for connect
+
+.PP
+\fB\-\-input\fP=""
+	command delimeted list of input streams
+
+.PP
+\fB\-\-pipeline\fP=""
+	pipeline name to attach connectors to
+
+.PP
+\fB\-\-to\fP=""
+	destination resource name
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-config\fP=""
+	config file (default is $HOME/meroxa.env)
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa(1)\fP

@@ -38,7 +38,7 @@ type RemovePipelineClient interface {
 
 func (rp *RemovePipeline) setArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>")
+		return errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline NAME")
 	}
 	// endpoint name
 	rp.name = args[0]
@@ -69,7 +69,7 @@ func (rp *RemovePipeline) output(p *meroxa.Pipeline) {
 // command represents the `meroxa remove pipeline` command
 func (rp *RemovePipeline) command() *cobra.Command {
 	return &cobra.Command{
-		Use:   "pipeline <name>",
+		Use:   "pipeline NAME",
 		Short: "Remove pipeline",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return rp.setArgs(args)

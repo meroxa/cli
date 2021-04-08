@@ -17,7 +17,7 @@ func TestRemoveEndpointArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{nil, errors.New("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]"), ""},
+		{nil, errors.New("requires endpoint name\n\nUsage:\n  meroxa remove endpoint NAME [flags]"), ""},
 		{[]string{"endpoint-name"}, nil, "endpoint-name"},
 	}
 

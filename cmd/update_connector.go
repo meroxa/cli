@@ -31,12 +31,12 @@ func UpdateConnectorCmd() *cobra.Command {
 	var state string
 
 	updateConnectorCmd := &cobra.Command{
-		Use:     "connector <name> --state <pause|resume|restart>",
+		Use:     "connector NAME --state pause | resume | restart",
 		Aliases: []string{"connectors"},
 		Short:   "Update connector state",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("requires connector name\n\nUsage:\n  meroxa update connector <name> --state <pause|resume|restart>")
+				return errors.New("requires connector name\n\nUsage:\n  meroxa update connector NAME --state pause | resume | restart")
 			}
 
 			return nil

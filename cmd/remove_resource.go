@@ -38,7 +38,7 @@ type RemoveResourceClient interface {
 
 func (rr *RemoveResource) setArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource <name>")
+		return errors.New("requires resource name\n\nUsage:\n  meroxa remove resource NAME")
 	}
 	// Resource Name
 	rr.name = args[0]
@@ -68,7 +68,7 @@ func (rr *RemoveResource) output(r *meroxa.Resource) {
 // command represents the `meroxa remove resource` command
 func (rr *RemoveResource) command() *cobra.Command {
 	return &cobra.Command{
-		Use:   "resource <name>",
+		Use:   "resource NAME",
 		Short: "Remove resource",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return rr.setArgs(args)

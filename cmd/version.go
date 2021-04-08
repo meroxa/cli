@@ -35,6 +35,6 @@ func VersionCmd() *cobra.Command {
 
 // Before changing this function, we'll need to update how the we're using the User-Agent when interacting with
 // Platform-API: https://git.io/JtXCG
-func versionString() string {
+func VersionString() string {
 	return fmt.Sprintf("Meroxa CLI %s", meroxaVersion)
 }

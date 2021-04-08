@@ -54,6 +54,8 @@ git tag is pushed to the repo.
 * Tag - `git tag -a vX.X.X -m "<message goes here>"`
 * Push - `git push origin vX.X.X`
 
+With every release, a new Homebrew formula will be automatically updated on [meroxa/homebrew-taps](https://github.com/meroxa/homebrew-taps).
+
 ## Linting
 
 If you want to make sure everything's correct before pushing to GitHub, you'll need to install [`golangci-lint`](https://golangci-lint.run/) and run:
@@ -78,3 +80,9 @@ To run the test suite:
 ```
 make test
 ```
+
+## Shell Completion
+
+If you want to enable shell completion manually, you can generate your own using our `meroxa completion` command.
+
+Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/meroxa_completion.md).

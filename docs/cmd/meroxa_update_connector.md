@@ -3,7 +3,7 @@
 Update connector state
 
 ```
-meroxa update connector <name> --state <pause|resume|restart> [flags]
+meroxa update connector NAME --state pause | resume | restart [flags]
 ```
 
 ### Options
