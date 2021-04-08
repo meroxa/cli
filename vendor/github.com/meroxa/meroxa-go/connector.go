@@ -19,6 +19,7 @@ type Connector struct {
 	State         string                 `json:"state"`
 	Trace         string                 `json:"trace,omitempty"`
 	PipelineID    int                    `json:"pipeline_id"`
+	PipelineName  string                 `json:"pipeline_name"`
 }
 
 type CreateConnectorInput struct {

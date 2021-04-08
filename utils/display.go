@@ -168,7 +168,7 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 				{Text: conn.Type},
 				{Text: streamStr},
 				{Text: conn.State},
-				{Text: fmt.Sprintf("%d", conn.PipelineID)},
+				{Text: fmt.Sprintf("%s", conn.PipelineName)},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
