@@ -16,8 +16,10 @@ func TestRemoveFlags(t *testing.T) {
 		required   bool
 		shorthand  string
 		persistent bool
+		hidden     bool
 	}{
-		{"force", false, "f", true},
+		{"force", false, "f", true, false},
+		{"yolo", false, "", true, true},
 	}
 
 	c := &cobra.Command{}
@@ -44,10 +46,18 @@ func TestRemoveFlags(t *testing.T) {
 		if f.required && !utils.IsFlagRequired(cf) {
 			t.Fatalf("expected flag \"%s\" to be required", f.name)
 		}
+
+		if cf.Hidden != f.hidden {
+			if cf.Hidden {
+				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+			} else {
+				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+			}
+		}
 	}
 }
 
-func TestConfirmationPrompt(t *testing.T) {
+func TestRemoveConfirmationPrompt(t *testing.T) {
 	expectedValue := "correct-value"
 
 	tests := []struct {
@@ -102,10 +112,34 @@ func TestConfirmationPrompt(t *testing.T) {
 	}
 }
 
-func TestAddConfirmation(t *testing.T) {
+func TestRemoveConfirmationWithForceFlag(t *testing.T) {
 	r := &Remove{}
 	cmd := r.command()
 	r.force = true
+
+	r.confirmableName = "argument-name"
+
+	for _, c := range cmd.Commands() {
+		output := utils.CaptureOutput(func() {
+			err := c.PreRunE(c, []string{r.confirmableName})
+
+			if err != nil {
+				t.Fatalf("not expected error, got \"%s\"", err.Error())
+			}
+		})
+
+		expected := fmt.Sprintf("Removing %s...\n", r.confirmableName)
+
+		if !strings.Contains(expected, output) {
+			t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+		}
+	}
+}
+
+func TestRemoveConfirmationWithYoloFlag(t *testing.T) {
+	r := &Remove{}
+	cmd := r.command()
+	r.yolo = true
 
 	r.confirmableName = "argument-name"
 
