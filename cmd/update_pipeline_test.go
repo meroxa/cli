@@ -90,6 +90,8 @@ func TestUpdatePipelineExecutionWithNewState(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockUpdatePipelineClient(ctrl)
 
+	flagRootOutputJSON = false
+
 	p := utils.GeneratePipeline()
 	newState := "pause"
 
@@ -131,11 +133,13 @@ func TestUpdatePipelineExecutionWithNewName(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockUpdatePipelineClient(ctrl)
 
-	p := utils.GeneratePipeline()
-	var pi meroxa.UpdatePipelineInput
+	flagRootOutputJSON = false
 
+	p := utils.GeneratePipeline()
 	newName := "new-pipeline-name"
-	pi.Name = newName
+	pi := meroxa.UpdatePipelineInput{
+		Name: newName,
+	}
 
 	client.
 		EXPECT().
@@ -176,6 +180,8 @@ func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockUpdatePipelineClient(ctrl)
+
+	flagRootOutputJSON = false
 
 	p := utils.GeneratePipeline()
 	var pi meroxa.UpdatePipelineInput

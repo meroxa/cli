@@ -21,100 +21,119 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
-
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
-type UpdateResource struct {
-	name, rType, metadata, credentials, url string
+type UpdateResourceClient interface {
+	UpdateResource(ctx context.Context, key string, resourceToUpdate meroxa.UpdateResourceInput) (*meroxa.Resource, error)
 }
 
-var updateResourceCmd UpdateResource
+type UpdateResource struct {
+	name, metadata, credentials, url string
+}
+
+func (ur *UpdateResource) setArgs(args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires resource name")
+	}
+
+	ur.name = args[0]
+
+	return nil
+}
+
+func (ur *UpdateResource) setFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&ur.url, "url", "u", "", "resource url")
+	cmd.Flags().StringVarP(&ur.metadata, "metadata", "m", "", "resource metadata")
+	cmd.Flags().StringVarP(&ur.credentials, "credentials", "", "", "resource credentials")
+}
+
+func (ur *UpdateResource) execute(ctx context.Context, c UpdateResourceClient) (*meroxa.Resource, error) {
+	if ur.url == "" && ur.metadata == "" && ur.credentials == "" {
+		return nil, errors.New("requires either `--metadata`, `--url` or `--credentials` to update the resource")
+	}
+
+	if !flagRootOutputJSON {
+		fmt.Printf("Updating %s resource...\n", ur.name)
+	}
+
+	var res meroxa.UpdateResourceInput
+
+	// If url was provided, update it
+	if ur.url != "" {
+		res.URL = ur.url
+	}
+
+	// TODO: Figure out best way to handle creds and metadata
+	// Get credentials (expect a JSON string)
+	if ur.credentials != "" {
+		var creds meroxa.Credentials
+		err := json.Unmarshal([]byte(ur.credentials), &creds)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Credentials = &creds
+	}
+
+	// If metadata was provided, update it
+	if ur.metadata != "" {
+		var metadata map[string]string
+		err := json.Unmarshal([]byte(ur.metadata), &metadata)
+		if err != nil {
+			return nil, err
+		}
+
+		res.Metadata = metadata
+	}
+
+	return c.UpdateResource(ctx, ur.name, res)
+
+	return nil, nil
+}
+
+func (ur *UpdateResource) output(res *meroxa.Resource) {
+	if flagRootOutputJSON {
+		utils.JSONPrint(res)
+	} else {
+		fmt.Printf("Resource %s successfully updated!\n", ur.name)
+	}
+}
 
 // UpdateResourceCmd represents the `meroxa update resource` command
-func (UpdateResource) command() *cobra.Command {
+func (ur *UpdateResource) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "resource NAME",
+		Use:     "resource <resource-name>",
 		Short:   "Update a resource",
 		Long:    `Use the update command to update various Meroxa resources.`,
 		Aliases: []string{"resources"},
-		// TODO: Change the design so a new name for the resource could be set
-		// meroxa update resource <old-resource-name> --name <new-resource-name>
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if len(args) < 1 || (updateResourceCmd.url == "" && updateResourceCmd.metadata == "" && updateResourceCmd.credentials == "") {
-				return errors.New("requires a resource name and either `--metadata`, `--url` or `--credentials` to update the resource \n\nUsage:\n  meroxa update resource NAME [--url URL | --metadata <metadata> | --credentials <credentials>]")
-			}
-
-			return nil
+			return ur.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Resource Name
-			updateResourceCmd.name = args[0]
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			defer cancel()
+
 			c, err := client()
 
 			if err != nil {
 				return err
 			}
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-			defer cancel()
 
-			var res meroxa.UpdateResourceInput
-
-			// If url was provided, update it
-			if updateResourceCmd.url != "" {
-				res.URL = updateResourceCmd.url
-			}
-
-			// TODO: Figure out best way to handle creds and metadata
-			// Get credentials (expect a JSON string)
-			if updateResourceCmd.credentials != "" {
-				var creds meroxa.Credentials
-				err = json.Unmarshal([]byte(updateResourceCmd.credentials), &creds)
-				if err != nil {
-					return err
-				}
-
-				res.Credentials = &creds
-			}
-
-			// If metadata was provided, update it
-			if updateResourceCmd.metadata != "" {
-				var metadata map[string]string
-				err = json.Unmarshal([]byte(updateResourceCmd.metadata), &metadata)
-				if err != nil {
-					return err
-				}
-
-				res.Metadata = metadata
-			}
-
-			// call meroxa-go to update resource
-			if !flagRootOutputJSON {
-				fmt.Printf("Updating %s resource...\n", updateResourceCmd.name)
-			}
-
-			resource, err := c.UpdateResource(ctx, updateResourceCmd.name, res)
+			resource, err := ur.execute(ctx, c)
 			if err != nil {
 				return err
 			}
 
-			if flagRootOutputJSON {
-				utils.JSONPrint(resource)
-			} else {
-				fmt.Printf("Resource %s successfully updated!\n", updateResourceCmd.name)
-			}
-
+			ur.output(resource)
 			return nil
 		},
 	}
 
-	cmd.Flags().StringVarP(&updateResourceCmd.url, "url", "u", "", "resource url")
-	cmd.Flags().StringVarP(&updateResourceCmd.metadata, "metadata", "m", "", "resource metadata")
-	cmd.Flags().StringVarP(&updateResourceCmd.credentials, "credentials", "", "", "resource credentials")
+	ur.setFlags(cmd)
 
 	return cmd
 }
