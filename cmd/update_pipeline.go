@@ -115,7 +115,7 @@ func (up *UpdatePipeline) output(p *meroxa.Pipeline) {
 // command represents the `meroxa update pipeline` command
 func (up *UpdatePipeline) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "pipeline <name>",
+		Use:     "pipeline NAME",
 		Aliases: []string{"pipelines"},
 		Short:   "Update pipeline state",
 		Example: "\n" +

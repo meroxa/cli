@@ -31,7 +31,7 @@ func DescribeConnectorCmd() *cobra.Command {
 		Short: "Describe connector",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("requires connector name\n\nUsage:\n  meroxa describe connector <name> [flags]")
+				return errors.New("requires connector name\n\nUsage:\n  meroxa describe connector NAME [flags]")
 			}
 			var (
 				err  error

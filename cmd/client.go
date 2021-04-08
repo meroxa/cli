@@ -126,5 +126,5 @@ func client() (*meroxa.Client, error) {
 		return nil, err
 	}
 
-	return meroxa.New(accessToken, versionString(), isDebugEnabled())
+	return meroxa.New(accessToken, VersionString(), isDebugEnabled())
 }

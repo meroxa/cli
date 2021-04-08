@@ -29,11 +29,11 @@ import (
 // CreatePipelineCmd represents the `meroxa create pipeline` command
 func CreatePipelineCmd() *cobra.Command {
 	createPipelineCmd := &cobra.Command{
-		Use:   "pipeline <name>",
+		Use:   "pipeline NAME",
 		Short: "Create a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("requires a pipeline name\n\nUsage:\n  meroxa create pipeline <name> [flags]")
+				return errors.New("requires a pipeline name\n\nUsage:\n  meroxa create pipeline NAME [flags]")
 			}
 			pipelineName := args[0]
 

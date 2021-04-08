@@ -3,7 +3,7 @@
 Invoke Meroxa API
 
 ```
-meroxa api <method> <path> [body] [flags]
+meroxa api METHOD PATH [body] [flags]
 ```
 
 ### Examples

@@ -11,11 +11,11 @@ import (
 // DescribeResourceCmd represents the `meroxa describe resource` command
 func DescribeResourceCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "resource <name>",
+		Use:   "resource NAME",
 		Short: "Describe resource",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("requires resource name\n\nUsage:\n  meroxa describe resource <name> [flags]")
+				return errors.New("requires resource name\n\nUsage:\n  meroxa describe resource NAME [flags]")
 			}
 			name := args[0]
 

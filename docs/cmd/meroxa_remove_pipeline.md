@@ -3,7 +3,7 @@
 Remove pipeline
 
 ```
-meroxa remove pipeline <name> [flags]
+meroxa remove pipeline NAME [flags]
 ```
 
 ### Options

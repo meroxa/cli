@@ -38,7 +38,7 @@ type CreateConnector struct {
 
 func (cc *CreateConnector) setArgs(args []string) error {
 	if cc.source == "" && cc.destination == "" {
-		return errors.New("requires either a source (--from) or a destination (--to)\n\nUsage:\n  meroxa create connector <custom-connector-name> [--from | --to]")
+		return errors.New("requires either a source (--from) or a destination (--to)\n\nUsage:\n  meroxa create connector NAME [--from | --to]")
 	}
 
 	// If user specified an optional connector name
@@ -132,13 +132,13 @@ func (cc *CreateConnector) output(con *meroxa.Connector) {
 // command returns the cobra Command for `create connector`
 func (cc *CreateConnector) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "connector [<custom-connector-name>] [flags]",
+		Use:   "connector [NAME] [flags]",
 		Short: "Create a connector",
 		Long:  "Use create connector to create a connector from a source (--from) or to a destination (--to)",
 		Example: "\n" +
-			"meroxa create connector [<custom-connector-name>] --from pg2kafka --input accounts \n" +
-			"meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders # --input will be the desired stream \n" +
-			"meroxa create connector [<custom-connector-name>] --to pg2redshift --input orders --pipeline my-pipeline\n",
+			"meroxa create connector [NAME] --from pg2kafka --input accounts \n" +
+			"meroxa create connector [NAME] --to pg2redshift --input orders # --input will be the desired stream \n" +
+			"meroxa create connector [NAME] --to pg2redshift --input orders --pipeline my-pipeline\n",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return cc.setArgs(args)
 		},

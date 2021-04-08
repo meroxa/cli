@@ -3,7 +3,7 @@
 Remove connector
 
 ```
-meroxa remove connector <name> [flags]
+meroxa remove connector NAME [flags]
 ```
 
 ### Options

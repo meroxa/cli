@@ -28,11 +28,11 @@ import (
 // LogsConnectorCmd represents the `meroxa logs connector` command
 func LogsConnectorCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "connector <name>",
+		Use:   "connector NAME",
 		Short: "Print logs for a connector",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
-				return errors.New("requires connector name\n\nUsage:\n  meroxa logs connector <name>")
+				return errors.New("requires connector name\n\nUsage:\n  meroxa logs connector NAME")
 			}
 			connector := args[0]
 

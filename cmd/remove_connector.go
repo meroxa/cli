@@ -39,7 +39,7 @@ type RemoveConnectorClient interface {
 
 func (rc *RemoveConnector) setArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector <name>")
+		return errors.New("requires connector name\n\nUsage:\n  meroxa remove connector NAME")
 	}
 	// Connector Name
 	rc.name = args[0]
@@ -70,7 +70,7 @@ func (rc *RemoveConnector) output(c *meroxa.Connector) {
 // command represents the `meroxa remove connector` command
 func (rc *RemoveConnector) command() *cobra.Command {
 	return &cobra.Command{
-		Use:   "connector <name>",
+		Use:   "connector NAME",
 		Short: "Remove connector",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return rc.setArgs(args)

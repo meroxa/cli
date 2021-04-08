@@ -7,7 +7,7 @@ Update a resource
 Use the update command to update various Meroxa resources.
 
 ```
-meroxa update resource <resource-name> [flags]
+meroxa update resource NAME [flags]
 ```
 
 ### Options

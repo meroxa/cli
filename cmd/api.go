@@ -14,7 +14,7 @@ import (
 // ApiCmd represents the `meroxa api` command
 func ApiCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "api <method> <path> [body]",
+		Use:   "api METHOD PATH [body]",
 		Short: "Invoke Meroxa API",
 		Args:  cobra.MinimumNArgs(2),
 		Example: `

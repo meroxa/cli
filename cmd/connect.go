@@ -73,7 +73,7 @@ func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*mer
 // command returns the cobra Command for `connect`
 func (conn *Connect) command() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "connect --from <resource-name> --to <resource-name>",
+		Use:   "connect --from RESOURCE-NAME --to RESOURCE-NAME",
 		Short: "Connect two resources together",
 		Long: `Use the connect command to automatically configure the connectors required to pull data from one resource 
 (source) to another (destination).
@@ -81,7 +81,7 @@ func (conn *Connect) command() *cobra.Command {
 This command is equivalent to creating two connectors separately, one from the source to Meroxa and another from Meroxa 
 to the destination:
 
-meroxa connect --from <resource-name> --to <resource-name> --input <source-input>
+meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT
 
 or
 

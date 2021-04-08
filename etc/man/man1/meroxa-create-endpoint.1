@@ -1,0 +1,61 @@
+.nh
+.TH "Meroxa" "1" "Apr 2021" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-create\-endpoint \- Create an endpoint
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa create endpoint [NAME] [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Use create endpoint to expose an endpoint to a connector stream
+
+
+.SH OPTIONS
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for endpoint
+
+.PP
+\fB\-p\fP, \fB\-\-protocol\fP=""
+	protocol, value can be http or grpc (required)
+
+.PP
+\fB\-s\fP, \fB\-\-stream\fP=""
+	stream name (required)
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-config\fP=""
+	config file (default is $HOME/meroxa.env)
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+
+meroxa create endpoint my\-endpoint \-\-protocol http \-\-stream my\-stream
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa\-create(1)\fP

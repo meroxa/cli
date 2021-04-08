@@ -20,7 +20,7 @@ func TestRemovePipelineArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{nil, errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline <name>"), ""},
+		{nil, errors.New("requires pipeline name\n\nUsage:\n  meroxa remove pipeline NAME"), ""},
 		{[]string{"endpoint-name"}, nil, "endpoint-name"},
 	}
 

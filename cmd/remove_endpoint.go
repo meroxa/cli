@@ -35,7 +35,7 @@ type RemoveEndpointClient interface {
 
 func (re *RemoveEndpoint) setArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires endpoint name\n\nUsage:\n  meroxa remove endpoint <name> [flags]")
+		return errors.New("requires endpoint name\n\nUsage:\n  meroxa remove endpoint NAME [flags]")
 	}
 	// endpoint name
 	re.name = args[0]
@@ -57,7 +57,7 @@ func (re *RemoveEndpoint) output() {
 // command represents the `meroxa remove endpoint` command
 func (re *RemoveEndpoint) command() *cobra.Command {
 	return &cobra.Command{
-		Use:     "endpoint <name>",
+		Use:     "endpoint NAME",
 		Aliases: []string{"endpoints"},
 		Short:   "Remove endpoint",
 		PreRunE: func(cmd *cobra.Command, args []string) error {

@@ -7,7 +7,7 @@ Create an endpoint
 Use create endpoint to expose an endpoint to a connector stream
 
 ```
-meroxa create endpoint [<custom-endpoint-name>] [flags]
+meroxa create endpoint [NAME] [flags]
 ```
 
 ### Examples

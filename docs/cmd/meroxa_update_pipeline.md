@@ -3,7 +3,7 @@
 Update pipeline state
 
 ```
-meroxa update pipeline <name> [flags]
+meroxa update pipeline NAME [flags]
 ```
 
 ### Examples
