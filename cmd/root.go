@@ -35,7 +35,7 @@ const (
 
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix     = "MEROXA"
-	clientTimeOut = 5 * time.Second
+	clientTimeOut = 10 * time.Second
 )
 
 var (
