@@ -20,6 +20,9 @@ brews:
   - tap:
       owner: meroxa
       name: homebrew-taps
+    commit_author:
+      name: meroxa-machine
+      email: machine@meroxa.io
     folder: Formula
     homepage:  https://meroxa.io
     description: The Meroxa CLI
