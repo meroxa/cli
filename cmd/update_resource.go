@@ -78,7 +78,7 @@ func (ur *UpdateResource) execute(ctx context.Context, c UpdateResourceClient) (
 		var creds meroxa.Credentials
 		err := json.Unmarshal([]byte(ur.credentials), &creds)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("can't parse credentials: %w", err)
 		}
 
 		res.Credentials = &creds
@@ -89,15 +89,13 @@ func (ur *UpdateResource) execute(ctx context.Context, c UpdateResourceClient) (
 		var metadata map[string]string
 		err := json.Unmarshal([]byte(ur.metadata), &metadata)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("can't parse metadata: %w", err)
 		}
 
 		res.Metadata = metadata
 	}
 
 	return c.UpdateResource(ctx, ur.name, res)
-
-	return nil, nil
 }
 
 func (ur *UpdateResource) output(res *meroxa.Resource) {
