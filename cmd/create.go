@@ -31,7 +31,7 @@ including connectors.`,
 
 	createCmd.AddCommand((&CreateConnector{}).command())
 	createCmd.AddCommand(CreatePipelineCmd())
-	createCmd.AddCommand(CreateEndpointCmd())
+	createCmd.AddCommand((&CreateEndpoint{}).command())
 
 	return createCmd
 }

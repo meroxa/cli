@@ -18,44 +18,75 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
-var (
-	flagEndpointCmdProtocol string
-	flagEndpointCmdStream   string
-)
+type CreateEndpointClient interface {
+	CreateEndpoint(ctx context.Context, name, protocol, stream string) error
+}
+
+type CreateEndpoint struct {
+	name, protocol, stream string
+}
+
+func (ce *CreateEndpoint) setArgs(args []string) error {
+	if len(args) > 0 {
+		ce.name = args[0]
+	}
+
+	return nil
+}
+
+func (ce *CreateEndpoint) setFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&ce.protocol, "protocol", "p", "", "protocol, value can be http or grpc (required)")
+	cmd.Flags().StringVarP(&ce.stream, "stream", "s", "", "stream name (required)")
+	cmd.MarkFlagRequired("protocol")
+	cmd.MarkFlagRequired("stream")
+}
+
+func (ce *CreateEndpoint) output() {
+	fmt.Println("Endpoint successfully created!")
+}
+
+func (ce *CreateEndpoint) execute(ctx context.Context, c CreateEndpointClient) error {
+	fmt.Println("Creating endpoint...")
+	return c.CreateEndpoint(ctx, ce.name, ce.protocol, ce.stream)
+}
 
 // CreateEndpointCmd represents the `meroxa create endpoint` command
-func CreateEndpointCmd() *cobra.Command {
-	createEndpointCmd := &cobra.Command{
+func (ce *CreateEndpoint) command() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:     "endpoint [NAME] [flags]",
 		Aliases: []string{"endpoints"},
 		Short:   "Create an endpoint",
 		Long:    "Use create endpoint to expose an endpoint to a connector stream",
 		Example: `
 meroxa create endpoint my-endpoint --protocol http --stream my-stream`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return ce.setArgs(args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
+			defer cancel()
+
 			c, err := client()
 			if err != nil {
 				return err
 			}
 
-			ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
-			defer cancel()
+			err = ce.execute(ctx, c)
 
-			var name string
-			if len(args) > 0 {
-				name = args[0]
+			if err != nil {
+				return err
 			}
 
-			return c.CreateEndpoint(ctx, name, flagEndpointCmdProtocol, flagEndpointCmdStream)
+			ce.output()
+
+			return nil
 		},
 	}
 
-	createEndpointCmd.Flags().StringVarP(&flagEndpointCmdProtocol, "protocol", "p", "", "protocol, value can be http or grpc (required)")
-	createEndpointCmd.Flags().StringVarP(&flagEndpointCmdStream, "stream", "s", "", "stream name (required)")
-	createEndpointCmd.MarkFlagRequired("protocol")
-	createEndpointCmd.MarkFlagRequired("stream")
-	return createEndpointCmd
+	ce.setFlags(cmd)
+	return cmd
 }
