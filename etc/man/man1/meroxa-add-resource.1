@@ -58,7 +58,7 @@ Use the add command to add resources to your Meroxa resource catalog.
 
 .nf
 
-meroxa add resource store \-\-type postgres \-u $DATABASE\_URL
+meroxa add resource store \-\-type postgres \-u $DATABASE\_URL \-\-metadata '{"logical\_replication":true}'
 meroxa add resource datalake \-\-type s3 \-u "s3://$AWS\_ACCESS\_KEY\_ID:$AWS\_ACCESS\_KEY\_SECRET@us\-east\-1/meroxa\-demos"
 meroxa add resource warehouse \-\-type redshift \-u $REDSHIFT\_URL
 meroxa add resource slack \-\-type url \-u $WEBHOOK\_URL

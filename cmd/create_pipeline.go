@@ -55,7 +55,7 @@ func CreatePipelineCmd() *cobra.Command {
 				return err
 			}
 			if metadataString != "" {
-				var metadata map[string]string
+				var metadata map[string]interface{}
 				err = json.Unmarshal([]byte(metadataString), &metadata)
 				if err != nil {
 					return err

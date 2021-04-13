@@ -85,7 +85,7 @@ func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (
 		}
 
 		if up.metadata != "" {
-			metadata := map[string]string{}
+			metadata := map[string]interface{}{}
 
 			err := json.Unmarshal([]byte(up.metadata), &metadata)
 			if err != nil {

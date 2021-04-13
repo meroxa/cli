@@ -86,7 +86,7 @@ func (ur *UpdateResource) execute(ctx context.Context, c UpdateResourceClient) (
 
 	// If metadata was provided, update it
 	if ur.metadata != "" {
-		var metadata map[string]string
+		var metadata map[string]interface{}
 		err := json.Unmarshal([]byte(ur.metadata), &metadata)
 		if err != nil {
 			return nil, fmt.Errorf("can't parse metadata: %w", err)

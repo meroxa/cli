@@ -186,7 +186,7 @@ func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
 	p := utils.GeneratePipeline()
 	var pi meroxa.UpdatePipelineInput
 
-	pi.Metadata = map[string]string{"key": "value"}
+	pi.Metadata = map[string]interface{}{"key": "value"}
 
 	client.
 		EXPECT().
