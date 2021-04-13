@@ -12,16 +12,16 @@ const pipelinesBasePath = "/v1/pipelines"
 
 // Pipeline represents the Meroxa Pipeline type within the Meroxa API
 type Pipeline struct {
-	ID       int               `json:"id"`
-	Name     string            `json:"name"`
-	Metadata map[string]string `json:"metadata,omitempty"`
-	State    string            `json:"state"`
+	ID       int                    `json:"id"`
+	Name     string                 `json:"name"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	State    string                 `json:"state"`
 }
 
 type UpdatePipelineInput struct {
-	Name     string            `json:"name"`
-	Metadata map[string]string `json:"metadata"`
-	State    string            `json:"state"`
+	Name     string                 `json:"name"`
+	Metadata map[string]interface{} `json:"metadata"`
+	State    string                 `json:"state"`
 }
 
 // ComponentKind enum for Component "kinds" within Pipeline stages

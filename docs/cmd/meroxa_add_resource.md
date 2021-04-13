@@ -14,7 +14,7 @@ meroxa add resource [NAME] --type TYPE [flags]
 
 ```
 
-meroxa add resource store --type postgres -u $DATABASE_URL
+meroxa add resource store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
 meroxa add resource datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
 meroxa add resource warehouse --type redshift -u $REDSHIFT_URL
 meroxa add resource slack --type url -u $WEBHOOK_URL

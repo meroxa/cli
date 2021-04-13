@@ -72,7 +72,7 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 	}
 
 	if ar.metadata != "" {
-		var metadata map[string]string
+		var metadata map[string]interface{}
 		err = json.Unmarshal([]byte(ar.metadata), &metadata)
 		if err != nil {
 			return nil, err
@@ -100,7 +100,7 @@ func (ar *AddResource) command() *cobra.Command {
 		Short: "Add a resource to your Meroxa resource catalog",
 		Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
 		Example: "\n" +
-			"meroxa add resource store --type postgres -u $DATABASE_URL\n" +
+			"meroxa add resource store --type postgres -u $DATABASE_URL --metadata '{\"logical_replication\":true}'\n" +
 			"meroxa add resource datalake --type s3 -u \"s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos\"\n" +
 			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
 			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",

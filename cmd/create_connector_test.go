@@ -106,11 +106,11 @@ func TestCreateConnectorExecution(t *testing.T) {
 				Name:         "connector-name",
 				ResourceID:   123,
 				PipelineName: "my-pipeline",
-				Configuration: map[string]string{
+				Configuration: map[string]interface{}{
 					"key":   "value",
 					"input": "foo",
 				},
-				Metadata: map[string]string{
+				Metadata: map[string]interface{}{
 					"metakey":          "metavalue",
 					"mx:connectorType": "source",
 				},

@@ -63,8 +63,8 @@ func (cc *CreateConnector) setFlags(cmd *cobra.Command) {
 	cmd.Flags().MarkHidden("metadata")
 }
 
-func (cc *CreateConnector) parseJSONMap(str string) (out map[string]string, err error) {
-	out = make(map[string]string)
+func (cc *CreateConnector) parseJSONMap(str string) (out map[string]interface{}, err error) {
+	out = make(map[string]interface{})
 	if str != "" {
 		err = json.Unmarshal([]byte(str), &out)
 	}

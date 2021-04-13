@@ -129,7 +129,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 		metadata: `{"metakey":"metavalue"}`,
 	}
 
-	var metadata map[string]string
+	var metadata map[string]interface{}
 
 	json.Unmarshal([]byte(ur.metadata), &metadata)
 	nr := meroxa.UpdateResourceInput{

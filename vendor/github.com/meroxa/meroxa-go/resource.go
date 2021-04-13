@@ -27,30 +27,30 @@ type Credentials struct {
 
 // CreateResourceInput represents the input for a Meroxa Resource type we're creating within the Meroxa API
 type CreateResourceInput struct {
-	ID          int               `json:"id"`
-	Type        string            `json:"type"`
-	Name        string            `json:"name,omitempty"`
-	URL         string            `json:"url"`
-	Credentials *Credentials      `json:"credentials,omitempty"`
-	Metadata    map[string]string `json:"metadata,omitempty"`
+	ID          int                    `json:"id"`
+	Type        string                 `json:"type"`
+	Name        string                 `json:"name,omitempty"`
+	URL         string                 `json:"url"`
+	Credentials *Credentials           `json:"credentials,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
-	ID          int               `json:"id"`
-	Type        string            `json:"type"`
-	Name        string            `json:"name"`
-	URL         string            `json:"url"`
-	Credentials *Credentials      `json:"credentials,omitempty"`
-	Metadata    map[string]string `json:"metadata,omitempty"`
+	ID          int                    `json:"id"`
+	Type        string                 `json:"type"`
+	Name        string                 `json:"name"`
+	URL         string                 `json:"url"`
+	Credentials *Credentials           `json:"credentials,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // UpdateResourceInput represents the Meroxa Resource we're updating in the Meroxa API
 type UpdateResourceInput struct {
-	Name        string            `json:"name,omitempty"` // TODO: Update this via CLI
-	URL         string            `json:"url,omitempty"`
-	Metadata    map[string]string `json:"metadata,omitempty"`
-	Credentials *Credentials      `json:"credentials,omitempty"`
+	Name        string                 `json:"name,omitempty"` // TODO: Update this via CLI
+	URL         string                 `json:"url,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	Credentials *Credentials           `json:"credentials,omitempty"`
 }
 
 // CreateResource provisions a new Resource from the given CreateResourceInput struct
