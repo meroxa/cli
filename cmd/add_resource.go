@@ -59,17 +59,16 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 
 	var err error
 
-	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
+	var creds meroxa.Credentials
 	if ar.credentials != "" {
-		var creds meroxa.Credentials
 		err = json.Unmarshal([]byte(ar.credentials), &creds)
 		if err != nil {
 			return nil, err
 		}
 
-		res.Credentials = &creds
 	}
+	res.Credentials = &creds
 
 	if ar.metadata != "" {
 		var metadata map[string]interface{}
@@ -119,10 +118,9 @@ func (ar *AddResource) command() *cobra.Command {
 			}
 
 			ri := meroxa.CreateResourceInput{
-				Type:     ar.rType,
-				Name:     ar.name,
-				URL:      ar.url,
-				Metadata: nil,
+				Type: ar.rType,
+				Name: ar.name,
+				URL:  ar.url,
 			}
 
 			res, err := ar.execute(ctx, c, ri)

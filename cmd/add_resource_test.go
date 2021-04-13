@@ -75,12 +75,13 @@ func TestAddResourceExecution(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockAddResourceClient(ctrl)
 
+	var emptyCreds meroxa.Credentials
+
 	r := meroxa.CreateResourceInput{
 		Type:        "postgres",
 		Name:        "",
 		URL:         "https://foo.url",
-		Credentials: nil,
-		Metadata:    nil,
+		Credentials: &emptyCreds,
 	}
 
 	cr := utils.GenerateResource()
