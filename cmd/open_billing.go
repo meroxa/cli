@@ -34,7 +34,7 @@ func getBillingURL() string {
 	if os.Getenv("ENV") == "staging" {
 		platformURL = DashboardStagingURL
 	}
-	return fmt.Sprintf("%s/account/billing", platformURL)
+	return fmt.Sprintf("%s/settings/billing", platformURL)
 }
 
 // OpenBillingCmd represents the `meroxa open billing` command
