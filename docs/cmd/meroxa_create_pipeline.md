@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa create pipeline"
-slug: meroxa_create_pipeline
-url: /cli/meroxa_create_pipeline/
----
 ## meroxa create pipeline
 
 Create a pipeline
@@ -31,5 +24,5 @@ meroxa create pipeline NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa create](meroxa_create)	 - Create Meroxa pipeline components
+* [meroxa create](meroxa_create.md)	 - Create Meroxa pipeline components
 

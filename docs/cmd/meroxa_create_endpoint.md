@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa create endpoint"
-slug: meroxa_create_endpoint
-url: /cli/meroxa_create_endpoint/
----
 ## meroxa create endpoint
 
 Create an endpoint
@@ -43,5 +36,5 @@ meroxa create endpoint my-endpoint --protocol http --stream my-stream
 
 ### SEE ALSO
 
-* [meroxa create](meroxa_create)	 - Create Meroxa pipeline components
+* [meroxa create](meroxa_create.md)	 - Create Meroxa pipeline components
 

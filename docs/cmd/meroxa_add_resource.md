@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa add resource"
-slug: meroxa_add_resource
-url: /cli/meroxa_add_resource/
----
 ## meroxa add resource
 
 Add a resource to your Meroxa resource catalog
@@ -49,5 +42,5 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
 
 ### SEE ALSO
 
-* [meroxa add](meroxa_add)	 - Add a resource to your Meroxa resource catalog
+* [meroxa add](meroxa_add.md)	 - Add a resource to your Meroxa resource catalog
 

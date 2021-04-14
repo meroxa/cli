@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa login"
-slug: meroxa_login
-url: /cli/meroxa_login/
----
 ## meroxa login
 
 login or sign up to the Meroxa platform
@@ -30,5 +23,5 @@ meroxa login [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
 

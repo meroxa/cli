@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa describe endpoint"
-slug: meroxa_describe_endpoint
-url: /cli/meroxa_describe_endpoint/
----
 ## meroxa describe endpoint
 
 Describe endpoint
@@ -30,5 +23,5 @@ meroxa describe endpoint NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa describe](meroxa_describe)	 - Describe a component
+* [meroxa describe](meroxa_describe.md)	 - Describe a component
 
