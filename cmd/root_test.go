@@ -35,10 +35,11 @@ func TestRootCmd(t *testing.T) {
 		{"update      Update a component"},
 		{"version     Display the Meroxa CLI version"},
 		{"Flags:\n" +
-			"      --config string   config file (default is $HOME/meroxa.env)\n" +
-			"      --debug           display any debugging information\n" +
-			"  -h, --help            help for meroxa\n" +
-			"      --json            output json\n\n"},
+			"      --config string      config file (default is $HOME/meroxa.env)\n" +
+			"      --debug              display any debugging information\n" +
+			"  -h, --help               help for meroxa\n" +
+			"      --json               output json\n" +
+			"      --timeout duration   set the client timeout (default 10s)\n\n"},
 		{"Use \"meroxa [command] --help\" for more information about a command."},
 	}
 
