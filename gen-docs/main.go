@@ -1,13 +1,27 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
+	"strings"
+	"time"
 
 	cmd "github.com/meroxa/cli/cmd"
 
 	"github.com/spf13/cobra/doc"
 )
+
+const fmTemplate = `---
+createdAt: %s
+updatedAt: %s
+title: "%s"
+slug: %s
+url: %s
+---
+`
 
 func main() {
 	// set HOME env var so that default values involve user's home directory do not depend on the running user.
@@ -27,8 +41,21 @@ func main() {
 		log.Fatal(err)
 	}
 
+	filePrepender := func(filename string) string {
+		createdAt := time.Now().Format(time.RFC3339)
+		name := filepath.Base(filename)
+		base := strings.TrimSuffix(name, path.Ext(name))
+		url := "/cli/" + strings.ToLower(base) + "/"
+		return fmt.Sprintf(fmTemplate, createdAt, createdAt, strings.Replace(base, "_", " ", -1), base, url)
+	}
+
+	linkHandler := func(name string) string {
+		base := strings.TrimSuffix(name, path.Ext(name))
+		return strings.ToLower(base)
+	}
+
 	// Generating Markdown Documents
-	err := doc.GenMarkdownTree(rootCmd, "./docs/cmd")
+	err := doc.GenMarkdownTreeCustom(rootCmd, "./docs/cmd", filePrepender, linkHandler)
 	if err != nil {
 		log.Fatal(err)
 	}

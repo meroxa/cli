@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa list resources"
+slug: meroxa_list_resources
+url: /cli/meroxa_list_resources/
+---
 ## meroxa list resources
 
 List resources
@@ -22,5 +29,5 @@ meroxa list resources [flags]
 
 ### SEE ALSO
 
-* [meroxa list](meroxa_list.md)	 - List components
+* [meroxa list](meroxa_list)	 - List components
 

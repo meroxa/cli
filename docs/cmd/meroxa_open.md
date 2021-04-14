@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa open"
+slug: meroxa_open
+url: /cli/meroxa_open/
+---
 ## meroxa open
 
 Open in a web browser
@@ -18,6 +25,6 @@ Open in a web browser
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa open billing](meroxa_open_billing.md)	 - Open your billing page in a web browser
+* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa open billing](meroxa_open_billing)	 - Open your billing page in a web browser
 

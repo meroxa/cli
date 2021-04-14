@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa billing"
+slug: meroxa_billing
+url: /cli/meroxa_billing/
+---
 ## meroxa billing
 
 Open your billing page in a web browser
@@ -22,5 +29,5 @@ meroxa billing [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa](meroxa)	 - The Meroxa CLI
 

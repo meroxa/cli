@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa remove pipeline"
+slug: meroxa_remove_pipeline
+url: /cli/meroxa_remove_pipeline/
+---
 ## meroxa remove pipeline
 
 Remove pipeline
@@ -23,5 +30,5 @@ meroxa remove pipeline NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa remove](meroxa_remove.md)	 - Remove a component
+* [meroxa remove](meroxa_remove)	 - Remove a component
 
