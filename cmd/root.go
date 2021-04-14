@@ -34,8 +34,7 @@ const (
 	defaultConfigFilename = "meroxa"
 
 	// The environment variable prefix of all environment variables bound to our command line flags.
-	envPrefix     = "MEROXA"
-	clientTimeOut = 10 * time.Second
+	envPrefix = "MEROXA"
 )
 
 var (
@@ -44,6 +43,7 @@ var (
 	source                        string
 	destination                   string
 	flagRootOutputJSON, flagDebug bool
+	clientTimeOut                 time.Duration
 	meroxaCmd                     *cobra.Command
 	cfg                           *viper.Viper
 )
@@ -70,6 +70,7 @@ meroxa list resource-types`,
 	rootCmd.PersistentFlags().BoolVar(&flagRootOutputJSON, "json", false, "output json")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
 	rootCmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
+	rootCmd.PersistentFlags().DurationVar(&clientTimeOut, "timeout", 10*time.Second, "set the client timeout")
 
 	rootCmd.SilenceUsage = true
 	rootCmd.DisableAutoGenTag = true
