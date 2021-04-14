@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa version"
-slug: meroxa_version
-url: /cli/meroxa_version/
----
 ## meroxa version
 
 Display the Meroxa CLI version
@@ -29,5 +22,5 @@ meroxa version [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
 

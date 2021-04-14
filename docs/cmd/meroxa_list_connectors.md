@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa list connectors"
-slug: meroxa_list_connectors
-url: /cli/meroxa_list_connectors/
----
 ## meroxa list connectors
 
 List connectors
@@ -30,5 +23,5 @@ meroxa list connectors [flags]
 
 ### SEE ALSO
 
-* [meroxa list](meroxa_list)	 - List components
+* [meroxa list](meroxa_list.md)	 - List components
 

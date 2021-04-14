@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa completion"
-slug: meroxa_completion
-url: /cli/meroxa_completion/
----
 ## meroxa completion
 
 Generate completion script
@@ -63,5 +56,5 @@ meroxa completion [bash|zsh|fish|powershell]
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
 

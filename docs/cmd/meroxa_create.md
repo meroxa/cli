@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa create"
-slug: meroxa_create
-url: /cli/meroxa_create/
----
 ## meroxa create
 
 Create Meroxa pipeline components
@@ -30,8 +23,8 @@ including connectors.
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
-* [meroxa create connector](meroxa_create_connector)	 - Create a connector
-* [meroxa create endpoint](meroxa_create_endpoint)	 - Create an endpoint
-* [meroxa create pipeline](meroxa_create_pipeline)	 - Create a pipeline
+* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa create connector](meroxa_create_connector.md)	 - Create a connector
+* [meroxa create endpoint](meroxa_create_endpoint.md)	 - Create an endpoint
+* [meroxa create pipeline](meroxa_create_pipeline.md)	 - Create a pipeline
 

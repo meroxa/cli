@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa update pipeline"
-slug: meroxa_update_pipeline
-url: /cli/meroxa_update_pipeline/
----
 ## meroxa update pipeline
 
 Update pipeline state
@@ -41,5 +34,5 @@ meroxa update pipeline pipeline-name --metadata '{"key":"value"}'
 
 ### SEE ALSO
 
-* [meroxa update](meroxa_update)	 - Update a component
+* [meroxa update](meroxa_update.md)	 - Update a component
 

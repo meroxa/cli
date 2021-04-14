@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa connect"
-slug: meroxa_connect
-url: /cli/meroxa_connect/
----
 ## meroxa connect
 
 Connect two resources together
@@ -49,5 +42,5 @@ meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
 

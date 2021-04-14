@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa api"
-slug: meroxa_api
-url: /cli/meroxa_api/
----
 ## meroxa api
 
 Invoke Meroxa API
@@ -37,5 +30,5 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
 

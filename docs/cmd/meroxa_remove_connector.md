@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa remove connector"
-slug: meroxa_remove_connector
-url: /cli/meroxa_remove_connector/
----
 ## meroxa remove connector
 
 Remove connector
@@ -30,5 +23,5 @@ meroxa remove connector NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa remove](meroxa_remove)	 - Remove a component
+* [meroxa remove](meroxa_remove.md)	 - Remove a component
 

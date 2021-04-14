@@ -1,10 +1,3 @@
----
-createdAt: 2021-04-14T11:12:19-04:00
-updatedAt: 2021-04-14T11:12:19-04:00
-title: "meroxa logs"
-slug: meroxa_logs
-url: /cli/meroxa_logs/
----
 ## meroxa logs
 
 Print logs for a component
@@ -25,6 +18,6 @@ Print logs for a component
 
 ### SEE ALSO
 
-* [meroxa](meroxa)	 - The Meroxa CLI
-* [meroxa logs connector](meroxa_logs_connector)	 - Print logs for a connector
+* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa logs connector](meroxa_logs_connector.md)	 - Print logs for a connector
 
