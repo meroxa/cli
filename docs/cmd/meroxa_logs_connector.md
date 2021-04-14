@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa logs connector"
+slug: meroxa_logs_connector
+url: /cli/meroxa_logs_connector/
+---
 ## meroxa logs connector
 
 Print logs for a connector
@@ -23,5 +30,5 @@ meroxa logs connector NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa logs](meroxa_logs.md)	 - Print logs for a component
+* [meroxa logs](meroxa_logs)	 - Print logs for a component
 

@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa update"
+slug: meroxa_update
+url: /cli/meroxa_update/
+---
 ## meroxa update
 
 Update a component
@@ -23,8 +30,8 @@ Update a component of the Meroxa platform, including connectors
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa update connector](meroxa_update_connector.md)	 - Update connector state
-* [meroxa update pipeline](meroxa_update_pipeline.md)	 - Update pipeline state
-* [meroxa update resource](meroxa_update_resource.md)	 - Update a resource
+* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa update connector](meroxa_update_connector)	 - Update connector state
+* [meroxa update pipeline](meroxa_update_pipeline)	 - Update pipeline state
+* [meroxa update resource](meroxa_update_resource)	 - Update a resource
 

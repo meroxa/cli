@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa list transforms"
+slug: meroxa_list_transforms
+url: /cli/meroxa_list_transforms/
+---
 ## meroxa list transforms
 
 List transforms
@@ -23,5 +30,5 @@ meroxa list transforms [flags]
 
 ### SEE ALSO
 
-* [meroxa list](meroxa_list.md)	 - List components
+* [meroxa list](meroxa_list)	 - List components
 

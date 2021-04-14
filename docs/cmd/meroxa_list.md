@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa list"
+slug: meroxa_list
+url: /cli/meroxa_list/
+---
 ## meroxa list
 
 List components
@@ -24,11 +31,11 @@ List the components of the Meroxa platform, including pipelines,
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa list connectors](meroxa_list_connectors.md)	 - List connectors
-* [meroxa list endpoint](meroxa_list_endpoint.md)	 - List endpoints
-* [meroxa list pipelines](meroxa_list_pipelines.md)	 - List pipelines
-* [meroxa list resource-types](meroxa_list_resource-types.md)	 - List resource-types
-* [meroxa list resources](meroxa_list_resources.md)	 - List resources
-* [meroxa list transforms](meroxa_list_transforms.md)	 - List transforms
+* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa list connectors](meroxa_list_connectors)	 - List connectors
+* [meroxa list endpoint](meroxa_list_endpoint)	 - List endpoints
+* [meroxa list pipelines](meroxa_list_pipelines)	 - List pipelines
+* [meroxa list resource-types](meroxa_list_resource-types)	 - List resource-types
+* [meroxa list resources](meroxa_list_resources)	 - List resources
+* [meroxa list transforms](meroxa_list_transforms)	 - List transforms
 

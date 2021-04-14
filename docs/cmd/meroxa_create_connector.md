@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa create connector"
+slug: meroxa_create_connector
+url: /cli/meroxa_create_connector/
+---
 ## meroxa create connector
 
 Create a connector
@@ -41,5 +48,5 @@ meroxa create connector [NAME] --to pg2redshift --input orders --pipeline my-pip
 
 ### SEE ALSO
 
-* [meroxa create](meroxa_create.md)	 - Create Meroxa pipeline components
+* [meroxa create](meroxa_create)	 - Create Meroxa pipeline components
 

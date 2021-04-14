@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa describe resource"
+slug: meroxa_describe_resource
+url: /cli/meroxa_describe_resource/
+---
 ## meroxa describe resource
 
 Describe resource
@@ -23,5 +30,5 @@ meroxa describe resource NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa describe](meroxa_describe.md)	 - Describe a component
+* [meroxa describe](meroxa_describe)	 - Describe a component
 

@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa add"
+slug: meroxa_add
+url: /cli/meroxa_add/
+---
 ## meroxa add
 
 Add a resource to your Meroxa resource catalog
@@ -19,6 +26,6 @@ Add a resource to your Meroxa resource catalog
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa add resource](meroxa_add_resource.md)	 - Add a resource to your Meroxa resource catalog
+* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa add resource](meroxa_add_resource)	 - Add a resource to your Meroxa resource catalog
 

@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa logout"
+slug: meroxa_logout
+url: /cli/meroxa_logout/
+---
 ## meroxa logout
 
 logout of the Meroxa platform
@@ -23,5 +30,5 @@ meroxa logout [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa](meroxa)	 - The Meroxa CLI
 

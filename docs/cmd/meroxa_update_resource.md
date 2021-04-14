@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa update resource"
+slug: meroxa_update_resource
+url: /cli/meroxa_update_resource/
+---
 ## meroxa update resource
 
 Update a resource
@@ -31,5 +38,5 @@ meroxa update resource NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa update](meroxa_update.md)	 - Update a component
+* [meroxa update](meroxa_update)	 - Update a component
 

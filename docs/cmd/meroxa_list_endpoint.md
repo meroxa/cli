@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa list endpoint"
+slug: meroxa_list_endpoint
+url: /cli/meroxa_list_endpoint/
+---
 ## meroxa list endpoint
 
 List endpoints
@@ -23,5 +30,5 @@ meroxa list endpoint [flags]
 
 ### SEE ALSO
 
-* [meroxa list](meroxa_list.md)	 - List components
+* [meroxa list](meroxa_list)	 - List components
 

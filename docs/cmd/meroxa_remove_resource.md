@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa remove resource"
+slug: meroxa_remove_resource
+url: /cli/meroxa_remove_resource/
+---
 ## meroxa remove resource
 
 Remove resource
@@ -24,5 +31,5 @@ meroxa remove resource NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa remove](meroxa_remove.md)	 - Remove a component
+* [meroxa remove](meroxa_remove)	 - Remove a component
 

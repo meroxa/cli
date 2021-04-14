@@ -1,3 +1,10 @@
+---
+createdAt: 2021-04-14T11:12:19-04:00
+updatedAt: 2021-04-14T11:12:19-04:00
+title: "meroxa remove"
+slug: meroxa_remove
+url: /cli/meroxa_remove/
+---
 ## meroxa remove
 
 Remove a component
@@ -25,9 +32,9 @@ Deprovision a component of the Meroxa platform, including pipelines,
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa remove connector](meroxa_remove_connector.md)	 - Remove connector
-* [meroxa remove endpoint](meroxa_remove_endpoint.md)	 - Remove endpoint
-* [meroxa remove pipeline](meroxa_remove_pipeline.md)	 - Remove pipeline
-* [meroxa remove resource](meroxa_remove_resource.md)	 - Remove resource
+* [meroxa](meroxa)	 - The Meroxa CLI
+* [meroxa remove connector](meroxa_remove_connector)	 - Remove connector
+* [meroxa remove endpoint](meroxa_remove_endpoint)	 - Remove endpoint
+* [meroxa remove pipeline](meroxa_remove_pipeline)	 - Remove pipeline
+* [meroxa remove resource](meroxa_remove_resource)	 - Remove resource
 
