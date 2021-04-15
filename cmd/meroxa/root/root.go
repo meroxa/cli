@@ -18,14 +18,12 @@ package root
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/root/add"
 	"github.com/meroxa/cli/cmd/meroxa/root/old"
-	"github.com/meroxa/cli/log"
 	"github.com/spf13/cobra"
 )
 
@@ -40,12 +38,6 @@ func Run() {
 
 // Cmd represents the base command when called without any subcommands.
 func Cmd() *cobra.Command {
-	var (
-		cfgFile        string
-		flagOutputJSON bool
-		flagDebug      bool
-	)
-
 	cmd := &cobra.Command{
 		Use:   "meroxa",
 		Short: "The Meroxa CLI",
@@ -57,43 +49,13 @@ resource types:
 
 meroxa list resource-types`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			// You can bind cobra and viper in a few locations, but PersistencePreRunE on the root command works well
-			cfg, err := readConfig(cfgFile)
-			if err != nil {
-				return err
-			}
-
-			global.Config = cfg
-
-			var (
-				logLevel         = log.Info
-				leveledLoggerOut = os.Stdout
-				jsonLoggerOut    = ioutil.Discard
-			)
-
-			if flagOutputJSON {
-				logLevel = log.Warn
-				jsonLoggerOut = os.Stdout
-			}
-			if flagDebug {
-				logLevel = log.Debug
-			}
-
-			global.Log = log.New(
-				log.NewLeveledLogger(leveledLoggerOut, logLevel),
-				log.NewJSONLogger(jsonLoggerOut),
-			)
-
-			return nil
+			return global.InitConfig()
 		},
-
 		SilenceUsage:      true,
 		DisableAutoGenTag: true,
 	}
 
-	cmd.PersistentFlags().BoolVar(&flagOutputJSON, "json", false, "output json")
-	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/meroxa.env)")
-	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
+	global.RegisterGlobalFlags(cmd)
 
 	// Subcommands
 	cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))

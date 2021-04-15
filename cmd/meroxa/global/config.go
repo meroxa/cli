@@ -1,4 +1,4 @@
-package root
+package global
 
 import (
 	"fmt"
@@ -6,6 +6,15 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
+
+func InitConfig() error {
+	cfg, err := NewConfig()
+	if err != nil {
+		return err
+	}
+	Config = cfg
+	return nil
+}
 
 const (
 	// The name of our config file, without the file extension because viper supports many different config file languages.
@@ -15,12 +24,12 @@ const (
 	envPrefix = "MEROXA"
 )
 
-func readConfig(path string) (*viper.Viper, error) {
+func NewConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 
-	if path != "" {
+	if flagConfig != "" {
 		// Use config file from the flag.
-		cfg.SetConfigFile(path)
+		cfg.SetConfigFile(flagConfig)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()

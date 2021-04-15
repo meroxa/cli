@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
 )
 
@@ -31,6 +31,7 @@ type addResourceClient interface {
 
 type AddResource struct {
 	client addResourceClient
+	logger log.Logger
 
 	name, rType, url, metadata, credentials string
 }
@@ -41,6 +42,7 @@ var (
 	_ builder.CommandWithFlags   = (*AddResource)(nil)
 	_ builder.CommandWithExecute = (*AddResource)(nil)
 	_ builder.CommandWithClient  = (*AddResource)(nil)
+	_ builder.CommandWithLogger  = (*AddResource)(nil)
 )
 
 func (ar *AddResource) Usage() string {
@@ -63,6 +65,10 @@ func (ar *AddResource) Client(client *meroxa.Client) {
 	ar.client = client
 }
 
+func (ar *AddResource) Logger(logger log.Logger) {
+	ar.logger = logger
+}
+
 func (ar *AddResource) ParseArgs(args []string) error {
 	if len(args) > 0 {
 		ar.name = args[0]
@@ -80,8 +86,6 @@ func (ar *AddResource) Flags() []builder.Flag {
 }
 
 func (ar *AddResource) Execute(ctx context.Context) error {
-	log := global.Log // TODO take from builder
-
 	input := meroxa.CreateResourceInput{
 		Type:     ar.rType,
 		Name:     ar.name,
@@ -89,7 +93,7 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
-	log.Infof(ctx, "Adding %s resource...", input.Type)
+	ar.logger.Infof(ctx, "Adding %s resource...", input.Type)
 
 	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
@@ -112,8 +116,8 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 		return err
 	}
 
-	log.Infof(ctx, "%s resource with name %s successfully added!", res.Type, res.Name)
-	log.JSON(ctx, res)
+	ar.logger.Infof(ctx, "%s resource with name %s successfully added!", res.Type, res.Name)
+	ar.logger.JSON(ctx, res)
 
 	return nil
 }

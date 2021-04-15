@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -69,6 +70,11 @@ type CommandWithClient interface {
 	Client(*meroxa.Client)
 }
 
+type CommandWithLogger interface {
+	Command
+	Logger(log.Logger)
+}
+
 type CommandWithSubCommands interface {
 	Command
 	SubCommands() []*cobra.Command
@@ -82,6 +88,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithDocs(cmd, c)
 	buildCommandWithAliases(cmd, c)
 	buildCommandWithClient(cmd, c)
+	buildCommandWithLogger(cmd, c)
 	buildCommandWithFlags(cmd, c)
 	buildCommandWithArgs(cmd, c)
 	buildCommandWithConfirm(cmd, c)
@@ -131,6 +138,26 @@ func buildCommandWithClient(cmd *cobra.Command, c Command) {
 			return err
 		}
 		v.Client(c)
+		return nil
+	}
+}
+
+func buildCommandWithLogger(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithLogger)
+	if !ok {
+		return
+	}
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		v.Logger(global.NewLogger())
 		return nil
 	}
 }
