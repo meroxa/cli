@@ -91,7 +91,7 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			c, err := global.NewClient()

@@ -46,7 +46,7 @@ func DescribeConnectorCmd() *cobra.Command {
 			}
 
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			conn, err = c.GetConnectorByName(ctx, name)

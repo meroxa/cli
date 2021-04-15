@@ -16,16 +16,11 @@ limitations under the License.
 
 package old
 
-import (
-	"time"
-)
-
-const (
-	// Deprecated: don't use a timeout through a context
-	clientTimeOut = 10 * time.Second
-)
+import "time"
 
 var (
+	// Deprecated: don't use a timeout through a context
+	ClientTimeOut time.Duration
 	// Deprecated: use log.Logger instead, it knows about the flag
 	FlagRootOutputJSON bool
 )

@@ -74,7 +74,7 @@ func (lc *ListConnectors) command() *cobra.Command {
 			}
 
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			connectors, err := lc.execute(ctx, c)

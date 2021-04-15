@@ -145,7 +145,7 @@ func (cc *CreateConnector) command() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			c, err := global.NewClient()

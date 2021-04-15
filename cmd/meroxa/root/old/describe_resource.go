@@ -26,7 +26,7 @@ func DescribeResourceCmd() *cobra.Command {
 				return err
 			}
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			res, err := c.GetResourceByName(ctx, name)

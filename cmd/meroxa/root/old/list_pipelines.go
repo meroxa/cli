@@ -38,7 +38,7 @@ func ListPipelinesCmd() *cobra.Command {
 			}
 
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			rr, err := c.ListPipelines(ctx)

@@ -43,7 +43,7 @@ func LogsConnectorCmd() *cobra.Command {
 			}
 
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			resp, err := c.GetConnectorLogs(ctx, connector)

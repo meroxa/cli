@@ -36,7 +36,7 @@ func ListEndpointsCmd() *cobra.Command {
 				return err
 			}
 
-			ctx, cancel := context.WithTimeout(context.Background(), clientTimeOut)
+			ctx, cancel := context.WithTimeout(context.Background(), ClientTimeOut)
 			defer cancel()
 
 			ends, err := c.ListEndpoints(ctx)

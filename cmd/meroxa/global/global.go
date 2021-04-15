@@ -1,6 +1,8 @@
 package global
 
 import (
+	"time"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -11,13 +13,15 @@ var (
 )
 
 var (
-	flagConfig string
-	flagDebug  bool
-	FlagJSON   bool // TODO make this private! do not use this variable from other packages
+	flagConfig  string
+	flagDebug   bool
+	FlagJSON    bool          // TODO make this private! do not use this variable from other packages
+	FlagTimeout time.Duration // TODO make this private! do not use this variable from other packages
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&FlagJSON, "json", false, "output json")
 	cmd.PersistentFlags().StringVar(&flagConfig, "config", "", "config file (default is $HOME/meroxa.env)")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
+	cmd.PersistentFlags().DurationVar(&FlagTimeout, "timeout", time.Second*10, "set the client timeout")
 }

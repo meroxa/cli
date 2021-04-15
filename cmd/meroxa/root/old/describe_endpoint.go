@@ -43,7 +43,7 @@ func DescribeEndpointCmd() *cobra.Command {
 				return err
 			}
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
 			end, err := c.GetEndpoint(ctx, name)

@@ -47,7 +47,7 @@ func NewClient() (*meroxa.Client, error) {
 
 func isDebugEnabled() bool {
 	val, ok := os.LookupEnv("MEROXA_DEBUG")
-	return (ok && val == "1") // TODO flagDebug
+	return flagDebug || (ok && val == "1")
 }
 
 func versionString() string {
