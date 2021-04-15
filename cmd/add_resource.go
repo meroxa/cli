@@ -20,9 +20,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 type AddResourceClient interface {
@@ -30,26 +33,44 @@ type AddResourceClient interface {
 }
 
 type AddResource struct {
-	name, rType, url, metadata, credentials string
+	Name        string
+	Credentials string `mapstructure:"credentials"`
+	Type        string `mapstructure:"type"`
+	Url         string `mapstructure:"url"`
+	Metadata    string `mapstructure:"metadata"`
+	cfg         *viper.Viper
 }
 
 func (ar *AddResource) setArgs(args []string) error {
 	if len(args) > 0 {
-		ar.name = args[0]
+		ar.Name = args[0]
 	}
 
 	return nil
 }
 
 func (ar *AddResource) setFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&ar.rType, "type", "", "", "resource type")
+	cmd.Flags().StringP("type", "", "", "resource type")
 	cmd.MarkFlagRequired("type")
 
-	cmd.Flags().StringVarP(&ar.url, "url", "u", "", "resource url")
+	cmd.Flags().StringP("url", "u", "", "resource url")
 	cmd.MarkFlagRequired("url")
 
-	cmd.Flags().StringVarP(&ar.credentials, "credentials", "", "", "resource credentials")
-	cmd.Flags().StringVarP(&ar.metadata, "metadata", "m", "", "resource metadata")
+	cmd.Flags().StringP("credentials", "", "", "resource credentials")
+	cmd.Flags().StringP("metadata", "m", "", "resource metadata")
+
+	viperBindFlags(cmd, ar.cfg)
+}
+
+func viperBindFlags(cmd *cobra.Command, v *viper.Viper) {
+	cmd.Flags().VisitAll(func(flag *pflag.Flag) {
+		flagName := flag.Name
+		if flagName != "config" && flagName != "help" {
+			if err := v.BindPFlag(flagName, flag); err != nil {
+				panic(fmt.Errorf("error binding flag '%s': %w", flagName, err).Error())
+			}
+		}
+	})
 }
 
 func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res meroxa.CreateResourceInput) (*meroxa.Resource, error) {
@@ -61,9 +82,9 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 
 	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
-	if ar.credentials != "" {
+	if ar.Credentials != "" {
 		var creds meroxa.Credentials
-		err = json.Unmarshal([]byte(ar.credentials), &creds)
+		err = json.Unmarshal([]byte(ar.Credentials), &creds)
 		if err != nil {
 			return nil, err
 		}
@@ -71,9 +92,9 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 		res.Credentials = &creds
 	}
 
-	if ar.metadata != "" {
+	if ar.Metadata != "" {
 		var metadata map[string]interface{}
-		err = json.Unmarshal([]byte(ar.metadata), &metadata)
+		err = json.Unmarshal([]byte(ar.Metadata), &metadata)
 		if err != nil {
 			return nil, err
 		}
@@ -108,6 +129,10 @@ func (ar *AddResource) command() *cobra.Command {
 			return ar.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := ar.cfg.Unmarshal(ar); err != nil {
+				return err
+			}
+
 			ctx := context.Background()
 			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
 			defer cancel()
@@ -119,9 +144,9 @@ func (ar *AddResource) command() *cobra.Command {
 			}
 
 			ri := meroxa.CreateResourceInput{
-				Type:     ar.rType,
-				Name:     ar.name,
-				URL:      ar.url,
+				Type:     ar.Type,
+				Name:     ar.Name,
+				URL:      ar.Url,
 				Metadata: nil,
 			}
 
