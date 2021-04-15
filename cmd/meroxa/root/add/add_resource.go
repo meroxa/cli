@@ -40,9 +40,9 @@ var (
 	_ builder.CommandWithDocs    = (*AddResource)(nil)
 	_ builder.CommandWithArgs    = (*AddResource)(nil)
 	_ builder.CommandWithFlags   = (*AddResource)(nil)
-	_ builder.CommandWithExecute = (*AddResource)(nil)
 	_ builder.CommandWithClient  = (*AddResource)(nil)
 	_ builder.CommandWithLogger  = (*AddResource)(nil)
+	_ builder.CommandWithExecute = (*AddResource)(nil)
 )
 
 func (ar *AddResource) Usage() string {

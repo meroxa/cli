@@ -13,7 +13,6 @@ const (
 	Info
 	Warn
 	Error
-	Noop
 )
 
 type LeveledLogger interface {

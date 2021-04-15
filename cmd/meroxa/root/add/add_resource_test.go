@@ -1,6 +1,22 @@
 package add
 
-/*func TestAddResourceArgs(t *testing.T) {
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
+	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
+)
+
+func TestAddResourceArgs(t *testing.T) {
 	tests := []struct {
 		args []string
 		err  error
@@ -12,7 +28,7 @@ package add
 
 	for _, tt := range tests {
 		ar := &AddResource{}
-		err := ar.setArgs(tt.args)
+		err := ar.ParseArgs(tt.args)
 
 		if tt.err != err {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
@@ -36,9 +52,7 @@ func TestAddResourceFlags(t *testing.T) {
 		{"metadata", false, "m"},
 	}
 
-	c := &cobra.Command{}
-	ar := &AddResource{}
-	ar.setFlags(c)
+	c := builder.BuildCobraCommand(&AddResource{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -60,6 +74,7 @@ func TestAddResourceExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockAddResourceClient(ctrl)
+	logger := log.NewTestLogger()
 
 	r := meroxa.CreateResourceInput{
 		Type:        "postgres",
@@ -70,7 +85,6 @@ func TestAddResourceExecution(t *testing.T) {
 	}
 
 	cr := utils.GenerateResource()
-
 	client.
 		EXPECT().
 		CreateResource(
@@ -79,56 +93,36 @@ func TestAddResourceExecution(t *testing.T) {
 		).
 		Return(&cr, nil)
 
-	output := utils.CaptureOutput(func() {
-		ar := &AddResource{}
-		got, err := ar.execute(ctx, client, r)
+	ar := &AddResource{
+		client: client,
+		logger: logger,
 
-		if !reflect.DeepEqual(got, &cr) {
-			t.Fatalf("expected \"%v\", got \"%v\"", &cr, got)
-		}
+		rType: r.Type,
+		name:  r.Name,
+		url:   r.URL,
+	}
 
-		if err != nil {
-			t.Fatalf("not expected error, got \"%s\"", err.Error())
-		}
-	})
+	err := ar.Execute(ctx)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
 
-	expected := fmt.Sprintf("Adding %s resource...", r.Type)
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Adding postgres resource...
+%s resource with name %s successfully added!`, cr.Type, cr.Name)
 
-	if !strings.Contains(output, expected) {
-		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
+	if strings.Trim(gotLeveledOutput, "\n") != strings.Trim(wantLeveledOutput, "\n") {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotResource meroxa.Resource
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotResource)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotResource, cr) {
+		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotResource)
 	}
 }
-
-func TestAddResourceOutput(t *testing.T) {
-	r := utils.GenerateResource()
-	cmd.flagRootOutputJSON = false
-
-	output := utils.CaptureOutput(func() {
-		ar := &AddResource{}
-		ar.output(&r)
-	})
-
-	expected := fmt.Sprintf("%s resource with name %s successfully added!", r.Type, r.Name)
-
-	if !strings.Contains(output, expected) {
-		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
-	}
-}
-
-func TestAddResourceJSONOutput(t *testing.T) {
-	r := utils.GenerateResource()
-	cmd.flagRootOutputJSON = true
-
-	output := utils.CaptureOutput(func() {
-		ar := &AddResource{}
-		ar.output(&r)
-	})
-
-	var parsedOutput meroxa.Resource
-	json.Unmarshal([]byte(output), &parsedOutput)
-
-	if !reflect.DeepEqual(r, parsedOutput) {
-		t.Fatalf("not expected output, got \"%s\"", output)
-	}
-}
-*/

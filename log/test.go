@@ -2,24 +2,31 @@ package log
 
 import "bytes"
 
-func NewTestLogger(level Level) *TestLogger {
-	var buf bytes.Buffer
+func NewTestLogger() *TestLogger {
+	var leveledBuf bytes.Buffer
+	var jsonBuf bytes.Buffer
 	return &TestLogger{
-		buf: &buf,
+		leveledBuf: &leveledBuf,
+		jsonBuf:    &jsonBuf,
 		Logger: New(
-			NewLeveledLogger(&buf, level),
-			NewJSONLogger(&buf),
+			NewLeveledLogger(&leveledBuf, Debug),
+			NewJSONLogger(&jsonBuf),
 		),
 	}
 }
 
 type TestLogger struct {
 	Logger
-	buf *bytes.Buffer
+	leveledBuf *bytes.Buffer
+	jsonBuf    *bytes.Buffer
 }
 
 var _ Logger = (*TestLogger)(nil)
 
-func (l *TestLogger) String() string {
-	return l.buf.String()
+func (l *TestLogger) JSONOutput() string {
+	return l.jsonBuf.String()
+}
+
+func (l *TestLogger) LeveledOutput() string {
+	return l.leveledBuf.String()
 }
