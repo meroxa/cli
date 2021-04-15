@@ -13,11 +13,11 @@ var (
 var (
 	flagConfig string
 	flagDebug  bool
-	flagJSON   bool
+	FlagJSON   bool // TODO make this private! do not use this variable from other packages
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().BoolVar(&flagJSON, "json", false, "output json")
+	cmd.PersistentFlags().BoolVar(&FlagJSON, "json", false, "output json")
 	cmd.PersistentFlags().StringVar(&flagConfig, "config", "", "config file (default is $HOME/meroxa.env)")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
 }

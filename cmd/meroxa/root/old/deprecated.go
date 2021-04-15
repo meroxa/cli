@@ -21,11 +21,11 @@ import (
 )
 
 const (
-	// Deprecated: don't use a timeout
+	// Deprecated: don't use a timeout through a context
 	clientTimeOut = 10 * time.Second
 )
 
 var (
-	// Deprecated: use log.Logger instead
+	// Deprecated: use log.Logger instead, it knows about the flag
 	FlagRootOutputJSON bool
 )

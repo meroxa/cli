@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
@@ -54,7 +55,7 @@ type Flag struct {
 	Long       string
 	Short      string
 	Usage      string
-	Default    string
+	Default    interface{}
 	Required   bool
 	Persistent bool
 	Ptr        interface{}
@@ -178,8 +179,39 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 
 		switch val := f.Ptr.(type) {
 		case *string:
-			flags.StringVarP(val, f.Long, f.Short, f.Default, f.Usage)
-		// TODO add more types
+			flags.StringVarP(val, f.Long, f.Short, f.Default.(string), f.Usage)
+		case *int:
+			flags.IntVarP(val, f.Long, f.Short, f.Default.(int), f.Usage)
+		case *int8:
+			flags.Int8VarP(val, f.Long, f.Short, f.Default.(int8), f.Usage)
+		case *int16:
+			flags.Int16VarP(val, f.Long, f.Short, f.Default.(int16), f.Usage)
+		case *int32:
+			flags.Int32VarP(val, f.Long, f.Short, f.Default.(int32), f.Usage)
+		case *int64:
+			flags.Int64VarP(val, f.Long, f.Short, f.Default.(int64), f.Usage)
+		case *float32:
+			flags.Float32VarP(val, f.Long, f.Short, f.Default.(float32), f.Usage)
+		case *float64:
+			flags.Float64VarP(val, f.Long, f.Short, f.Default.(float64), f.Usage)
+		case *bool:
+			flags.BoolVarP(val, f.Long, f.Short, f.Default.(bool), f.Usage)
+		case *time.Duration:
+			flags.DurationVarP(val, f.Long, f.Short, f.Default.(time.Duration), f.Usage)
+		case *[]bool:
+			flags.BoolSliceVarP(val, f.Long, f.Short, f.Default.([]bool), f.Usage)
+		case *[]float32:
+			flags.Float32SliceVarP(val, f.Long, f.Short, f.Default.([]float32), f.Usage)
+		case *[]float64:
+			flags.Float64SliceVarP(val, f.Long, f.Short, f.Default.([]float64), f.Usage)
+		case *[]int32:
+			flags.Int32SliceVarP(val, f.Long, f.Short, f.Default.([]int32), f.Usage)
+		case *[]int64:
+			flags.Int64SliceVarP(val, f.Long, f.Short, f.Default.([]int64), f.Usage)
+		case *[]int:
+			flags.IntSliceVarP(val, f.Long, f.Short, f.Default.([]int), f.Usage)
+		case *[]string:
+			flags.StringSliceVarP(val, f.Long, f.Short, f.Default.([]string), f.Usage)
 		default:
 			panic(fmt.Errorf("unexpected flag value type: %T", val))
 		}

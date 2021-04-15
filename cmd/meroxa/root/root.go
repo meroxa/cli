@@ -49,6 +49,7 @@ resource types:
 
 meroxa list resource-types`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			old.FlagRootOutputJSON = global.FlagJSON
 			return global.InitConfig()
 		},
 		SilenceUsage:      true,

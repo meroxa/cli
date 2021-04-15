@@ -14,7 +14,7 @@ func NewLogger() log.Logger {
 		jsonLoggerOut    = ioutil.Discard
 	)
 
-	if flagJSON {
+	if FlagJSON {
 		logLevel = log.Warn
 		jsonLoggerOut = os.Stdout
 	}
