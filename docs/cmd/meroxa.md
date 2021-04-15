@@ -15,10 +15,11 @@ meroxa list resource-types
 ### Options
 
 ```
-      --config string   config file (default is $HOME/meroxa.env)
-      --debug           display any debugging information
-  -h, --help            help for meroxa
-      --json            output json
+      --config string      config file (default is $HOME/meroxa.env)
+      --debug              display any debugging information
+  -h, --help               help for meroxa
+      --json               output json
+      --timeout duration   set the client timeout (default 10s)
 ```
 
 ### SEE ALSO

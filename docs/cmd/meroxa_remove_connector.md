@@ -15,10 +15,11 @@ meroxa remove connector NAME [flags]
 ### Options inherited from parent commands
 
 ```
-      --config string   config file (default is $HOME/meroxa.env)
-      --debug           display any debugging information
-  -f, --force           force delete without confirmation prompt
-      --json            output json
+      --config string      config file (default is $HOME/meroxa.env)
+      --debug              display any debugging information
+  -f, --force              force delete without confirmation prompt
+      --json               output json
+      --timeout duration   set the client timeout (default 10s)
 ```
 
 ### SEE ALSO
