@@ -85,4 +85,4 @@ make test
 
 If you want to enable shell completion manually, you can generate your own using our `meroxa completion` command.
 
-Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/meroxa_completion.md).
+Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/md/meroxa_completion.md).

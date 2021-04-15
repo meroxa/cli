@@ -1,9 +1,11 @@
 package meroxa
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 )
 
 type DumpTransport struct {
@@ -11,7 +13,14 @@ type DumpTransport struct {
 }
 
 func (d *DumpTransport) RoundTrip(h *http.Request) (*http.Response, error) {
-	dump, err := httputil.DumpRequestOut(h, true)
+	cloned := h.Clone(context.Background())
+
+	// Makes sure we don't log out the bearer token by accident when it's not nil
+	if !strings.Contains(cloned.Header.Get("Authorization"), "nil") {
+		cloned.Header.Set("Authorization", "REDACTED")
+	}
+
+	dump, err := httputil.DumpRequestOut(cloned, true)
 
 	if err != nil {
 		return nil, err
