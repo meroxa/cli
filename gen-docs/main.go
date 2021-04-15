@@ -49,8 +49,8 @@ func generateManPages(rootCmd *cobra.Command) error {
 	header := &doc.GenManHeader{
 		Title:   "Meroxa",
 		Section: "1",
-		// Source:  old2.VersionString(), TODO
-		Manual: "Meroxa Manual",
+		Source:  "Meroxa CLI ", // TODO change this to actually get version
+		Manual:  "Meroxa Manual",
 	}
 
 	return doc.GenManTree(rootCmd, header, "./etc/man/man1")
