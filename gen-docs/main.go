@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	cmd "github.com/meroxa/cli/cmd"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"time"
-
-	cmd "github.com/meroxa/cli/cmd"
 
 	"github.com/spf13/cobra/doc"
 )
@@ -45,13 +45,7 @@ func renameFromUnderscoreToDash(dir string) {
 	}
 }
 
-func main() {
-	// set HOME env var so that default values involve user's home directory do not depend on the running user.
-	os.Setenv("HOME", "/home/user")
-
-	rootCmd := cmd.RootCmd()
-
-	// Generating Man Pages
+func generateManPages(rootCmd *cobra.Command) error {
 	header := &doc.GenManHeader{
 		Title:   "Meroxa",
 		Section: "1",
@@ -59,16 +53,14 @@ func main() {
 		Manual:  "Meroxa Manual",
 	}
 
-	if err := doc.GenManTree(rootCmd, header, "./etc/man/man1"); err != nil {
-		log.Fatal(err)
-	}
+	return doc.GenManTree(rootCmd, header, "./etc/man/man1")
+}
 
-	// Generating Markdown Documents
-	err := doc.GenMarkdownTree(rootCmd, "./docs/cmd")
-	if err != nil {
-		log.Fatal(err)
-	}
+func generateMarkdownPages(rootCmd *cobra.Command) error {
+	return doc.GenMarkdownTree(rootCmd, "./docs/cmd/md")
+}
 
+func generateDocsDotComPages(rootCmd *cobra.Command) error {
 	filePrepender := func(filename string) string {
 		createdAt := time.Now().Format(time.RFC3339)
 		name := filepath.Base(filename)
@@ -84,14 +76,10 @@ func main() {
 		return "/cli/" + strings.ToLower(slug) + "/"
 	}
 
-	// Generating Markdown Documents
-	errWeb := doc.GenMarkdownTreeCustom(rootCmd, "./docs/web", filePrepender, linkHandler)
-	if errWeb != nil {
-		log.Fatal(err)
-	}
+	return doc.GenMarkdownTreeCustom(rootCmd, "./docs/cmd/www", filePrepender, linkHandler)
+}
 
-	renameFromUnderscoreToDash("./docs/web")
-
+func generateShellCompletionFiles(rootCmd *cobra.Command) {
 	// Generating Bash Completion File
 	if err := rootCmd.GenBashCompletionFile("./etc/completion/meroxa.completion.sh"); err != nil {
 		log.Fatal(err)
@@ -121,4 +109,27 @@ func main() {
 	if err := rootCmd.GenPowerShellCompletion(powerShellCompletionFile); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func main() {
+	// set HOME env var so that default values involve user's home directory do not depend on the running user.
+	os.Setenv("HOME", "/home/user")
+
+	rootCmd := cmd.RootCmd()
+
+	if err := generateManPages(rootCmd); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := generateMarkdownPages(rootCmd); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := generateDocsDotComPages(rootCmd); err != nil {
+		log.Fatal(err)
+	} else {
+		renameFromUnderscoreToDash("./docs/cmd/www")
+	}
+
+	generateShellCompletionFiles(rootCmd)
 }
