@@ -55,6 +55,7 @@ meroxa list resource-types`,
 		},
 		SilenceUsage:      true,
 		DisableAutoGenTag: true,
+		TraverseChildren:  true,
 	}
 
 	global.RegisterGlobalFlags(cmd)
