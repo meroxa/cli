@@ -38,10 +38,17 @@ type AddResource struct {
 	}
 
 	flags struct {
-		Type        string `long:"type"        short:""  usage:"resource type"        required:"true"`
-		Url         string `long:"url"         short:"u" usage:"resource url"         required:"true"`
-		Metadata    string `long:"credentials" short:""  usage:"resource credentials" required:"false"`
-		Credentials string `long:"metadata"    short:"m" usage:"resource metadata"    required:"false"`
+		Type     string `long:"type"        short:""  usage:"resource type"        required:"true"`
+		Url      string `long:"url"         short:"u" usage:"resource url"         required:"true"`
+		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
+
+		// credentials
+		Username   string `long:"username"    short:"" usage:"username"`
+		Password   string `long:"password"    short:"" usage:"passsword"`
+		CaCert     string `long:"ca-cert"     short:"" usage:"trusted certificates for verifying resource"`
+		ClientCert string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
+		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
+		Ssl        bool   `long:"ssl"         short:"" usage:"use SSL"`
 	}
 }
 
@@ -97,14 +104,14 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
-	ar.logger.Infof(ctx, "Adding %s resource...", input.Type)
-
-	// TODO: Figure out best way to handle creds and metadata
-	// Get credentials (expect a JSON string)
-	if ar.flags.Credentials != "" {
-		err := json.Unmarshal([]byte(ar.flags.Credentials), &input.Credentials)
-		if err != nil {
-			return err
+	if ar.hasCreds() {
+		input.Credentials = &meroxa.Credentials{
+			Username:      ar.flags.Username,
+			Password:      ar.flags.Password,
+			CACert:        ar.flags.CaCert,
+			ClientCert:    ar.flags.ClientCert,
+			ClientCertKey: ar.flags.ClientKey,
+			UseSSL:        ar.flags.Ssl,
 		}
 	}
 
@@ -115,6 +122,8 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 		}
 	}
 
+	ar.logger.Infof(ctx, "Adding %s resource...", input.Type)
+
 	res, err := ar.client.CreateResource(ctx, &input)
 	if err != nil {
 		return err
@@ -124,4 +133,13 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 	ar.logger.JSON(ctx, res)
 
 	return nil
+}
+
+func (ar *AddResource) hasCreds() bool {
+	return ar.flags.Username != "" ||
+		ar.flags.Password != "" ||
+		ar.flags.CaCert != "" ||
+		ar.flags.ClientCert != "" ||
+		ar.flags.ClientKey != "" ||
+		ar.flags.Ssl
 }

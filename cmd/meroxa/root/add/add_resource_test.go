@@ -47,7 +47,12 @@ func TestAddResourceFlags(t *testing.T) {
 	}{
 		{"type", true, ""},
 		{"url", true, "u"},
-		{"credentials", false, ""},
+		{"username", false, ""},
+		{"password", false, ""},
+		{"ca-cert", false, ""},
+		{"client-cert", false, ""},
+		{"client-key", false, ""},
+		{"ssl", false, ""},
 		{"metadata", false, "m"},
 	}
 
