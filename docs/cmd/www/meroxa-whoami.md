@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-16T13:22:36+02:00
-updatedAt: 2021-04-16T13:22:36+02:00
+createdAt: 2021-04-16T17:48:56+02:00
+updatedAt: 2021-04-16T17:48:56+02:00
 title: "meroxa whoami"
 slug: meroxa-whoami
 url: /cli/meroxa-whoami/
