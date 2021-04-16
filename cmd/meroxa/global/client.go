@@ -92,6 +92,7 @@ func getAccessToken(cfg *viper.Viper) (string, error) {
 		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
 	}
 	cfg.Set("ACCESS_TOKEN", accessToken)
+	// TODO make sure config is updated on disk
 
 	return accessToken, nil
 }

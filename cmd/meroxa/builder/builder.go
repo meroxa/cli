@@ -17,67 +17,99 @@ import (
 )
 
 type Command interface {
+	// Usage is the one-line usage message.
+	// Recommended syntax is as follow:
+	//   [ ] identifies an optional argument. Arguments that are not enclosed in brackets are required.
+	//   ... indicates that you can specify multiple values for the previous argument.
+	//   |   indicates mutually exclusive information. You can use the argument to the left of the separator or the
+	//       argument to the right of the separator. You cannot use both arguments in a single use of the command.
+	//   { } delimits a set of mutually exclusive arguments when one of the arguments is required. If the arguments are
+	//       optional, they are enclosed in brackets ([ ]).
+	// Example: add [-F file | -D dir]... [-f format] profile
 	Usage() string
 }
 
 type CommandWithExecute interface {
 	Command
+	// Execute is the actual work function. Most commands will implement this.
 	Execute(ctx context.Context) error
 }
 
 type CommandWithDocs interface {
 	Command
+	// Docs returns the documentation for the command.
 	Docs() Docs
 }
 
+// Docs will be shown to the user when typing 'help' as well as in generated docs.
 type Docs struct {
-	Short   string
-	Long    string
+	// Short is the short description shown in the 'help' output.
+	Short string
+	// Long is the long message shown in the 'help <this-command>' output.
+	Long string
+	// Example is examples of how to use the command.
 	Example string
 }
 
 type CommandWithAliases interface {
 	Command
+	// Aliases is an array of aliases that can be used instead of the first word in Usage.
 	Aliases() []string
 }
 
 type CommandWithArgs interface {
 	Command
+	// ParseArgs is meant to parse arguments after the command name.
 	ParseArgs([]string) error
 }
 
 type CommandWithFlags interface {
 	Command
+	// Flags returns the set of flags on this command.
 	Flags() []Flag
 }
 
+// Flag describes a single command line flag.
 type Flag struct {
-	Long       string
-	Short      string
-	Usage      string
-	Default    interface{}
-	Required   bool
+	// Long name of the flag.
+	Long string
+	// Short name of the flag (one character).
+	Short string
+	// Usage is the description shown in the 'help' output.
+	Usage string
+	// Required is used to mark the flag as required.
+	Required bool
+	// Persistent is used to propagate the flag to subcommands.
 	Persistent bool
-	Ptr        interface{}
+	// Default is the default value when the flag is not explicitly supplied. It should have the same type as the value
+	// behind the pointer in field Ptr.
+	Default interface{}
+	// Ptr is a pointer to the value into which the flag will be parsed.
+	Ptr interface{}
 }
 
 type CommandWithConfirm interface {
 	Command
+	// Confirm adds a prompt before the command is executed where the user is asked to write the exact value as
+	// wantInput. If the user input matches the command will be executed, otherwise processing will be stopped.
 	Confirm(ctx context.Context) (wantInput string)
 }
 
 type CommandWithClient interface {
 	Command
+	// Client provides the meroxa client to the command.
 	Client(*meroxa.Client)
 }
 
 type CommandWithLogger interface {
 	Command
+	// Logger provides the logger to the command.
 	Logger(log.Logger)
 }
 
 type CommandWithSubCommands interface {
 	Command
+	// SubCommands defines subcommands of a command.
 	SubCommands() []*cobra.Command
 }
 
@@ -88,10 +120,10 @@ func BuildCobraCommand(c Command) *cobra.Command {
 
 	buildCommandWithDocs(cmd, c)
 	buildCommandWithAliases(cmd, c)
-	buildCommandWithClient(cmd, c)
-	buildCommandWithLogger(cmd, c)
 	buildCommandWithFlags(cmd, c)
 	buildCommandWithArgs(cmd, c)
+	buildCommandWithLogger(cmd, c)
+	buildCommandWithClient(cmd, c)
 	buildCommandWithConfirm(cmd, c)
 	buildCommandWithExecute(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
@@ -118,49 +150,6 @@ func buildCommandWithAliases(cmd *cobra.Command, c Command) {
 	}
 
 	cmd.Aliases = v.Aliases()
-}
-
-func buildCommandWithClient(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithClient)
-	if !ok {
-		return
-	}
-
-	old := cmd.PreRunE
-	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-		c, err := global.NewClient()
-		if err != nil {
-			return err
-		}
-		v.Client(c)
-		return nil
-	}
-}
-
-func buildCommandWithLogger(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithLogger)
-	if !ok {
-		return
-	}
-
-	old := cmd.PreRunE
-	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-
-		v.Logger(global.NewLogger())
-		return nil
-	}
 }
 
 func buildCommandWithFlags(cmd *cobra.Command, c Command) {
@@ -243,6 +232,49 @@ func buildCommandWithArgs(cmd *cobra.Command, c Command) {
 	}
 }
 
+func buildCommandWithLogger(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithLogger)
+	if !ok {
+		return
+	}
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		v.Logger(global.NewLogger())
+		return nil
+	}
+}
+
+func buildCommandWithClient(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithClient)
+	if !ok {
+		return
+	}
+
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+		c, err := global.NewClient()
+		if err != nil {
+			return err
+		}
+		v.Client(c)
+		return nil
+	}
+}
+
 func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
 	v, ok := c.(CommandWithConfirm)
 	if !ok {
@@ -260,8 +292,8 @@ func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
 		panic(fmt.Errorf("could not mark flag hidden: %w", err))
 	}
 
-	old := cmd.PreRunE
-	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if old != nil {
 			err := old(cmd, args)
 			if err != nil {
@@ -291,7 +323,14 @@ func buildCommandWithExecute(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	cmd.RunE = func(cmd *cobra.Command, _ []string) error {
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
 		return v.Execute(cmd.Context())
 	}
 }

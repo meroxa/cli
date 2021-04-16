@@ -26,7 +26,10 @@ func TestAddCmd(t *testing.T) {
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
 	rootCmd.SetArgs([]string{"add"})
-	rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
 
 	out, err := ioutil.ReadAll(b)
 
@@ -36,7 +39,7 @@ func TestAddCmd(t *testing.T) {
 
 	for _, tt := range tests {
 		if !strings.Contains(string(out), tt.expected) {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.expected, string(out))
+			t.Fatalf("expected %q got %q", tt.expected, string(out))
 		}
 	}
 }

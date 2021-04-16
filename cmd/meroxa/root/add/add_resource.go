@@ -33,7 +33,16 @@ type AddResource struct {
 	client addResourceClient
 	logger log.Logger
 
-	name, rType, url, metadata, credentials string
+	args struct {
+		Name string
+	}
+
+	flags struct {
+		Type        string `long:"type"        short:""  usage:"resource type"        required:"true"`
+		Url         string `long:"url"         short:"u" usage:"resource url"         required:"true"`
+		Metadata    string `long:"credentials" short:""  usage:"resource credentials" required:"false"`
+		Credentials string `long:"metadata"    short:"m" usage:"resource metadata"    required:"false"`
+	}
 }
 
 var (
@@ -69,27 +78,22 @@ func (ar *AddResource) Logger(logger log.Logger) {
 	ar.logger = logger
 }
 
+func (ar *AddResource) Flags() []builder.Flag {
+	return builder.BuildFlags(&ar.flags)
+}
+
 func (ar *AddResource) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		ar.name = args[0]
+		ar.args.Name = args[0]
 	}
 	return nil
 }
 
-func (ar *AddResource) Flags() []builder.Flag {
-	return []builder.Flag{
-		{Long: "type", Short: "", Usage: "resource type", Default: "", Required: true, Ptr: &ar.rType},
-		{Long: "url", Short: "u", Usage: "resource url", Default: "", Required: true, Ptr: &ar.url},
-		{Long: "credentials", Short: "", Usage: "resource credentials", Default: "", Required: false, Ptr: &ar.credentials},
-		{Long: "metadata", Short: "m", Usage: "resource metadata", Default: "", Required: false, Ptr: &ar.metadata},
-	}
-}
-
 func (ar *AddResource) Execute(ctx context.Context) error {
 	input := meroxa.CreateResourceInput{
-		Type:     ar.rType,
-		Name:     ar.name,
-		URL:      ar.url,
+		Type:     ar.flags.Type,
+		Name:     ar.args.Name,
+		URL:      ar.flags.Url,
 		Metadata: nil,
 	}
 
@@ -97,15 +101,15 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 
 	// TODO: Figure out best way to handle creds and metadata
 	// Get credentials (expect a JSON string)
-	if ar.credentials != "" {
-		err := json.Unmarshal([]byte(ar.credentials), &input.Credentials)
+	if ar.flags.Credentials != "" {
+		err := json.Unmarshal([]byte(ar.flags.Credentials), &input.Credentials)
 		if err != nil {
 			return err
 		}
 	}
 
-	if ar.metadata != "" {
-		err := json.Unmarshal([]byte(ar.metadata), &input.Metadata)
+	if ar.flags.Metadata != "" {
+		err := json.Unmarshal([]byte(ar.flags.Metadata), &input.Metadata)
 		if err != nil {
 			return err
 		}

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -109,9 +108,10 @@ func TestAddResourceExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Adding postgres resource...
-%s resource with name %s successfully added!`, cr.Type, cr.Name)
+%s resource with name %s successfully added!
+`, cr.Type, cr.Name)
 
-	if strings.Trim(gotLeveledOutput, "\n") != strings.Trim(wantLeveledOutput, "\n") {
+	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
