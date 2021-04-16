@@ -44,11 +44,11 @@ type AddResource struct {
 
 		// credentials
 		Username   string `long:"username"    short:"" usage:"username"`
-		Password   string `long:"password"    short:"" usage:"passsword"`
+		Password   string `long:"password"    short:"" usage:"password"`
 		CaCert     string `long:"ca-cert"     short:"" usage:"trusted certificates for verifying resource"`
 		ClientCert string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
 		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
-		Ssl        bool   `long:"ssl"         short:"" usage:"use SSL"`
+		SSL        bool   `long:"ssl"         short:"" usage:"use SSL"`
 	}
 }
 
@@ -69,11 +69,12 @@ func (ar *AddResource) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Add a resource to your Meroxa resource catalog",
 		Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
-		Example: "\n" +
-			"meroxa add resource store --type postgres -u $DATABASE_URL --metadata '{\"logical_replication\":true}'\n" +
-			"meroxa add resource datalake --type s3 -u \"s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos\"\n" +
-			"meroxa add resource warehouse --type redshift -u $REDSHIFT_URL\n" +
-			"meroxa add resource slack --type url -u $WEBHOOK_URL\n",
+		Example: `
+meroxa add resource store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
+meroxa add resource datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
+meroxa add resource warehouse --type redshift -u $REDSHIFT_URL
+meroxa add resource slack --type url -u $WEBHOOK_URL
+`,
 	}
 }
 
@@ -104,14 +105,14 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
-	if ar.hasCreds() {
+	if ar.hasCredentials() {
 		input.Credentials = &meroxa.Credentials{
 			Username:      ar.flags.Username,
 			Password:      ar.flags.Password,
 			CACert:        ar.flags.CaCert,
 			ClientCert:    ar.flags.ClientCert,
 			ClientCertKey: ar.flags.ClientKey,
-			UseSSL:        ar.flags.Ssl,
+			UseSSL:        ar.flags.SSL,
 		}
 	}
 
@@ -135,11 +136,11 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (ar *AddResource) hasCreds() bool {
+func (ar *AddResource) hasCredentials() bool {
 	return ar.flags.Username != "" ||
 		ar.flags.Password != "" ||
 		ar.flags.CaCert != "" ||
 		ar.flags.ClientCert != "" ||
 		ar.flags.ClientKey != "" ||
-		ar.flags.Ssl
+		ar.flags.SSL
 }

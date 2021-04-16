@@ -23,7 +23,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -42,12 +41,7 @@ func NewClient() (*meroxa.Client, error) {
 		return nil, err
 	}
 
-	return meroxa.New(accessToken, versionString(), isDebugEnabled())
-}
-
-func isDebugEnabled() bool {
-	val, ok := os.LookupEnv("MEROXA_DEBUG")
-	return flagDebug || (ok && val == "1")
+	return meroxa.New(accessToken, versionString(), flagDebug)
 }
 
 func versionString() string {
