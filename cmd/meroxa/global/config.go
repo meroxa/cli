@@ -7,15 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func InitConfig() error {
-	cfg, err := NewConfig()
-	if err != nil {
-		return err
-	}
-	Config = cfg
-	return nil
-}
-
 const (
 	// The name of our config file, without the file extension because viper supports many different config file languages.
 	defaultConfigFilename = "meroxa"
@@ -24,7 +15,7 @@ const (
 	envPrefix = "MEROXA"
 )
 
-func NewConfig() (*viper.Viper, error) {
+func readConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 
 	if flagConfig != "" {

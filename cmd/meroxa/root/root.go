@@ -51,7 +51,7 @@ meroxa list resource-types`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			old.FlagRootOutputJSON = global.FlagJSON
 			old.ClientTimeOut = global.FlagTimeout
-			return global.InitConfig()
+			return global.PersistentPreRunE(cmd)
 		},
 		SilenceUsage:      true,
 		DisableAutoGenTag: true,
