@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-15T17:48:51+02:00
-updatedAt: 2021-04-15T17:48:51+02:00
+createdAt: 2021-04-16T13:22:36+02:00
+updatedAt: 2021-04-16T13:22:36+02:00
 title: "meroxa add resource"
 slug: meroxa-add-resource
 url: /cli/meroxa-add-resource/
@@ -31,11 +31,16 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
 ### Options
 
 ```
-      --credentials string   resource credentials
+      --ca-cert string       trusted certificates for verifying resource
+      --client-cert string   client certificate for authenticating to the resource
+      --client-key string    client private key for authenticating to the resource
   -h, --help                 help for resource
   -m, --metadata string      resource metadata
+      --password string      passsword
+      --ssl                  use SSL
       --type string          resource type
   -u, --url string           resource url
+      --username string      username
 ```
 
 ### Options inherited from parent commands
