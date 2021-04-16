@@ -46,6 +46,15 @@ type AddResource struct {
 	cfg        *viper.Viper
 }
 
+func (ar *AddResource) hasCreds() bool {
+	return ar.Username != "" ||
+		ar.Password != "" ||
+		ar.CaCert != "" ||
+		ar.ClientCert != "" ||
+		ar.ClientKey != "" ||
+		ar.Ssl
+}
+
 func (ar *AddResource) setArgs(args []string) error {
 	if len(args) > 0 {
 		ar.Name = args[0]
@@ -91,13 +100,15 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 
 	var err error
 
-	res.Credentials = &meroxa.Credentials{
-		Username:      ar.Username,
-		Password:      ar.Password,
-		CACert:        ar.CaCert,
-		ClientCert:    ar.ClientCert,
-		ClientCertKey: ar.ClientKey,
-		UseSSL:        ar.Ssl,
+	if ar.hasCreds() {
+		res.Credentials = &meroxa.Credentials{
+			Username:      ar.Username,
+			Password:      ar.Password,
+			CACert:        ar.CaCert,
+			ClientCert:    ar.ClientCert,
+			ClientCertKey: ar.ClientKey,
+			UseSSL:        ar.Ssl,
+		}
 	}
 
 	if ar.Metadata != "" {
