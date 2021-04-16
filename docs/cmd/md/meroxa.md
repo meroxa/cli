@@ -39,4 +39,6 @@ meroxa list resource-types
 * [meroxa remove](meroxa_remove.md)	 - Remove a component
 * [meroxa update](meroxa_update.md)	 - Update a component
 * [meroxa version](meroxa_version.md)	 - Display the Meroxa CLI version
+* [meroxa whoami](meroxa_whoami.md)	 - Display the current logged in user
+
 

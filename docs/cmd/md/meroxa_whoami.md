@@ -1,22 +1,24 @@
----
-createdAt: 2021-04-16T17:48:56+02:00
-updatedAt: 2021-04-16T17:48:56+02:00
-title: "meroxa logout"
-slug: meroxa-logout
-url: /cli/meroxa-logout/
----
-## meroxa logout
+## meroxa whoami
 
-logout of the Meroxa platform
+Display the current logged in user
+
 
 ```
-meroxa logout [flags]
+meroxa whoami [flags]
+```
+
+### Examples
+
+```
+
+meroxa whoami'
+
 ```
 
 ### Options
 
 ```
-  -h, --help   help for logout
+  -h, --help   help for whoami
 ```
 
 ### Options inherited from parent commands
@@ -30,5 +32,5 @@ meroxa logout [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
 

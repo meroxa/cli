@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-15T17:48:51+02:00
-updatedAt: 2021-04-15T17:48:51+02:00
+createdAt: 2021-04-16T17:48:56+02:00
+updatedAt: 2021-04-16T17:48:56+02:00
 title: "meroxa open billing"
 slug: meroxa-open-billing
 url: /cli/meroxa-open-billing/

@@ -1,22 +1,31 @@
 ---
 createdAt: 2021-04-16T17:48:56+02:00
 updatedAt: 2021-04-16T17:48:56+02:00
-title: "meroxa remove endpoint"
-slug: meroxa-remove-endpoint
-url: /cli/meroxa-remove-endpoint/
+title: "meroxa whoami"
+slug: meroxa-whoami
+url: /cli/meroxa-whoami/
 ---
-## meroxa remove endpoint
+## meroxa whoami
 
-Remove endpoint
+Display the current logged in user
+
 
 ```
-meroxa remove endpoint NAME [flags]
+meroxa whoami [flags]
+```
+
+### Examples
+
+```
+
+meroxa whoami'
+
 ```
 
 ### Options
 
 ```
-  -h, --help   help for endpoint
+  -h, --help   help for whoami
 ```
 
 ### Options inherited from parent commands
@@ -24,12 +33,11 @@ meroxa remove endpoint NAME [flags]
 ```
       --config string      config file (default is $HOME/meroxa.env)
       --debug              display any debugging information
-  -f, --force              force delete without confirmation prompt
       --json               output json
       --timeout duration   set the client timeout (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa remove](/cli/meroxa-remove/)	 - Remove a component
+* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
 
