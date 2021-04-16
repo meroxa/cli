@@ -33,8 +33,8 @@ func TestAddResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.name)
+		if tt.name != ar.args.Name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
 		}
 	}
 }
@@ -95,11 +95,10 @@ func TestAddResourceExecution(t *testing.T) {
 	ar := &AddResource{
 		client: client,
 		logger: logger,
-
-		rType: r.Type,
-		name:  r.Name,
-		url:   r.URL,
 	}
+	ar.args.Name = r.Name
+	ar.flags.Type = r.Type
+	ar.flags.Url = r.URL
 
 	err := ar.Execute(ctx)
 	if err != nil {

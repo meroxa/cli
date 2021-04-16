@@ -75,7 +75,7 @@ func buildFlag(val reflect.Value, sf reflect.StructField) (Flag, error) {
 		Usage:      usage,
 		Required:   required,
 		Persistent: persistent,
-		Default:    reflect.New(val.Type()).Elem().Interface(),
+		Default:    reflect.New(val.Type()).Elem().Interface(), // default is always empty
 		Ptr:        val.Addr().Interface(),
 	}, nil
 }

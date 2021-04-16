@@ -113,6 +113,8 @@ type CommandWithSubCommands interface {
 	SubCommands() []*cobra.Command
 }
 
+// BuildCobraCommand takes a Command and builds a *cobra.Command from it. It figures out if the command implements any
+// other CommandWith* interfaces and configures the cobra command accordingly.
 func BuildCobraCommand(c Command) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: c.Usage(),
@@ -168,24 +170,54 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 
 		switch val := f.Ptr.(type) {
 		case *string:
+			if f.Default == nil {
+				f.Default = ""
+			}
 			flags.StringVarP(val, f.Long, f.Short, f.Default.(string), f.Usage)
 		case *int:
+			if f.Default == nil {
+				f.Default = 0
+			}
 			flags.IntVarP(val, f.Long, f.Short, f.Default.(int), f.Usage)
 		case *int8:
+			if f.Default == nil {
+				f.Default = int8(0)
+			}
 			flags.Int8VarP(val, f.Long, f.Short, f.Default.(int8), f.Usage)
 		case *int16:
+			if f.Default == nil {
+				f.Default = int16(0)
+			}
 			flags.Int16VarP(val, f.Long, f.Short, f.Default.(int16), f.Usage)
 		case *int32:
+			if f.Default == nil {
+				f.Default = int32(0)
+			}
 			flags.Int32VarP(val, f.Long, f.Short, f.Default.(int32), f.Usage)
 		case *int64:
+			if f.Default == nil {
+				f.Default = int64(0)
+			}
 			flags.Int64VarP(val, f.Long, f.Short, f.Default.(int64), f.Usage)
 		case *float32:
+			if f.Default == nil {
+				f.Default = float32(0)
+			}
 			flags.Float32VarP(val, f.Long, f.Short, f.Default.(float32), f.Usage)
 		case *float64:
+			if f.Default == nil {
+				f.Default = float64(0)
+			}
 			flags.Float64VarP(val, f.Long, f.Short, f.Default.(float64), f.Usage)
 		case *bool:
+			if f.Default == nil {
+				f.Default = false
+			}
 			flags.BoolVarP(val, f.Long, f.Short, f.Default.(bool), f.Usage)
 		case *time.Duration:
+			if f.Default == nil {
+				f.Default = time.Duration(0)
+			}
 			flags.DurationVarP(val, f.Long, f.Short, f.Default.(time.Duration), f.Usage)
 		case *[]bool:
 			flags.BoolSliceVarP(val, f.Long, f.Short, f.Default.([]bool), f.Usage)
