@@ -33,12 +33,17 @@ type AddResourceClient interface {
 }
 
 type AddResource struct {
-	Name        string
-	Credentials string `mapstructure:"credentials"`
-	Type        string `mapstructure:"type"`
-	Url         string `mapstructure:"url"`
-	Metadata    string `mapstructure:"metadata"`
-	cfg         *viper.Viper
+	Name       string
+	Type       string `mapstructure:"type"`
+	Url        string `mapstructure:"url"`
+	Metadata   string `mapstructure:"metadata"`
+	Username   string `mapstructure:"username"`
+	Password   string `mapstructure:"password"`
+	CaCert     string `mapstructure:"ca-cert"`
+	ClientCert string `mapstructure:"client-cert"`
+	ClientKey  string `mapstructure:"client-key"`
+	Ssl        bool   `mapstructure:"ssl"`
+	cfg        *viper.Viper
 }
 
 func (ar *AddResource) setArgs(args []string) error {
@@ -56,7 +61,13 @@ func (ar *AddResource) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringP("url", "u", "", "resource url")
 	cmd.MarkFlagRequired("url")
 
-	cmd.Flags().StringP("credentials", "", "", "resource credentials")
+	cmd.Flags().StringP("username", "", "", "username")
+	cmd.Flags().StringP("password", "", "", "passsword")
+	cmd.Flags().StringP("ca-cert", "", "", "trusted certificates for verifying resource")
+	cmd.Flags().StringP("client-cert", "", "", "client certificate for authenticating to the resource")
+	cmd.Flags().StringP("client-key", "", "", "client private key for authenticating to the resource")
+	cmd.Flags().BoolP("ssl", "", false, "use SSL")
+
 	cmd.Flags().StringP("metadata", "m", "", "resource metadata")
 
 	viperBindFlags(cmd, ar.cfg)
@@ -80,16 +91,13 @@ func (ar *AddResource) execute(ctx context.Context, c AddResourceClient, res mer
 
 	var err error
 
-	// TODO: Figure out best way to handle creds and metadata
-	// Get credentials (expect a JSON string)
-	if ar.Credentials != "" {
-		var creds meroxa.Credentials
-		err = json.Unmarshal([]byte(ar.Credentials), &creds)
-		if err != nil {
-			return nil, err
-		}
-
-		res.Credentials = &creds
+	res.Credentials = &meroxa.Credentials{
+		Username:      ar.Username,
+		Password:      ar.Password,
+		CACert:        ar.CaCert,
+		ClientCert:    ar.ClientCert,
+		ClientCertKey: ar.ClientKey,
+		UseSSL:        ar.Ssl,
 	}
 
 	if ar.Metadata != "" {

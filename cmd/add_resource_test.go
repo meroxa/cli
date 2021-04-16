@@ -4,14 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	mock "github.com/meroxa/cli/mock-cmd"
 	utils "github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
-	"reflect"
-	"strings"
-	"testing"
+	"github.com/spf13/viper"
 )
 
 func TestAddResourceArgs(t *testing.T) {
@@ -32,8 +34,8 @@ func TestAddResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.name)
+		if tt.name != ar.Name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.Name)
 		}
 	}
 }
@@ -46,12 +48,17 @@ func TestAddResourceFlags(t *testing.T) {
 	}{
 		{"type", true, ""},
 		{"url", true, "u"},
-		{"credentials", false, ""},
+		{"username", false, ""},
+		{"password", false, ""},
+		{"ca-cert", false, ""},
+		{"client-cert", false, ""},
+		{"client-key", false, ""},
+		{"ssl", false, ""},
 		{"metadata", false, "m"},
 	}
 
 	c := &cobra.Command{}
-	ar := &AddResource{}
+	ar := &AddResource{cfg: viper.New()}
 	ar.setFlags(c)
 
 	for _, f := range expectedFlags {
@@ -79,7 +86,7 @@ func TestAddResourceExecution(t *testing.T) {
 		Type:        "postgres",
 		Name:        "",
 		URL:         "https://foo.url",
-		Credentials: nil,
+		Credentials: &meroxa.Credentials{},
 		Metadata:    nil,
 	}
 
