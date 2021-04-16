@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-15T17:48:51+02:00
-updatedAt: 2021-04-15T17:48:51+02:00
+createdAt: 2021-04-16T13:22:36+02:00
+updatedAt: 2021-04-16T13:22:36+02:00
 title: "meroxa"
 slug: meroxa
 url: /cli/meroxa/
@@ -46,4 +46,6 @@ meroxa list resource-types
 * [meroxa remove](/cli/meroxa-remove/)	 - Remove a component
 * [meroxa update](/cli/meroxa-update/)	 - Update a component
 * [meroxa version](/cli/meroxa-version/)	 - Display the Meroxa CLI version
+* [meroxa whoami](/cli/meroxa-whoami/)	 - Display the current logged in user
+
 

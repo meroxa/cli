@@ -91,6 +91,7 @@ meroxa list resource-types`,
 	rootCmd.AddCommand((&Remove{}).command())
 	rootCmd.AddCommand(UpdateCmd())
 	rootCmd.AddCommand(VersionCmd())
+	rootCmd.AddCommand((&GetUser{}).command()) // meroxa whoami
 
 	return rootCmd
 }
