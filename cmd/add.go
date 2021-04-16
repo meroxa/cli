@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // AddCmd represents the `meroxa add` command
@@ -26,7 +27,7 @@ func AddCmd() *cobra.Command {
 		Short: "Add a resource to your Meroxa resource catalog",
 	}
 
-	addResourceCmd := &AddResource{}
+	addResourceCmd := &AddResource{cfg: viper.New()}
 	addCmd.AddCommand(addResourceCmd.command())
 
 	return addCmd

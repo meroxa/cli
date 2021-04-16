@@ -24,11 +24,16 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
 ### Options
 
 ```
-      --credentials string   resource credentials
+      --ca-cert string       trusted certificates for verifying resource
+      --client-cert string   client certificate for authenticating to the resource
+      --client-key string    client private key for authenticating to the resource
   -h, --help                 help for resource
   -m, --metadata string      resource metadata
+      --password string      passsword
+      --ssl                  use SSL
       --type string          resource type
   -u, --url string           resource url
+      --username string      username
 ```
 
 ### Options inherited from parent commands
