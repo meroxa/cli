@@ -9,23 +9,23 @@ import (
 )
 
 type testFlags struct {
-	Flag1  string        `long:"flag1"  short:"a" usage:"flag1 usage"  required:"true" persistent:"false"`
+	Flag1  string        `long:"flag1"  short:"a" usage:"flag1 usage"  required:"true"  persistent:"false"`
 	Flag2  int           `long:"flag2"  short:"b" usage:"flag2 usage"  required:"false" persistent:"true"`
-	Flag3  int8          `long:"flag3"  short:"c" usage:"flag3 usage"  required:"true" persistent:"false"`
+	Flag3  int8          `long:"flag3"  short:"c" usage:"flag3 usage"  required:"true"  persistent:"false"`
 	Flag4  int16         `long:"flag4"  short:"d" usage:"flag4 usage"  required:"false" persistent:"true"`
-	Flag5  int32         `long:"flag5"  short:"e" usage:"flag5 usage"  required:"true" persistent:"false"`
+	Flag5  int32         `long:"flag5"  short:"e" usage:"flag5 usage"  required:"true"  persistent:"false"`
 	Flag6  int64         `long:"flag6"  short:"f" usage:"flag6 usage"  required:"false" persistent:"true"`
-	Flag7  float32       `long:"flag7"  short:"g" usage:"flag7 usage"  required:"true" persistent:"false"`
+	Flag7  float32       `long:"flag7"  short:"g" usage:"flag7 usage"  required:"true"  persistent:"false"`
 	Flag8  float64       `long:"flag8"  short:"h" usage:"flag8 usage"  required:"false" persistent:"true"`
-	Flag9  bool          `long:"flag9"  short:"i" usage:"flag9 usage"  required:"true" persistent:"false"`
+	Flag9  bool          `long:"flag9"  short:"i" usage:"flag9 usage"  required:"true"  persistent:"false"`
 	Flag10 time.Duration `long:"flag10" short:"j" usage:"flag10 usage" required:"false" persistent:"true"`
-	Flag11 []bool        `long:"flag11" short:"k" usage:"flag11 usage" required:"true" persistent:"false"`
+	Flag11 []bool        `long:"flag11" short:"k" usage:"flag11 usage" required:"true"  persistent:"false"`
 	Flag12 []float32     `long:"flag12" short:"l" usage:"flag12 usage" required:"false" persistent:"true"`
-	Flag13 []float64     `long:"flag13" short:"m" usage:"flag13 usage" required:"true" persistent:"false"`
+	Flag13 []float64     `long:"flag13" short:"m" usage:"flag13 usage" required:"true"  persistent:"false"`
 	Flag14 []int32       `long:"flag14" short:"n" usage:"flag14 usage" required:"false" persistent:"true"`
-	Flag15 []int64       `long:"flag15" short:"o" usage:"flag15 usage" required:"true" persistent:"false"`
+	Flag15 []int64       `long:"flag15" short:"o" usage:"flag15 usage" required:"true"  persistent:"false"`
 	Flag16 []int         `long:"flag16" short:"p" usage:"flag16 usage" required:"false" persistent:"true"`
-	Flag17 []string      `long:"flag17" short:"q" usage:"flag17 usage" required:"true" persistent:"false"`
+	Flag17 []string      `long:"flag17" short:"q" usage:"flag17 usage" required:"true"  persistent:"false"`
 }
 
 func TestBuildFlags(t *testing.T) {
