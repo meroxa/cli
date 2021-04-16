@@ -220,18 +220,39 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.DurationVarP(val, f.Long, f.Short, f.Default.(time.Duration), f.Usage)
 		case *[]bool:
+			if f.Default == nil {
+				f.Default = []bool(nil)
+			}
 			flags.BoolSliceVarP(val, f.Long, f.Short, f.Default.([]bool), f.Usage)
 		case *[]float32:
+			if f.Default == nil {
+				f.Default = []float32(nil)
+			}
 			flags.Float32SliceVarP(val, f.Long, f.Short, f.Default.([]float32), f.Usage)
 		case *[]float64:
+			if f.Default == nil {
+				f.Default = []float64(nil)
+			}
 			flags.Float64SliceVarP(val, f.Long, f.Short, f.Default.([]float64), f.Usage)
 		case *[]int32:
+			if f.Default == nil {
+				f.Default = []int32(nil)
+			}
 			flags.Int32SliceVarP(val, f.Long, f.Short, f.Default.([]int32), f.Usage)
 		case *[]int64:
+			if f.Default == nil {
+				f.Default = []int64(nil)
+			}
 			flags.Int64SliceVarP(val, f.Long, f.Short, f.Default.([]int64), f.Usage)
 		case *[]int:
+			if f.Default == nil {
+				f.Default = []int(nil)
+			}
 			flags.IntSliceVarP(val, f.Long, f.Short, f.Default.([]int), f.Usage)
 		case *[]string:
+			if f.Default == nil {
+				f.Default = []string(nil)
+			}
 			flags.StringSliceVarP(val, f.Long, f.Short, f.Default.([]string), f.Usage)
 		default:
 			panic(fmt.Errorf("unexpected flag value type: %T", val))
