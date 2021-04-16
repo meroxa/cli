@@ -34,6 +34,7 @@ func TestCmd(t *testing.T) {
 		{"remove      Remove a component"},
 		{"update      Update a component"},
 		{"version     Display the Meroxa CLI version"},
+		{"whoami      Display the current logged in user"},
 		{"Flags:\n" +
 			"      --config string      config file (default is $HOME/meroxa.env)\n" +
 			"      --debug              display any debugging information\n" +

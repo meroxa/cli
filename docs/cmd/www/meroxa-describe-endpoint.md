@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-16T17:48:56+02:00
-updatedAt: 2021-04-16T17:48:56+02:00
+createdAt: 2021-04-16T19:26:31+02:00
+updatedAt: 2021-04-16T19:26:31+02:00
 title: "meroxa describe endpoint"
 slug: meroxa-describe-endpoint
 url: /cli/meroxa-describe-endpoint/

@@ -1957,6 +1957,8 @@ _meroxa_whoami()
 
     flags+=("--help")
     flags+=("-h")
+    local_nonpersistent_flags+=("--help")
+    local_nonpersistent_flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")

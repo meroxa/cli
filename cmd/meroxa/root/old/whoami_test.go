@@ -1,4 +1,4 @@
-package cmd
+package old
 
 import (
 	"context"
@@ -42,7 +42,7 @@ func TestWhoAmIExecution(t *testing.T) {
 
 func TestWhoAmIOutput(t *testing.T) {
 	u := generateUser()
-	flagRootOutputJSON = false
+	FlagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
 		gu := &GetUser{}
@@ -58,7 +58,7 @@ func TestWhoAmIOutput(t *testing.T) {
 
 func TestWhoAmIOutputJSONOutput(t *testing.T) {
 	u := generateUser()
-	flagRootOutputJSON = true
+	FlagRootOutputJSON = true
 
 	output := utils.CaptureOutput(func() {
 		gu := &GetUser{}

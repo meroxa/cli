@@ -14,12 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package cmd
+package old
 
 import (
 	"context"
 	"fmt"
 
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
@@ -40,15 +41,15 @@ func (gu *GetUser) execute(ctx context.Context, c GetUserClient) (*meroxa.User, 
 }
 
 func (gu *GetUser) output(user *meroxa.User) {
-	if flagRootOutputJSON {
+	if FlagRootOutputJSON {
 		utils.JSONPrint(user)
 	} else {
 		fmt.Printf("%s\n", user.Email)
 	}
 }
 
-// command represents the `meroxa whoami` command
-func (gu *GetUser) command() *cobra.Command {
+// Command represents the `meroxa whoami` command
+func (gu *GetUser) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whoami",
 		Short: "Display the current logged in user\n",
@@ -57,10 +58,10 @@ func (gu *GetUser) command() *cobra.Command {
 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, clientTimeOut)
+			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
 			defer cancel()
 
-			c, err := client()
+			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}

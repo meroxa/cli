@@ -75,6 +75,7 @@ meroxa list resource-types`,
 	cmd.AddCommand((&old.Remove{}).Command())
 	cmd.AddCommand(old.UpdateCmd())
 	cmd.AddCommand(old.VersionCmd())
+	cmd.AddCommand((&old.GetUser{}).Command())
 
 	return cmd
 }
