@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	cmd "github.com/meroxa/cli/cmd"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path"
@@ -11,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/meroxa/cli/cmd/meroxa/root"
+	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
 
@@ -49,7 +49,7 @@ func generateManPages(rootCmd *cobra.Command) error {
 	header := &doc.GenManHeader{
 		Title:   "Meroxa",
 		Section: "1",
-		Source:  cmd.VersionString(),
+		Source:  "Meroxa CLI ", // TODO change this to actually get version
 		Manual:  "Meroxa Manual",
 	}
 
@@ -115,7 +115,7 @@ func main() {
 	// set HOME env var so that default values involve user's home directory do not depend on the running user.
 	os.Setenv("HOME", "/home/user")
 
-	rootCmd := cmd.RootCmd()
+	rootCmd := root.Cmd()
 
 	if err := generateManPages(rootCmd); err != nil {
 		log.Fatal(err)

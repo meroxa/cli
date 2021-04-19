@@ -2,11 +2,11 @@ SHELL=/bin/bash -o pipefail
 
 .PHONY: build
 build: docs
-	go build -mod=vendor -o meroxa
+	go build -mod=vendor -o meroxa cmd/meroxa/main.go
 
 .PHONY: install
 install:
-	go build -o $$(go env GOPATH)/bin/meroxa
+	go build -o $$(go env GOPATH)/bin/meroxa cmd/meroxa/main.go
 
 PRIVATE_REPOS = github.com/meroxa/meroxa-go
 .PHONY: gomod
