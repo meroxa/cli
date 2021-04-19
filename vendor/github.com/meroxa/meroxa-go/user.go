@@ -5,17 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const usersPath = "/v1/users"
 
 type User struct {
-	UUID       string `json:"uuid"`
-	Username   string `json:"preferred_username,omitempty"`
-	Email      string `json:"email,omitempty"`
-	GivenName  string `json:"given_name,omitempty"`
-	FamilyName string `json:"family_name,omitempty"`
-	Verified   bool   `json:"email_verified,omitempty"`
+	UUID       string    `json:"uuid"`
+	Username   string    `json:"username,omitempty"`
+	Email      string    `json:"email,omitempty"`
+	GivenName  string    `json:"given_name,omitempty"`
+	FamilyName string    `json:"family_name,omitempty"`
+	Verified   bool      `json:"email_verified,omitempty"`
+	LastLogin  time.Time `json:"last_login,omitempty"`
 }
 
 // GetUser returns a User with

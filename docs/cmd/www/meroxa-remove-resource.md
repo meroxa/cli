@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-16T19:26:31+02:00
-updatedAt: 2021-04-16T19:26:31+02:00
+createdAt: 2021-04-19T17:05:14+02:00
+updatedAt: 2021-04-19T17:05:14+02:00
 title: "meroxa remove resource"
 slug: meroxa-remove-resource
 url: /cli/meroxa-remove-resource/
