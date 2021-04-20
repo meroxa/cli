@@ -1,30 +1,23 @@
----
-createdAt: 
-updatedAt: 
-title: "meroxa add resource"
-slug: meroxa-add-resource
-url: /cli/meroxa-add-resource/
----
-## meroxa add resource
+## meroxa resources create
 
-Add a resource to your Meroxa resource catalog
+Create a resource into your Meroxa resource catalog
 
 ### Synopsis
 
-Use the add command to add resources to your Meroxa resource catalog.
+Use the create command to create resources into your Meroxa resource catalog.
 
 ```
-meroxa add resource [NAME] --type TYPE --url URL [flags]
+meroxa resources create resource [NAME] --type TYPE --url URL [flags]
 ```
 
 ### Examples
 
 ```
 
-meroxa add resource store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
-meroxa add resource datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
-meroxa add resource warehouse --type redshift -u $REDSHIFT_URL
-meroxa add resource slack --type url -u $WEBHOOK_URL
+meroxa resource create store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
+meroxa resource create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
+meroxa resource create warehouse --type redshift -u $REDSHIFT_URL
+meroxa resource create slack --type url -u $WEBHOOK_URL
 
 ```
 
@@ -34,7 +27,7 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
       --ca-cert string       trusted certificates for verifying resource
       --client-cert string   client certificate for authenticating to the resource
       --client-key string    client private key for authenticating to the resource
-  -h, --help                 help for resource
+  -h, --help                 help for create
   -m, --metadata string      resource metadata
       --password string      password
       --ssl                  use SSL
@@ -54,5 +47,5 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
 
 ### SEE ALSO
 
-* [meroxa add](/cli/meroxa-add/)	 - Add a resource to your Meroxa resource catalog
+* [meroxa resources](meroxa_resources.md)	 - Manage resources on Meroxa
 

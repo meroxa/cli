@@ -1,4 +1,4 @@
-package add
+package resource
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
-func TestAddResourceArgs(t *testing.T) {
+func TestCreateResourceArgs(t *testing.T) {
 	tests := []struct {
 		args []string
 		err  error
@@ -26,7 +26,7 @@ func TestAddResourceArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		ar := &AddResource{}
+		ar := &CreateResource{}
 		err := ar.ParseArgs(tt.args)
 
 		if tt.err != err {
@@ -39,7 +39,7 @@ func TestAddResourceArgs(t *testing.T) {
 	}
 }
 
-func TestAddResourceFlags(t *testing.T) {
+func TestCreateResourceFlags(t *testing.T) {
 	expectedFlags := []struct {
 		name      string
 		required  bool
@@ -56,7 +56,7 @@ func TestAddResourceFlags(t *testing.T) {
 		{"metadata", false, "m"},
 	}
 
-	c := builder.BuildCobraCommand(&AddResource{})
+	c := builder.BuildCobraCommand(&CreateResource{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -74,7 +74,7 @@ func TestAddResourceFlags(t *testing.T) {
 	}
 }
 
-func TestAddResourceExecution(t *testing.T) {
+func TestCreateResourceExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockAddResourceClient(ctrl)
@@ -97,7 +97,7 @@ func TestAddResourceExecution(t *testing.T) {
 		).
 		Return(&cr, nil)
 
-	ar := &AddResource{
+	ar := &CreateResource{
 		client: client,
 		logger: logger,
 	}
@@ -111,8 +111,8 @@ func TestAddResourceExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Adding postgres resource...
-%s resource with name %s successfully added!
+	wantLeveledOutput := fmt.Sprintf(`Creating postgres resource...
+%s resource with name %s successfully created!
 `, cr.Type, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {

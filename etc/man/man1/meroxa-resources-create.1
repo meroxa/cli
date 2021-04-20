@@ -3,17 +3,17 @@
 
 .SH NAME
 .PP
-meroxa\-add\-resource \- Add a resource to your Meroxa resource catalog
+meroxa\-resources\-create \- Create a resource into your Meroxa resource catalog
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa add resource [NAME] \-\-type TYPE \-\-url URL [flags]\fP
+\fBmeroxa resources create resource [NAME] \-\-type TYPE \-\-url URL [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Use the add command to add resources to your Meroxa resource catalog.
+Use the create command to create resources into your Meroxa resource catalog.
 
 
 .SH OPTIONS
@@ -31,7 +31,7 @@ Use the add command to add resources to your Meroxa resource catalog.
 
 .PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
-	help for resource
+	help for create
 
 .PP
 \fB\-m\fP, \fB\-\-metadata\fP=""
@@ -82,10 +82,10 @@ Use the add command to add resources to your Meroxa resource catalog.
 
 .nf
 
-meroxa add resource store \-\-type postgres \-u $DATABASE\_URL \-\-metadata '{"logical\_replication":true}'
-meroxa add resource datalake \-\-type s3 \-u "s3://$AWS\_ACCESS\_KEY\_ID:$AWS\_ACCESS\_KEY\_SECRET@us\-east\-1/meroxa\-demos"
-meroxa add resource warehouse \-\-type redshift \-u $REDSHIFT\_URL
-meroxa add resource slack \-\-type url \-u $WEBHOOK\_URL
+meroxa resource create store \-\-type postgres \-u $DATABASE\_URL \-\-metadata '{"logical\_replication":true}'
+meroxa resource create datalake \-\-type s3 \-u "s3://$AWS\_ACCESS\_KEY\_ID:$AWS\_ACCESS\_KEY\_SECRET@us\-east\-1/meroxa\-demos"
+meroxa resource create warehouse \-\-type redshift \-u $REDSHIFT\_URL
+meroxa resource create slack \-\-type url \-u $WEBHOOK\_URL
 
 
 .fi
@@ -94,4 +94,4 @@ meroxa add resource slack \-\-type url \-u $WEBHOOK\_URL
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-add(1)\fP
+\fBmeroxa\-resources(1)\fP

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package add
+package resource
 
 import (
 	"context"
@@ -25,13 +25,13 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
-type addResourceClient interface {
+type createResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
-// nolint:golint // add.AddResource is stuttering, it should be fixed when reorganizing commands
-type AddResource struct {
-	client addResourceClient
+// nolint:golint // add.CreateResource is stuttering, it should be fixed when reorganizing commands
+type CreateResource struct {
+	client createResourceClient
 	logger log.Logger
 
 	args struct {
@@ -54,51 +54,51 @@ type AddResource struct {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*AddResource)(nil)
-	_ builder.CommandWithArgs    = (*AddResource)(nil)
-	_ builder.CommandWithFlags   = (*AddResource)(nil)
-	_ builder.CommandWithClient  = (*AddResource)(nil)
-	_ builder.CommandWithLogger  = (*AddResource)(nil)
-	_ builder.CommandWithExecute = (*AddResource)(nil)
+	_ builder.CommandWithDocs    = (*CreateResource)(nil)
+	_ builder.CommandWithArgs    = (*CreateResource)(nil)
+	_ builder.CommandWithFlags   = (*CreateResource)(nil)
+	_ builder.CommandWithClient  = (*CreateResource)(nil)
+	_ builder.CommandWithLogger  = (*CreateResource)(nil)
+	_ builder.CommandWithExecute = (*CreateResource)(nil)
 )
 
-func (ar *AddResource) Usage() string {
-	return "resource [NAME] --type TYPE --url URL"
+func (ar *CreateResource) Usage() string {
+	return "create resource [NAME] --type TYPE --url URL"
 }
 
-func (ar *AddResource) Docs() builder.Docs {
+func (ar *CreateResource) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Add a resource to your Meroxa resource catalog",
-		Long:  `Use the add command to add resources to your Meroxa resource catalog.`,
+		Short: "Create a resource into your Meroxa resource catalog",
+		Long:  `Use the create command to create resources into your Meroxa resource catalog.`,
 		Example: `
-meroxa add resource store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
-meroxa add resource datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
-meroxa add resource warehouse --type redshift -u $REDSHIFT_URL
-meroxa add resource slack --type url -u $WEBHOOK_URL
+meroxa resource create store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
+meroxa resource create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
+meroxa resource create warehouse --type redshift -u $REDSHIFT_URL
+meroxa resource create slack --type url -u $WEBHOOK_URL
 `,
 	}
 }
 
-func (ar *AddResource) Client(client *meroxa.Client) {
+func (ar *CreateResource) Client(client *meroxa.Client) {
 	ar.client = client
 }
 
-func (ar *AddResource) Logger(logger log.Logger) {
+func (ar *CreateResource) Logger(logger log.Logger) {
 	ar.logger = logger
 }
 
-func (ar *AddResource) Flags() []builder.Flag {
+func (ar *CreateResource) Flags() []builder.Flag {
 	return builder.BuildFlags(&ar.flags)
 }
 
-func (ar *AddResource) ParseArgs(args []string) error {
+func (ar *CreateResource) ParseArgs(args []string) error {
 	if len(args) > 0 {
 		ar.args.Name = args[0]
 	}
 	return nil
 }
 
-func (ar *AddResource) Execute(ctx context.Context) error {
+func (ar *CreateResource) Execute(ctx context.Context) error {
 	input := meroxa.CreateResourceInput{
 		Type:     ar.flags.Type,
 		Name:     ar.args.Name,
@@ -124,20 +124,20 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 		}
 	}
 
-	ar.logger.Infof(ctx, "Adding %s resource...", input.Type)
+	ar.logger.Infof(ctx, "Creating %s resource...", input.Type)
 
 	res, err := ar.client.CreateResource(ctx, &input)
 	if err != nil {
 		return err
 	}
 
-	ar.logger.Infof(ctx, "%s resource with name %s successfully added!", res.Type, res.Name)
+	ar.logger.Infof(ctx, "%s resource with name %s successfully created!", res.Type, res.Name)
 	ar.logger.JSON(ctx, res)
 
 	return nil
 }
 
-func (ar *AddResource) hasCredentials() bool {
+func (ar *CreateResource) hasCredentials() bool {
 	return ar.flags.Username != "" ||
 		ar.flags.Password != "" ||
 		ar.flags.CaCert != "" ||

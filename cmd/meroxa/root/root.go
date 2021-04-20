@@ -20,10 +20,12 @@ import (
 	"context"
 	"os"
 
+	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/root/add"
 	"github.com/meroxa/cli/cmd/meroxa/root/old"
+	"github.com/meroxa/cli/cmd/meroxa/root/resource"
 	"github.com/spf13/cobra"
 )
 
@@ -60,22 +62,18 @@ meroxa list resource-types`,
 	global.RegisterGlobalFlags(cmd)
 
 	// Subcommands
-	cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&resource.Resource{}))
 	cmd.AddCommand(old.APICmd())
 	cmd.AddCommand(old.BillingCmd())
 	cmd.AddCommand(old.CompletionCmd())
 	cmd.AddCommand((&old.Connect{}).Command())
-	cmd.AddCommand(old.CreateCmd())
-	cmd.AddCommand(old.DescribeCmd())
-	cmd.AddCommand(old.ListCmd())
 	cmd.AddCommand(old.LoginCmd())
 	cmd.AddCommand(old.LogoutCmd())
-	cmd.AddCommand(old.LogsCmd())
-	cmd.AddCommand(old.OpenCmd())
-	cmd.AddCommand((&old.Remove{}).Command())
-	cmd.AddCommand(old.UpdateCmd())
 	cmd.AddCommand(old.VersionCmd())
 	cmd.AddCommand((&old.GetUser{}).Command())
+
+	// This function adds commands we're aiming to sunset in v1.0
+	deprecated.RegisterCommands(cmd)
 
 	return cmd
 }

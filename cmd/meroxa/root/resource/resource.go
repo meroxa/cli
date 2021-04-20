@@ -14,27 +14,35 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package add
+package resource
 
 import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/spf13/cobra"
 )
 
-type Add struct{}
+type Resource struct{}
 
-func (*Add) Usage() string {
-	return "add"
+var (
+	_ builder.CommandWithAliases = (*Resource)(nil)
+)
+
+func (*Resource) Aliases() []string {
+	return []string{"resource"}
 }
 
-func (*Add) Docs() builder.Docs {
+func (*Resource) Usage() string {
+	return "resources"
+}
+
+func (*Resource) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Add a resource to your Meroxa resource catalog",
+		Short: "Manage resources on Meroxa",
 	}
 }
 
-func (*Add) SubCommands() []*cobra.Command {
+func (*Resource) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		builder.BuildCobraCommand(&AddResource{}),
+		builder.BuildCobraCommand(&CreateResource{}),
 	}
 }

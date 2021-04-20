@@ -1,11 +1,11 @@
-## meroxa add
+## meroxa resources
 
-Add a resource to your Meroxa resource catalog
+Manage resources on Meroxa
 
 ### Options
 
 ```
-  -h, --help   help for add
+  -h, --help   help for resources
 ```
 
 ### Options inherited from parent commands
@@ -20,5 +20,5 @@ Add a resource to your Meroxa resource catalog
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa add resource](meroxa_add_resource.md)	 - Add a resource to your Meroxa resource catalog
+* [meroxa resources create](meroxa_resources_create.md)	 - Create a resource into your Meroxa resource catalog
 

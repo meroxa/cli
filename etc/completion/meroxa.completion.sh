@@ -353,113 +353,6 @@ __meroxa_handle_word()
     __meroxa_handle_word
 }
 
-_meroxa_add_help()
-{
-    last_command="meroxa_add_help"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    has_completion_function=1
-    noun_aliases=()
-}
-
-_meroxa_add_resource()
-{
-    last_command="meroxa_add_resource"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--ca-cert=")
-    two_word_flags+=("--ca-cert")
-    flags+=("--client-cert=")
-    two_word_flags+=("--client-cert")
-    flags+=("--client-key=")
-    two_word_flags+=("--client-key")
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--metadata=")
-    two_word_flags+=("--metadata")
-    two_word_flags+=("-m")
-    flags+=("--password=")
-    two_word_flags+=("--password")
-    flags+=("--ssl")
-    flags+=("--type=")
-    two_word_flags+=("--type")
-    flags+=("--url=")
-    two_word_flags+=("--url")
-    two_word_flags+=("-u")
-    flags+=("--username=")
-    two_word_flags+=("--username")
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_flag+=("--type=")
-    must_have_one_flag+=("--url=")
-    must_have_one_flag+=("-u")
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_add()
-{
-    last_command="meroxa_add"
-
-    command_aliases=()
-
-    commands=()
-    commands+=("help")
-    commands+=("resource")
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
 _meroxa_api()
 {
     last_command="meroxa_api"
@@ -1599,6 +1492,113 @@ _meroxa_remove()
     noun_aliases=()
 }
 
+_meroxa_resources_create()
+{
+    last_command="meroxa_resources_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--ca-cert=")
+    two_word_flags+=("--ca-cert")
+    flags+=("--client-cert=")
+    two_word_flags+=("--client-cert")
+    flags+=("--client-key=")
+    two_word_flags+=("--client-key")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--metadata=")
+    two_word_flags+=("--metadata")
+    two_word_flags+=("-m")
+    flags+=("--password=")
+    two_word_flags+=("--password")
+    flags+=("--ssl")
+    flags+=("--type=")
+    two_word_flags+=("--type")
+    flags+=("--url=")
+    two_word_flags+=("--url")
+    two_word_flags+=("-u")
+    flags+=("--username=")
+    two_word_flags+=("--username")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--type=")
+    must_have_one_flag+=("--url=")
+    must_have_one_flag+=("-u")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_help()
+{
+    last_command="meroxa_resources_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_resources()
+{
+    last_command="meroxa_resources"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("help")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_update_connector()
 {
     last_command="meroxa_update_connector"
@@ -1837,7 +1837,6 @@ _meroxa_root_command()
     command_aliases=()
 
     commands=()
-    commands+=("add")
     commands+=("api")
     commands+=("billing")
     commands+=("completion")
@@ -1856,6 +1855,11 @@ _meroxa_root_command()
         aliashash["delete"]="remove"
         command_aliases+=("rm")
         aliashash["rm"]="remove"
+    fi
+    commands+=("resources")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resource")
+        aliashash["resource"]="resources"
     fi
     commands+=("update")
     commands+=("version")

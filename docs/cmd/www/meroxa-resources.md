@@ -1,18 +1,18 @@
 ---
 createdAt: 
 updatedAt: 
-title: "meroxa add"
-slug: meroxa-add
-url: /cli/meroxa-add/
+title: "meroxa resources"
+slug: meroxa-resources
+url: /cli/meroxa-resources/
 ---
-## meroxa add
+## meroxa resources
 
-Add a resource to your Meroxa resource catalog
+Manage resources on Meroxa
 
 ### Options
 
 ```
-  -h, --help   help for add
+  -h, --help   help for resources
 ```
 
 ### Options inherited from parent commands
@@ -27,5 +27,5 @@ Add a resource to your Meroxa resource catalog
 ### SEE ALSO
 
 * [meroxa](/cli/meroxa/)	 - The Meroxa CLI
-* [meroxa add resource](/cli/meroxa-add-resource/)	 - Add a resource to your Meroxa resource catalog
+* [meroxa resources create](/cli/meroxa-resources-create/)	 - Create a resource into your Meroxa resource catalog
 

@@ -1,4 +1,4 @@
-package add_test
+package resource_test
 
 import (
 	"bytes"
@@ -9,23 +9,23 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root"
 )
 
-func TestAddCmd(t *testing.T) {
+func TestResourceCmd(t *testing.T) {
 	tests := []struct {
 		expected string
 	}{
-		{"Add a resource to your Meroxa resource catalog"},
+		{"Manage resources on Meroxa"},
 		{"Usage:\n" +
-			"  meroxa add [command]"},
+			"  meroxa resources [command]"},
 		{"Available Commands:"},
-		{"resource    Add a resource to your Meroxa resource catalog"},
+		{"create      Create a resource into your Meroxa resource catalog"},
 		{"Flags:\n" +
-			"  -h, --help   help for add"},
+			"  -h, --help   help for resources"},
 	}
 
 	rootCmd := root.Cmd()
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
-	rootCmd.SetArgs([]string{"add"})
+	rootCmd.SetArgs([]string{"resources"})
 	err := rootCmd.Execute()
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())

@@ -31,7 +31,6 @@ meroxa list resource-types
 
 ### SEE ALSO
 
-* [meroxa add](/cli/meroxa-add/)	 - Add a resource to your Meroxa resource catalog
 * [meroxa api](/cli/meroxa-api/)	 - Invoke Meroxa API
 * [meroxa billing](/cli/meroxa-billing/)	 - Open your billing page in a web browser
 * [meroxa completion](/cli/meroxa-completion/)	 - Generate completion script
@@ -44,6 +43,7 @@ meroxa list resource-types
 * [meroxa logs](/cli/meroxa-logs/)	 - Print logs for a component
 * [meroxa open](/cli/meroxa-open/)	 - Open in a web browser
 * [meroxa remove](/cli/meroxa-remove/)	 - Remove a component
+* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
 * [meroxa update](/cli/meroxa-update/)	 - Update a component
 * [meroxa version](/cli/meroxa-version/)	 - Display the Meroxa CLI version
 * [meroxa whoami](/cli/meroxa-whoami/)	 - Display the current logged in user

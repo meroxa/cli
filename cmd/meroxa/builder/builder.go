@@ -25,7 +25,7 @@ type Command interface {
 	//       argument to the right of the separator. You cannot use both arguments in a single use of the command.
 	//   { } delimits a set of mutually exclusive arguments when one of the arguments is required. If the arguments are
 	//       optional, they are enclosed in brackets ([ ]).
-	// Example: add [-F file | -D dir]... [-f format] profile
+	// Example: create [-F file | -D dir]... [-f format] profile
 	Usage() string
 }
 
