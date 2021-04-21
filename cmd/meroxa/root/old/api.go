@@ -37,7 +37,7 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 				body = args[2]
 			}
 
-			resp, err := c.MakeRequestString(context.Background(), method, path, body)
+			resp, err := c.MakeRequest(context.Background(), method, path, body, nil)
 			if err != nil {
 				return err
 			}

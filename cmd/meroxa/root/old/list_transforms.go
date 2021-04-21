@@ -17,8 +17,6 @@ limitations under the License.
 package old
 
 import (
-	"context"
-
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
@@ -36,11 +34,7 @@ func ListTransformsCmd() *cobra.Command {
 				return err
 			}
 
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
-			rr, err := c.ListTransforms(ctx)
+			rr, err := c.ListTransforms(cmd.Context())
 			if err != nil {
 				return err
 			}

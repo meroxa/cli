@@ -2,15 +2,14 @@ package global
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
 const (
-	// The name of our config file, without the file extension because viper supports many different config file languages.
-	defaultConfigFilename = "meroxa"
-
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix = "MEROXA"
 )
@@ -23,16 +22,16 @@ func readConfig() (*viper.Viper, error) {
 		cfg.SetConfigFile(flagConfig)
 	} else {
 		// Find home directory.
-		home, err := homedir.Dir()
+		configDir, err := os.UserConfigDir()
 		if err != nil {
-			return nil, fmt.Errorf("could not get home directory: %w", err)
+			return nil, fmt.Errorf("could not get config directory: %w", err)
 		}
+		configDir = filepath.Join(configDir, "meroxa")
 
-		// Set the base name of the config file, without the file extension.
-		cfg.SetConfigName(defaultConfigFilename)
-		cfg.AddConfigPath(home)
+		cfg.AddConfigPath(configDir)
+		cfg.SetConfigName("config")
+		cfg.SetConfigType("env")
 	}
-	cfg.SetConfigType("env")
 
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
@@ -50,9 +49,10 @@ func readConfig() (*viper.Viper, error) {
 	// avoid conflicts.
 	cfg.SetEnvPrefix(envPrefix)
 
-	// Bind to environment variables
-	// Works great for simple config names, but needs help for names
-	// like --favorite-color which we fix in the bindFlags function
+	// Add support for flags like --favorite-color by replacing - with _.
+	cfg.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	// Bind to environment variables.
 	cfg.AutomaticEnv()
 
 	return cfg, nil

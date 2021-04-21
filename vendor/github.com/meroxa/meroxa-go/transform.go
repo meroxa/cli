@@ -27,7 +27,7 @@ type Transform struct {
 func (c *Client) ListTransforms(ctx context.Context) ([]*Transform, error) {
 	path := fmt.Sprintf("/v1/transforms")
 
-	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}

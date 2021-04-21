@@ -78,16 +78,12 @@ func (rc *RemoveConnector) command() *cobra.Command {
 			return rc.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			con, err := rc.execute(ctx, c)
+			con, err := rc.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

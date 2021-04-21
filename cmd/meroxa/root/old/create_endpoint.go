@@ -69,15 +69,12 @@ meroxa create endpoint my-endpoint --protocol http --stream my-stream`,
 			return ce.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, cancel := context.WithTimeout(context.Background(), ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			err = ce.execute(ctx, c)
+			err = ce.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

@@ -17,7 +17,6 @@ limitations under the License.
 package old
 
 import (
-	"context"
 	"errors"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -45,11 +44,7 @@ func DescribeConnectorCmd() *cobra.Command {
 				return err
 			}
 
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
-			conn, err = c.GetConnectorByName(ctx, name)
+			conn, err = c.GetConnectorByName(cmd.Context(), name)
 			if err != nil {
 				return err
 			}

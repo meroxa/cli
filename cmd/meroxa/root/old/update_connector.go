@@ -17,10 +17,8 @@ limitations under the License.
 package old
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/utils"
@@ -51,16 +49,12 @@ func UpdateConnectorCmd() *cobra.Command {
 				return err
 			}
 
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-			defer cancel()
-
 			// call meroxa-go to update connector status with name
 			if !FlagRootOutputJSON {
 				fmt.Printf("Updating %s connector...\n", conName)
 			}
 
-			con, err := c.UpdateConnectorStatus(ctx, conName, state)
+			con, err := c.UpdateConnectorStatus(cmd.Context(), conName, state)
 			if err != nil {
 				return err
 			}

@@ -57,16 +57,12 @@ func (gu *GetUser) Command() *cobra.Command {
 			"meroxa whoami'\n",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			u, err := gu.execute(ctx, c)
+			u, err := gu.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

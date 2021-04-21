@@ -17,7 +17,6 @@ limitations under the License.
 package old
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -43,9 +42,6 @@ func CreatePipelineCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
 
 			p := &meroxa.Pipeline{
 				Name: pipelineName,
@@ -69,7 +65,7 @@ func CreatePipelineCmd() *cobra.Command {
 				fmt.Println("Creating Pipeline...")
 			}
 
-			res, err := c.CreatePipeline(ctx, p)
+			res, err := c.CreatePipeline(cmd.Context(), p)
 			if err != nil {
 				return err
 			}

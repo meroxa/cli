@@ -90,16 +90,12 @@ meroxa create connector --from postgres --input accounts # Creates source connec
 meroxa create connector --to redshift --input orders # Creates destination connector
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			_, _, err = conn.execute(ctx, c)
+			_, _, err = conn.execute(cmd.Context(), c)
 			if err != nil {
 				return err
 			}

@@ -76,17 +76,13 @@ func (rr *RemoveResource) command() *cobra.Command {
 			return rr.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 
 			if err != nil {
 				return err
 			}
 
-			r, err := rr.execute(ctx, c)
+			r, err := rr.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

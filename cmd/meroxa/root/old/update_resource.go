@@ -119,17 +119,13 @@ func (ur *UpdateResource) command() *cobra.Command {
 			return ur.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 
 			if err != nil {
 				return err
 			}
 
-			resource, err := ur.execute(ctx, c)
+			resource, err := ur.execute(cmd.Context(), c)
 			if err != nil {
 				return err
 			}

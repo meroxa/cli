@@ -23,7 +23,7 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 ### Options inherited from parent commands
 
 ```
-      --config string      config file (default is $HOME/meroxa.env)
+      --config string      config file
       --debug              display any debugging information
       --json               output json
       --timeout duration   set the client timeout (default 10s)

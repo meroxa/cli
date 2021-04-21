@@ -11,7 +11,7 @@ const connectorLogsBasePath = "/v1/connectors"
 func (c *Client) GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", connectorLogsBasePath, connectorName)
 
-	req, err := c.newRequest(ctx, http.MethodGet, path, nil, noopEncodeFunc)
+	req, err := c.newRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -20,5 +20,5 @@ func (c *Client) GetConnectorLogs(ctx context.Context, connectorName string) (*h
 	req.Header.Add("Content-Type", textContentType)
 	req.Header.Add("Accept", textContentType)
 
-	return c.do(ctx, req)
+	return c.httpClient.Do(req)
 }
