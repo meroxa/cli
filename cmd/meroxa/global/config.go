@@ -48,30 +48,9 @@ func readConfig() (*viper.Viper, error) {
 			return nil, fmt.Errorf("could not read config: %w", err)
 		}
 
-		// TODO remove this code once we migrate acceptance tests to use new location
 		// No config found, fallback to old config file location in $HOME
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			return nil, fmt.Errorf("could not get home directory: %w", err)
-		}
-		cfg.AddConfigPath(homeDir)
-		cfg.SetConfigName("meroxa")
-		cfg.SetConfigType("env")
-
-		if err := cfg.ReadInConfig(); err != nil {
-			// It's okay if there isn't a config file
-			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-				return nil, fmt.Errorf("could not read config: %w", err)
-			}
-		}
-		cfg.SetConfigName("config") // revert config name
-		if err == nil {
-			// we read the config in the home folder, let's write it to the new location
-			err = cfg.SafeWriteConfig()
-			if err != nil {
-				return nil, err
-			}
-		}
+		// TODO remove this code once we migrate acceptance tests to use new location
+		setupCompatibility(cfg)
 	}
 
 	// When we bind flags to environment variables expect that the
@@ -87,4 +66,38 @@ func readConfig() (*viper.Viper, error) {
 	cfg.AutomaticEnv()
 
 	return cfg, nil
+}
+
+// setupCompatibility falls back to old config file location in $HOME
+// also it enables env variable API_URL alongside MEROXA_API_URL.
+// This function should be removed once we migrate acceptance tests.
+func setupCompatibility(cfg *viper.Viper) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("could not get home directory: %w", err)
+	}
+	cfg.AddConfigPath(homeDir)
+	cfg.SetConfigName("meroxa")
+	cfg.SetConfigType("env")
+
+	if err := cfg.ReadInConfig(); err != nil {
+		// It's okay if there isn't a config file
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return fmt.Errorf("could not read config: %w", err)
+		}
+	}
+	cfg.SetConfigName("config") // revert config name
+	if err == nil {
+		// we read the config in the home folder, let's write it to the new location
+		err = cfg.SafeWriteConfig()
+		if err != nil {
+			return err
+		}
+	}
+
+	if apiUrl, ok := os.LookupEnv("API_URL"); ok {
+		os.Setenv("MEROXA_API_URL", apiUrl)
+	}
+
+	return nil
 }
