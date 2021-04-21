@@ -50,7 +50,14 @@ func readConfig() (*viper.Viper, error) {
 
 		// No config found, fallback to old config file location in $HOME
 		// TODO remove this code once we migrate acceptance tests to use new location
-		setupCompatibility(cfg)
+		if err := setupCompatibility(cfg); err != nil {
+			return nil, err
+		}
+	}
+
+	// TODO remove this code once we migrate acceptance tests to use new env variable
+	if apiUrl, ok := os.LookupEnv("API_URL"); ok {
+		os.Setenv("MEROXA_API_URL", apiUrl)
 	}
 
 	// When we bind flags to environment variables expect that the
@@ -93,10 +100,6 @@ func setupCompatibility(cfg *viper.Viper) error {
 		if err != nil {
 			return err
 		}
-	}
-
-	if apiUrl, ok := os.LookupEnv("API_URL"); ok {
-		os.Setenv("MEROXA_API_URL", apiUrl)
 	}
 
 	return nil
