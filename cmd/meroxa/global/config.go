@@ -28,6 +28,12 @@ func readConfig() (*viper.Viper, error) {
 		}
 		configDir = filepath.Join(configDir, "meroxa")
 
+		// create subdirectory if it doesn't exist, otherwise viper will complain
+		err = os.MkdirAll(configDir, 0755)
+		if err != nil {
+			return nil, fmt.Errorf("could not create meroxa config directory: %w", err)
+		}
+
 		cfg.AddConfigPath(configDir)
 		cfg.SetConfigName("config")
 		cfg.SetConfigType("env")
@@ -40,6 +46,31 @@ func readConfig() (*viper.Viper, error) {
 		// It's okay if there isn't a config file
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return nil, fmt.Errorf("could not read config: %w", err)
+		}
+
+		// TODO remove this code once we migrate acceptance tests to use new location
+		// No config found, fallback to old config file location in $HOME
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return nil, fmt.Errorf("could not get home directory: %w", err)
+		}
+		cfg.AddConfigPath(homeDir)
+		cfg.SetConfigName("meroxa")
+		cfg.SetConfigType("env")
+
+		if err := cfg.ReadInConfig(); err != nil {
+			// It's okay if there isn't a config file
+			if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+				return nil, fmt.Errorf("could not read config: %w", err)
+			}
+		}
+		cfg.SetConfigName("config") // revert config name
+		if err == nil {
+			// we read the config in the home folder, let's write it to the new location
+			err = cfg.SafeWriteConfig()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
