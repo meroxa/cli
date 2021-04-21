@@ -18,8 +18,8 @@ var (
 	flagConfig  string
 	flagApiUrl  string
 	flagDebug   bool
-	FlagJSON    bool          // TODO make this private! do not use this variable from other packages
-	flagTimeout time.Duration // TODO make this private! do not use this variable from other packages
+	flagTimeout time.Duration
+	FlagJSON    bool // TODO make this private! do not use this variable from other packages
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
