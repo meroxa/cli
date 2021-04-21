@@ -36,7 +36,7 @@ func TestCmd(t *testing.T) {
 		{"version     Display the Meroxa CLI version"},
 		{"whoami      Display the current logged in user"},
 		{"Flags:\n" +
-			"      --config string      config file (default is $HOME/meroxa.env)\n" +
+			"      --config string      config file\n" +
 			"      --debug              display any debugging information\n" +
 			"  -h, --help               help for meroxa\n" +
 			"      --json               output json\n" +
