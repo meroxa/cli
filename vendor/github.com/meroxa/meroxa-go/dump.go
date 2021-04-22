@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
-	"unicode/utf8"
 )
 
 type dumpTransport struct {
@@ -90,7 +89,6 @@ func (d *dumpTransport) obfuscate(text string) string {
 		return strings.Repeat(star, minStarsLen) + text[minStarsLen:]
 	} else {
 		// hide everything except visibleSuffixLen
-		starsLen := utf8.RuneCountInString(text) - visibleSuffixLen
-		return strings.Repeat(star, starsLen) + text[len(text)-visibleSuffixLen:]
+		return strings.Repeat(star, minStarsLen) + text[len(text)-visibleSuffixLen:]
 	}
 }

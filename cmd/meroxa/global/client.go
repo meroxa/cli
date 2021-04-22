@@ -17,11 +17,11 @@ limitations under the License.
 package global
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/meroxa/meroxa-go"
-	"github.com/meroxa/meroxa-go/auth"
 	"golang.org/x/oauth2"
 )
 
@@ -30,6 +30,13 @@ const (
 )
 
 func NewClient() (*meroxa.Client, error) {
+	accessToken := Config.GetString("ACCESS_TOKEN")
+	refreshToken := Config.GetString("REFRESH_TOKEN")
+	if accessToken == "" && refreshToken == "" {
+		// we need at least one token for creating an authenticated client
+		return nil, errors.New("please login or signup by running 'meroxa login'")
+	}
+
 	options := []meroxa.Option{
 		meroxa.WithUserAgent(fmt.Sprintf("Meroxa CLI %s", Version)),
 	}
@@ -49,10 +56,10 @@ func NewClient() (*meroxa.Client, error) {
 	options = append(options, meroxa.WithAuthentication(
 		&oauth2.Config{
 			ClientID: clientID,
-			Endpoint: auth.Endpoint,
+			Endpoint: meroxa.OAuth2Endpoint,
 		},
-		Config.GetString("ACCESS_TOKEN"),
-		Config.GetString("REFRESH_TOKEN"),
+		accessToken,
+		refreshToken,
 		onTokenRefreshed,
 	))
 

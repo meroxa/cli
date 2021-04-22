@@ -46,7 +46,6 @@ github.com/mattn/go-runewidth
 # github.com/meroxa/meroxa-go v0.0.0-20210419140943-b0700600f917 => ../meroxa-go
 ## explicit
 github.com/meroxa/meroxa-go
-github.com/meroxa/meroxa-go/auth
 # github.com/mitchellh/mapstructure v1.4.1
 ## explicit
 github.com/mitchellh/mapstructure

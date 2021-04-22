@@ -34,6 +34,10 @@ type GetUser struct {
 }
 
 func (gu *GetUser) execute(ctx context.Context, c GetUserClient) (*meroxa.User, error) {
+	// TODO think about extracting the info from the access token.
+	//  The access token is a JWT and contains these fields:
+	//  * "https://api.meroxa.io/v1/email": "john.doe@example.com"
+	//  * "https://api.meroxa.io/v1/username": "John Doe"
 	var err error
 
 	user, err := c.GetUser(ctx)

@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/meroxa/meroxa-go/auth"
 	"golang.org/x/oauth2"
 )
 
@@ -70,9 +69,9 @@ func WithClient(httpClient *http.Client) Option {
 // is refreshed.
 // Note: provide WithClientTimeout option before WithAuthentication to set the
 // timeout of the client used for fetching access tokens.
-func WithAuthentication(conf *oauth2.Config, accessToken, refreshToken string, observers ...auth.TokenObserver) Option {
+func WithAuthentication(conf *oauth2.Config, accessToken, refreshToken string, observers ...TokenObserver) Option {
 	return func(client *Client) error {
-		httpClient, err := auth.NewClient(client.httpClient, conf, accessToken, refreshToken, observers...)
+		httpClient, err := newAuthClient(client.httpClient, conf, accessToken, refreshToken, observers...)
 		if err != nil {
 			return err
 		}

@@ -1,7 +1,8 @@
-package auth
+package meroxa
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +14,72 @@ import (
 	"github.com/cristalhq/jwt/v3"
 	"golang.org/x/oauth2"
 )
+
+const (
+	ClientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb" // TODO this is the CLI ID, create separate client ID for 3rd party apps and provide it as default
+)
+
+var (
+	OAuth2Endpoint = oauth2.Endpoint{
+		AuthURL:  "https://auth.meroxa.io/authorize",
+		TokenURL: "https://auth.meroxa.io/oauth/token",
+	}
+)
+
+// TokenObserver is a function that will be notified when a new token is fetched.
+type TokenObserver func(*oauth2.Token)
+
+func DefaultOAuth2Config() *oauth2.Config {
+	return &oauth2.Config{
+		ClientID: ClientID,
+		Endpoint: OAuth2Endpoint,
+	}
+}
+
+func newAuthClient(
+	client *http.Client,
+	conf *oauth2.Config,
+	accessToken,
+	refreshToken string,
+	tokenObservers ...TokenObserver,
+) (*http.Client, error) {
+	if client == nil {
+		client = http.DefaultClient
+	}
+	if conf == nil {
+		conf = DefaultOAuth2Config()
+	}
+
+	var expiry time.Time
+	if accessToken != "" {
+		var err error
+		expiry, err = getTokenExpiry(accessToken)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	ts := oauth2.ReuseTokenSource(
+		&oauth2.Token{
+			AccessToken:  accessToken,
+			TokenType:    "Bearer",
+			RefreshToken: refreshToken,
+			Expiry:       expiry,
+		},
+		&tokenSource{
+			conf:         conf,
+			client:       client,
+			refreshToken: refreshToken,
+			observers:    tokenObservers,
+		},
+	)
+
+	// make sure the oauth2 client is using the supplied client for outgoing requests
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, client)
+
+	return oauth2.NewClient(ctx, ts), nil
+}
 
 type tokenSource struct {
 	client       *http.Client
@@ -26,7 +93,7 @@ func (ts *tokenSource) Token() (*oauth2.Token, error) {
 		return nil, errors.New("oauth2: token expired and refresh token is not set")
 	}
 
-	tk, err := retrieveToken(ts.client, ts.conf, ts.refreshToken)
+	tk, err := ts.retrieveToken(ts.client, ts.conf, ts.refreshToken)
 	if err != nil {
 		return nil, err
 	}
@@ -39,19 +106,19 @@ func (ts *tokenSource) Token() (*oauth2.Token, error) {
 	}
 
 	// asynchronously notify observers
-	go notifyTokenObservers(tk, ts.observers)
+	go ts.notifyTokenObservers(tk, ts.observers)
 
 	return tk, err
 }
 
-func notifyTokenObservers(token *oauth2.Token, observers []TokenObserver) {
+func (ts *tokenSource) notifyTokenObservers(token *oauth2.Token, observers []TokenObserver) {
 	clone := *token
 	for _, o := range observers {
 		o(&clone)
 	}
 }
 
-func retrieveToken(client *http.Client, conf *oauth2.Config, refreshToken string) (*oauth2.Token, error) {
+func (ts *tokenSource) retrieveToken(client *http.Client, conf *oauth2.Config, refreshToken string) (*oauth2.Token, error) {
 	tmp := make(map[string]interface{})
 	tmp["client_id"] = conf.ClientID
 	tmp["grant_type"] = "refresh_token"
