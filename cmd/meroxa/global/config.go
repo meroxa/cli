@@ -56,8 +56,8 @@ func readConfig() (*viper.Viper, error) {
 	}
 
 	// TODO remove this code once we migrate acceptance tests to use new env variable
-	if apiUrl, ok := os.LookupEnv("API_URL"); ok {
-		os.Setenv("MEROXA_API_URL", apiUrl)
+	if apiURL, ok := os.LookupEnv("API_URL"); ok {
+		os.Setenv("MEROXA_API_URL", apiURL)
 	}
 
 	// When we bind flags to environment variables expect that the
@@ -87,7 +87,7 @@ func setupCompatibility(cfg *viper.Viper) error {
 	cfg.SetConfigName("meroxa")
 	cfg.SetConfigType("env")
 
-	if err := cfg.ReadInConfig(); err != nil {
+	if err = cfg.ReadInConfig(); err != nil {
 		// It's okay if there isn't a config file
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return fmt.Errorf("could not read config: %w", err)

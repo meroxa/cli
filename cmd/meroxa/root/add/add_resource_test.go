@@ -103,7 +103,7 @@ func TestAddResourceExecution(t *testing.T) {
 	}
 	ar.args.Name = r.Name
 	ar.flags.Type = r.Type
-	ar.flags.Url = r.URL
+	ar.flags.URL = r.URL
 
 	err := ar.Execute(ctx)
 	if err != nil {

@@ -111,7 +111,7 @@ func TestRemoveResourceJSONOutput(t *testing.T) {
 	})
 
 	var parsedOutput meroxa.Resource
-	json.Unmarshal([]byte(output), &parsedOutput)
+	_ = json.Unmarshal([]byte(output), &parsedOutput)
 
 	if !reflect.DeepEqual(r, parsedOutput) {
 		t.Fatalf("not expected output, got \"%s\"", output)

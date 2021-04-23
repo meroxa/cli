@@ -162,7 +162,7 @@ func TestCreateConnectorJSONOutput(t *testing.T) {
 	})
 
 	var parsedOutput meroxa.Connector
-	json.Unmarshal([]byte(output), &parsedOutput)
+	_ = json.Unmarshal([]byte(output), &parsedOutput)
 
 	if !reflect.DeepEqual(c, parsedOutput) {
 		t.Fatalf("not expected output, got \"%s\"", output)

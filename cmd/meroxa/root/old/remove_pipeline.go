@@ -32,7 +32,7 @@ type RemovePipeline struct {
 	removeCmd *Remove
 }
 
-// RemovePipelineClient represents the interface for meroxa client
+// RemovePipelineClient represents the interface for meroxa client.
 type RemovePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 	DeletePipeline(ctx context.Context, id int) error
@@ -68,7 +68,7 @@ func (rp *RemovePipeline) output(p *meroxa.Pipeline) {
 	}
 }
 
-// command represents the `meroxa remove pipeline` command
+// command represents the `meroxa remove pipeline` command.
 func (rp *RemovePipeline) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "pipeline NAME",
@@ -83,6 +83,9 @@ func (rp *RemovePipeline) command() *cobra.Command {
 			}
 
 			p, err := rp.execute(cmd.Context(), c)
+			if err != nil {
+				return err
+			}
 
 			rp.output(p)
 

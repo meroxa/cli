@@ -2,7 +2,6 @@ package old
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -89,7 +88,7 @@ func TestCreateEndpointExecution(t *testing.T) {
 		}
 	})
 
-	expected := fmt.Sprintf("Creating endpoint...")
+	expected := "Creating endpoint..."
 
 	if !strings.Contains(output, expected) {
 		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
@@ -104,7 +103,7 @@ func TestCreateEndpointOutput(t *testing.T) {
 		ce.output()
 	})
 
-	expected := fmt.Sprintf("Endpoint successfully created!")
+	expected := "Endpoint successfully created!"
 
 	if !strings.Contains(output, expected) {
 		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)

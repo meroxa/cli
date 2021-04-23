@@ -47,8 +47,8 @@ func NewClient() (*meroxa.Client, error) {
 	if flagTimeout != 0 {
 		options = append(options, meroxa.WithClientTimeout(flagTimeout))
 	}
-	if flagApiUrl != "" {
-		options = append(options, meroxa.WithBaseURL(flagApiUrl))
+	if flagAPIURL != "" {
+		options = append(options, meroxa.WithBaseURL(flagAPIURL))
 	}
 
 	// WithAuthentication needs to be added after WithDumpTransport

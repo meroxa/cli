@@ -61,7 +61,7 @@ meroxa list resource-types`,
 
 	// Subcommands
 	cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
-	cmd.AddCommand(old.ApiCmd())
+	cmd.AddCommand(old.APICmd())
 	cmd.AddCommand(old.BillingCmd())
 	cmd.AddCommand(old.CompletionCmd())
 	cmd.AddCommand((&old.Connect{}).Command())

@@ -28,7 +28,7 @@ func TestDescribeCmd(t *testing.T) {
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
 	rootCmd.SetArgs([]string{"describe"})
-	rootCmd.Execute()
+	_ = rootCmd.Execute()
 
 	out, err := ioutil.ReadAll(b)
 

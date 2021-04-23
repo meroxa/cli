@@ -2,11 +2,12 @@ package utils
 
 import (
 	"bytes"
-	"github.com/meroxa/meroxa-go"
-	"github.com/spf13/pflag"
 	"io"
 	"math/rand"
 	"os"
+
+	"github.com/meroxa/meroxa-go"
+	"github.com/spf13/pflag"
 )
 
 func GeneratePipeline() meroxa.Pipeline {
@@ -52,7 +53,7 @@ func IsFlagRequired(flag *pflag.Flag) bool {
 	return false
 }
 
-// CaptureOutput is used to capture stdout to be compared on tests
+// CaptureOutput is used to capture stdout to be compared on tests.
 func CaptureOutput(f func()) string {
 	old := os.Stdout // keep backup of the real stdout
 	r, w, _ := os.Pipe()
@@ -64,13 +65,13 @@ func CaptureOutput(f func()) string {
 	// copy the output in a separate goroutine so printing can't block indefinitely
 	go func() {
 		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		_, _ = io.Copy(&buf, r)
 		outC <- buf.String()
 	}()
 	f()
 
 	// back to normal state
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old // restoring the real stdout
 	out := <-outC
 	return out

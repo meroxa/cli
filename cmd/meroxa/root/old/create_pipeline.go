@@ -27,7 +27,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CreatePipelineCmd represents the `meroxa create pipeline` command
+// CreatePipelineCmd represents the `meroxa create pipeline` command.
 func CreatePipelineCmd() *cobra.Command {
 	createPipelineCmd := &cobra.Command{
 		Use:   "pipeline NAME",

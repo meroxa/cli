@@ -3,10 +3,11 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/meroxa/meroxa-go"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/meroxa/meroxa-go"
 )
 
 func TestResourcesTable(t *testing.T) {
@@ -210,5 +211,5 @@ func TestPipelinesTable(t *testing.T) {
 
 func deepCopy(a, b interface{}) {
 	byt, _ := json.Marshal(a)
-	json.Unmarshal(byt, b)
+	_ = json.Unmarshal(byt, b)
 }

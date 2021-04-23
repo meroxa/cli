@@ -106,7 +106,6 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 		if !reflect.DeepEqual(got, &r) {
 			t.Fatalf("expected \"%v\", got \"%v\"", &r, got)
 		}
-
 	})
 
 	expected := fmt.Sprintf("Updating %s resource...", r.Name)
@@ -132,7 +131,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 
 	var metadata map[string]interface{}
 
-	json.Unmarshal([]byte(ur.metadata), &metadata)
+	_ = json.Unmarshal([]byte(ur.metadata), &metadata)
 	nr := meroxa.UpdateResourceInput{
 		Metadata: metadata,
 	}
@@ -287,7 +286,7 @@ func TestUpdateResourceJSONOutput(t *testing.T) {
 	})
 
 	var parsedOutput meroxa.Resource
-	json.Unmarshal([]byte(output), &parsedOutput)
+	_ = json.Unmarshal([]byte(output), &parsedOutput)
 
 	if !reflect.DeepEqual(r, parsedOutput) {
 		t.Fatalf("not expected output, got \"%s\"", output)

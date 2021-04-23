@@ -24,7 +24,7 @@ import (
 
 // TODO: Check how to disable parent flags (e.g.: --json)
 
-// BillingCmd represents the `meroxa billing` command
+// BillingCmd represents the `meroxa billing` command.
 func BillingCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "billing",

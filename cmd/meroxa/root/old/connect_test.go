@@ -35,7 +35,7 @@ func TestConnectCmd(t *testing.T) {
 		rootCmd.SetOut(b)
 		rootCmd.SetErr(b)
 		rootCmd.SetArgs(tt.args)
-		rootCmd.Execute()
+		_ = rootCmd.Execute()
 		output, err := ioutil.ReadAll(b)
 
 		if err != nil {

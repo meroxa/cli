@@ -28,7 +28,7 @@ func TestUpdateCmd(t *testing.T) {
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
 	rootCmd.SetArgs([]string{"update"})
-	rootCmd.Execute()
+	_ = rootCmd.Execute()
 
 	out, err := ioutil.ReadAll(b)
 

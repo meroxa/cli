@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// UpdateConnectorCmd represents the `meroxa update connector` command
+// UpdateConnectorCmd represents the `meroxa update connector` command.
 func UpdateConnectorCmd() *cobra.Command {
 	var state string
 
@@ -71,7 +71,7 @@ func UpdateConnectorCmd() *cobra.Command {
 
 	// TODO: Validate state has to be either of pause|resume|restart
 	updateConnectorCmd.Flags().StringVarP(&state, "state", "", "", "connector state")
-	updateConnectorCmd.MarkFlagRequired("state")
+	_ = updateConnectorCmd.MarkFlagRequired("state")
 
 	return updateConnectorCmd
 }

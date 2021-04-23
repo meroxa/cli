@@ -29,6 +29,7 @@ type addResourceClient interface {
 	CreateResource(ctx context.Context, resource *meroxa.CreateResourceInput) (*meroxa.Resource, error)
 }
 
+// nolint:golint // add.AddResource is stuttering, it should be fixed when reorganizing commands
 type AddResource struct {
 	client addResourceClient
 	logger log.Logger
@@ -39,7 +40,7 @@ type AddResource struct {
 
 	flags struct {
 		Type     string `long:"type"        short:""  usage:"resource type"        required:"true"`
-		Url      string `long:"url"         short:"u" usage:"resource url"         required:"true"`
+		URL      string `long:"url"         short:"u" usage:"resource url"         required:"true"`
 		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
 
 		// credentials
@@ -101,7 +102,7 @@ func (ar *AddResource) Execute(ctx context.Context) error {
 	input := meroxa.CreateResourceInput{
 		Type:     ar.flags.Type,
 		Name:     ar.args.Name,
-		URL:      ar.flags.Url,
+		URL:      ar.flags.URL,
 		Metadata: nil,
 	}
 

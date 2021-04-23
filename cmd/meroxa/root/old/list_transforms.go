@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListTransformsCmd represents the `meroxa list transforms` command
+// ListTransformsCmd represents the `meroxa list transforms` command.
 func ListTransformsCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "transforms",

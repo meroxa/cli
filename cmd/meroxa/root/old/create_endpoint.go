@@ -43,8 +43,8 @@ func (ce *CreateEndpoint) setArgs(args []string) error {
 func (ce *CreateEndpoint) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&ce.protocol, "protocol", "p", "", "protocol, value can be http or grpc (required)")
 	cmd.Flags().StringVarP(&ce.stream, "stream", "s", "", "stream name (required)")
-	cmd.MarkFlagRequired("protocol")
-	cmd.MarkFlagRequired("stream")
+	_ = cmd.MarkFlagRequired("protocol")
+	_ = cmd.MarkFlagRequired("stream")
 }
 
 func (ce *CreateEndpoint) output() {
@@ -56,7 +56,7 @@ func (ce *CreateEndpoint) execute(ctx context.Context, c CreateEndpointClient) e
 	return c.CreateEndpoint(ctx, ce.name, ce.protocol, ce.stream)
 }
 
-// CreateEndpointCmd represents the `meroxa create endpoint` command
+// CreateEndpointCmd represents the `meroxa create endpoint` command.
 func (ce *CreateEndpoint) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "endpoint [NAME] [flags]",

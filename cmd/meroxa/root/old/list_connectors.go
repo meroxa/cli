@@ -61,7 +61,7 @@ func (lc *ListConnectors) output(connectors []*meroxa.Connector) {
 	}
 }
 
-// ListConnectorsCmd represents the `meroxa list connectors` command
+// ListConnectorsCmd represents the `meroxa list connectors` command.
 func (lc *ListConnectors) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "connectors",

@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CreateCmd represents the `meroxa create` command
+// CreateCmd represents the `meroxa create` command.
 func CreateCmd() *cobra.Command {
 	createCmd := &cobra.Command{
 		Use:   "create",

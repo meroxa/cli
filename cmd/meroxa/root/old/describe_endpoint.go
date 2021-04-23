@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DescribeEndpointCmd represents the `meroxa describe endpoint` command
+// DescribeEndpointCmd represents the `meroxa describe endpoint` command.
 func DescribeEndpointCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint NAME",
@@ -53,7 +53,6 @@ func DescribeEndpointCmd() *cobra.Command {
 				utils.PrintEndpointsTable([]meroxa.Endpoint{*end})
 			}
 			return nil
-
 		},
 	}
 }

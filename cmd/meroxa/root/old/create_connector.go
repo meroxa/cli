@@ -52,7 +52,7 @@ func (cc *CreateConnector) setArgs(args []string) error {
 
 func (cc *CreateConnector) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&cc.input, "input", "", "", "command delimited list of input streams")
-	cmd.MarkFlagRequired("input")
+	_ = cmd.MarkFlagRequired("input")
 
 	cmd.Flags().StringVarP(&cc.config, "config", "c", "", "connector configuration")
 	cmd.Flags().StringVarP(&cc.metadata, "metadata", "m", "", "connector metadata")
@@ -61,7 +61,7 @@ func (cc *CreateConnector) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&cc.pipelineName, "pipeline", "", "", "pipeline name to attach connector to")
 
 	// Hide metadata flag for now. This could probably go away
-	cmd.Flags().MarkHidden("metadata")
+	_ = cmd.Flags().MarkHidden("metadata")
 }
 
 func (cc *CreateConnector) parseJSONMap(str string) (out map[string]interface{}, err error) {
@@ -130,7 +130,7 @@ func (cc *CreateConnector) output(con *meroxa.Connector) {
 	}
 }
 
-// command returns the cobra Command for `create connector`
+// command returns the cobra Command for `create connector`.
 func (cc *CreateConnector) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "connector [NAME] [flags]",
@@ -145,13 +145,11 @@ func (cc *CreateConnector) command() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, err := global.NewClient()
-
 			if err != nil {
 				return err
 			}
 
 			res, err := cc.execute(cmd.Context(), c)
-
 			if err != nil {
 				return err
 			}

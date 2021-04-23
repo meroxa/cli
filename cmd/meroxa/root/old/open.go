@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// OpenCmd represents the `meroxa open` command
+// OpenCmd represents the `meroxa open` command.
 func OpenCmd() *cobra.Command {
 	openCmd := &cobra.Command{
 		Use:   "open",

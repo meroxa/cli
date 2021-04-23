@@ -108,7 +108,7 @@ func (ur *UpdateResource) output(res *meroxa.Resource) {
 	}
 }
 
-// UpdateResourceCmd represents the `meroxa update resource` command
+// UpdateResourceCmd represents the `meroxa update resource` command.
 func (ur *UpdateResource) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "resource NAME",

@@ -89,7 +89,7 @@ func (up *UpdatePipeline) execute(ctx context.Context, c UpdatePipelineClient) (
 		if up.metadata != "" {
 			metadata := map[string]interface{}{}
 
-			err := json.Unmarshal([]byte(up.metadata), &metadata)
+			err = json.Unmarshal([]byte(up.metadata), &metadata)
 			if err != nil {
 				return p, err
 			}
@@ -114,7 +114,7 @@ func (up *UpdatePipeline) output(p *meroxa.Pipeline) {
 	}
 }
 
-// command represents the `meroxa update pipeline` command
+// command represents the `meroxa update pipeline` command.
 func (up *UpdatePipeline) command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "pipeline NAME",

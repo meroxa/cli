@@ -263,7 +263,7 @@ func TestBuildCommandWithFlags(t *testing.T) {
 
 	for i := 1; i <= 17; i++ {
 		if i%2 == 1 {
-			want.MarkFlagRequired(fmt.Sprintf("flag%d", i))
+			_ = want.MarkFlagRequired(fmt.Sprintf("flag%d", i))
 		}
 	}
 
