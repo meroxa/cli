@@ -17,7 +17,6 @@ limitations under the License.
 package old
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -42,11 +41,8 @@ func DescribeEndpointCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
 
-			end, err := c.GetEndpoint(ctx, name)
+			end, err := c.GetEndpoint(cmd.Context(), name)
 			if err != nil {
 				return err
 			}

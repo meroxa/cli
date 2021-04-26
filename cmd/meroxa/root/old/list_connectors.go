@@ -73,11 +73,7 @@ func (lc *ListConnectors) command() *cobra.Command {
 				return err
 			}
 
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
-			connectors, err := lc.execute(ctx, c)
+			connectors, err := lc.execute(cmd.Context(), c)
 			if err != nil {
 				return err
 			}

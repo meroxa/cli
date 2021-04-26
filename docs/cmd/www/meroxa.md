@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-19T17:05:14+02:00
-updatedAt: 2021-04-19T17:05:14+02:00
+createdAt: 2021-04-21T15:46:44+02:00
+updatedAt: 2021-04-21T15:46:44+02:00
 title: "meroxa"
 slug: meroxa
 url: /cli/meroxa/
@@ -22,7 +22,7 @@ meroxa list resource-types
 ### Options
 
 ```
-      --config string      config file (default is $HOME/meroxa.env)
+      --config string      config file
       --debug              display any debugging information
   -h, --help               help for meroxa
       --json               output json

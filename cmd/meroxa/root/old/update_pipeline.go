@@ -128,16 +128,12 @@ func (up *UpdatePipeline) command() *cobra.Command {
 			return up.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			p, err := up.execute(ctx, c)
+			p, err := up.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

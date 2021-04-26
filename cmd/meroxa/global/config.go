@@ -2,15 +2,14 @@ package global
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
 const (
-	// The name of our config file, without the file extension because viper supports many different config file languages.
-	defaultConfigFilename = "meroxa"
-
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix = "MEROXA"
 )
@@ -23,16 +22,22 @@ func readConfig() (*viper.Viper, error) {
 		cfg.SetConfigFile(flagConfig)
 	} else {
 		// Find home directory.
-		home, err := homedir.Dir()
+		configDir, err := os.UserConfigDir()
 		if err != nil {
-			return nil, fmt.Errorf("could not get home directory: %w", err)
+			return nil, fmt.Errorf("could not get config directory: %w", err)
+		}
+		configDir = filepath.Join(configDir, "meroxa")
+
+		// create subdirectory if it doesn't exist, otherwise viper will complain
+		err = os.MkdirAll(configDir, 0755)
+		if err != nil {
+			return nil, fmt.Errorf("could not create meroxa config directory: %w", err)
 		}
 
-		// Set the base name of the config file, without the file extension.
-		cfg.SetConfigName(defaultConfigFilename)
-		cfg.AddConfigPath(home)
+		cfg.AddConfigPath(configDir)
+		cfg.SetConfigName("config")
+		cfg.SetConfigType("env")
 	}
-	cfg.SetConfigType("env")
 
 	// Attempt to read the config file, gracefully ignoring errors
 	// caused by a config file not being found. Return an error
@@ -42,6 +47,17 @@ func readConfig() (*viper.Viper, error) {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			return nil, fmt.Errorf("could not read config: %w", err)
 		}
+
+		// No config found, fallback to old config file location in $HOME
+		// TODO remove this code once we migrate acceptance tests to use new location
+		if err := setupCompatibility(cfg); err != nil {
+			return nil, err
+		}
+	}
+
+	// TODO remove this code once we migrate acceptance tests to use new env variable
+	if apiUrl, ok := os.LookupEnv("API_URL"); ok {
+		os.Setenv("MEROXA_API_URL", apiUrl)
 	}
 
 	// When we bind flags to environment variables expect that the
@@ -50,10 +66,41 @@ func readConfig() (*viper.Viper, error) {
 	// avoid conflicts.
 	cfg.SetEnvPrefix(envPrefix)
 
-	// Bind to environment variables
-	// Works great for simple config names, but needs help for names
-	// like --favorite-color which we fix in the bindFlags function
+	// Add support for flags like --favorite-color by replacing - with _.
+	cfg.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	// Bind to environment variables.
 	cfg.AutomaticEnv()
 
 	return cfg, nil
+}
+
+// setupCompatibility falls back to old config file location in $HOME
+// also it enables env variable API_URL alongside MEROXA_API_URL.
+// This function should be removed once we migrate acceptance tests.
+func setupCompatibility(cfg *viper.Viper) error {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return fmt.Errorf("could not get home directory: %w", err)
+	}
+	cfg.AddConfigPath(homeDir)
+	cfg.SetConfigName("meroxa")
+	cfg.SetConfigType("env")
+
+	if err := cfg.ReadInConfig(); err != nil {
+		// It's okay if there isn't a config file
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return fmt.Errorf("could not read config: %w", err)
+		}
+	}
+	cfg.SetConfigName("config") // revert config name
+	if err == nil {
+		// we read the config in the home folder, let's write it to the new location
+		err = cfg.SafeWriteConfig()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

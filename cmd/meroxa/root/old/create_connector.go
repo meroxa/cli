@@ -144,17 +144,13 @@ func (cc *CreateConnector) command() *cobra.Command {
 			return cc.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 
 			if err != nil {
 				return err
 			}
 
-			res, err := cc.execute(ctx, c)
+			res, err := cc.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

@@ -17,8 +17,6 @@ limitations under the License.
 package old
 
 import (
-	"context"
-
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/utils"
 
@@ -37,11 +35,7 @@ func ListPipelinesCmd() *cobra.Command {
 				return err
 			}
 
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
-			rr, err := c.ListPipelines(ctx)
+			rr, err := c.ListPipelines(cmd.Context())
 			if err != nil {
 				return err
 			}

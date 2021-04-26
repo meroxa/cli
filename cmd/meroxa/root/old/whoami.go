@@ -34,6 +34,10 @@ type GetUser struct {
 }
 
 func (gu *GetUser) execute(ctx context.Context, c GetUserClient) (*meroxa.User, error) {
+	// TODO think about extracting the info from the access token.
+	//  The access token is a JWT and contains these fields:
+	//  * "https://api.meroxa.io/v1/email": "john.doe@example.com"
+	//  * "https://api.meroxa.io/v1/username": "John Doe"
 	var err error
 
 	user, err := c.GetUser(ctx)
@@ -57,16 +61,12 @@ func (gu *GetUser) Command() *cobra.Command {
 			"meroxa whoami'\n",
 
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			u, err := gu.execute(ctx, c)
+			u, err := gu.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

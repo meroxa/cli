@@ -17,116 +17,58 @@ limitations under the License.
 package global
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"time"
+	"os"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/meroxa/meroxa-go"
-	"github.com/spf13/viper"
+	"golang.org/x/oauth2"
 )
 
 const (
 	clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
-	domain   = "auth.meroxa.io"
 )
 
 func NewClient() (*meroxa.Client, error) {
-	accessToken, err := getAccessToken(Config)
-	if err != nil {
-		return nil, err
+	accessToken := Config.GetString("ACCESS_TOKEN")
+	refreshToken := Config.GetString("REFRESH_TOKEN")
+	if accessToken == "" && refreshToken == "" {
+		// we need at least one token for creating an authenticated client
+		return nil, errors.New("please login or signup by running 'meroxa login'")
 	}
 
-	return meroxa.New(accessToken, versionString(), flagDebug)
+	options := []meroxa.Option{
+		meroxa.WithUserAgent(fmt.Sprintf("Meroxa CLI %s", Version)),
+	}
+
+	if flagDebug {
+		options = append(options, meroxa.WithDumpTransport(os.Stdout))
+	}
+	if flagTimeout != 0 {
+		options = append(options, meroxa.WithClientTimeout(flagTimeout))
+	}
+	if flagApiUrl != "" {
+		options = append(options, meroxa.WithBaseURL(flagApiUrl))
+	}
+
+	// WithAuthentication needs to be added after WithDumpTransport
+	// to catch requests to auth0
+	options = append(options, meroxa.WithAuthentication(
+		&oauth2.Config{
+			ClientID: clientID,
+			Endpoint: meroxa.OAuth2Endpoint,
+		},
+		accessToken,
+		refreshToken,
+		onTokenRefreshed,
+	))
+
+	return meroxa.New(options...)
 }
 
-func versionString() string {
-	return fmt.Sprintf("Meroxa CLI %s", Version)
-}
-
-func getAccessToken(cfg *viper.Viper) (string, error) {
-	// check access token expiration
-	accessToken := cfg.GetString("ACCESS_TOKEN")
-	if accessToken == "" {
-		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
-	}
-
-	// check access exp and grab refresh
-	token, _, err := new(jwt.Parser).ParseUnverified(accessToken, jwt.MapClaims{})
-	if err != nil {
-		fmt.Println(err)
-		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
-	}
-
-	// check token exp
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
-	}
-
-	var exp time.Time
-	tokenExp := claims["exp"].(float64)
-	exp = time.Unix(int64(tokenExp), 0)
-
-	if exp.After(time.Now()) {
-		return accessToken, nil
-	}
-
-	// access token is expire, use refresh
-	refreshToken := cfg.GetString("REFRESH_TOKEN")
-	if refreshToken == "" {
-		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
-	}
-	accessToken, _, err = refresh(domain, clientID, refreshToken)
-	if err != nil {
-		return "", fmt.Errorf("please login or signup by running 'meroxa login'")
-	}
-	cfg.Set("ACCESS_TOKEN", accessToken)
-	// TODO make sure config is updated on disk
-
-	return accessToken, nil
-}
-
-func refresh(domain string, clientID string, refreshToken string) (accessToken string, newRefreshToken string, err error) {
-	url := fmt.Sprintf("https://%s/oauth/token", domain)
-	var tokenBody = make(map[string]string)
-	tokenBody["client_id"] = clientID
-
-	if refreshToken != "" {
-		tokenBody["grant_type"] = "refresh_token"
-		tokenBody["refresh_token"] = refreshToken
-	} else {
-		return "", "", errors.New("no refresh token")
-	}
-	requestBody, err := json.Marshal(tokenBody)
-	if err != nil {
-		fmt.Println("marshal:", err)
-		return "", "", err
-	}
-
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
-	if err != nil {
-		fmt.Println("request error:", err)
-		return "", "", err
-	}
-	defer resp.Body.Close()
-	responseBody, err := ioutil.ReadAll(resp.Body)
-
-	if len(responseBody) > 0 {
-		var ff interface{}
-		json.Unmarshal(responseBody, &ff)
-		result := ff.(map[string]interface{})
-		accessToken = fmt.Sprintf("%v", result["access_token"])
-		if refreshToken == "" {
-			newRefreshToken = fmt.Sprintf("%v", result["refresh_token"])
-		}
-
-		return accessToken, newRefreshToken, nil
-	}
-
-	return "", "", nil
+// onTokenRefreshed tries to save the new token in the config.
+func onTokenRefreshed(token *oauth2.Token) {
+	Config.Set("ACCESS_TOKEN", token.AccessToken)
+	Config.Set("REFRESH_TOKEN", token.RefreshToken)
+	_ = Config.WriteConfig() // ignore error, it's a best effort
 }

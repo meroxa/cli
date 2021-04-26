@@ -17,7 +17,6 @@ limitations under the License.
 package old
 
 import (
-	"context"
 	"errors"
 	"io"
 	"os"
@@ -42,11 +41,7 @@ func LogsConnectorCmd() *cobra.Command {
 				return err
 			}
 
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
-			resp, err := c.GetConnectorLogs(ctx, connector)
+			resp, err := c.GetConnectorLogs(cmd.Context(), connector)
 			if err != nil {
 				return err
 			}

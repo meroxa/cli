@@ -66,10 +66,6 @@ func (re *RemoveEndpoint) command() *cobra.Command {
 			return re.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
@@ -77,7 +73,7 @@ func (re *RemoveEndpoint) command() *cobra.Command {
 
 			// TODO: To be consistent with other commands, execute should return
 			// also the component being removed
-			err = re.execute(ctx, c)
+			err = re.execute(cmd.Context(), c)
 
 			if err != nil {
 				return err

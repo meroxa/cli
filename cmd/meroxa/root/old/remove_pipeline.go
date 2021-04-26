@@ -77,16 +77,12 @@ func (rp *RemovePipeline) command() *cobra.Command {
 			return rp.setArgs(args)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
-
 			c, err := global.NewClient()
 			if err != nil {
 				return err
 			}
 
-			p, err := rp.execute(ctx, c)
+			p, err := rp.execute(cmd.Context(), c)
 
 			rp.output(p)
 

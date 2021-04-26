@@ -1,7 +1,6 @@
 package old
 
 import (
-	"context"
 	"errors"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -25,11 +24,8 @@ func DescribeResourceCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			ctx := context.Background()
-			ctx, cancel := context.WithTimeout(ctx, ClientTimeOut)
-			defer cancel()
 
-			res, err := c.GetResourceByName(ctx, name)
+			res, err := c.GetResourceByName(cmd.Context(), name)
 			if err != nil {
 				return err
 			}

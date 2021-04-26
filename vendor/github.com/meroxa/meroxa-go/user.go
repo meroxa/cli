@@ -24,7 +24,7 @@ type User struct {
 func (c *Client) GetUser(ctx context.Context) (*User, error) {
 	path := fmt.Sprintf("%s/me", usersPath)
 
-	resp, err := c.makeRequest(ctx, http.MethodGet, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}

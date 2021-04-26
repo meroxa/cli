@@ -4,16 +4,14 @@ go 1.16
 
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.9.0
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/golang/mock v1.3.1
+	github.com/golang/mock v1.5.0
 	github.com/gorilla/mux v1.7.3
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20210419140943-b0700600f917
-	github.com/mitchellh/go-homedir v1.1.0
+	github.com/meroxa/meroxa-go v0.0.0-20210426102830-ca17779c22ac
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pelletier/go-toml v1.8.1 // indirect
@@ -27,6 +25,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.5.1 // indirect
+	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
 	golang.org/x/sys v0.0.0-20210324051608-47abb6519492 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
