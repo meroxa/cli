@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// LogsConnectorCmd represents the `meroxa logs connector` command
+// LogsConnectorCmd represents the `meroxa logs connector` command.
 func LogsConnectorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "connector NAME",
@@ -45,6 +45,7 @@ func LogsConnectorCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer resp.Body.Close()
 
 			_, err = io.Copy(os.Stdout, resp.Body)
 			if err != nil {

@@ -2,7 +2,6 @@ package old
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -12,12 +11,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ApiCmd represents the `meroxa api` command
-func ApiCmd() *cobra.Command {
+// APICmd represents the `meroxa api` command.
+func APICmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "api METHOD PATH [body]",
 		Short: "Invoke Meroxa API",
-		Args:  cobra.MinimumNArgs(2),
+		Args:  cobra.MinimumNArgs(2), // nolint:gomnd
 		Example: `
 meroxa api GET /v1/endpoints
 meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379-public.accounts", "name": "1234"}'`,
@@ -33,14 +32,15 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 				body   string
 			)
 
-			if len(args) > 2 {
+			if len(args) > 2 { // nolint:gomnd
 				body = args[2]
 			}
 
-			resp, err := c.MakeRequest(context.Background(), method, path, body, nil)
+			resp, err := c.MakeRequest(cmd.Context(), method, path, body, nil)
 			if err != nil {
 				return err
 			}
+			defer resp.Body.Close()
 
 			b, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
@@ -56,7 +56,7 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 			for k, v := range resp.Header {
 				fmt.Printf("< %s %s\n", k, strings.Join(v, " "))
 			}
-			fmt.Printf(prettyJSON.String())
+			fmt.Print(prettyJSON.String())
 
 			return nil
 		},

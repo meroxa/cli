@@ -27,13 +27,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// RemoveConnectorCmd represents the `meroxa remove connector` command
+// RemoveConnector represents the `meroxa remove connector` command.
 type RemoveConnector struct {
 	name      string
 	removeCmd *Remove
 }
 
-// RemoveConnectorClient represents the interface for meroxa client
+// RemoveConnectorClient represents the interface for meroxa client.
 type RemoveConnectorClient interface {
 	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
 	DeleteConnector(ctx context.Context, id int) error
@@ -69,7 +69,7 @@ func (rc *RemoveConnector) output(c *meroxa.Connector) {
 	}
 }
 
-// command represents the `meroxa remove connector` command
+// command represents the `meroxa remove connector` command.
 func (rc *RemoveConnector) command() *cobra.Command {
 	return &cobra.Command{
 		Use:   "connector NAME",

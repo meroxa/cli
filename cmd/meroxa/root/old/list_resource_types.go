@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListResourceTypesCmd represents the `meroxa list resource-types` command
+// ListResourceTypesCmd represents the `meroxa list resource-types` command.
 func ListResourceTypesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "resource-types",

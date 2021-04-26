@@ -17,6 +17,7 @@ limitations under the License.
 package old
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -40,13 +41,14 @@ const (
 	callbackURL = "http://localhost:21900/oauth/callback"
 	audience    = "https://api.meroxa.io/v1"
 
-	// TODO refactor this and move to global client
+	// TODO refactor this and move to global client.
 	clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
 	domain   = "auth.meroxa.io"
 )
 
 // AuthorizeUser implements the PKCE OAuth2 flow.
-func authorizeUser(cfg *viper.Viper, clientID string, authDomain string, redirectURL string) {
+// nolint:funlen // this function should be refactored when moving to the new code structure
+func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 	// initialize the code verifier
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
@@ -72,7 +74,7 @@ func authorizeUser(cfg *viper.Viper, clientID string, authDomain string, redirec
 		code := r.URL.Query().Get("code")
 		if code == "" {
 			fmt.Println("meroxa: Url Param 'code' is missing")
-			io.WriteString(w, "Error: could not find 'code' URL parameter\n")
+			_, _ = io.WriteString(w, "Error: could not find 'code' URL parameter\n")
 
 			// close the HTTP server and return
 			cleanup(server)
@@ -81,10 +83,10 @@ func authorizeUser(cfg *viper.Viper, clientID string, authDomain string, redirec
 
 		// trade the authorization code and the code verifier for an access token
 		codeVerifier := CodeVerifier.String()
-		accessToken, refreshToken, err := getAccessTokenAuth(clientID, codeVerifier, code, redirectURL)
+		accessToken, refreshToken, err := getAccessTokenAuth(r.Context(), clientID, codeVerifier, code, redirectURL)
 		if err != nil {
 			fmt.Println("meroxa: could not get access token")
-			io.WriteString(w, "Error: could not retrieve tokens\n")
+			_, _ = io.WriteString(w, "Error: could not retrieve tokens\n")
 
 			// close the HTTP server and return
 			cleanup(server)
@@ -99,7 +101,7 @@ func authorizeUser(cfg *viper.Viper, clientID string, authDomain string, redirec
 			}
 			if err != nil {
 				fmt.Printf("meroxa: could not write config file: %v", err)
-				io.WriteString(w, "Error: could not store access token\n")
+				_, _ = io.WriteString(w, "Error: could not store access token\n")
 
 				// close the HTTP server and return
 				cleanup(server)
@@ -108,7 +110,7 @@ func authorizeUser(cfg *viper.Viper, clientID string, authDomain string, redirec
 		}
 
 		// return an indication of success to the caller
-		io.WriteString(w, `
+		_, _ = io.WriteString(w, `
 			<html>
 				<div style="width:100%!; color:#282D39; display:flex; flex-direction: column; justify-content: center; align-items:center;">
 					<img src="https://meroxa-public-assets.s3.us-east-2.amazonaws.com/MeroxaTransparent%402x.png" alt="Meroxa"
@@ -154,7 +156,7 @@ func authorizeUser(cfg *viper.Viper, clientID string, authDomain string, redirec
 
 	// start the blocking web server loop
 	// this will exit when the handler gets fired and calls server.Close()
-	server.Serve(l)
+	_ = server.Serve(l)
 }
 
 func login() error {
@@ -163,17 +165,20 @@ func login() error {
 	return nil
 }
 
-// cleanup closes the HTTP server
+// cleanup closes the HTTP server.
 func cleanup(server *http.Server) {
 	// we run this as a goroutine so that this function falls through and
 	// the socket to the browser gets flushed/closed before the server goes away
 	go server.Close()
 }
 
-// getAccessTokenAuth trades the authorization code retrieved from the first OAuth2 leg for an access token
-func getAccessTokenAuth(clientID string, codeVerifier string, authorizationCode string, callbackURL string) (string, string, error) {
+// getAccessTokenAuth trades the authorization code retrieved from the first OAuth2 leg for an access token.
+func getAccessTokenAuth(
+	ctx context.Context,
+	clientID, codeVerifier, authorizationCode, callbackURL string,
+) (accessToken, refreshToken string, err error) {
 	// set the url and form-encoded data for the POST to the access token endpoint
-	url := "https://auth.meroxa.io/oauth/token"
+	tokenURL := "https://auth.meroxa.io/oauth/token" // nolint:gosec // this URL should actually be taken from meroxa.OAuth2Endpoint
 	data := fmt.Sprintf(
 		"grant_type=authorization_code&client_id=%s"+
 			"&code_verifier=%s"+
@@ -183,7 +188,10 @@ func getAccessTokenAuth(clientID string, codeVerifier string, authorizationCode 
 	payload := strings.NewReader(data)
 
 	// create the request and execute it
-	req, _ := http.NewRequest("POST", url, payload)
+	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, payload)
+	if err != nil {
+		return "", "", err
+	}
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -204,12 +212,12 @@ func getAccessTokenAuth(clientID string, codeVerifier string, authorizationCode 
 	}
 
 	// retrieve the access token out of the map, and return to caller
-	accessToken := responseData["access_token"].(string)
-	refreshToken := responseData["refresh_token"].(string)
+	accessToken = responseData["access_token"].(string)
+	refreshToken = responseData["refresh_token"].(string)
 	return accessToken, refreshToken, nil
 }
 
-// LoginCmd represents the `meroxa login` command
+// LoginCmd represents the `meroxa login` command.
 func LoginCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "login",

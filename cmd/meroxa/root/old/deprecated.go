@@ -17,6 +17,7 @@ limitations under the License.
 package old
 
 var (
-	// Deprecated: use log.Logger instead, it knows about the flag
+	// FlagRootOutputJSON is true if we should output a JSON result.
+	// Deprecated: use log.Logger instead, it knows about the flag.
 	FlagRootOutputJSON bool
 )

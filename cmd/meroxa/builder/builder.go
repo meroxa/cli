@@ -154,6 +154,7 @@ func buildCommandWithAliases(cmd *cobra.Command, c Command) {
 	cmd.Aliases = v.Aliases()
 }
 
+// nolint:funlen,gocyclo // this function has a big switch statement, can't get around that
 func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 	v, ok := c.(CommandWithFlags)
 	if !ok {

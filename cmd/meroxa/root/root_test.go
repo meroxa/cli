@@ -47,9 +47,12 @@ func TestCmd(t *testing.T) {
 	cmd := Cmd()
 	var b bytes.Buffer
 	cmd.SetOut(&b)
-	cmd.Execute()
-	out, err := ioutil.ReadAll(&b)
+	err := cmd.Execute()
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
 
+	out, err := ioutil.ReadAll(&b)
 	if err != nil {
 		t.Fatal(err)
 	}

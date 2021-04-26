@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListPipelinesCmd represents the `meroxa list pipelines` command
+// ListPipelinesCmd represents the `meroxa list pipelines` command.
 func ListPipelinesCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "pipelines",

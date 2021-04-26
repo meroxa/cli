@@ -75,20 +75,19 @@ func (d *dumpTransport) dumpResponse(resp *http.Response) error {
 }
 
 func (d *dumpTransport) obfuscate(text string) string {
+	if len(text) < 5 {
+		// hide whole text
+		return strings.Repeat("*", len(text))
+	}
+
 	const (
-		visibleSuffixLen = 4
-		minStarsLen      = 4
-		star             = "*"
+		maxVisibleLen = 7
 	)
 
-	if len(text) < minStarsLen {
-		// hide whole text
-		return strings.Repeat(star, len(text))
-	} else if len(text) < minStarsLen+visibleSuffixLen {
-		// hide only minStarsLen
-		return strings.Repeat(star, minStarsLen) + text[minStarsLen:]
-	} else {
-		// hide everything except visibleSuffixLen
-		return strings.Repeat(star, minStarsLen) + text[len(text)-visibleSuffixLen:]
+	visibleLen := (len(text) - 3) / 2
+	if visibleLen > maxVisibleLen {
+		visibleLen = maxVisibleLen
 	}
+
+	return text[:visibleLen] + "..." + text[len(text)-visibleLen:]
 }

@@ -52,7 +52,7 @@ func (gu *GetUser) output(user *meroxa.User) {
 	}
 }
 
-// Command represents the `meroxa whoami` command
+// Command represents the `meroxa whoami` command.
 func (gu *GetUser) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "whoami",

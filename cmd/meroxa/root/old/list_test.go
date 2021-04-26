@@ -30,7 +30,7 @@ func TestListCmd(t *testing.T) {
 	b := bytes.NewBufferString("")
 	rootCmd.SetOut(b)
 	rootCmd.SetArgs([]string{"list"})
-	rootCmd.Execute()
+	_ = rootCmd.Execute()
 
 	out, err := ioutil.ReadAll(b)
 

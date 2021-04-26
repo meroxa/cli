@@ -20,7 +20,6 @@ import (
 	"context"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 )
 
@@ -30,15 +29,15 @@ type Connect struct {
 
 func (conn *Connect) setFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&conn.source, "from", "", "", "source resource name")
-	cmd.MarkFlagRequired("from")
+	_ = cmd.MarkFlagRequired("from")
 	cmd.Flags().StringVarP(&conn.destination, "to", "", "", "destination resource name")
-	cmd.MarkFlagRequired("to")
+	_ = cmd.MarkFlagRequired("to")
 	cmd.Flags().StringVarP(&conn.config, "config", "c", "", "connector configuration")
 	cmd.Flags().StringVarP(&conn.input, "input", "", "", "command delimeted list of input streams")
 	cmd.Flags().StringVarP(&conn.pipelineName, "pipeline", "", "", "pipeline name to attach connectors to")
 }
 
-func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*meroxa.Connector, *meroxa.Connector, error) {
+func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) error {
 	srcCc := &CreateConnector{
 		input:        conn.input,
 		config:       conn.config,
@@ -48,7 +47,7 @@ func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*mer
 
 	srcCon, err := srcCc.execute(ctx, c)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 	srcCc.output(srcCon)
 
@@ -64,14 +63,14 @@ func (conn *Connect) execute(ctx context.Context, c CreateConnectorClient) (*mer
 
 	destCon, err := destCc.execute(ctx, c)
 	if err != nil {
-		return nil, nil, err
+		return err
 	}
 	destCc.output(destCon)
 
-	return srcCon, destCon, nil
+	return nil
 }
 
-// Command returns the cobra Command for `connect`
+// Command returns the cobra Command for `connect`.
 func (conn *Connect) Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "connect --from RESOURCE-NAME --to RESOURCE-NAME",
@@ -95,7 +94,7 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 				return err
 			}
 
-			_, _, err = conn.execute(cmd.Context(), c)
+			err = conn.execute(cmd.Context(), c)
 			if err != nil {
 				return err
 			}

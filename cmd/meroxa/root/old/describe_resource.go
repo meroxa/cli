@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DescribeResourceCmd represents the `meroxa describe resource` command
+// DescribeResourceCmd represents the `meroxa describe resource` command.
 func DescribeResourceCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "resource NAME",

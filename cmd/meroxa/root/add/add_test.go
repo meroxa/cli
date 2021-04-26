@@ -32,7 +32,6 @@ func TestAddCmd(t *testing.T) {
 	}
 
 	out, err := ioutil.ReadAll(b)
-
 	if err != nil {
 		t.Fatal(err)
 	}

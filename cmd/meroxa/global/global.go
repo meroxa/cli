@@ -16,7 +16,7 @@ var (
 
 var (
 	flagConfig  string
-	flagApiUrl  string
+	flagAPIURL  string
 	flagDebug   bool
 	flagTimeout time.Duration
 	FlagJSON    bool // TODO make this private! do not use this variable from other packages
@@ -25,9 +25,9 @@ var (
 func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&FlagJSON, "json", false, "output json")
 	cmd.PersistentFlags().StringVar(&flagConfig, "config", "", "config file")
-	cmd.PersistentFlags().StringVar(&flagApiUrl, "api-url", "", "API url")
+	cmd.PersistentFlags().StringVar(&flagAPIURL, "api-url", "", "API url")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
-	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", time.Second*10, "set the client timeout")
+	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", time.Second*10, "set the client timeout") // nolint:gomnd
 
 	if err := cmd.PersistentFlags().MarkHidden("api-url"); err != nil {
 		panic(fmt.Sprintf("could not mark flag as hidden: %v", err))
@@ -49,7 +49,7 @@ func PersistentPreRunE(cmd *cobra.Command) error {
 	return nil
 }
 
-// Bind each cobra flag to its associated viper configuration (config file and environment variable)
+// Bind each cobra flag to its associated viper configuration (config file and environment variable).
 func bindFlags(cmd *cobra.Command, v *viper.Viper) error {
 	var err error
 	cmd.Flags().VisitAll(func(f *pflag.Flag) {

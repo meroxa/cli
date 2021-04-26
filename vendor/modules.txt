@@ -43,7 +43,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20210426102830-ca17779c22ac
+# github.com/meroxa/meroxa-go v0.0.0-20210426150351-91d304d1dc66
 ## explicit
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/mapstructure v1.4.1

@@ -23,16 +23,16 @@ url: %s
 ---
 `
 
-func renameFromUnderscoreToDash(dir string) {
+func renameFromUnderscoreToDash(dir string) error {
 	file, err := os.Open(dir)
 	if err != nil {
-		log.Fatalf("failed opening directory: %s", err)
+		return fmt.Errorf("failed opening directory: %w", err)
 	}
 	defer file.Close()
 
 	list, err := file.Readdirnames(0) // 0 to read all files and folders
 	if err != nil {
-		log.Fatalf("failed reading directory: %s", err)
+		return fmt.Errorf("failed reading directory: %w", err)
 	}
 	for _, name := range list {
 		oldName := name
@@ -43,6 +43,7 @@ func renameFromUnderscoreToDash(dir string) {
 			continue
 		}
 	}
+	return nil
 }
 
 func generateManPages(rootCmd *cobra.Command) error {
@@ -79,36 +80,20 @@ func generateDocsDotComPages(rootCmd *cobra.Command) error {
 	return doc.GenMarkdownTreeCustom(rootCmd, "./docs/cmd/www", filePrepender, linkHandler)
 }
 
-func generateShellCompletionFiles(rootCmd *cobra.Command) {
-	// Generating Bash Completion File
+func generateShellCompletionFiles(rootCmd *cobra.Command) error {
 	if err := rootCmd.GenBashCompletionFile("./etc/completion/meroxa.completion.sh"); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not generate bash completion: %w", err)
 	}
 	if err := rootCmd.GenZshCompletionFile("./etc/completion/meroxa.completion.zsh"); err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not generate zsh completion: %w", err)
 	}
-
-	// Generating Fish Completion File
-	fishCompletionFile, err := os.Create("./etc/completion/meroxa.completion.fish")
-
-	if err != nil {
-		log.Fatal(err)
+	if err := rootCmd.GenFishCompletionFile("./etc/completion/meroxa.completion.fish", true); err != nil {
+		return fmt.Errorf("could not generate fish completion: %w", err)
 	}
-
-	if err := rootCmd.GenFishCompletion(fishCompletionFile, true); err != nil {
-		log.Fatal(err)
+	if err := rootCmd.GenPowerShellCompletionFile("./etc/completion/meroxa.completion.ps1"); err != nil {
+		return fmt.Errorf("could not generate powershell completion: %w", err)
 	}
-
-	// Generating Power Shell File
-	powerShellCompletionFile, err := os.Create("./etc/completion/meroxa.completion.ps1")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := rootCmd.GenPowerShellCompletion(powerShellCompletionFile); err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
 
 func main() {
@@ -127,9 +112,13 @@ func main() {
 
 	if err := generateDocsDotComPages(rootCmd); err != nil {
 		log.Fatal(err)
-	} else {
-		renameFromUnderscoreToDash("./docs/cmd/www")
 	}
 
-	generateShellCompletionFiles(rootCmd)
+	if err := renameFromUnderscoreToDash("./docs/cmd/www"); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := generateShellCompletionFiles(rootCmd); err != nil {
+		log.Fatal(err)
+	}
 }

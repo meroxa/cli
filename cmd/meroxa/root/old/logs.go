@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// LogsCmd represents the `meroxa logs` command
+// LogsCmd represents the `meroxa logs` command.
 func LogsCmd() *cobra.Command {
 	logsCmd := &cobra.Command{
 		Use:   "logs",

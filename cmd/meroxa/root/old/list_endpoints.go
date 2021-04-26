@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// ListEndpointsCmd represents the `meroxa list endpoints` command
+// ListEndpointsCmd represents the `meroxa list endpoints` command.
 func ListEndpointsCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint",

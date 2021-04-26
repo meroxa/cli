@@ -3,7 +3,6 @@ package old
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -49,7 +48,7 @@ func TestWhoAmIOutput(t *testing.T) {
 		gu.output(&u)
 	})
 
-	expected := fmt.Sprintf("%s", u.Email)
+	expected := u.Email
 
 	if !strings.Contains(output, expected) {
 		t.Fatalf("expected output \"%s\" got \"%s\"", expected, output)
@@ -66,7 +65,7 @@ func TestWhoAmIOutputJSONOutput(t *testing.T) {
 	})
 
 	var parsedOutput meroxa.User
-	json.Unmarshal([]byte(output), &parsedOutput)
+	_ = json.Unmarshal([]byte(output), &parsedOutput)
 
 	if !reflect.DeepEqual(u, parsedOutput) {
 		t.Fatalf("not expected output, got \"%s\"", output)

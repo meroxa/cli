@@ -38,20 +38,13 @@ func getBillingURL() string {
 	return fmt.Sprintf("%s/settings/billing", platformURL)
 }
 
-// OpenBillingCmd represents the `meroxa open billing` command
+// OpenBillingCmd represents the `meroxa open billing` command.
 func OpenBillingCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "billing",
 		Short: "Open your billing page in a web browser",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
-			err := browser.OpenURL(getBillingURL())
-
-			if err != nil {
-				return err
-			}
-
-			return nil
+			return browser.OpenURL(getBillingURL())
 		},
 	}
 }

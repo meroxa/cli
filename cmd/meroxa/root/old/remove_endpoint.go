@@ -30,7 +30,7 @@ type RemoveEndpoint struct {
 	removeCmd *Remove
 }
 
-// RemoveEndpointClient represents the interface for meroxa client
+// RemoveEndpointClient represents the interface for meroxa client.
 type RemoveEndpointClient interface {
 	DeleteEndpoint(ctx context.Context, name string) error
 }
@@ -56,7 +56,7 @@ func (re *RemoveEndpoint) output() {
 	fmt.Printf("endpoint %s successfully removed\n", re.name)
 }
 
-// command represents the `meroxa remove endpoint` command
+// command represents the `meroxa remove endpoint` command.
 func (re *RemoveEndpoint) command() *cobra.Command {
 	return &cobra.Command{
 		Use:     "endpoint NAME",

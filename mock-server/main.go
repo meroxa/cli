@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -12,7 +13,6 @@ import (
 var memDB map[string]map[string]interface{}
 
 func main() {
-
 	// Init in-memory database
 	memDB = make(map[string]map[string]interface{})
 
@@ -24,7 +24,10 @@ func main() {
 	r.HandleFunc("/{object}/{id}", describeHandler).Methods("GET")
 
 	// Run Server
-	http.ListenAndServe(":8080", r)
+	err := http.ListenAndServe(":8080", r)
+	if err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
 }
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +40,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(responseJSON))
+	_, _ = w.Write(responseJSON)
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +62,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	nextID := strconv.Itoa(len(memDB[object]) + 1)
 	memDB[object][nextID] = o
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%s created", object)
+	_, _ = fmt.Fprintf(w, "%s created", object)
 }
 
 func describeHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,5 +77,5 @@ func describeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(responseJSON))
+	_, _ = w.Write(responseJSON)
 }
