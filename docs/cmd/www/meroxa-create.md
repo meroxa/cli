@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-21T15:46:44+02:00
-updatedAt: 2021-04-21T15:46:44+02:00
+createdAt: 
+updatedAt: 
 title: "meroxa create"
 slug: meroxa-create
 url: /cli/meroxa-create/
