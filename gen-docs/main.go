@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/root"
 	"github.com/spf13/cobra"
@@ -63,12 +62,11 @@ func generateMarkdownPages(rootCmd *cobra.Command) error {
 
 func generateDocsDotComPages(rootCmd *cobra.Command) error {
 	filePrepender := func(filename string) string {
-		createdAt := time.Now().Format(time.RFC3339)
 		name := filepath.Base(filename)
 		base := strings.TrimSuffix(name, path.Ext(name))
 		slug := strings.Replace(base, "_", "-", -1)
 		url := "/cli/" + strings.ToLower(slug) + "/"
-		return fmt.Sprintf(fmTemplate, createdAt, createdAt, strings.Replace(base, "_", " ", -1), slug, url)
+		return fmt.Sprintf(fmTemplate, "", "", strings.Replace(base, "_", " ", -1), slug, url)
 	}
 
 	linkHandler := func(name string) string {

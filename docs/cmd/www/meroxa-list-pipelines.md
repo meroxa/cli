@@ -1,6 +1,6 @@
 ---
-createdAt: 2021-04-21T15:46:44+02:00
-updatedAt: 2021-04-21T15:46:44+02:00
+createdAt: 
+updatedAt: 
 title: "meroxa list pipelines"
 slug: meroxa-list-pipelines
 url: /cli/meroxa-list-pipelines/
