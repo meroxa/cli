@@ -20,10 +20,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
-	"github.com/meroxa/cli/cmd/meroxa/root/deprecated/add"
 	"github.com/spf13/cobra"
 )
 
@@ -63,17 +61,8 @@ meroxa list resource-types`,
 
 	// v1
 	if _, ok := os.LookupEnv("MEROXA_V2"); !ok {
-		// TODO: Once we make a full transition to `subject-verb-object` remove these altogether
-		cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
-		cmd.AddCommand(deprecated.CompletionCmd())
-		cmd.AddCommand((&deprecated.Connect{}).Command())
-		cmd.AddCommand(deprecated.CreateCmd())
-		cmd.AddCommand(deprecated.DescribeCmd())
-		cmd.AddCommand(deprecated.ListCmd())
-		cmd.AddCommand(deprecated.LogsCmd())
-		cmd.AddCommand(deprecated.OpenCmd())
-		cmd.AddCommand((&deprecated.Remove{}).Command())
-		cmd.AddCommand(deprecated.UpdateCmd())
+		// TODO: Once we make a full transition to `subject-verb-object` remove the `deprecated` pkg altogether
+		deprecated.RegisterCommands(cmd)
 	}
 
 	// v2
