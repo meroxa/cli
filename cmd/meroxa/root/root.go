@@ -72,10 +72,10 @@ meroxa list resource-types`,
 	// v2
 	cmd.AddCommand(APICmd())
 	cmd.AddCommand(BillingCmd())
+	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand(LoginCmd())
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(VersionCmd())
-	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand((&GetUser{}).Command()) // whoami
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
