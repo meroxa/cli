@@ -29,15 +29,19 @@ func GenerateResource() meroxa.Resource {
 	}
 }
 
-func GenerateConnector(pipelineID int) meroxa.Connector {
+func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 	if pipelineID == 0 {
 		pipelineID = rand.Intn(10000)
+	}
+
+	if connectorName == "" {
+		connectorName = "connector-1234"
 	}
 
 	return meroxa.Connector{
 		ID:         1,
 		Type:       "postgres",
-		Name:       "connector-1234",
+		Name:       connectorName,
 		State:      "running",
 		PipelineID: pipelineID,
 	}

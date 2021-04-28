@@ -1,0 +1,160 @@
+package connectors
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"testing"
+
+	"github.com/meroxa/cli/log"
+
+	"github.com/golang/mock/gomock"
+	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go"
+
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/utils"
+)
+
+func TestCreateConnectorArgs(t *testing.T) {
+	tests := []struct {
+		args []string
+		err  error
+		name string
+	}{
+		{nil, nil, ""},
+		{[]string{"conName"}, nil, "conName"},
+	}
+
+	for _, tt := range tests {
+		cc := &CreateConnector{}
+		err := cc.ParseArgs(tt.args)
+
+		if tt.err != err {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		}
+
+		if tt.name != cc.args.Name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		}
+	}
+}
+
+func TestCreateConnectorFlags(t *testing.T) {
+	expectedFlags := []struct {
+		name      string
+		required  bool
+		shorthand string
+		hidden    bool
+	}{
+		{name: "input", required: true, shorthand: "", hidden: false},
+		{name: "config", required: false, shorthand: "c", hidden: false},
+		{name: "from", required: false, shorthand: "", hidden: false},
+		{name: "to", required: false, shorthand: "", hidden: false},
+		{name: "metadata", required: false, shorthand: "m", hidden: true},
+	}
+
+	c := builder.BuildCobraCommand(&CreateConnector{})
+
+	for _, f := range expectedFlags {
+		cf := c.Flags().Lookup(f.name)
+		if cf == nil {
+			t.Fatalf("expected flag \"%s\" to be present", f.name)
+		}
+
+		if f.shorthand != cf.Shorthand {
+			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+		}
+
+		if f.required && !utils.IsFlagRequired(cf) {
+			t.Fatalf("expected flag \"%s\" to be required", f.name)
+		}
+
+		if cf.Hidden != f.hidden {
+			if cf.Hidden {
+				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+			} else {
+				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+			}
+		}
+	}
+}
+
+func TestCreateConnectorExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockCreateConnectorClient(ctrl)
+	logger := log.NewTestLogger()
+
+	sourceName := "my-resource"
+	connectorName := "connector-name"
+
+	c := &CreateConnector{
+		client: client,
+		logger: logger,
+	}
+
+	c.flags.Input = "foo"
+	c.flags.Config = `{"key":"value"}`
+	c.flags.Metadata = `{"metakey":"metavalue"}`
+	c.flags.Source = sourceName
+	c.flags.Pipeline = "my-pipeline"
+	c.args.Name = connectorName
+
+	cr := utils.GenerateConnector(0, connectorName)
+
+	client.
+		EXPECT().
+		GetResourceByName(
+			ctx,
+			sourceName,
+		).
+		Return(&meroxa.Resource{ID: 123}, nil)
+
+	client.
+		EXPECT().
+		CreateConnector(
+			ctx,
+			meroxa.CreateConnectorInput{
+				Name:         connectorName,
+				ResourceID:   123,
+				PipelineName: "my-pipeline",
+				Configuration: map[string]interface{}{
+					"key":   "value",
+					"input": "foo",
+				},
+				Metadata: map[string]interface{}{
+					"metakey":          "metavalue",
+					"mx:connectorType": "source",
+				},
+			},
+		).
+		Return(&cr, nil)
+
+	err := c.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %s...
+Connector %s successfully created!
+`, sourceName, connectorName)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotConnector meroxa.Connector
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotConnector)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotConnector, cr) {
+		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotConnector)
+	}
+}

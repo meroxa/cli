@@ -44,5 +44,6 @@ func (*Connectors) Docs() builder.Docs {
 func (*Connectors) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&ListConnectors{}),
+		builder.BuildCobraCommand(&CreateConnector{}),
 	}
 }

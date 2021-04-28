@@ -56,7 +56,7 @@ func TestRemoveConnectorExecution(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockRemoveConnectorClient(ctrl)
 
-	c := utils.GenerateConnector(0)
+	c := utils.GenerateConnector(0, "")
 
 	client.
 		EXPECT().
@@ -88,7 +88,7 @@ func TestRemoveConnectorExecution(t *testing.T) {
 }
 
 func TestRemoveConnectorOutput(t *testing.T) {
-	c := utils.GenerateConnector(0)
+	c := utils.GenerateConnector(0, "")
 	FlagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
@@ -104,7 +104,7 @@ func TestRemoveConnectorOutput(t *testing.T) {
 }
 
 func TestRemoveConnectorJSONOutput(t *testing.T) {
-	c := utils.GenerateConnector(0)
+	c := utils.GenerateConnector(0, "")
 	FlagRootOutputJSON = true
 
 	output := utils.CaptureOutput(func() {

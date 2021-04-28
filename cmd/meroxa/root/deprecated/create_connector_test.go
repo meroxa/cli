@@ -88,7 +88,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 		pipelineName: "my-pipeline",
 	}
 
-	cr := utils.GenerateConnector(0)
+	cr := utils.GenerateConnector(0, "")
 
 	client.
 		EXPECT().
@@ -137,7 +137,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 }
 
 func TestCreateConnectorOutput(t *testing.T) {
-	c := utils.GenerateConnector(0)
+	c := utils.GenerateConnector(0, "")
 	FlagRootOutputJSON = false
 
 	output := utils.CaptureOutput(func() {
@@ -153,7 +153,7 @@ func TestCreateConnectorOutput(t *testing.T) {
 }
 
 func TestCreateConnectorJSONOutput(t *testing.T) {
-	c := utils.GenerateConnector(0)
+	c := utils.GenerateConnector(0, "")
 	FlagRootOutputJSON = true
 
 	output := utils.CaptureOutput(func() {

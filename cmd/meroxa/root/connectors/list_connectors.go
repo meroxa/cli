@@ -30,7 +30,7 @@ type ListConnectors struct {
 	logger log.Logger
 
 	flags struct {
-		Pipeline string `long:"pipeline"        short:""  usage:"filter connectors by pipeline name"        required:"false"`
+		Pipeline string `long:"pipeline"        short:""  usage:"filter connectors by pipeline name"`
 	}
 }
 
