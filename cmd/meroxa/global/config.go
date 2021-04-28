@@ -48,7 +48,7 @@ func readConfig() (*viper.Viper, error) {
 			return nil, fmt.Errorf("could not read config: %w", err)
 		}
 
-		// No config found, fallback to deprecated config file location in $HOME
+		// No config found, fallback to old config file location in $HOME
 		// TODO remove this code once we migrate acceptance tests to use new location
 		if err := setupCompatibility(cfg); err != nil {
 			return nil, err
@@ -75,7 +75,7 @@ func readConfig() (*viper.Viper, error) {
 	return cfg, nil
 }
 
-// setupCompatibility falls back to deprecated config file location in $HOME
+// setupCompatibility falls back to old config file location in $HOME
 // also it enables env variable API_URL alongside MEROXA_API_URL.
 // This function should be removed once we migrate acceptance tests.
 func setupCompatibility(cfg *viper.Viper) error {

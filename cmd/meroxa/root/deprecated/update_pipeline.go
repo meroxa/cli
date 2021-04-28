@@ -121,7 +121,7 @@ func (up *UpdatePipeline) command() *cobra.Command {
 		Aliases: []string{"pipelines"},
 		Short:   "Update pipeline state",
 		Example: "\n" +
-			"meroxa update pipeline deprecated-name --name new-name\n" +
+			"meroxa update pipeline old-name --name new-name\n" +
 			"meroxa update pipeline pipeline-name --state pause\n" +
 			"meroxa update pipeline pipeline-name --metadata '{\"key\":\"value\"}'",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
