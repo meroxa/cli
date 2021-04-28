@@ -16,6 +16,7 @@ var (
 	_ builder.CommandWithLogger  = (*ListConnectors)(nil)
 	_ builder.CommandWithExecute = (*ListConnectors)(nil)
 	_ builder.CommandWithFlags   = (*ListConnectors)(nil)
+	_ builder.CommandWithAliases = (*ListConnectors)(nil)
 )
 
 type listConnectorsClient interface {
@@ -31,6 +32,10 @@ type ListConnectors struct {
 	flags struct {
 		Pipeline string `long:"pipeline"        short:""  usage:"filter connectors by pipeline name"        required:"false"`
 	}
+}
+
+func (l *ListConnectors) Aliases() []string {
+	return []string{"ls"}
 }
 
 func (l *ListConnectors) Execute(ctx context.Context) error {
