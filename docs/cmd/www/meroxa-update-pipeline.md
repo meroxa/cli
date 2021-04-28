@@ -17,7 +17,7 @@ meroxa update pipeline NAME [flags]
 
 ```
 
-meroxa update pipeline old-name --name new-name
+meroxa update pipeline deprecated-name --name new-name
 meroxa update pipeline pipeline-name --state pause
 meroxa update pipeline pipeline-name --metadata '{"key":"value"}'
 ```
