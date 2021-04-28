@@ -62,17 +62,19 @@ meroxa list resource-types`,
 	// Subcommands
 
 	// v1
-	// TODO: Once we make a full transition to `subject-verb-object` remove these altogether
-	cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
-	cmd.AddCommand(deprecated.CompletionCmd())
-	cmd.AddCommand((&deprecated.Connect{}).Command())
-	cmd.AddCommand(deprecated.CreateCmd())
-	cmd.AddCommand(deprecated.DescribeCmd())
-	cmd.AddCommand(deprecated.ListCmd())
-	cmd.AddCommand(deprecated.LogsCmd())
-	cmd.AddCommand(deprecated.OpenCmd())
-	cmd.AddCommand((&deprecated.Remove{}).Command())
-	cmd.AddCommand(deprecated.UpdateCmd())
+	if _, ok := os.LookupEnv("MEROXA_V2"); !ok {
+		// TODO: Once we make a full transition to `subject-verb-object` remove these altogether
+		cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
+		cmd.AddCommand(deprecated.CompletionCmd())
+		cmd.AddCommand((&deprecated.Connect{}).Command())
+		cmd.AddCommand(deprecated.CreateCmd())
+		cmd.AddCommand(deprecated.DescribeCmd())
+		cmd.AddCommand(deprecated.ListCmd())
+		cmd.AddCommand(deprecated.LogsCmd())
+		cmd.AddCommand(deprecated.OpenCmd())
+		cmd.AddCommand((&deprecated.Remove{}).Command())
+		cmd.AddCommand(deprecated.UpdateCmd())
+	}
 
 	// v2
 	cmd.AddCommand(APICmd())
