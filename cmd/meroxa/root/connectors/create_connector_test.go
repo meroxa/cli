@@ -88,7 +88,6 @@ func TestCreateConnectorExecution(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	sourceName := "my-resource"
-	connectorName := "connector-name"
 
 	c := &CreateConnector{
 		client: client,
@@ -100,9 +99,8 @@ func TestCreateConnectorExecution(t *testing.T) {
 	c.flags.Metadata = `{"metakey":"metavalue"}`
 	c.flags.Source = sourceName
 	c.flags.Pipeline = "my-pipeline"
-	c.args.Name = connectorName
 
-	cr := utils.GenerateConnector(0, connectorName)
+	cr := utils.GenerateConnector(0, "")
 
 	client.
 		EXPECT().
@@ -117,7 +115,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			meroxa.CreateConnectorInput{
-				Name:         connectorName,
+				Name:         "",
 				ResourceID:   123,
 				PipelineName: "my-pipeline",
 				Configuration: map[string]interface{}{
@@ -141,7 +139,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q...
 Connector %q successfully created!
-`, sourceName, connectorName)
+`, sourceName, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

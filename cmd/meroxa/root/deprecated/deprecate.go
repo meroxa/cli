@@ -9,7 +9,6 @@ import (
 func RegisterCommands(cmd *cobra.Command) {
 	cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
 	cmd.AddCommand(CompletionCmd())
-	cmd.AddCommand((&Connect{}).Command())
 	cmd.AddCommand(CreateCmd())
 	cmd.AddCommand(DescribeCmd())
 	cmd.AddCommand(ListCmd())

@@ -44,6 +44,9 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 		Name:       connectorName,
 		State:      "running",
 		PipelineID: pipelineID,
+		Streams: map[string]interface{}{
+			"output": []interface{}{"my-resource.Table"},
+		},
 	}
 }
 

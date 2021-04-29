@@ -4,11 +4,11 @@ Connect two resources together
 
 ### Synopsis
 
-Use the connect command to automatically configure the connectors required to pull data from one resource 
-(source) to another (destination).
+Use the connect command to automatically configure the connectors required to pull data 
+from one resource (source) to another (destination).
 
-This command is equivalent to creating two connectors separately, one from the source to Meroxa and another from Meroxa 
-to the destination:
+This command is equivalent to creating two connectors separately, 
+one from the source to Meroxa and another from Meroxa to the destination:
 
 meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT
 
@@ -27,7 +27,7 @@ meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
 ```
       --from string       source resource name
   -h, --help              help for connect
-      --input string      command delimeted list of input streams
+      --input string      command delimited list of input streams
       --pipeline string   pipeline name to attach connectors to
       --to string         destination resource name
 ```

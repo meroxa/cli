@@ -51,20 +51,15 @@ func (c *CreateConnector) parseJSONMap(str string) (out map[string]interface{}, 
 	return out, err
 }
 
-func (c *CreateConnector) Execute(ctx context.Context) error {
-	// TODO: Implement something like dependant flags in Builder
-	if c.flags.Source == "" && c.flags.Destination == "" {
-		return errors.New("requires either a source (--from) or a destination (--to)")
-	}
-
+func (c *CreateConnector) CreateConnector(ctx context.Context) (*meroxa.Connector, error) {
 	config, err := c.parseJSONMap(c.flags.Config)
 	if err != nil {
-		return errors.New("can't parse config, make sure it is a valid JSON map")
+		return nil, errors.New("can't parse config, make sure it is a valid JSON map")
 	}
 
 	metadata, err := c.parseJSONMap(c.flags.Metadata)
 	if err != nil {
-		return errors.New("can't parse metadata, make sure it is a valid JSON map")
+		return nil, errors.New("can't parse metadata, make sure it is a valid JSON map")
 	}
 
 	// merge in input
@@ -80,12 +75,12 @@ func (c *CreateConnector) Execute(ctx context.Context) error {
 		resourceName = c.flags.Destination
 		metadata["mx:connectorType"] = "destination"
 	default:
-		return errors.New("requires either a source (--from) or a destination (--to)")
+		return nil, errors.New("requires either a source (--from) or a destination (--to)")
 	}
 
 	res, err := c.client.GetResourceByName(ctx, resourceName)
 	if err != nil {
-		return fmt.Errorf("can't fetch resource with name %q: %w", resourceName, err)
+		return nil, fmt.Errorf("can't fetch resource with name %q: %w", resourceName, err)
 	}
 
 	switch {
@@ -95,13 +90,22 @@ func (c *CreateConnector) Execute(ctx context.Context) error {
 		c.logger.Infof(ctx, "Creating connector to destination %q...\n", resourceName)
 	}
 
-	connector, err := c.client.CreateConnector(ctx, meroxa.CreateConnectorInput{
+	return c.client.CreateConnector(ctx, meroxa.CreateConnectorInput{
 		Name:          c.args.Name,
 		ResourceID:    res.ID,
 		PipelineName:  c.flags.Pipeline,
 		Configuration: config,
 		Metadata:      metadata,
 	})
+}
+
+func (c *CreateConnector) Execute(ctx context.Context) error {
+	// TODO: Implement something like dependant flags in Builder
+	if c.flags.Source == "" && c.flags.Destination == "" {
+		return errors.New("requires either a source (--from) or a destination (--to)")
+	}
+
+	connector, err := c.CreateConnector(ctx)
 
 	if err != nil {
 		return err
