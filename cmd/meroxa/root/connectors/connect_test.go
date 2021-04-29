@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
 Copyright © 2021 Meroxa Inc
 
@@ -14,6 +15,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+=======
+>>>>>>> a7d48ee (refactor: Connect using builder)
 package connectors
 
 import (
