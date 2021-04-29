@@ -47,5 +47,6 @@ func (*Connectors) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&DescribeConnector{}),
 		builder.BuildCobraCommand(&ListConnectors{}),
 		builder.BuildCobraCommand(&LogsConnector{}),
+		builder.BuildCobraCommand(&RemoveConnector{}),
 	}
 }
