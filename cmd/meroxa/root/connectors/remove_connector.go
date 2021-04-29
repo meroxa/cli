@@ -39,7 +39,7 @@ func (r *RemoveConnector) Execute(ctx context.Context) error {
 		return err
 	}
 
-	r.logger.Infof(ctx, "connector %q successfully removed", r.args.Name)
+	r.logger.Infof(ctx, "Connector %q successfully removed", r.args.Name)
 	r.logger.JSON(ctx, con)
 
 	return nil
