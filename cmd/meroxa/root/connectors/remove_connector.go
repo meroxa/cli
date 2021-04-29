@@ -25,6 +25,10 @@ type RemoveConnector struct {
 	}
 }
 
+func (r *RemoveConnector) Confirm(_ context.Context) (wantInput string) {
+	return r.args.Name
+}
+
 func (r *RemoveConnector) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing connector %q...", r.args.Name)
 
@@ -83,4 +87,5 @@ var (
 	_ builder.CommandWithClient  = (*RemoveConnector)(nil)
 	_ builder.CommandWithLogger  = (*RemoveConnector)(nil)
 	_ builder.CommandWithExecute = (*RemoveConnector)(nil)
+	_ builder.CommandWithConfirm = (*RemoveConnector)(nil)
 )
