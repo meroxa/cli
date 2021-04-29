@@ -1,11 +1,10 @@
 package connectors
 
 import (
+	"bytes"
 	"context"
 	"errors"
-	"io"
 	"net/http"
-	"os"
 
 	"github.com/meroxa/meroxa-go"
 
@@ -36,17 +35,20 @@ type LogsConnector struct {
 
 func (l *LogsConnector) Execute(ctx context.Context) error {
 	resp, err := l.client.GetConnectorLogs(ctx, l.args.Name)
+
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	_, err = io.Copy(os.Stdout, resp.Body)
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(resp.Body)
+
 	if err != nil {
 		return err
 	}
 
-	os.Stdout.Write([]byte("\n"))
+	l.logger.Info(ctx, buf.String())
 
 	return nil
 }

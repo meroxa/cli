@@ -23,8 +23,8 @@ func TestCreateConnectorArgs(t *testing.T) {
 		err  error
 		name string
 	}{
-		{nil, nil, ""},
-		{[]string{"conName"}, nil, "conName"},
+		{args: nil, err: nil, name: ""},
+		{args: []string{"conName"}, err: nil, name: "conName"},
 	}
 
 	for _, tt := range tests {
