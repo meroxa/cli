@@ -64,7 +64,7 @@ meroxa list resource-types`,
 	// Subcommands
 
 	// v1
-	if _, ok := os.LookupEnv("MEROXA_V2"); !ok {
+	if v, ok := os.LookupEnv("MEROXA_V2"); !ok || ok && v != "only" {
 		// TODO: Once we make a full transition to `subject-verb-object` remove the `deprecated` pkg altogether
 		deprecated.RegisterCommands(cmd)
 	}
