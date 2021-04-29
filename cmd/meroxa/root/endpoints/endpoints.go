@@ -45,5 +45,6 @@ func (*Endpoints) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&CreateEndpoint{}),
 		builder.BuildCobraCommand(&DescribeEndpoint{}),
+		builder.BuildCobraCommand(&ListEndpoints{}),
 	}
 }
