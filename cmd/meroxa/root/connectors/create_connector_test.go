@@ -139,8 +139,8 @@ func TestCreateConnectorExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %s...
-Connector %s successfully created!
+	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q...
+Connector %q successfully created!
 `, sourceName, connectorName)
 
 	if gotLeveledOutput != wantLeveledOutput {

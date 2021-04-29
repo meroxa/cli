@@ -90,9 +90,9 @@ func (c *CreateConnector) Execute(ctx context.Context) error {
 
 	switch {
 	case c.flags.Source != "":
-		c.logger.Infof(ctx, "Creating connector from source %s...\n", resourceName)
+		c.logger.Infof(ctx, "Creating connector from source %q...\n", resourceName)
 	case c.flags.Destination != "":
-		c.logger.Infof(ctx, "Creating connector to destination %s...\n", resourceName)
+		c.logger.Infof(ctx, "Creating connector to destination %q...\n", resourceName)
 	}
 
 	connector, err := c.client.CreateConnector(ctx, meroxa.CreateConnectorInput{
@@ -107,7 +107,7 @@ func (c *CreateConnector) Execute(ctx context.Context) error {
 		return err
 	}
 
-	c.logger.Infof(ctx, "Connector %s successfully created!\n", connector.Name)
+	c.logger.Infof(ctx, "Connector %q successfully created!\n", connector.Name)
 	c.logger.JSON(ctx, connector)
 
 	return nil
