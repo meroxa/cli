@@ -20,9 +20,9 @@ func JSONPrint(data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func PrintEndpointsTable(ends []meroxa.Endpoint) {
+func EndpointsTable(ends []meroxa.Endpoint) string {
 	if len(ends) == 0 {
-		return
+		return ""
 	}
 
 	table := simpletable.New()
@@ -61,7 +61,11 @@ func PrintEndpointsTable(ends []meroxa.Endpoint) {
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
 	table.SetStyle(simpletable.StyleCompact)
-	fmt.Println(table.String())
+
+	return table.String()
+}
+func PrintEndpointsTable(ends []meroxa.Endpoint) {
+	fmt.Println(EndpointsTable(ends))
 }
 
 func PrintResourcesTable(resources []*meroxa.Resource) {

@@ -50,6 +50,18 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 	}
 }
 
+func GenerateEndpoint() meroxa.Endpoint {
+	return meroxa.Endpoint{
+		Name:              "endpoint",
+		Protocol:          "http",
+		Host:              "https://endpoint.test",
+		Stream:            "stream",
+		Ready:             true,
+		BasicAuthUsername: "root",
+		BasicAuthPassword: "secret",
+	}
+}
+
 func IsFlagRequired(flag *pflag.Flag) bool {
 	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
 
