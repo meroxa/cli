@@ -59,8 +59,7 @@ func (c *Connect) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Source connector %q and destination connector %q successfully created!\n", srcCon.Name, destCon.Name)
 
 	// Combine both source and destination connectors so they're included in JSON format
-	var connectors []*meroxa.Connector
-	connectors = append(connectors, srcCon, destCon)
+	connectors := []*meroxa.Connector{srcCon, destCon}
 
 	c.logger.JSON(ctx, connectors)
 
