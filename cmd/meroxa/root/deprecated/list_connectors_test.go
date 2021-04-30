@@ -18,7 +18,7 @@ import (
 
 func getConnectors(pipelineID int) []*meroxa.Connector {
 	var connectors []*meroxa.Connector
-	c := utils.GenerateConnector(pipelineID)
+	c := utils.GenerateConnector(pipelineID, "")
 	connectors = append(connectors, &c)
 	return connectors
 }

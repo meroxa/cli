@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Meroxa Inc
+Copyright © 2021 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,10 +20,12 @@ import (
 	"context"
 	"os"
 
+	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
-	"github.com/meroxa/cli/cmd/meroxa/root/deprecated/add"
 	"github.com/spf13/cobra"
 )
 
@@ -62,18 +64,9 @@ meroxa list resource-types`,
 	// Subcommands
 
 	// v1
-	if _, ok := os.LookupEnv("MEROXA_V2"); !ok {
-		// TODO: Once we make a full transition to `subject-verb-object` remove these altogether
-		cmd.AddCommand(builder.BuildCobraCommand(&add.Add{}))
-		cmd.AddCommand(deprecated.CompletionCmd())
-		cmd.AddCommand((&deprecated.Connect{}).Command())
-		cmd.AddCommand(deprecated.CreateCmd())
-		cmd.AddCommand(deprecated.DescribeCmd())
-		cmd.AddCommand(deprecated.ListCmd())
-		cmd.AddCommand(deprecated.LogsCmd())
-		cmd.AddCommand(deprecated.OpenCmd())
-		cmd.AddCommand((&deprecated.Remove{}).Command())
-		cmd.AddCommand(deprecated.UpdateCmd())
+	if v, ok := os.LookupEnv("MEROXA_V2"); !ok || ok && v != "only" {
+		// TODO: Once we make a full transition to `subject-verb-object` remove the `deprecated` pkg altogether
+		deprecated.RegisterCommands(cmd)
 	}
 
 	// v2
@@ -82,7 +75,13 @@ meroxa list resource-types`,
 	cmd.AddCommand(LoginCmd())
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(VersionCmd())
+	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand((&GetUser{}).Command()) // whoami
+
+	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
+	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
+		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
+	}
 
 	return cmd
 }

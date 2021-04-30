@@ -75,7 +75,7 @@ func TestEmptyTables(t *testing.T) {
 		PrintConnectorsTable(emptyConnectorsList)
 	})
 
-	if out != "" {
+	if out != "\n" {
 		t.Errorf("Output for connectors should be blank")
 	}
 

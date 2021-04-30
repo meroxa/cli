@@ -14,27 +14,40 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package add
+package connectors
 
 import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/spf13/cobra"
 )
 
-type Add struct{}
+type Connectors struct{}
 
-func (*Add) Usage() string {
-	return "add"
+var (
+	_ builder.CommandWithAliases = (*Connectors)(nil)
+)
+
+func (*Connectors) Usage() string {
+	return "connectors"
 }
 
-func (*Add) Docs() builder.Docs {
+func (*Connectors) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Add a resource to your Meroxa resource catalog",
+		Short: "Manage connectors on Meroxa",
 	}
 }
 
-func (*Add) SubCommands() []*cobra.Command {
+func (*Connectors) Aliases() []string {
+	return []string{"connector"}
+}
+
+func (*Connectors) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		builder.BuildCobraCommand(&AddResource{}),
+		builder.BuildCobraCommand(&Create{}),
+		builder.BuildCobraCommand(&Describe{}),
+		builder.BuildCobraCommand(&List{}),
+		builder.BuildCobraCommand(&Logs{}),
+		builder.BuildCobraCommand(&Remove{}),
+		builder.BuildCobraCommand(&Update{}),
 	}
 }

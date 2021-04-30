@@ -86,6 +86,8 @@ type Flag struct {
 	Default interface{}
 	// Ptr is a pointer to the value into which the flag will be parsed.
 	Ptr interface{}
+	// Hidden is used to mark the flag as hidden.
+	Hidden bool
 }
 
 type CommandWithConfirm interface {
@@ -263,6 +265,13 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			err := cobra.MarkFlagRequired(flags, f.Long)
 			if err != nil {
 				panic(fmt.Errorf("could not mark flag required: %w", err))
+			}
+		}
+
+		if f.Hidden {
+			err := flags.MarkHidden(f.Long)
+			if err != nil {
+				panic(fmt.Errorf("could not mark flag hidden: %w", err))
 			}
 		}
 	}

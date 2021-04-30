@@ -128,7 +128,7 @@ func PrintTransformsTable(transforms []*meroxa.Transform) {
 	}
 }
 
-func PrintConnectorsTable(connectors []*meroxa.Connector) {
+func ConnectorsTable(connectors []*meroxa.Connector) string {
 	if len(connectors) != 0 {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
@@ -174,8 +174,14 @@ func PrintConnectorsTable(connectors []*meroxa.Connector) {
 			table.Body.Cells = append(table.Body.Cells, r)
 		}
 		table.SetStyle(simpletable.StyleCompact)
-		fmt.Println(table.String())
+		return table.String()
 	}
+
+	return ""
+}
+
+func PrintConnectorsTable(connectors []*meroxa.Connector) {
+	fmt.Println(ConnectorsTable(connectors))
 }
 
 func PrintResourceTypesTable(types []string) {
