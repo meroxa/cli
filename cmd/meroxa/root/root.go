@@ -20,6 +20,8 @@ import (
 	"context"
 	"os"
 
+	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
+
 	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -72,15 +74,16 @@ meroxa list resource-types`,
 	// v2
 	cmd.AddCommand(APICmd())
 	cmd.AddCommand(BillingCmd())
+	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand(LoginCmd())
 	cmd.AddCommand(LogoutCmd())
 	cmd.AddCommand(VersionCmd())
-	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand((&GetUser{}).Command()) // whoami
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
 	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
 		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
+		cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
 	}
 
 	return cmd
