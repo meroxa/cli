@@ -26,6 +26,40 @@ func (c *Connect) Client(client *meroxa.Client) {
 	c.client = client
 }
 
+func (c *Connect) Usage() string {
+	return "connect --from RESOURCE-NAME --to RESOURCE-NAME"
+}
+
+func (c *Connect) Docs() builder.Docs {
+	longOutput := `Use the connect command to automatically configure the connectors required to pull data 
+from one resource (source) to another (destination).
+
+This command is equivalent to creating two connectors separately, 
+one from the source to Meroxa and another from Meroxa to the destination:
+
+meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT
+
+or
+`
+	// Adapt the output based on the CLI version
+	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
+		longOutput += `
+meroxa connector create --from postgres --input accounts # Creates source connector
+meroxa connector create --to redshift --input orders # Creates destination connector
+`
+	} else {
+		longOutput += `
+meroxa create connector --from postgres --input accounts # Creates source connector
+meroxa create connector --to redshift --input orders # Creates destination connector
+`
+	}
+
+	return builder.Docs{
+		Short: "Connect two resources together",
+		Long:  longOutput,
+	}
+}
+
 func (c *Connect) Execute(ctx context.Context) error {
 	cc := &CreateConnector{
 		client: c.client,
@@ -72,40 +106,6 @@ func (c *Connect) Flags() []builder.Flag {
 
 func (c *Connect) Logger(logger log.Logger) {
 	c.logger = logger
-}
-
-func (c *Connect) Usage() string {
-	return "connect --from RESOURCE-NAME --to RESOURCE-NAME"
-}
-
-func (c *Connect) Docs() builder.Docs {
-	longOutput := `Use the connect command to automatically configure the connectors required to pull data 
-from one resource (source) to another (destination).
-
-This command is equivalent to creating two connectors separately, 
-one from the source to Meroxa and another from Meroxa to the destination:
-
-meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT
-
-or
-`
-	// Adapt the output based on the CLI version
-	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
-		longOutput += `
-meroxa connector create --from postgres --input accounts # Creates source connector
-meroxa connector create --to redshift --input orders # Creates destination connector
-`
-	} else {
-		longOutput += `
-meroxa create connector --from postgres --input accounts # Creates source connector
-meroxa create connector --to redshift --input orders # Creates destination connector
-`
-	}
-
-	return builder.Docs{
-		Short: "Connect two resources together",
-		Long:  longOutput,
-	}
 }
 
 var (

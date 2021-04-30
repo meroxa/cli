@@ -34,6 +34,16 @@ type ListConnectors struct {
 	}
 }
 
+func (l *ListConnectors) Usage() string {
+	return "list"
+}
+
+func (l *ListConnectors) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "List connectors",
+	}
+}
+
 func (l *ListConnectors) Aliases() []string {
 	return []string{"ls"}
 }
@@ -81,14 +91,4 @@ func (l *ListConnectors) Logger(logger log.Logger) {
 
 func (l *ListConnectors) Client(client *meroxa.Client) {
 	l.client = client
-}
-
-func (l *ListConnectors) Usage() string {
-	return "list"
-}
-
-func (l *ListConnectors) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "List connectors",
-	}
 }

@@ -27,10 +27,6 @@ var (
 	_ builder.CommandWithAliases = (*Connectors)(nil)
 )
 
-func (*Connectors) Aliases() []string {
-	return []string{"connector"}
-}
-
 func (*Connectors) Usage() string {
 	return "connectors"
 }
@@ -39,6 +35,10 @@ func (*Connectors) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Manage connectors on Meroxa",
 	}
+}
+
+func (*Connectors) Aliases() []string {
+	return []string{"connector"}
 }
 
 func (*Connectors) SubCommands() []*cobra.Command {

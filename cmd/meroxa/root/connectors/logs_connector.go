@@ -33,6 +33,16 @@ type LogsConnector struct {
 	}
 }
 
+func (l *LogsConnector) Usage() string {
+	return "logs NAME"
+}
+
+func (l *LogsConnector) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Print logs for a connector",
+	}
+}
+
 func (l *LogsConnector) Execute(ctx context.Context) error {
 	resp, err := l.client.GetConnectorLogs(ctx, l.args.Name)
 
@@ -67,14 +77,4 @@ func (l *LogsConnector) ParseArgs(args []string) error {
 
 	l.args.Name = args[0]
 	return nil
-}
-
-func (l *LogsConnector) Usage() string {
-	return "logs NAME"
-}
-
-func (l *LogsConnector) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Print logs for a connector",
-	}
 }

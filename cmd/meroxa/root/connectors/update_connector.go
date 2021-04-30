@@ -28,6 +28,16 @@ type UpdateConnector struct {
 	}
 }
 
+func (u *UpdateConnector) Usage() string {
+	return "update NAME --state pause | resume | restart"
+}
+
+func (u *UpdateConnector) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Update connector state",
+	}
+}
+
 func (u *UpdateConnector) Execute(ctx context.Context) error {
 	u.logger.Infof(ctx, "Updating connector %q...", u.args.Name)
 
@@ -60,16 +70,6 @@ func (u *UpdateConnector) ParseArgs(args []string) error {
 
 	u.args.Name = args[0]
 	return nil
-}
-
-func (u *UpdateConnector) Usage() string {
-	return "update NAME --state pause | resume | restart"
-}
-
-func (u *UpdateConnector) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Update connector state",
-	}
 }
 
 var (

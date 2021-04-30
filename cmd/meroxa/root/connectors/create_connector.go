@@ -43,6 +43,21 @@ type CreateConnector struct {
 	}
 }
 
+func (c *CreateConnector) Usage() string {
+	return "create [NAME] [flags]"
+}
+
+func (c *CreateConnector) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Create a connector",
+		Long:  "Use `connectors create` to create a connector from a source (--from) or to a destination (--to)",
+		Example: "\n" +
+			"meroxa connectors create [NAME] --from pg2kafka --input accounts \n" +
+			"meroxa connectors create [NAME] --to pg2redshift --input orders # --input will be the desired stream \n" +
+			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline\n",
+	}
+}
+
 func (c *CreateConnector) parseJSONMap(str string) (out map[string]interface{}, err error) {
 	out = make(map[string]interface{})
 	if str != "" {
@@ -134,19 +149,4 @@ func (c *CreateConnector) ParseArgs(args []string) error {
 		c.args.Name = args[0]
 	}
 	return nil
-}
-
-func (c *CreateConnector) Usage() string {
-	return "create [NAME] [flags]"
-}
-
-func (c *CreateConnector) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Create a connector",
-		Long:  "Use `connectors create` to create a connector from a source (--from) or to a destination (--to)",
-		Example: "\n" +
-			"meroxa connectors create [NAME] --from pg2kafka --input accounts \n" +
-			"meroxa connectors create [NAME] --to pg2redshift --input orders # --input will be the desired stream \n" +
-			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline\n",
-	}
 }

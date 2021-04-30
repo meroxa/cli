@@ -32,6 +32,16 @@ type DescribeConnector struct {
 	}
 }
 
+func (d *DescribeConnector) Usage() string {
+	return "describe [NAME]"
+}
+
+func (d *DescribeConnector) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Describe connector",
+	}
+}
+
 func (d *DescribeConnector) Execute(ctx context.Context) error {
 	connector, err := d.client.GetConnectorByName(ctx, d.args.Name)
 	if err != nil {
@@ -59,14 +69,4 @@ func (d *DescribeConnector) ParseArgs(args []string) error {
 
 	d.args.Name = args[0]
 	return nil
-}
-
-func (d *DescribeConnector) Usage() string {
-	return "describe [NAME]"
-}
-
-func (d *DescribeConnector) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Describe connector",
-	}
 }

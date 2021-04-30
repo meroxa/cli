@@ -25,6 +25,16 @@ type RemoveConnector struct {
 	}
 }
 
+func (r *RemoveConnector) Usage() string {
+	return "remove NAME"
+}
+
+func (r *RemoveConnector) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Remove connector",
+	}
+}
+
 func (r *RemoveConnector) Confirm(_ context.Context) (wantInput string) {
 	return r.args.Name
 }
@@ -68,16 +78,6 @@ func (r *RemoveConnector) ParseArgs(args []string) error {
 
 func (r *RemoveConnector) Aliases() []string {
 	return []string{"rm", "delete"}
-}
-
-func (r *RemoveConnector) Usage() string {
-	return "remove NAME"
-}
-
-func (r *RemoveConnector) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Remove connector",
-	}
 }
 
 var (
