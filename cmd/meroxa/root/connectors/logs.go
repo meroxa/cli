@@ -29,18 +29,18 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*LogsConnector)(nil)
-	_ builder.CommandWithArgs    = (*LogsConnector)(nil)
-	_ builder.CommandWithClient  = (*LogsConnector)(nil)
-	_ builder.CommandWithLogger  = (*LogsConnector)(nil)
-	_ builder.CommandWithExecute = (*LogsConnector)(nil)
+	_ builder.CommandWithDocs    = (*Logs)(nil)
+	_ builder.CommandWithArgs    = (*Logs)(nil)
+	_ builder.CommandWithClient  = (*Logs)(nil)
+	_ builder.CommandWithLogger  = (*Logs)(nil)
+	_ builder.CommandWithExecute = (*Logs)(nil)
 )
 
 type logsConnectorClient interface {
 	GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error)
 }
 
-type LogsConnector struct {
+type Logs struct {
 	client logsConnectorClient
 	logger log.Logger
 
@@ -49,17 +49,17 @@ type LogsConnector struct {
 	}
 }
 
-func (l *LogsConnector) Usage() string {
+func (l *Logs) Usage() string {
 	return "logs NAME"
 }
 
-func (l *LogsConnector) Docs() builder.Docs {
+func (l *Logs) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Print logs for a connector",
 	}
 }
 
-func (l *LogsConnector) Execute(ctx context.Context) error {
+func (l *Logs) Execute(ctx context.Context) error {
 	resp, err := l.client.GetConnectorLogs(ctx, l.args.Name)
 
 	if err != nil {
@@ -79,15 +79,15 @@ func (l *LogsConnector) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (l *LogsConnector) Logger(logger log.Logger) {
+func (l *Logs) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
-func (l *LogsConnector) Client(client *meroxa.Client) {
+func (l *Logs) Client(client *meroxa.Client) {
 	l.client = client
 }
 
-func (l *LogsConnector) ParseArgs(args []string) error {
+func (l *Logs) ParseArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires connector name")
 	}

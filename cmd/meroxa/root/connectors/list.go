@@ -27,12 +27,12 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*ListConnectors)(nil)
-	_ builder.CommandWithClient  = (*ListConnectors)(nil)
-	_ builder.CommandWithLogger  = (*ListConnectors)(nil)
-	_ builder.CommandWithExecute = (*ListConnectors)(nil)
-	_ builder.CommandWithFlags   = (*ListConnectors)(nil)
-	_ builder.CommandWithAliases = (*ListConnectors)(nil)
+	_ builder.CommandWithDocs    = (*List)(nil)
+	_ builder.CommandWithClient  = (*List)(nil)
+	_ builder.CommandWithLogger  = (*List)(nil)
+	_ builder.CommandWithExecute = (*List)(nil)
+	_ builder.CommandWithFlags   = (*List)(nil)
+	_ builder.CommandWithAliases = (*List)(nil)
 )
 
 type listConnectorsClient interface {
@@ -41,7 +41,7 @@ type listConnectorsClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 }
 
-type ListConnectors struct {
+type List struct {
 	client listConnectorsClient
 	logger log.Logger
 
@@ -50,21 +50,21 @@ type ListConnectors struct {
 	}
 }
 
-func (l *ListConnectors) Usage() string {
+func (l *List) Usage() string {
 	return "list"
 }
 
-func (l *ListConnectors) Docs() builder.Docs {
+func (l *List) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "List connectors",
 	}
 }
 
-func (l *ListConnectors) Aliases() []string {
+func (l *List) Aliases() []string {
 	return []string{"ls"}
 }
 
-func (l *ListConnectors) Execute(ctx context.Context) error {
+func (l *List) Execute(ctx context.Context) error {
 	var err error
 	var connectors []*meroxa.Connector
 
@@ -97,14 +97,14 @@ func (l *ListConnectors) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (l *ListConnectors) Flags() []builder.Flag {
+func (l *List) Flags() []builder.Flag {
 	return builder.BuildFlags(&l.flags)
 }
 
-func (l *ListConnectors) Logger(logger log.Logger) {
+func (l *List) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
-func (l *ListConnectors) Client(client *meroxa.Client) {
+func (l *List) Client(client *meroxa.Client) {
 	l.client = client
 }

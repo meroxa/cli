@@ -28,12 +28,12 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*CreateConnector)(nil)
-	_ builder.CommandWithArgs    = (*CreateConnector)(nil)
-	_ builder.CommandWithFlags   = (*CreateConnector)(nil)
-	_ builder.CommandWithClient  = (*CreateConnector)(nil)
-	_ builder.CommandWithLogger  = (*CreateConnector)(nil)
-	_ builder.CommandWithExecute = (*CreateConnector)(nil)
+	_ builder.CommandWithDocs    = (*Create)(nil)
+	_ builder.CommandWithArgs    = (*Create)(nil)
+	_ builder.CommandWithFlags   = (*Create)(nil)
+	_ builder.CommandWithClient  = (*Create)(nil)
+	_ builder.CommandWithLogger  = (*Create)(nil)
+	_ builder.CommandWithExecute = (*Create)(nil)
 )
 
 type createConnectorClient interface {
@@ -41,7 +41,7 @@ type createConnectorClient interface {
 	CreateConnector(ctx context.Context, input meroxa.CreateConnectorInput) (*meroxa.Connector, error)
 }
 
-type CreateConnector struct {
+type Create struct {
 	client createConnectorClient
 	logger log.Logger
 
@@ -59,11 +59,11 @@ type CreateConnector struct {
 	}
 }
 
-func (c *CreateConnector) Usage() string {
+func (c *Create) Usage() string {
 	return "create [NAME] [flags]"
 }
 
-func (c *CreateConnector) Docs() builder.Docs {
+func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create a connector",
 		Long:  "Use `connectors create` to create a connector from a source (--from) or to a destination (--to)",
@@ -74,7 +74,7 @@ func (c *CreateConnector) Docs() builder.Docs {
 	}
 }
 
-func (c *CreateConnector) parseJSONMap(str string) (out map[string]interface{}, err error) {
+func (c *Create) parseJSONMap(str string) (out map[string]interface{}, err error) {
 	out = make(map[string]interface{})
 	if str != "" {
 		err = json.Unmarshal([]byte(str), &out)
@@ -82,7 +82,7 @@ func (c *CreateConnector) parseJSONMap(str string) (out map[string]interface{}, 
 	return out, err
 }
 
-func (c *CreateConnector) CreateConnector(ctx context.Context) (*meroxa.Connector, error) {
+func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error) {
 	config, err := c.parseJSONMap(c.flags.Config)
 	if err != nil {
 		return nil, errors.New("can't parse config, make sure it is a valid JSON map")
@@ -130,7 +130,7 @@ func (c *CreateConnector) CreateConnector(ctx context.Context) (*meroxa.Connecto
 	})
 }
 
-func (c *CreateConnector) Execute(ctx context.Context) error {
+func (c *Create) Execute(ctx context.Context) error {
 	// TODO: Implement something like dependant flags in Builder
 	if c.flags.Source == "" && c.flags.Destination == "" {
 		return errors.New("requires either a source (--from) or a destination (--to)")
@@ -148,19 +148,19 @@ func (c *CreateConnector) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (c *CreateConnector) Client(client *meroxa.Client) {
+func (c *Create) Client(client *meroxa.Client) {
 	c.client = client
 }
 
-func (c *CreateConnector) Logger(logger log.Logger) {
+func (c *Create) Logger(logger log.Logger) {
 	c.logger = logger
 }
 
-func (c *CreateConnector) Flags() []builder.Flag {
+func (c *Create) Flags() []builder.Flag {
 	return builder.BuildFlags(&c.flags)
 }
 
-func (c *CreateConnector) ParseArgs(args []string) error {
+func (c *Create) ParseArgs(args []string) error {
 	if len(args) > 0 {
 		c.args.Name = args[0]
 	}

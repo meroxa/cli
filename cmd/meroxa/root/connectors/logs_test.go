@@ -41,7 +41,7 @@ func TestLogsConnectorArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		cc := &LogsConnector{}
+		cc := &Logs{}
 		err := cc.ParseArgs(tt.args)
 
 		if err != nil && tt.err.Error() != err.Error() {
@@ -62,7 +62,7 @@ func TestLogsConnectorExecution(t *testing.T) {
 
 	connectorName := "connector-name"
 
-	c := &LogsConnector{
+	c := &Logs{
 		client: client,
 		logger: logger,
 	}

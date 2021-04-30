@@ -44,7 +44,7 @@ func TestRemoveConnectorArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		cc := &RemoveConnector{}
+		cc := &Remove{}
 		err := cc.ParseArgs(tt.args)
 
 		if err != nil && tt.err.Error() != err.Error() {
@@ -63,7 +63,7 @@ func TestRemoveConnectorExecution(t *testing.T) {
 	client := mock.NewMockRemoveConnectorClient(ctrl)
 	logger := log.NewTestLogger()
 
-	r := &RemoveConnector{
+	r := &Remove{
 		client: client,
 		logger: logger,
 	}

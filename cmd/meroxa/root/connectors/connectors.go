@@ -43,11 +43,11 @@ func (*Connectors) Aliases() []string {
 
 func (*Connectors) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		builder.BuildCobraCommand(&CreateConnector{}),
-		builder.BuildCobraCommand(&DescribeConnector{}),
-		builder.BuildCobraCommand(&ListConnectors{}),
-		builder.BuildCobraCommand(&LogsConnector{}),
-		builder.BuildCobraCommand(&RemoveConnector{}),
-		builder.BuildCobraCommand(&UpdateConnector{}),
+		builder.BuildCobraCommand(&Create{}),
+		builder.BuildCobraCommand(&Describe{}),
+		builder.BuildCobraCommand(&List{}),
+		builder.BuildCobraCommand(&Logs{}),
+		builder.BuildCobraCommand(&Remove{}),
+		builder.BuildCobraCommand(&Update{}),
 	}
 }

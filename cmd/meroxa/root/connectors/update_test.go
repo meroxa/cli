@@ -45,7 +45,7 @@ func TestUpdateConnectorArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		cc := &UpdateConnector{}
+		cc := &Update{}
 		err := cc.ParseArgs(tt.args)
 
 		if err != nil && tt.err.Error() != err.Error() {
@@ -68,7 +68,7 @@ func TestUpdateConnectorFlags(t *testing.T) {
 		{name: "state", required: true, shorthand: "", hidden: false},
 	}
 
-	c := builder.BuildCobraCommand(&UpdateConnector{})
+	c := builder.BuildCobraCommand(&Update{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -100,7 +100,7 @@ func TestUpdateConnectorExecution(t *testing.T) {
 	client := mock.NewMockUpdateConnectorClient(ctrl)
 	logger := log.NewTestLogger()
 
-	u := &UpdateConnector{
+	u := &Update{
 		client: client,
 		logger: logger,
 	}

@@ -44,7 +44,7 @@ func TestCreateConnectorArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		cc := &CreateConnector{}
+		cc := &Create{}
 		err := cc.ParseArgs(tt.args)
 
 		if tt.err != err {
@@ -71,7 +71,7 @@ func TestCreateConnectorFlags(t *testing.T) {
 		{name: "metadata", required: false, shorthand: "m", hidden: true},
 	}
 
-	c := builder.BuildCobraCommand(&CreateConnector{})
+	c := builder.BuildCobraCommand(&Create{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -105,7 +105,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 
 	sourceName := "my-resource"
 
-	c := &CreateConnector{
+	c := &Create{
 		client: client,
 		logger: logger,
 	}

@@ -49,7 +49,7 @@ func TestListConnectorsFlags(t *testing.T) {
 		{name: "pipeline", required: false, shorthand: ""},
 	}
 
-	c := builder.BuildCobraCommand(&ListConnectors{})
+	c := builder.BuildCobraCommand(&List{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -80,7 +80,7 @@ func TestListConnectorsExecution(t *testing.T) {
 		ListConnectors(ctx).
 		Return(connectors, nil)
 
-	lc := &ListConnectors{
+	lc := &List{
 		client: client,
 		logger: logger,
 	}

@@ -43,7 +43,7 @@ func TestDescribeConnectorArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		ar := &DescribeConnector{}
+		ar := &Describe{}
 		err := ar.ParseArgs(tt.args)
 
 		if err != nil && tt.err.Error() != err.Error() {
@@ -73,7 +73,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 		).
 		Return(&c, nil)
 
-	dc := &DescribeConnector{
+	dc := &Describe{
 		client: client,
 		logger: logger,
 	}

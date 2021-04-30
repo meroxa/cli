@@ -77,7 +77,7 @@ meroxa create connector --to redshift --input orders # Creates destination conne
 }
 
 func (c *Connect) Execute(ctx context.Context) error {
-	cc := &CreateConnector{
+	cc := &Create{
 		client: c.client,
 		logger: c.logger,
 	}
@@ -97,7 +97,7 @@ func (c *Connect) Execute(ctx context.Context) error {
 	// we use the stream of the source as the input for the destination below
 	inputStreams := srcCon.Streams["output"].([]interface{})
 	cc.flags.Input = inputStreams[0].(string)
-	cc.flags.Source = "" // unset the source to make sure cc.CreateConnector shows the right output
+	cc.flags.Source = "" // unset the source to make sure cc.Create shows the right output
 	cc.flags.Destination = c.flags.Destination
 
 	destCon, err := cc.CreateConnector(ctx)

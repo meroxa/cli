@@ -31,7 +31,7 @@ type updateConnectorClient interface {
 	UpdateConnectorStatus(ctx context.Context, connectorKey, state string) (*meroxa.Connector, error)
 }
 
-type UpdateConnector struct {
+type Update struct {
 	client updateConnectorClient
 	logger log.Logger
 
@@ -44,17 +44,17 @@ type UpdateConnector struct {
 	}
 }
 
-func (u *UpdateConnector) Usage() string {
+func (u *Update) Usage() string {
 	return "update NAME --state pause | resume | restart"
 }
 
-func (u *UpdateConnector) Docs() builder.Docs {
+func (u *Update) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Update connector state",
 	}
 }
 
-func (u *UpdateConnector) Execute(ctx context.Context) error {
+func (u *Update) Execute(ctx context.Context) error {
 	u.logger.Infof(ctx, "Updating connector %q...", u.args.Name)
 
 	con, err := u.client.UpdateConnectorStatus(ctx, u.args.Name, u.flags.State)
@@ -67,19 +67,19 @@ func (u *UpdateConnector) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (u *UpdateConnector) Flags() []builder.Flag {
+func (u *Update) Flags() []builder.Flag {
 	return builder.BuildFlags(&u.flags)
 }
 
-func (u *UpdateConnector) Logger(logger log.Logger) {
+func (u *Update) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *UpdateConnector) Client(client *meroxa.Client) {
+func (u *Update) Client(client *meroxa.Client) {
 	u.client = client
 }
 
-func (u *UpdateConnector) ParseArgs(args []string) error {
+func (u *Update) ParseArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires connector name")
 	}
@@ -89,10 +89,10 @@ func (u *UpdateConnector) ParseArgs(args []string) error {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*UpdateConnector)(nil)
-	_ builder.CommandWithArgs    = (*UpdateConnector)(nil)
-	_ builder.CommandWithFlags   = (*UpdateConnector)(nil)
-	_ builder.CommandWithClient  = (*UpdateConnector)(nil)
-	_ builder.CommandWithLogger  = (*UpdateConnector)(nil)
-	_ builder.CommandWithExecute = (*UpdateConnector)(nil)
+	_ builder.CommandWithDocs    = (*Update)(nil)
+	_ builder.CommandWithArgs    = (*Update)(nil)
+	_ builder.CommandWithFlags   = (*Update)(nil)
+	_ builder.CommandWithClient  = (*Update)(nil)
+	_ builder.CommandWithLogger  = (*Update)(nil)
+	_ builder.CommandWithExecute = (*Update)(nil)
 )

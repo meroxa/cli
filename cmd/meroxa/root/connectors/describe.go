@@ -28,18 +28,18 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*DescribeConnector)(nil)
-	_ builder.CommandWithArgs    = (*DescribeConnector)(nil)
-	_ builder.CommandWithClient  = (*DescribeConnector)(nil)
-	_ builder.CommandWithLogger  = (*DescribeConnector)(nil)
-	_ builder.CommandWithExecute = (*DescribeConnector)(nil)
+	_ builder.CommandWithDocs    = (*Describe)(nil)
+	_ builder.CommandWithArgs    = (*Describe)(nil)
+	_ builder.CommandWithClient  = (*Describe)(nil)
+	_ builder.CommandWithLogger  = (*Describe)(nil)
+	_ builder.CommandWithExecute = (*Describe)(nil)
 )
 
 type describeConnectorClient interface {
 	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
 }
 
-type DescribeConnector struct {
+type Describe struct {
 	client describeConnectorClient
 	logger log.Logger
 
@@ -48,17 +48,17 @@ type DescribeConnector struct {
 	}
 }
 
-func (d *DescribeConnector) Usage() string {
+func (d *Describe) Usage() string {
 	return "describe [NAME]"
 }
 
-func (d *DescribeConnector) Docs() builder.Docs {
+func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe connector",
 	}
 }
 
-func (d *DescribeConnector) Execute(ctx context.Context) error {
+func (d *Describe) Execute(ctx context.Context) error {
 	connector, err := d.client.GetConnectorByName(ctx, d.args.Name)
 	if err != nil {
 		return err
@@ -70,15 +70,15 @@ func (d *DescribeConnector) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (d *DescribeConnector) Client(client *meroxa.Client) {
+func (d *Describe) Client(client *meroxa.Client) {
 	d.client = client
 }
 
-func (d *DescribeConnector) Logger(logger log.Logger) {
+func (d *Describe) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-func (d *DescribeConnector) ParseArgs(args []string) error {
+func (d *Describe) ParseArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires connector name")
 	}
