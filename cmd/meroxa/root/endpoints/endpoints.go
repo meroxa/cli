@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Meroxa Inc
+Copyright © 2021 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,10 +27,6 @@ var (
 	_ builder.CommandWithAliases = (*Endpoints)(nil)
 )
 
-func (*Endpoints) Aliases() []string {
-	return []string{"endpoint"}
-}
-
 func (*Endpoints) Usage() string {
 	return "endpoints"
 }
@@ -41,11 +37,15 @@ func (*Endpoints) Docs() builder.Docs {
 	}
 }
 
+func (*Endpoints) Aliases() []string {
+	return []string{"endpoint"}
+}
+
 func (*Endpoints) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		builder.BuildCobraCommand(&CreateEndpoint{}),
-		builder.BuildCobraCommand(&DescribeEndpoint{}),
-		builder.BuildCobraCommand(&ListEndpoints{}),
-		builder.BuildCobraCommand(&RemoveEndpoint{}),
+		builder.BuildCobraCommand(&Create{}),
+		builder.BuildCobraCommand(&Describe{}),
+		builder.BuildCobraCommand(&List{}),
+		builder.BuildCobraCommand(&Remove{}),
 	}
 }
