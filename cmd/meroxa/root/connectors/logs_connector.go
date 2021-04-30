@@ -41,8 +41,7 @@ func (l *LogsConnector) Execute(ctx context.Context) error {
 	}
 	defer resp.Body.Close()
 
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
 		return err
