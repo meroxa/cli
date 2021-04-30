@@ -26,6 +26,8 @@ Currently, we provide pre-built Meroxa binaries for macOS (Darwin) Windows, and 
 
 See [Releases](https://github.com/meroxa/cli/releases).
 
+If you run into any issues during compiling the binaries, checkout the [troubleshooting guide](#troubleshooting).
+
 Prerequisite Tools:
 
 * [Git](https://git-scm.com/)
@@ -86,3 +88,31 @@ make test
 If you want to enable shell completion manually, you can generate your own using our `meroxa completion` command.
 
 Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/md/meroxa_completion.md).
+
+## Troubleshooting
+
+### make gomod
+
+#### Error: fatal: could not read Username for 'https://github.com': terminal prompts disabled
+
+If you have already setup your access to `meroxa` repositories via [SSH](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)
+you can enforce the download of the required dependencies listed in the [go.mod file](https://github.com/meroxa/cli/blob/master/go.mod) via `ssh` instead
+of `https` to circumvent this error.
+
+To do so, setup your `gitconfig`, by running:
+
+```
+git config --global url."git@github.com:".insteadOf "https://github.com"
+```
+
+Verify the correct setup, by running ` cat ~/.gitconfig`. You should see the following output:
+
+```
+[user]
+	name = Jane Doe
+	email = janedoe@gmail.com
+[url "git@github.com:"]
+	insteadOf = https://github.com
+```
+
+Run the `make gomod` command again, and you should see all depedencies being downloaded successfully.
