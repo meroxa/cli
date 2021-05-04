@@ -1,4 +1,4 @@
-package add
+package resources
 
 import (
 	"context"
@@ -15,31 +15,31 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
-func TestAddResourceArgs(t *testing.T) {
+func TestCreateResourceArgs(t *testing.T) {
 	tests := []struct {
 		args []string
 		err  error
 		name string
 	}{
 		{nil, nil, ""},
-		{[]string{"resName"}, nil, "resName"},
+		{[]string{"my-resource"}, nil, "my-resource"},
 	}
 
 	for _, tt := range tests {
-		ar := &AddResource{}
-		err := ar.ParseArgs(tt.args)
+		c := &Create{}
+		err := c.ParseArgs(tt.args)
 
 		if tt.err != err {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
+		if tt.name != c.args.Name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, c.args.Name)
 		}
 	}
 }
 
-func TestAddResourceFlags(t *testing.T) {
+func TestCreateResourceFlags(t *testing.T) {
 	expectedFlags := []struct {
 		name      string
 		required  bool
@@ -56,7 +56,7 @@ func TestAddResourceFlags(t *testing.T) {
 		{"metadata", false, "m"},
 	}
 
-	c := builder.BuildCobraCommand(&AddResource{})
+	c := builder.BuildCobraCommand(&Create{})
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
@@ -74,7 +74,7 @@ func TestAddResourceFlags(t *testing.T) {
 	}
 }
 
-func TestAddResourceExecution(t *testing.T) {
+func TestCreateResourceExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockCreateResourceClient(ctrl)
@@ -97,22 +97,22 @@ func TestAddResourceExecution(t *testing.T) {
 		).
 		Return(&cr, nil)
 
-	ar := &AddResource{
+	c := &Create{
 		client: client,
 		logger: logger,
 	}
-	ar.args.Name = r.Name
-	ar.flags.Type = r.Type
-	ar.flags.URL = r.URL
+	c.args.Name = r.Name
+	c.flags.Type = r.Type
+	c.flags.URL = r.URL
 
-	err := ar.Execute(ctx)
+	err := c.Execute(ctx)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Adding postgres resource...
-%s resource with name %s successfully added!
+	wantLeveledOutput := fmt.Sprintf(`Creating %q resource...
+%q resource successfully created!
 `, cr.Type, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {

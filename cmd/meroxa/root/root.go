@@ -21,6 +21,7 @@ import (
 	"os"
 
 	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
+	"github.com/meroxa/cli/cmd/meroxa/root/resources"
 
 	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
 
@@ -87,6 +88,7 @@ meroxa list resource-types`,
 		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
+		cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
 	}
 
 	return cmd

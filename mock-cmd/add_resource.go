@@ -23,8 +23,8 @@ type MockAddResourceClientMockRecorder struct {
 	mock *MockAddResourceClient
 }
 
-// NewMockAddResourceClient creates a new mock instance.
-func NewMockAddResourceClient(ctrl *gomock.Controller) *MockAddResourceClient {
+// NewMockCreateResourceClient creates a new mock instance.
+func NewMockCreateResourceClient(ctrl *gomock.Controller) *MockAddResourceClient {
 	mock := &MockAddResourceClient{ctrl: ctrl}
 	mock.recorder = &MockAddResourceClientMockRecorder{mock}
 	return mock
