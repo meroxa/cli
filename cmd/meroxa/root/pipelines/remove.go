@@ -45,7 +45,7 @@ func (r *Remove) Usage() string {
 
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Remove endpoint",
+		Short: "Remove pipeline",
 	}
 }
 
