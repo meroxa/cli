@@ -46,5 +46,6 @@ func (*Pipelines) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Create{}),
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Remove{}),
+		builder.BuildCobraCommand(&Update{}),
 	}
 }
