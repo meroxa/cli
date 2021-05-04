@@ -172,3 +172,16 @@ Connector %q successfully created!
 		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotConnector)
 	}
 }
+
+func TestCreateConnectorExecutionNoFlags(t *testing.T) {
+	ctx := context.Background()
+	c := &Create{}
+
+	err := c.Execute(ctx)
+
+	expected := "requires either a source (--from) or a destination (--to)"
+
+	if err != nil && err.Error() != expected {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+}
