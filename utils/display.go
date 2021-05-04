@@ -208,7 +208,7 @@ func PrintResourceTypesTable(types []string) {
 	fmt.Println(table.String())
 }
 
-func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
+func PipelinesTable(pipelines []*meroxa.Pipeline) string {
 	if len(pipelines) != 0 {
 		table := simpletable.New()
 
@@ -230,6 +230,11 @@ func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
 			table.Body.Cells = append(table.Body.Cells, r)
 		}
 		table.SetStyle(simpletable.StyleCompact)
-		fmt.Println(table.String())
+		return table.String()
 	}
+	return ""
+}
+
+func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
+	fmt.Println(PipelinesTable(pipelines))
 }

@@ -44,5 +44,6 @@ func (*Pipelines) Docs() builder.Docs {
 func (*Pipelines) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Create{}),
+		builder.BuildCobraCommand(&List{}),
 	}
 }
