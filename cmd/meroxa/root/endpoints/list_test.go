@@ -39,7 +39,7 @@ func getEndpoints() []meroxa.Endpoint {
 func TestListConnectorsExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMocklistEndpointsClient(ctrl)
+	client := mock.NewMockListEndpointsClient(ctrl)
 	logger := log.NewTestLogger()
 
 	endpoints := getEndpoints()
