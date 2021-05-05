@@ -45,15 +45,15 @@ func TestCreateResourceFlags(t *testing.T) {
 		required  bool
 		shorthand string
 	}{
-		{"type", true, ""},
-		{"url", true, "u"},
-		{"username", false, ""},
-		{"password", false, ""},
-		{"ca-cert", false, ""},
-		{"client-cert", false, ""},
-		{"client-key", false, ""},
-		{"ssl", false, ""},
-		{"metadata", false, "m"},
+		{name: "type", required: true, shorthand: ""},
+		{name: "url", required: true, shorthand: "u"},
+		{name: "username", required: false, shorthand: ""},
+		{name: "password", required: false, shorthand: ""},
+		{name: "ca-cert", required: false, shorthand: ""},
+		{name: "client-cert", required: false, shorthand: ""},
+		{name: "client-key", required: false, shorthand: ""},
+		{name: "ssl", required: false, shorthand: ""},
+		{name: "metadata", required: false, shorthand: "m"},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
