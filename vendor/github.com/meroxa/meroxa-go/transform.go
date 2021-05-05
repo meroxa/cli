@@ -9,7 +9,7 @@ import (
 
 type Property struct {
 	Name     string `json:"name"`
-	Required bool   `json:"bool"`
+	Required bool   `json:"required"`
 	Type     string `json:"type"`
 }
 
@@ -17,7 +17,7 @@ type Property struct {
 type Transform struct {
 	ID          int        `json:"id"`
 	Name        string     `json:"name"`
-	Required    bool       `json:"bool"`
+	Required    bool       `json:"required"`
 	Description string     `json:"description"`
 	Type        string     `json:"type"`
 	Properties  []Property `json:"properties"`
