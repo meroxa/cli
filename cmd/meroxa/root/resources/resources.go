@@ -44,5 +44,7 @@ func (*Resources) Aliases() []string {
 func (*Resources) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Create{}),
+		builder.BuildCobraCommand(&Describe{}),
+		builder.BuildCobraCommand(&List{}),
 	}
 }
