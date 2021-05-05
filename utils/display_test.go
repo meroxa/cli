@@ -66,7 +66,7 @@ func TestEmptyTables(t *testing.T) {
 		PrintResourcesTable(emptyResourcesList)
 	})
 
-	if out != "" {
+	if out != "\n" {
 		t.Errorf("Output for resources should be blank")
 	}
 

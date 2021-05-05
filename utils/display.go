@@ -68,7 +68,7 @@ func PrintEndpointsTable(ends []meroxa.Endpoint) {
 	fmt.Println(EndpointsTable(ends))
 }
 
-func PrintResourcesTable(resources []*meroxa.Resource) {
+func ResourcesTable(resources []*meroxa.Resource) string {
 	if len(resources) != 0 {
 		table := simpletable.New()
 		table.Header = &simpletable.Header{
@@ -91,8 +91,14 @@ func PrintResourcesTable(resources []*meroxa.Resource) {
 			table.Body.Cells = append(table.Body.Cells, r)
 		}
 		table.SetStyle(simpletable.StyleCompact)
-		fmt.Println(table.String())
+		return table.String()
 	}
+
+	return ""
+}
+
+func PrintResourcesTable(resources []*meroxa.Resource) {
+	fmt.Println(ResourcesTable(resources))
 }
 
 func PrintTransformsTable(transforms []*meroxa.Transform) {
