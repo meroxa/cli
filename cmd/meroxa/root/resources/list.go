@@ -31,15 +31,22 @@ var (
 	_ builder.CommandWithLogger  = (*List)(nil)
 	_ builder.CommandWithExecute = (*List)(nil)
 	_ builder.CommandWithAliases = (*List)(nil)
+	_ builder.CommandWithFlags   = (*List)(nil)
 )
 
 type listResourcesClient interface {
 	ListResources(ctx context.Context) ([]*meroxa.Resource, error)
+	ListResourceTypes(ctx context.Context) ([]string, error)
 }
 
 type List struct {
 	client listResourcesClient
 	logger log.Logger
+
+	flags struct {
+		Types bool `long:"types" short:"" usage:"list resource types"`
+		Type  bool `long:"type" short:"" usage:"alias to --types" hidden:"true"`
+	}
 }
 
 func (l *List) Usage() string {
@@ -48,8 +55,12 @@ func (l *List) Usage() string {
 
 func (l *List) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "List resources",
+		Short: "List resources and resource types",
 	}
+}
+
+func (l *List) Flags() []builder.Flag {
+	return builder.BuildFlags(&l.flags)
 }
 
 func (l *List) Aliases() []string {
@@ -58,6 +69,23 @@ func (l *List) Aliases() []string {
 
 func (l *List) Execute(ctx context.Context) error {
 	var err error
+
+	// What used to be `meroxa list resource-types`
+	if l.flags.Types || l.flags.Type {
+		var rTypes []string
+
+		rTypes, err = l.client.ListResourceTypes(ctx)
+
+		if err != nil {
+			return err
+		}
+
+		l.logger.JSON(ctx, rTypes)
+		l.logger.Info(ctx, utils.ResourceTypesTable(rTypes))
+
+		return nil
+	}
+
 	resources, err := l.client.ListResources(ctx)
 	if err != nil {
 		return err

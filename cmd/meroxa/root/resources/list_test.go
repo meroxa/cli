@@ -23,6 +23,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	mock "github.com/meroxa/cli/mock-cmd"
@@ -34,6 +36,33 @@ func getResources() []*meroxa.Resource {
 	var resources []*meroxa.Resource
 	r := utils.GenerateResource()
 	return append(resources, &r)
+}
+
+func TestListResourcesFlags(t *testing.T) {
+	expectedFlags := []struct {
+		name      string
+		required  bool
+		shorthand string
+	}{
+		{name: "types", required: false, shorthand: ""},
+	}
+
+	c := builder.BuildCobraCommand(&List{})
+
+	for _, f := range expectedFlags {
+		cf := c.Flags().Lookup(f.name)
+		if cf == nil {
+			t.Fatalf("expected flag \"%s\" to be present", f.name)
+		}
+
+		if f.shorthand != cf.Shorthand {
+			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+		}
+
+		if f.required && !utils.IsFlagRequired(cf) {
+			t.Fatalf("expected flag \"%s\" to be required", f.name)
+		}
+	}
 }
 
 func TestListResourcesExecution(t *testing.T) {
@@ -83,5 +112,61 @@ func TestListResourcesExecution(t *testing.T) {
 
 	if !reflect.DeepEqual(gotResources, lr) {
 		t.Fatalf("expected \"%v\", got \"%v\"", lr, gotResources)
+	}
+}
+
+func TestListResourceTypesExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockListResourcesClient(ctrl)
+	logger := log.NewTestLogger()
+
+	var types = []string{
+		"postgres",
+		"s3",
+		"redshift",
+		"mysql",
+		"url",
+		"mongodb",
+		"elasticsearch",
+		"snowflakedb",
+		"bigquery",
+	}
+
+	client.
+		EXPECT().
+		ListResourceTypes(ctx).
+		Return(types, nil)
+
+	l := &List{
+		client: client,
+		logger: logger,
+	}
+
+	l.flags.Types = true
+
+	err := l.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := utils.ResourceTypesTable(types)
+
+	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotTypes []string
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotTypes)
+
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotTypes, types) {
+		t.Fatalf("expected \"%v\", got \"%v\"", types, gotTypes)
 	}
 }
