@@ -69,7 +69,7 @@ func (u *Update) Docs() builder.Docs {
 
 func (u *Update) Execute(ctx context.Context) error {
 	// TODO: Implement something like dependant flags in Builder
-	if u.flags.Name == "" && u.flags.URL == "" && u.flags.Metadata == "" && !u.updateCredentials() {
+	if u.flags.Name == "" && u.flags.URL == "" && u.flags.Metadata == "" && !u.isUpdatingCredentials() {
 		return errors.New("requires either `--name`, `--url`, `--metadata` or one of the credential flags")
 	}
 
@@ -89,42 +89,15 @@ func (u *Update) Execute(ctx context.Context) error {
 
 	// If metadata was provided, update it
 	if u.flags.Metadata != "" {
-		var metadata map[string]interface{}
-		err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
+		err := u.setMetadata(&res)
 		if err != nil {
 			return fmt.Errorf("can't parse metadata: %w", err)
 		}
-
-		res.Metadata = metadata
 	}
 
 	// If any of the credential values are being updated
-	if u.updateCredentials() {
-		res.Credentials = &meroxa.Credentials{}
-
-		if u.flags.Username != "" {
-			res.Credentials.Username = u.flags.Username
-		}
-
-		if u.flags.Password != "" {
-			res.Credentials.Password = u.flags.Password
-		}
-
-		if u.flags.CaCert != "" {
-			res.Credentials.CACert = u.flags.CaCert
-		}
-
-		if u.flags.ClientCert != "" {
-			res.Credentials.ClientCert = u.flags.ClientCert
-		}
-
-		if u.flags.ClientKey != "" {
-			res.Credentials.ClientCertKey = u.flags.ClientKey
-		}
-
-		if u.flags.SSL {
-			res.Credentials.UseSSL = u.flags.SSL
-		}
+	if u.isUpdatingCredentials() {
+		u.setCredentials(&res)
 	}
 
 	r, err := u.client.UpdateResource(ctx, u.args.Name, res)
@@ -168,11 +141,46 @@ var (
 	_ builder.CommandWithExecute = (*Update)(nil)
 )
 
-func (u *Update) updateCredentials() bool {
-	return u.flags.Username != "" &&
-		u.flags.Password != "" &&
-		u.flags.CaCert != "" &&
-		u.flags.ClientCert != "" &&
-		u.flags.ClientKey != "" &&
+func (u *Update) isUpdatingCredentials() bool {
+	return u.flags.Username != "" ||
+		u.flags.Password != "" ||
+		u.flags.CaCert != "" ||
+		u.flags.ClientCert != "" ||
+		u.flags.ClientKey != "" ||
 		u.flags.SSL
+}
+
+func (u *Update) setMetadata(res *meroxa.UpdateResourceInput) error {
+	var metadata map[string]interface{}
+	err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
+	res.Metadata = metadata
+	return err
+}
+
+func (u *Update) setCredentials(res *meroxa.UpdateResourceInput) {
+	res.Credentials = &meroxa.Credentials{}
+
+	if u.flags.Username != "" {
+		res.Credentials.Username = u.flags.Username
+	}
+
+	if u.flags.Password != "" {
+		res.Credentials.Password = u.flags.Password
+	}
+
+	if u.flags.CaCert != "" {
+		res.Credentials.CACert = u.flags.CaCert
+	}
+
+	if u.flags.ClientCert != "" {
+		res.Credentials.ClientCert = u.flags.ClientCert
+	}
+
+	if u.flags.ClientKey != "" {
+		res.Credentials.ClientCertKey = u.flags.ClientKey
+	}
+
+	if u.flags.SSL {
+		res.Credentials.UseSSL = u.flags.SSL
+	}
 }
