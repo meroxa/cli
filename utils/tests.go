@@ -62,6 +62,17 @@ func GenerateEndpoint() meroxa.Endpoint {
 	}
 }
 
+func GenerateTransform() meroxa.Transform {
+	return meroxa.Transform{
+		ID:          0,
+		Name:        "ReplaceField",
+		Required:    false,
+		Description: "Filter or rename fields",
+		Type:        "builtin",
+		Properties:  nil,
+	}
+}
+
 func IsFlagRequired(flag *pflag.Flag) bool {
 	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
 
