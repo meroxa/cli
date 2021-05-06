@@ -20,26 +20,22 @@ import (
 	"context"
 	"os"
 
-	"github.com/meroxa/cli/cmd/meroxa/root/version"
-
 	"github.com/meroxa/cli/cmd/meroxa/root/api"
-	"github.com/meroxa/cli/cmd/meroxa/root/billing"
-	"github.com/meroxa/cli/cmd/meroxa/root/open"
-
 	"github.com/meroxa/cli/cmd/meroxa/root/auth"
-
+	"github.com/meroxa/cli/cmd/meroxa/root/billing"
+	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
+	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
+	"github.com/meroxa/cli/cmd/meroxa/root/open"
 	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
 	"github.com/meroxa/cli/cmd/meroxa/root/resources"
 	"github.com/meroxa/cli/cmd/meroxa/root/transforms"
+	"github.com/meroxa/cli/cmd/meroxa/root/version"
 
-	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
-
-	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
+	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
 	"github.com/spf13/cobra"
 )
 
