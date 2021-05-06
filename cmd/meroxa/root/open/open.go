@@ -17,16 +17,29 @@ limitations under the License.
 package open
 
 import (
+	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/spf13/cobra"
 )
 
-// Cmd represents the `meroxa open` command.
-func Cmd() *cobra.Command {
-	openCmd := &cobra.Command{
-		Use:   "open",
+var (
+	_ builder.CommandWithDocs        = (*Open)(nil)
+	_ builder.CommandWithSubCommands = (*Open)(nil)
+)
+
+type Open struct{}
+
+func (o *Open) Usage() string {
+	return "open"
+}
+
+func (o *Open) Docs() builder.Docs {
+	return builder.Docs{
 		Short: "Open in a web browser",
 	}
+}
 
-	openCmd.AddCommand(SubCmd())
-	return openCmd
+func (o *Open) SubCommands() []*cobra.Command {
+	return []*cobra.Command{
+		builder.BuildCobraCommand(&Billing{}),
+	}
 }

@@ -17,29 +17,36 @@ limitations under the License.
 package billing
 
 import (
-	"fmt"
+	"context"
+
+	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
-
-	"github.com/spf13/cobra"
 )
 
-// TODO: Check how to disable parent flags (e.g.: --json)
+type Billing struct{}
 
-// Cmd represents the `meroxa billing` command.
-func Cmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "billing",
+var (
+	_ builder.CommandWithDocs    = (*Billing)(nil)
+	_ builder.CommandWithExecute = (*Billing)(nil)
+)
+
+func (b *Billing) Usage() string {
+	return "billing"
+}
+
+func (b *Billing) Docs() builder.Docs {
+	return builder.Docs{
 		Short: "Open your billing page in a web browser",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("meroxa open billing")
-			err := open.Cmd().RunE(cmd, args)
-
-			if err != nil {
-				return err
-			}
-
-			return nil
-		},
 	}
+}
+
+func (b *Billing) Execute(ctx context.Context) error {
+	err := builder.BuildCobraCommand(&open.Billing{}).Execute()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
