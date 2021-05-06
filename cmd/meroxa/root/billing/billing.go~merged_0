@@ -14,6 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+<<<<<<< HEAD
+package billing
+
+import (
+	"github.com/meroxa/cli/cmd/meroxa/root/open"
+)
+
+type Billing struct {
+	open.Billing
+=======
 <<<<<<< HEAD:cmd/meroxa/root/auth/auth.go
 package auth
 
@@ -65,4 +75,5 @@ func (o *Auth) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Logout{}),
 		builder.BuildCobraCommand(&WhoAmI{}),
 	}
+>>>>>>> 48bdb79 (refactor: Commands to their own pkgs)
 }

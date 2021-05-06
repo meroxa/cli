@@ -17,45 +17,27 @@ limitations under the License.
 package auth
 
 import (
-	"context"
+	"fmt"
 
-	"github.com/meroxa/cli/log"
-
-	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/spf13/cobra"
 )
 
-var (
-	_ builder.CommandWithDocs    = (*Logout)(nil)
-	_ builder.CommandWithExecute = (*Logout)(nil)
-	_ builder.CommandWithLogger  = (*Logout)(nil)
-)
-
-type Logout struct {
-	logger log.Logger
-}
-
-func (l *Logout) Usage() string {
-	return "logout"
-}
-
-func (l *Logout) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Clears local login credentials of the Meroxa Platform",
+// LogoutCmd represents the `meroxa logout` command.
+func LogoutCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "logout",
+		Short: "logout of the Meroxa platform",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// TODO: add confirmation
+			global.Config.Set("ACCESS_TOKEN", "")
+			global.Config.Set("REFRESH_TOKEN", "")
+			err := global.Config.WriteConfig()
+			if err != nil {
+				return err
+			}
+			fmt.Println("Successfully logged out.")
+			return nil
+		},
 	}
-}
-
-func (l *Logout) Logger(logger log.Logger) {
-	l.logger = logger
-}
-
-func (l *Logout) Execute(ctx context.Context) error {
-	global.Config.Set("ACCESS_TOKEN", "")
-	global.Config.Set("REFRESH_TOKEN", "")
-	err := global.Config.WriteConfig()
-	if err != nil {
-		return err
-	}
-	l.logger.Infof(ctx, "Successfully logged out.")
-	return nil
 }

@@ -9,7 +9,7 @@ You may obtain a copy of the License at
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or impliew.
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
@@ -18,56 +18,67 @@ package auth
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
+
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
+	"github.com/spf13/cobra"
 )
 
-type getUserClient interface {
+type GetUserClient interface {
 	GetUser(ctx context.Context) (*meroxa.User, error)
 }
 
-type WhoAmI struct {
-	client getUserClient
-	logger log.Logger
+type GetUser struct {
 }
 
-var (
-	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
-	_ builder.CommandWithClient  = (*WhoAmI)(nil)
-	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
-	_ builder.CommandWithExecute = (*WhoAmI)(nil)
-)
+func (gu *GetUser) execute(ctx context.Context, c GetUserClient) (*meroxa.User, error) {
+	// TODO think about extracting the info from the access token.
+	//  The access token is a JWT and contains these fields:
+	//  * "https://api.meroxa.io/v1/email": "john.doe@example.com"
+	//  * "https://api.meroxa.io/v1/username": "John Doe"
+	var err error
 
-func (w *WhoAmI) Usage() string {
-	return "whoami"
+	user, err := c.GetUser(ctx)
+	return user, err
 }
 
-func (w *WhoAmI) Docs() builder.Docs {
-	return builder.Docs{
-		Short:   "Display the current logged in user\n",
-		Example: "meroxa whoami",
+func (gu *GetUser) output(user *meroxa.User) {
+	if deprecated.FlagRootOutputJSON {
+		utils.JSONPrint(user)
+	} else {
+		fmt.Printf("%s\n", user.Email)
 	}
 }
 
-func (w *WhoAmI) Client(client *meroxa.Client) {
-	w.client = client
-}
+// Command represents the `meroxa whoami` command.
+func (gu *GetUser) Command() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "whoami",
+		Short: "Display the current logged in user\n",
+		Example: "\n" +
+			"meroxa whoami'\n",
 
-func (w *WhoAmI) Logger(logger log.Logger) {
-	w.logger = logger
-}
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, err := global.NewClient()
+			if err != nil {
+				return err
+			}
 
-func (w *WhoAmI) Execute(ctx context.Context) error {
-	user, err := w.client.GetUser(ctx)
+			u, err := gu.execute(cmd.Context(), c)
 
-	if err != nil {
-		return err
+			if err != nil {
+				return err
+			}
+
+			gu.output(u)
+
+			return nil
+		},
 	}
 
-	w.logger.Infof(ctx, "%s", user.Email)
-	w.logger.JSON(ctx, user)
-
-	return nil
+	return cmd
 }

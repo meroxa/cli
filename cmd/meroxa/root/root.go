@@ -69,7 +69,6 @@ resource types:
 		Short: "The Meroxa CLI",
 		Long:  longOutput,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			deprecated.FlagRootOutputJSON = global.FlagJSON
 			return global.PersistentPreRunE(cmd)
 		},
 		SilenceUsage:      true,
@@ -81,15 +80,14 @@ resource types:
 
 	// Subcommands
 
-	// v1
-	if v, ok := os.LookupEnv("MEROXA_V2"); !ok || ok && v != "only" {
-		// TODO: Once we make a full transition to `subject-verb-object` remove the `deprecated` pkg altogether
-		deprecated.RegisterCommands(cmd)
-
+	if !global.IsMeroxaV2Released() {
 		cmd.AddCommand(builder.BuildCobraCommand(&auth.Login{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&auth.Logout{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&auth.WhoAmI{}))
 	}
+
+	// Once we decide to remove support for old commands, remove the following line and its content
+	deprecated.RegisterCommands(cmd)
 
 	// v2
 	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
@@ -101,7 +99,7 @@ resource types:
 	cmd.AddCommand(builder.BuildCobraCommand(&version.Version{}))
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
-	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
+	if global.IsMeroxaV2Released() {
 		cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
@@ -109,6 +107,7 @@ resource types:
 		cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&transforms.Transforms{}))
 
+		// For meroxa v2 we want these to be under auth (`meroxa auth login`)
 		setAliases(cmd)
 	}
 
