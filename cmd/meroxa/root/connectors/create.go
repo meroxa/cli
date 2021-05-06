@@ -90,7 +90,7 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 
 	metadata, err := c.parseJSONMap(c.flags.Metadata)
 	if err != nil {
-		return nil, errors.New("can't parse metadata, make sure it is a valid JSON map")
+		return nil, fmt.Errorf("could not parse metadata: %w", err)
 	}
 
 	// merge in input

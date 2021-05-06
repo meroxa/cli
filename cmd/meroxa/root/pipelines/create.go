@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/meroxa/meroxa-go"
 
@@ -64,7 +65,7 @@ func (c *Create) Execute(ctx context.Context) error {
 		var metadata map[string]interface{}
 		err := json.Unmarshal([]byte(c.flags.Metadata), &metadata)
 		if err != nil {
-			return err
+			return fmt.Errorf("could not parse metadata: %w", err)
 		}
 
 		p.Metadata = metadata
