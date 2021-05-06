@@ -84,7 +84,8 @@ meroxa list resource-types`,
 	}
 
 	// v2
-	cmd.AddCommand(api.Cmd())
+
+	// Old design
 	cmd.AddCommand(billing.Cmd())
 	cmd.AddCommand(CompletionCmd())
 	cmd.AddCommand(version.Cmd())
@@ -94,6 +95,9 @@ meroxa list resource-types`,
 	cmd.AddCommand(auth.LoginCmd())
 	cmd.AddCommand(auth.LogoutCmd())
 	cmd.AddCommand((&auth.GetUser{}).Command()) // whoami
+
+	// New design
+	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
 	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
