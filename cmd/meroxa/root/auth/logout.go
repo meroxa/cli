@@ -37,7 +37,7 @@ func (l *Logout) Usage() string {
 
 func (l *Logout) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "logout of the Meroxa platform",
+		Short: "Clears local login credentials of the Meroxa Platform",
 	}
 }
 
