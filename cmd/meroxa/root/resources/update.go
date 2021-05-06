@@ -92,9 +92,9 @@ func (u *Update) Execute(ctx context.Context) error {
 		var metadata map[string]interface{}
 		err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
 		if err != nil {
-			res.Metadata = metadata
 			return fmt.Errorf("can't parse metadata: %w", err)
 		}
+		res.Metadata = metadata
 	}
 
 	// If any of the credential values are being updated
