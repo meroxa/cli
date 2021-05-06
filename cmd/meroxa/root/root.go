@@ -86,18 +86,18 @@ meroxa list resource-types`,
 	// v2
 
 	// Old design
-	cmd.AddCommand(billing.Cmd())
-	cmd.AddCommand(CompletionCmd())
-	cmd.AddCommand(version.Cmd())
-	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
+	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
 
+	cmd.AddCommand(billing.Cmd())
+	cmd.AddCommand(version.Cmd())
 	cmd.AddCommand(open.Cmd())
-	cmd.AddCommand(auth.LoginCmd())
-	cmd.AddCommand(auth.LogoutCmd())
-	cmd.AddCommand((&auth.GetUser{}).Command()) // whoami
 
 	// New design
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&auth.WhoAmI{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&auth.Login{})) // This still needs some re-work
+	cmd.AddCommand(builder.BuildCobraCommand(&auth.Logout{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
 	if _, ok := os.LookupEnv("MEROXA_V2"); ok {

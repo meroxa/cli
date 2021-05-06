@@ -29,11 +29,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+
 	"github.com/fatih/color"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
 	"github.com/skratchdot/open-golang/open"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -45,6 +46,31 @@ const (
 	clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
 	domain   = "auth.meroxa.io"
 )
+
+var (
+	_ builder.CommandWithDocs    = (*Login)(nil)
+	_ builder.CommandWithExecute = (*Login)(nil)
+)
+
+type Login struct{}
+
+func (l *Login) Usage() string {
+	return "login"
+}
+
+func (l *Login) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "login or sign up to the Meroxa platform",
+	}
+}
+
+func (l *Login) Execute(ctx context.Context) error {
+	err := login()
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // AuthorizeUser implements the PKCE OAuth2 flow.
 // nolint:funlen // this function should be refactored when moving to the new code structure
@@ -215,19 +241,4 @@ func getAccessTokenAuth(
 	accessToken = responseData["access_token"].(string)
 	refreshToken = responseData["refresh_token"].(string)
 	return accessToken, refreshToken, nil
-}
-
-// LoginCmd represents the `meroxa login` command.
-func LoginCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "login",
-		Short: "login or sign up to the Meroxa platform",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := login()
-			if err != nil {
-				return err
-			}
-			return nil
-		},
-	}
 }
