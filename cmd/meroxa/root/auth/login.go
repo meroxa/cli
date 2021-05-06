@@ -65,7 +65,7 @@ func (l *Login) Docs() builder.Docs {
 }
 
 func (l *Login) Execute(ctx context.Context) error {
-	err := login()
+	err := l.login()
 	if err != nil {
 		return err
 	}
@@ -74,7 +74,7 @@ func (l *Login) Execute(ctx context.Context) error {
 
 // AuthorizeUser implements the PKCE OAuth2 flow.
 // nolint:funlen // this function should be refactored when moving to the new code structure
-func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
+func (l *Login) authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 	// initialize the code verifier
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
@@ -103,19 +103,19 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 			_, _ = io.WriteString(w, "Error: could not find 'code' URL parameter\n")
 
 			// close the HTTP server and return
-			cleanup(server)
+			l.cleanup(server)
 			return
 		}
 
 		// trade the authorization code and the code verifier for an access token
 		codeVerifier := CodeVerifier.String()
-		accessToken, refreshToken, err := getAccessTokenAuth(r.Context(), clientID, codeVerifier, code, redirectURL)
+		accessToken, refreshToken, err := l.getAccessTokenAuth(r.Context(), clientID, codeVerifier, code, redirectURL)
 		if err != nil {
 			fmt.Println("meroxa: could not get access token")
 			_, _ = io.WriteString(w, "Error: could not retrieve tokens\n")
 
 			// close the HTTP server and return
-			cleanup(server)
+			l.cleanup(server)
 			return
 		}
 		cfg.Set("ACCESS_TOKEN", accessToken)
@@ -130,7 +130,7 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 				_, _ = io.WriteString(w, "Error: could not store access token\n")
 
 				// close the HTTP server and return
-				cleanup(server)
+				l.cleanup(server)
 				return
 			}
 		}
@@ -155,7 +155,7 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 		fmt.Println("Successfully logged in.")
 
 		// close the HTTP server
-		cleanup(server)
+		l.cleanup(server)
 	})
 
 	// parse the redirect URL for the port number
@@ -167,7 +167,7 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 
 	// set up a listener on the redirect port
 	port := fmt.Sprintf(":%s", u.Port())
-	l, err := net.Listen("tcp", port)
+	listener, err := net.Listen("tcp", port)
 	if err != nil {
 		fmt.Printf("meroxa: can't listen to port %s: %s\n", port, err)
 		os.Exit(1)
@@ -182,24 +182,24 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 
 	// start the blocking web server loop
 	// this will exit when the handler gets fired and calls server.Close()
-	_ = server.Serve(l)
+	_ = server.Serve(listener)
 }
 
-func login() error {
+func (l *Login) login() error {
 	log.Println(color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
-	authorizeUser(global.Config, clientID, domain, callbackURL)
+	l.authorizeUser(global.Config, clientID, domain, callbackURL)
 	return nil
 }
 
 // cleanup closes the HTTP server.
-func cleanup(server *http.Server) {
+func (l *Login) cleanup(server *http.Server) {
 	// we run this as a goroutine so that this function falls through and
 	// the socket to the browser gets flushed/closed before the server goes away
 	go server.Close()
 }
 
 // getAccessTokenAuth trades the authorization code retrieved from the first OAuth2 leg for an access token.
-func getAccessTokenAuth(
+func (l *Login) getAccessTokenAuth(
 	ctx context.Context,
 	clientID, codeVerifier, authorizationCode, callbackURL string,
 ) (accessToken, refreshToken string, err error) {
