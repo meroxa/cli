@@ -24,7 +24,9 @@ import (
 type Transforms struct{}
 
 var (
-	_ builder.CommandWithAliases = (*Transforms)(nil)
+	_ builder.CommandWithAliases     = (*Transforms)(nil)
+	_ builder.CommandWithDocs        = (*Transforms)(nil)
+	_ builder.CommandWithSubCommands = (*Transforms)(nil)
 )
 
 func (*Transforms) Usage() string {

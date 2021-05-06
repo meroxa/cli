@@ -24,7 +24,9 @@ import (
 type Resources struct{}
 
 var (
-	_ builder.CommandWithAliases = (*Resources)(nil)
+	_ builder.CommandWithAliases     = (*Resources)(nil)
+	_ builder.CommandWithDocs        = (*Resources)(nil)
+	_ builder.CommandWithSubCommands = (*Resources)(nil)
 )
 
 func (*Resources) Usage() string {

@@ -24,7 +24,8 @@ import (
 type Connectors struct{}
 
 var (
-	_ builder.CommandWithAliases = (*Connectors)(nil)
+	_ builder.CommandWithAliases     = (*Connectors)(nil)
+	_ builder.CommandWithSubCommands = (*Connectors)(nil)
 )
 
 func (*Connectors) Usage() string {
