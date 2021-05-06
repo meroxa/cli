@@ -22,17 +22,16 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-
 	"github.com/fatih/color"
+	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/log"
 	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
 	"github.com/skratchdot/open-golang/open"
 	"github.com/spf13/viper"
@@ -49,10 +48,13 @@ const (
 
 var (
 	_ builder.CommandWithDocs    = (*Login)(nil)
+	_ builder.CommandWithLogger  = (*Login)(nil)
 	_ builder.CommandWithExecute = (*Login)(nil)
 )
 
-type Login struct{}
+type Login struct {
+	logger log.Logger
+}
 
 func (l *Login) Usage() string {
 	return "login"
@@ -60,21 +62,25 @@ func (l *Login) Usage() string {
 
 func (l *Login) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "login or sign up to the Meroxa platform",
+		Short: "Login or Sign up to the Meroxa Platform",
 	}
 }
 
 func (l *Login) Execute(ctx context.Context) error {
-	err := l.login()
+	err := l.login(ctx)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+func (l *Login) Logger(logger log.Logger) {
+	l.logger = logger
+}
+
 // AuthorizeUser implements the PKCE OAuth2 flow.
 // nolint:funlen // this function should be refactored when moving to the new code structure
-func (l *Login) authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
+func (l *Login) authorizeUser(ctx context.Context, cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 	// initialize the code verifier
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
@@ -89,7 +95,8 @@ func (l *Login) authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectUR
 			"&code_challenge=%s"+
 			"&code_challenge_method=S256&redirect_uri=%s",
 		authDomain, audience, clientID, codeChallenge, redirectURL)
-	log.Println(color.CyanString(authorizationURL))
+
+	l.logger.Warn(ctx, color.CyanString(authorizationURL))
 
 	// start a web server to listen on a callback URL
 	server := &http.Server{Addr: redirectURL}
@@ -185,9 +192,9 @@ func (l *Login) authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectUR
 	_ = server.Serve(listener)
 }
 
-func (l *Login) login() error {
-	log.Println(color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
-	l.authorizeUser(global.Config, clientID, domain, callbackURL)
+func (l *Login) login(ctx context.Context) error {
+	l.logger.Warn(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
+	l.authorizeUser(ctx, global.Config, clientID, domain, callbackURL)
 	return nil
 }
 

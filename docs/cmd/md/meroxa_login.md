@@ -1,6 +1,6 @@
 ## meroxa login
 
-login or sign up to the Meroxa platform
+Login or Sign up to the Meroxa Platform
 
 ```
 meroxa login [flags]
