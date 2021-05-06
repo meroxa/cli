@@ -14,19 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-<<<<<<< HEAD
-<<<<<<< HEAD:cmd/meroxa/root/open/open.go
 package open
-=======
-package version
->>>>>>> 48bdb79 (refactor: Commands to their own pkgs):cmd/meroxa/root/version/version.go
 
 import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/spf13/cobra"
 )
 
-<<<<<<< HEAD:cmd/meroxa/root/open/open.go
 var (
 	_ builder.CommandWithDocs        = (*Open)(nil)
 	_ builder.CommandWithSubCommands = (*Open)(nil)
@@ -47,32 +41,5 @@ func (o *Open) Docs() builder.Docs {
 func (o *Open) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Billing{}),
-=======
-// Cmd represents the `meroxa version` command.
-func Cmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "version",
-		Short: "Display the Meroxa CLI version",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH)
-		},
->>>>>>> 48bdb79 (refactor: Commands to their own pkgs):cmd/meroxa/root/version/version.go
 	}
-=======
-package open
-
-import (
-	"github.com/spf13/cobra"
-)
-
-// Cmd represents the `meroxa open` command.
-func Cmd() *cobra.Command {
-	openCmd := &cobra.Command{
-		Use:   "open",
-		Short: "Open in a web browser",
-	}
-
-	openCmd.AddCommand(SubCmd())
-	return openCmd
->>>>>>> 48bdb79 (refactor: Commands to their own pkgs)
 }

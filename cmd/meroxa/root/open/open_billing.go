@@ -70,17 +70,3 @@ func (b *Billing) getBillingURL() string {
 	}
 	return fmt.Sprintf("%s/settings/billing", platformURL)
 }
-<<<<<<< HEAD:cmd/meroxa/root/open/open_billing.go
-=======
-
-// SubCmd represents the `meroxa open billing` command.
-func SubCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "billing",
-		Short: "Open your billing page in a web browser",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return browser.OpenURL(getBillingURL())
-		},
-	}
-}
->>>>>>> 48bdb79 (refactor: Commands to their own pkgs):cmd/meroxa/root/deprecated/open_billing.go
