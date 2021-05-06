@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package endpoints
+package pipelines
 
 import (
 	"context"
@@ -30,24 +30,27 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
-func getEndpoints() []meroxa.Endpoint {
-	var endpoints []meroxa.Endpoint
-	e := utils.GenerateEndpoint()
-	return append(endpoints, e)
-}
-
-func TestListConnectorsExecution(t *testing.T) {
+func TestListPipelinesExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListEndpointsClient(ctrl)
+	client := mock.NewMockListPipelinesClient(ctrl)
 	logger := log.NewTestLogger()
 
-	endpoints := getEndpoints()
+	var pipelines []*meroxa.Pipeline
+
+	rP := meroxa.Pipeline{
+		ID:       1,
+		Name:     "my-pipeline",
+		Metadata: nil,
+		State:    "healthy",
+	}
+
+	pipelines = append(pipelines, &rP)
 
 	client.
 		EXPECT().
-		ListEndpoints(ctx).
-		Return(endpoints, nil)
+		ListPipelines(ctx).
+		Return(pipelines, nil)
 
 	l := &List{
 		client: client,
@@ -61,25 +64,27 @@ func TestListConnectorsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.EndpointsTable(endpoints)
+	wantLeveledOutput := utils.PipelinesTable(pipelines)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotEndpoints []meroxa.Endpoint
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotEndpoints)
+	var gotPipelines []meroxa.Pipeline
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotPipelines)
 
-	var le []meroxa.Endpoint
+	var lp []meroxa.Pipeline
 
-	le = append(le, endpoints...)
+	for _, p := range pipelines {
+		lp = append(lp, *p)
+	}
 
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !reflect.DeepEqual(gotEndpoints, le) {
-		t.Fatalf("expected \"%v\", got \"%v\"", endpoints, gotEndpoints)
+	if !reflect.DeepEqual(gotPipelines, lp) {
+		t.Fatalf("expected \"%v\", got \"%v\"", pipelines, gotPipelines)
 	}
 }

@@ -20,6 +20,8 @@ import (
 	"context"
 	"os"
 
+	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
+
 	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
 
 	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
@@ -84,6 +86,7 @@ meroxa list resource-types`,
 	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
 		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
+		cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
 	}
 
 	return cmd

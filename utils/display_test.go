@@ -85,7 +85,7 @@ func TestEmptyTables(t *testing.T) {
 		PrintPipelinesTable(emptyPipelinesList)
 	})
 
-	if out != "" {
+	if out != "\n" {
 		t.Errorf("Output for pipelines should be blank")
 	}
 }

@@ -23,8 +23,8 @@ type MocklistEndpointsClientMockRecorder struct {
 	mock *MocklistEndpointsClient
 }
 
-// NewMocklistEndpointsClient creates a new mock instance.
-func NewMocklistEndpointsClient(ctrl *gomock.Controller) *MocklistEndpointsClient {
+// NewMockListEndpointsClient creates a new mock instance.
+func NewMockListEndpointsClient(ctrl *gomock.Controller) *MocklistEndpointsClient {
 	mock := &MocklistEndpointsClient{ctrl: ctrl}
 	mock.recorder = &MocklistEndpointsClientMockRecorder{mock}
 	return mock
