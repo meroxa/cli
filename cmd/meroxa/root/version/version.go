@@ -17,20 +17,40 @@ limitations under the License.
 package version
 
 import (
-	"fmt"
+	"context"
 	"runtime"
 
+	"github.com/meroxa/cli/log"
+
+	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/spf13/cobra"
 )
 
-// Cmd represents the `meroxa version` command.
-func Cmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "version",
+type Version struct {
+	logger log.Logger
+}
+
+var (
+	_ builder.CommandWithDocs    = (*Version)(nil)
+	_ builder.CommandWithExecute = (*Version)(nil)
+	_ builder.CommandWithLogger  = (*Version)(nil)
+)
+
+func (v *Version) Usage() string {
+	return "version"
+}
+
+func (v *Version) Docs() builder.Docs {
+	return builder.Docs{
 		Short: "Display the Meroxa CLI version",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH)
-		},
 	}
+}
+
+func (v *Version) Logger(logger log.Logger) {
+	v.logger = logger
+}
+
+func (v *Version) Execute(ctx context.Context) error {
+	v.logger.Infof(ctx, "meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH)
+	return nil
 }
