@@ -20,6 +20,14 @@ import (
 	"context"
 	"os"
 
+	"github.com/meroxa/cli/cmd/meroxa/root/version"
+
+	"github.com/meroxa/cli/cmd/meroxa/root/api"
+	"github.com/meroxa/cli/cmd/meroxa/root/billing"
+	"github.com/meroxa/cli/cmd/meroxa/root/open"
+
+	"github.com/meroxa/cli/cmd/meroxa/root/auth"
+
 	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
 	"github.com/meroxa/cli/cmd/meroxa/root/resources"
 	"github.com/meroxa/cli/cmd/meroxa/root/transforms"
@@ -76,13 +84,16 @@ meroxa list resource-types`,
 	}
 
 	// v2
-	cmd.AddCommand(APICmd())
-	cmd.AddCommand(BillingCmd())
+	cmd.AddCommand(api.Cmd())
+	cmd.AddCommand(billing.Cmd())
+	cmd.AddCommand(CompletionCmd())
+	cmd.AddCommand(version.Cmd())
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
-	cmd.AddCommand(LoginCmd())
-	cmd.AddCommand(LogoutCmd())
-	cmd.AddCommand(VersionCmd())
-	cmd.AddCommand((&GetUser{}).Command()) // whoami
+
+	cmd.AddCommand(open.Cmd())
+	cmd.AddCommand(auth.LoginCmd())
+	cmd.AddCommand(auth.LogoutCmd())
+	cmd.AddCommand((&auth.GetUser{}).Command()) // whoami
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
 	if _, ok := os.LookupEnv("MEROXA_V2"); ok {

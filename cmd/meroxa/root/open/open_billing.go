@@ -14,23 +14,37 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package root
+package open
 
 import (
 	"fmt"
-	"runtime"
+	"os"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 )
 
-// VersionCmd represents the `meroxa version` command.
-func VersionCmd() *cobra.Command {
+const (
+	DashboardProductionURL = "https://dashboard.meroxa.io"
+	DashboardStagingURL    = "https://dashboard.staging.meroxa.io"
+)
+
+func getBillingURL() string {
+	platformURL := DashboardProductionURL
+
+	if os.Getenv("ENV") == "staging" {
+		platformURL = DashboardStagingURL
+	}
+	return fmt.Sprintf("%s/settings/billing", platformURL)
+}
+
+// SubCmd represents the `meroxa open billing` command.
+func SubCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "version",
-		Short: "Display the Meroxa CLI version",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH)
+		Use:   "billing",
+		Short: "Open your billing page in a web browser",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return browser.OpenURL(getBillingURL())
 		},
 	}
 }

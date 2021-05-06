@@ -14,30 +14,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package root
+package version
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/spf13/cobra"
 )
 
-// LogoutCmd represents the `meroxa logout` command.
-func LogoutCmd() *cobra.Command {
+// Cmd represents the `meroxa version` command.
+func Cmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "logout",
-		Short: "logout of the Meroxa platform",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: add confirmation
-			global.Config.Set("ACCESS_TOKEN", "")
-			global.Config.Set("REFRESH_TOKEN", "")
-			err := global.Config.WriteConfig()
-			if err != nil {
-				return err
-			}
-			fmt.Println("Successfully logged out.")
-			return nil
+		Use:   "version",
+		Short: "Display the Meroxa CLI version",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH)
 		},
 	}
 }

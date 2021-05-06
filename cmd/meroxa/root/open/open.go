@@ -14,32 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package root
+package open
 
 import (
-	"fmt"
-
-	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
-
 	"github.com/spf13/cobra"
 )
 
-// TODO: Check how to disable parent flags (e.g.: --json)
-
-// BillingCmd represents the `meroxa billing` command.
-func BillingCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "billing",
-		Short: "Open your billing page in a web browser",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("meroxa open billing")
-			err := deprecated.OpenBillingCmd().RunE(cmd, args)
-
-			if err != nil {
-				return err
-			}
-
-			return nil
-		},
+// Cmd represents the `meroxa open` command.
+func Cmd() *cobra.Command {
+	openCmd := &cobra.Command{
+		Use:   "open",
+		Short: "Open in a web browser",
 	}
+
+	openCmd.AddCommand(SubCmd())
+	return openCmd
 }

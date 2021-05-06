@@ -14,37 +14,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package deprecated
+package auth
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/pkg/browser"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/spf13/cobra"
 )
 
-const (
-	DashboardProductionURL = "https://dashboard.meroxa.io"
-	DashboardStagingURL    = "https://dashboard.staging.meroxa.io"
-)
-
-func getBillingURL() string {
-	platformURL := DashboardProductionURL
-
-	if os.Getenv("ENV") == "staging" {
-		platformURL = DashboardStagingURL
-	}
-	return fmt.Sprintf("%s/settings/billing", platformURL)
-}
-
-// OpenBillingCmd represents the `meroxa open billing` command.
-func OpenBillingCmd() *cobra.Command {
+// LogoutCmd represents the `meroxa logout` command.
+func LogoutCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "billing",
-		Short: "Open your billing page in a web browser",
+		Use:   "logout",
+		Short: "logout of the Meroxa platform",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return browser.OpenURL(getBillingURL())
+			// TODO: add confirmation
+			global.Config.Set("ACCESS_TOKEN", "")
+			global.Config.Set("REFRESH_TOKEN", "")
+			err := global.Config.WriteConfig()
+			if err != nil {
+				return err
+			}
+			fmt.Println("Successfully logged out.")
+			return nil
 		},
 	}
 }

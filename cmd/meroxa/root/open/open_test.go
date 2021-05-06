@@ -1,4 +1,4 @@
-package deprecated_test
+package open_test
 
 import (
 	"bytes"
