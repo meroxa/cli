@@ -50,16 +50,24 @@ func Run() {
 
 // Cmd represents the base command when called without any subcommands.
 func Cmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "meroxa",
-		Short: "The Meroxa CLI",
-		Long: `The Meroxa CLI allows quick and easy access to the Meroxa data platform.
+	longOutput := `The Meroxa CLI allows quick and easy access to the Meroxa Data Platform.
 
 Using the CLI you are able to create and manage sophisticated data pipelines
 with only a few simple commands. You can get started by listing the supported
 resource types:
 
-meroxa list resource-types`,
+`
+
+	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
+		longOutput += `meroxa resources list --types`
+	} else {
+		longOutput += `meroxa list resource-types`
+	}
+
+	cmd := &cobra.Command{
+		Use:   "meroxa",
+		Short: "The Meroxa CLI",
+		Long:  longOutput,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			deprecated.FlagRootOutputJSON = global.FlagJSON
 			return global.PersistentPreRunE(cmd)
