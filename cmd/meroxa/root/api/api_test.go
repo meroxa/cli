@@ -101,6 +101,7 @@ func TestAPIExecution(t *testing.T) {
 	a.args.Path = "/v1/my-path"
 
 	var httpResponse = &http.Response{
+		Status:     "200 OK",
 		StatusCode: 200,
 		Body: ioutil.NopCloser(bytes.NewReader([]byte(
 			`{ "key": "value" }`,
@@ -125,7 +126,7 @@ func TestAPIExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := `> GET /v1/my-path
-<  
+< 200 OK 
 {
 	"key": "value"
 }
