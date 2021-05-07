@@ -18,7 +18,8 @@ package auth
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/meroxa/cli/log"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -27,9 +28,12 @@ import (
 var (
 	_ builder.CommandWithDocs    = (*Logout)(nil)
 	_ builder.CommandWithExecute = (*Logout)(nil)
+	_ builder.CommandWithLogger  = (*Logout)(nil)
 )
 
-type Logout struct{}
+type Logout struct {
+	logger log.Logger
+}
 
 func (l *Logout) Usage() string {
 	return "logout"
@@ -41,14 +45,17 @@ func (l *Logout) Docs() builder.Docs {
 	}
 }
 
+func (l *Logout) Logger(logger log.Logger) {
+	l.logger = logger
+}
+
 func (l *Logout) Execute(ctx context.Context) error {
-	// TODO: add confirmation
 	global.Config.Set("ACCESS_TOKEN", "")
 	global.Config.Set("REFRESH_TOKEN", "")
 	err := global.Config.WriteConfig()
 	if err != nil {
 		return err
 	}
-	fmt.Println("Successfully logged out.")
+	l.logger.Infof(ctx, "Successfully logged out.")
 	return nil
 }
