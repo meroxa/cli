@@ -22,6 +22,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -134,5 +135,16 @@ func TestAPIExecution(t *testing.T) {
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	expectedBody := `
+{
+  "key": "value"
+}
+`
+
+	if !strings.Contains(expectedBody, gotJSONOutput) {
+		t.Fatalf("expected \"%v\", got \"%v\"", expectedBody, gotJSONOutput)
 	}
 }
