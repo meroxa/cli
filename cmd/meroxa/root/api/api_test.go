@@ -20,15 +20,10 @@ import (
 	"bytes"
 	"context"
 	"errors"
-<<<<<<< HEAD
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
-=======
-	"io/ioutil"
-	"net/http"
->>>>>>> 451b598 (refactor & feature: Convert API to builder command)
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -107,21 +102,12 @@ func TestAPIExecution(t *testing.T) {
 	a.args.Method = "GET"
 	a.args.Path = "/v1/my-path"
 
-<<<<<<< HEAD
 	bodyResponse := `{ "key": "value" }`
 
 	var httpResponse = &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
 		Body:       ioutil.NopCloser(bytes.NewReader([]byte(bodyResponse))),
-=======
-	var httpResponse = &http.Response{
-		Status:     "200 OK",
-		StatusCode: 200,
-		Body: ioutil.NopCloser(bytes.NewReader([]byte(
-			`{ "key": "value" }`,
-		))),
->>>>>>> 451b598 (refactor & feature: Convert API to builder command)
 	}
 
 	client.
@@ -140,7 +126,6 @@ func TestAPIExecution(t *testing.T) {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-<<<<<<< HEAD
 	expectedBody := `{
 	"key": "value"
 }`
@@ -150,26 +135,14 @@ func TestAPIExecution(t *testing.T) {
 < %s 
 %s
 `, a.args.Method, a.args.Path, httpResponse.Status, expectedBody)
-=======
-	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := `> GET /v1/my-path
-< 200 OK 
-{
-	"key": "value"
-}
-`
->>>>>>> 451b598 (refactor & feature: Convert API to builder command)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
-<<<<<<< HEAD
 
 	gotJSONOutput := strings.TrimSpace(logger.JSONOutput())
 
 	if !strings.Contains(expectedBody, gotJSONOutput) {
 		t.Fatalf("expected \"%v\", got \"%v\"", expectedBody, gotJSONOutput)
 	}
-=======
->>>>>>> 451b598 (refactor & feature: Convert API to builder command)
 }
