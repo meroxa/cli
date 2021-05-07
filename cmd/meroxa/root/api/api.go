@@ -109,10 +109,10 @@ func (a *API) Execute(ctx context.Context) error {
 		prettyJSON.Write(b)
 	}
 
-	a.logger.Infof(ctx, "> %s %s\n", a.args.Method, a.args.Path)
-	a.logger.Infof(ctx, "< %s %s\n", resp.Status, resp.Proto)
+	a.logger.Infof(ctx, "> %s %s", a.args.Method, a.args.Path)
+	a.logger.Infof(ctx, "< %s %s", resp.Status, resp.Proto)
 	for k, v := range resp.Header {
-		a.logger.Infof(ctx, "< %s %s\n", k, strings.Join(v, " "))
+		a.logger.Infof(ctx, "< %s %s", k, strings.Join(v, " "))
 	}
 
 	a.logger.Info(ctx, prettyJSON.String())
