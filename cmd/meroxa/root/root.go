@@ -124,9 +124,10 @@ func setAliases(cmd *cobra.Command) {
 		"whoami": &auth.WhoAmI{},
 	}
 
-	for _, c := range aliases {
+	for v, c := range aliases {
 		cc := builder.BuildCobraCommand(c)
 		cc.Hidden = true
+		cc.Use = v
 		cmd.AddCommand(cc)
 	}
 }
