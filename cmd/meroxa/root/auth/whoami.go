@@ -20,9 +20,7 @@ import (
 	"context"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-
 	"github.com/meroxa/cli/log"
-
 	"github.com/meroxa/meroxa-go"
 )
 
