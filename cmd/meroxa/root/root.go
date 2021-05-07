@@ -85,15 +85,16 @@ resource types:
 	if v, ok := os.LookupEnv("MEROXA_V2"); !ok || ok && v != "only" {
 		// TODO: Once we make a full transition to `subject-verb-object` remove the `deprecated` pkg altogether
 		deprecated.RegisterCommands(cmd)
+
+		cmd.AddCommand(builder.BuildCobraCommand(&auth.Login{}))
+		cmd.AddCommand(builder.BuildCobraCommand(&auth.Logout{}))
+		cmd.AddCommand(builder.BuildCobraCommand(&auth.WhoAmI{}))
 	}
 
 	// v2
 	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
 
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
-	cmd.AddCommand(builder.BuildCobraCommand(&auth.WhoAmI{}))
-	cmd.AddCommand(builder.BuildCobraCommand(&auth.Login{}))
-	cmd.AddCommand(builder.BuildCobraCommand(&auth.Logout{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&billing.Billing{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
@@ -101,12 +102,31 @@ resource types:
 
 	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
 	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
+		cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
 		cmd.AddCommand(builder.BuildCobraCommand(&transforms.Transforms{}))
+
+		setAliases(cmd)
 	}
 
 	return cmd
+}
+
+// setAliases includes command to root but not shown in help
+// e.g.: `meroxa login` -> `meroxa auth login`.
+func setAliases(cmd *cobra.Command) {
+	aliases := map[string]builder.Command{
+		"login":  &auth.Login{},
+		"logout": &auth.Logout{},
+		"whoami": &auth.WhoAmI{},
+	}
+
+	for _, c := range aliases {
+		cc := builder.BuildCobraCommand(c)
+		cc.Hidden = true
+		cmd.AddCommand(cc)
+	}
 }
