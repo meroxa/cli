@@ -14,20 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-<<<<<<< HEAD:cmd/meroxa/root/auth/auth.go
 package auth
 
 import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-=======
-package billing
-
-import (
-	"fmt"
-
-	"github.com/meroxa/cli/cmd/meroxa/root/open"
-
->>>>>>> 48bdb79 (refactor: Commands to their own pkgs):cmd/meroxa/root/billing/billing.go
 	"github.com/spf13/cobra"
 )
 
@@ -36,18 +26,7 @@ var (
 	_ builder.CommandWithSubCommands = (*Auth)(nil)
 )
 
-<<<<<<< HEAD:cmd/meroxa/root/auth/auth.go
 type Auth struct{}
-=======
-// Cmd represents the `meroxa billing` command.
-func Cmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "billing",
-		Short: "Open your billing page in a web browser",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println("meroxa open billing")
-			err := open.Cmd().RunE(cmd, args)
->>>>>>> 48bdb79 (refactor: Commands to their own pkgs):cmd/meroxa/root/billing/billing.go
 
 func (o *Auth) Usage() string {
 	return "auth"
