@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -101,12 +102,12 @@ func TestAPIExecution(t *testing.T) {
 	a.args.Method = "GET"
 	a.args.Path = "/v1/my-path"
 
+	bodyResponse := `{ "key": "value" }`
+
 	var httpResponse = &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
-		Body: ioutil.NopCloser(bytes.NewReader([]byte(
-			`{ "key": "value" }`,
-		))),
+		Body:       ioutil.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
 	client.
@@ -125,24 +126,21 @@ func TestAPIExecution(t *testing.T) {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := `> GET /v1/my-path
-< 200 OK 
-{
+	expectedBody := `{
 	"key": "value"
-}
-`
+}`
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`> %s %s
+< %s 
+%s
+`, a.args.Method, a.args.Path, httpResponse.Status, expectedBody)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
-	gotJSONOutput := logger.JSONOutput()
-	expectedBody := `
-{
-  "key": "value"
-}
-`
+	gotJSONOutput := strings.TrimSpace(logger.JSONOutput())
 
 	if !strings.Contains(expectedBody, gotJSONOutput) {
 		t.Fatalf("expected \"%v\", got \"%v\"", expectedBody, gotJSONOutput)
