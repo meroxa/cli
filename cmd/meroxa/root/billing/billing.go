@@ -17,36 +17,9 @@ limitations under the License.
 package billing
 
 import (
-	"context"
-
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
 )
 
-type Billing struct{}
-
-var (
-	_ builder.CommandWithDocs    = (*Billing)(nil)
-	_ builder.CommandWithExecute = (*Billing)(nil)
-)
-
-func (b *Billing) Usage() string {
-	return "billing"
-}
-
-func (b *Billing) Docs() builder.Docs {
-	return builder.Docs{
-		Short: "Open your billing page in a web browser",
-	}
-}
-
-func (b *Billing) Execute(ctx context.Context) error {
-	err := builder.BuildCobraCommand(&open.Billing{}).Execute()
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+type Billing struct {
+	open.Billing
 }
