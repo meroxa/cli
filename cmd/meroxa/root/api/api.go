@@ -104,7 +104,7 @@ func (a *API) Execute(ctx context.Context) error {
 	}
 	var prettyJSON bytes.Buffer
 
-	if err := json.Indent(&prettyJSON, b, "", "\t"); err != nil {
+	if err = json.Indent(&prettyJSON, b, "", "\t"); err != nil {
 		prettyJSON.Write(b)
 	}
 
@@ -117,7 +117,8 @@ func (a *API) Execute(ctx context.Context) error {
 	a.logger.Info(ctx, prettyJSON.String())
 
 	var bodyJSON map[string]interface{}
-	err = json.Unmarshal([]byte(prettyJSON.String()), &bodyJSON)
+
+	err = json.Unmarshal(prettyJSON.Bytes(), &bodyJSON)
 
 	if err != nil {
 		a.logger.Errorf(ctx, "could not unmarshal: %w", err)
