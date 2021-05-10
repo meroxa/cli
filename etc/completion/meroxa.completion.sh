@@ -955,9 +955,9 @@ _meroxa_list_connectors()
     noun_aliases=()
 }
 
-_meroxa_list_endpoint()
+_meroxa_list_endpoints()
 {
-    last_command="meroxa_list_endpoint"
+    last_command="meroxa_list_endpoints"
 
     command_aliases=()
 
@@ -1054,6 +1054,7 @@ _meroxa_list_resource-types()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--types")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1082,6 +1083,7 @@ _meroxa_list_resources()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--types")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1110,6 +1112,7 @@ _meroxa_list_transforms()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--types")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1131,34 +1134,34 @@ _meroxa_list()
     commands=()
     commands+=("connectors")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("connector")
-        aliashash["connector"]="connectors"
+        command_aliases+=("ls")
+        aliashash["ls"]="connectors"
     fi
-    commands+=("endpoint")
+    commands+=("endpoints")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("endpoints")
-        aliashash["endpoints"]="endpoint"
+        command_aliases+=("ls")
+        aliashash["ls"]="endpoints"
     fi
     commands+=("help")
     commands+=("pipelines")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("pipeline")
-        aliashash["pipeline"]="pipelines"
+        command_aliases+=("ls")
+        aliashash["ls"]="pipelines"
     fi
     commands+=("resource-types")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("resource-type")
-        aliashash["resource-type"]="resource-types"
+        command_aliases+=("ls")
+        aliashash["ls"]="resource-types"
     fi
     commands+=("resources")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("resource")
-        aliashash["resource"]="resources"
+        command_aliases+=("ls")
+        aliashash["ls"]="resources"
     fi
     commands+=("transforms")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("transform")
-        aliashash["transform"]="transforms"
+        command_aliases+=("ls")
+        aliashash["ls"]="transforms"
     fi
 
     flags=()
