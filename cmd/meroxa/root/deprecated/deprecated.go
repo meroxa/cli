@@ -16,8 +16,15 @@ limitations under the License.
 
 package deprecated
 
-var (
-	// FlagRootOutputJSON is true if we should output a JSON result.
-	// Deprecated: use log.Logger instead, it knows about the flag.
-	FlagRootOutputJSON bool
-)
+import "github.com/spf13/cobra"
+
+// RegisterCommands Adds commands that follow an old CLI structure that's not longer in use.
+func RegisterCommands(cmd *cobra.Command) {
+	cmd.AddCommand(addCmd())
+	cmd.AddCommand(createCmd())
+	cmd.AddCommand(describeCmd())
+	cmd.AddCommand(listCmd())
+	cmd.AddCommand(logsCmd())
+	cmd.AddCommand(removeCmd())
+	cmd.AddCommand(updateCmd())
+}
