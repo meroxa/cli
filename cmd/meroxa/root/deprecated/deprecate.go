@@ -5,9 +5,10 @@ import (
 )
 
 func RegisterCommands(cmd *cobra.Command) {
-	cmd.AddCommand(addCmd()) // ✅.
+	cmd.AddCommand(addCmd())
+	cmd.AddCommand(createCmd())
 
-	cmd.AddCommand(CreateCmd())
+	// To migrate
 	cmd.AddCommand(DescribeCmd())
 	cmd.AddCommand(ListCmd())
 	cmd.AddCommand(LogsCmd())

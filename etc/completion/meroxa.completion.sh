@@ -732,10 +732,6 @@ _meroxa_create()
     commands=()
     commands+=("connector")
     commands+=("endpoint")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("endpoints")
-        aliashash["endpoints"]="endpoint"
-    fi
     commands+=("help")
     commands+=("pipeline")
 

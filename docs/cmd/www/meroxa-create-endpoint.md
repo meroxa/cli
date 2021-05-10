@@ -28,8 +28,8 @@ meroxa create endpoint my-endpoint --protocol http --stream my-stream
 
 ```
   -h, --help              help for endpoint
-  -p, --protocol string   protocol, value can be http or grpc (required)
-  -s, --stream string     stream name (required)
+  -p, --protocol string   protocol, value can be http or grpc
+  -s, --stream string     stream name
 ```
 
 ### Options inherited from parent commands
