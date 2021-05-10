@@ -3,7 +3,7 @@
 Describe connector
 
 ```
-meroxa describe connector [name] [flags]
+meroxa describe connector NAME [flags]
 ```
 
 ### Options
