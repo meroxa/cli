@@ -16,7 +16,8 @@ meroxa remove pipeline NAME [flags]
 ### Options
 
 ```
-  -h, --help   help for pipeline
+  -f, --force   skip confirmation
+  -h, --help    help for pipeline
 ```
 
 ### Options inherited from parent commands
@@ -24,7 +25,6 @@ meroxa remove pipeline NAME [flags]
 ```
       --config string      config file
       --debug              display any debugging information
-  -f, --force              force delete without confirmation prompt
       --json               output json
       --timeout duration   set the client timeout (default 10s)
 ```

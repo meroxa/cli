@@ -9,7 +9,8 @@ meroxa remove connector NAME [flags]
 ### Options
 
 ```
-  -h, --help   help for connector
+  -f, --force   skip confirmation
+  -h, --help    help for connector
 ```
 
 ### Options inherited from parent commands
@@ -17,7 +18,6 @@ meroxa remove connector NAME [flags]
 ```
       --config string      config file
       --debug              display any debugging information
-  -f, --force              force delete without confirmation prompt
       --json               output json
       --timeout duration   set the client timeout (default 10s)
 ```

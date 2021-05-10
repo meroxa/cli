@@ -10,8 +10,8 @@ func RegisterCommands(cmd *cobra.Command) {
 	cmd.AddCommand(describeCmd())
 	cmd.AddCommand(listCmd())
 	cmd.AddCommand(logsCmd())
+	cmd.AddCommand(removeCmd())
 
 	// To migrate
-	cmd.AddCommand((&Remove{}).Command())
 	cmd.AddCommand(UpdateCmd())
 }

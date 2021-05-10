@@ -1424,13 +1424,13 @@ _meroxa_remove_connector()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1454,13 +1454,13 @@ _meroxa_remove_endpoint()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1487,8 +1487,6 @@ _meroxa_remove_help()
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1513,13 +1511,13 @@ _meroxa_remove_pipeline()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1543,13 +1541,13 @@ _meroxa_remove_resource()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1567,14 +1565,34 @@ _meroxa_remove()
 
     commands=()
     commands+=("connector")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="connector"
+        command_aliases+=("rm")
+        aliashash["rm"]="connector"
+    fi
     commands+=("endpoint")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("endpoints")
-        aliashash["endpoints"]="endpoint"
+        command_aliases+=("delete")
+        aliashash["delete"]="endpoint"
+        command_aliases+=("rm")
+        aliashash["rm"]="endpoint"
     fi
     commands+=("help")
     commands+=("pipeline")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="pipeline"
+        command_aliases+=("rm")
+        aliashash["rm"]="pipeline"
+    fi
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="resource"
+        command_aliases+=("rm")
+        aliashash["rm"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
@@ -1582,8 +1600,6 @@ _meroxa_remove()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
