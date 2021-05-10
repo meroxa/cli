@@ -363,6 +363,12 @@ func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
 				return err
 			}
 		}
+
+		// do not prompt for confirmation when --force (or --yolo 😜) is set
+		if force || yolo {
+			return nil
+		}
+
 		wantInput := v.Confirm(cmd.Context())
 
 		reader := bufio.NewReader(os.Stdin)
