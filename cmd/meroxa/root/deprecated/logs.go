@@ -14,20 +14,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/* ⚠️ WARN ⚠️
+
+The following commands will be removed once we decide to stop adding support for commands that don't follow
+the `subject-verb-object` design.
+
+*/
+
 package deprecated
 
 import (
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
 	"github.com/spf13/cobra"
 )
 
-// LogsCmd represents the `meroxa logs` command.
-func LogsCmd() *cobra.Command {
-	logsCmd := &cobra.Command{
+// logsCmd represents the `meroxa logs` command.
+func logsCmd() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "logs",
 		Short: "Print logs for a component",
 	}
 
-	logsCmd.AddCommand(LogsConnectorCmd())
+	cmd.AddCommand(logsConnectorCmd())
 
-	return logsCmd
+	return cmd
+}
+
+// logsConnectorCmd represents `meroxa logs connector` -> `meroxa connector logs`.
+func logsConnectorCmd() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&connectors.Logs{})
+	cmd.Use = "connector NAME"
+	cmd.Short = "Print logs for a connector"
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `connector logs` instead"
+	}
+
+	return cmd
 }
