@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -21,6 +22,11 @@ var (
 	flagTimeout time.Duration
 	FlagJSON    bool // TODO make this private! do not use this variable from other packages
 )
+
+func IsMeroxaV2Released() bool {
+	_, ok := os.LookupEnv("MEROXA_V2")
+	return ok
+}
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&FlagJSON, "json", false, "output json")

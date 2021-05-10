@@ -439,6 +439,10 @@ _meroxa_add()
     commands=()
     commands+=("help")
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("add")
+        aliashash["add"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
