@@ -1721,8 +1721,12 @@ _meroxa_update_resource()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--credentials=")
-    two_word_flags+=("--credentials")
+    flags+=("--ca-cert=")
+    two_word_flags+=("--ca-cert")
+    flags+=("--client-cert=")
+    two_word_flags+=("--client-cert")
+    flags+=("--client-key=")
+    two_word_flags+=("--client-key")
     flags+=("--help")
     flags+=("-h")
     flags+=("--metadata=")
@@ -1730,9 +1734,14 @@ _meroxa_update_resource()
     two_word_flags+=("-m")
     flags+=("--name=")
     two_word_flags+=("--name")
+    flags+=("--password=")
+    two_word_flags+=("--password")
+    flags+=("--ssl")
     flags+=("--url=")
     two_word_flags+=("--url")
     two_word_flags+=("-u")
+    flags+=("--username=")
+    two_word_flags+=("--username")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1753,21 +1762,9 @@ _meroxa_update()
 
     commands=()
     commands+=("connector")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("connectors")
-        aliashash["connectors"]="connector"
-    fi
     commands+=("help")
     commands+=("pipeline")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("pipelines")
-        aliashash["pipelines"]="pipeline"
-    fi
     commands+=("resource")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("resources")
-        aliashash["resources"]="resource"
-    fi
 
     flags=()
     two_word_flags=()

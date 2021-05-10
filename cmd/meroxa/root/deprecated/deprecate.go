@@ -11,7 +11,5 @@ func RegisterCommands(cmd *cobra.Command) {
 	cmd.AddCommand(listCmd())
 	cmd.AddCommand(logsCmd())
 	cmd.AddCommand(removeCmd())
-
-	// To migrate
-	cmd.AddCommand(UpdateCmd())
+	cmd.AddCommand(updateCmd())
 }
