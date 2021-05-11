@@ -60,9 +60,7 @@ func removeConnectorCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&connectors.Remove{})
 	cmd.Use = "connector NAME"
 	cmd.Short = "Remove connector"
-
-	// Unset aliases since the original command didn't have one.
-	cmd.Aliases = nil
+	cmd.Aliases = []string{"connectors"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `connector remove` instead"
@@ -76,9 +74,7 @@ func removeEndpointCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&endpoints.Remove{})
 	cmd.Use = "endpoint NAME"
 	cmd.Short = "Remove endpoint"
-
-	// Unset aliases since the original command didn't have one.
-	cmd.Aliases = nil
+	cmd.Aliases = []string{"endpoints"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `endpoint remove` instead"
@@ -92,9 +88,7 @@ func removePipelineCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&pipelines.Remove{})
 	cmd.Use = "pipeline NAME"
 	cmd.Short = "Remove pipeline"
-
-	// Unset aliases since the original command didn't have one.
-	cmd.Aliases = nil
+	cmd.Aliases = []string{"pipelines"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `pipeline remove` instead"
@@ -108,9 +102,7 @@ func removeResourceCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.Remove{})
 	cmd.Use = "resource NAME"
 	cmd.Short = "Remove resource"
-
-	// Unset aliases since the original command didn't have one.
-	cmd.Aliases = nil
+	cmd.Aliases = []string{"resources"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `resource remove` instead"

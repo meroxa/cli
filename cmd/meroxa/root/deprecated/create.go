@@ -61,6 +61,8 @@ func createConnectorCmd() *cobra.Command {
 		"meroxa create connector [NAME] --to pg2redshift --input orders # --input will be the desired stream \n" +
 		"meroxa create connector [NAME] --to pg2redshift --input orders --pipeline my-pipeline\n"
 
+	cmd.Aliases = []string{"connectors"}
+
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `connector create` instead"
 	}
@@ -76,6 +78,7 @@ func createEndpoint() *cobra.Command {
 	cmd.Long = "Use create endpoint to expose an endpoint to a connector stream"
 	cmd.Example = `
 meroxa create endpoint my-endpoint --protocol http --stream my-stream`
+	cmd.Aliases = []string{"endpoints"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `endpoint create` instead"
@@ -90,6 +93,7 @@ func createPipelineCmd() *cobra.Command {
 
 	cmd.Use = "pipeline NAME" //nolint:goconst
 	cmd.Short = "Create a pipeline"
+	cmd.Aliases = []string{"pipelines"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `pipelines create` instead"

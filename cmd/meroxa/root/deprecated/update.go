@@ -56,6 +56,7 @@ func updateConnector() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&connectors.Update{})
 	cmd.Use = "connector NAME --state pause | resume | restart"
 	cmd.Short = "Update connector state"
+	cmd.Aliases = []string{"connectors"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `connector update` instead"
@@ -69,6 +70,8 @@ func updatePipeline() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&pipelines.Update{})
 	cmd.Use = "pipeline NAME"
 	cmd.Short = "Update pipeline state"
+	cmd.Aliases = []string{"pipelines"}
+
 	cmd.Example = "\n" +
 		"meroxa update pipeline old-name --name new-name\n" +
 		"meroxa update pipeline pipeline-name --state pause\n" +
@@ -87,6 +90,7 @@ func updateResource() *cobra.Command {
 	cmd.Use = "resource NAME"
 	cmd.Short = "Update a resource"
 	cmd.Long = `Use the update command to update various Meroxa resources.`
+	cmd.Aliases = []string{"resources"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `resource update` instead"

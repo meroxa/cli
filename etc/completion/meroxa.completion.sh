@@ -439,6 +439,10 @@ _meroxa_add()
     commands=()
     commands+=("help")
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resources")
+        aliashash["resources"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
@@ -727,9 +731,21 @@ _meroxa_create()
 
     commands=()
     commands+=("connector")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("connectors")
+        aliashash["connectors"]="connector"
+    fi
     commands+=("endpoint")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("endpoints")
+        aliashash["endpoints"]="endpoint"
+    fi
     commands+=("help")
     commands+=("pipeline")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("pipelines")
+        aliashash["pipelines"]="pipeline"
+    fi
 
     flags=()
     two_word_flags=()
@@ -1156,8 +1172,8 @@ _meroxa_list()
     fi
     commands+=("transforms")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("transforms")
-        aliashash["transforms"]="transforms"
+        command_aliases+=("transform")
+        aliashash["transform"]="transforms"
     fi
 
     flags=()
@@ -1561,10 +1577,26 @@ _meroxa_remove()
 
     commands=()
     commands+=("connector")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("connectors")
+        aliashash["connectors"]="connector"
+    fi
     commands+=("endpoint")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("endpoints")
+        aliashash["endpoints"]="endpoint"
+    fi
     commands+=("help")
     commands+=("pipeline")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("pipelines")
+        aliashash["pipelines"]="pipeline"
+    fi
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resources")
+        aliashash["resources"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
@@ -1734,9 +1766,21 @@ _meroxa_update()
 
     commands=()
     commands+=("connector")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("connectors")
+        aliashash["connectors"]="connector"
+    fi
     commands+=("help")
     commands+=("pipeline")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("pipelines")
+        aliashash["pipelines"]="pipeline"
+    fi
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resources")
+        aliashash["resources"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
