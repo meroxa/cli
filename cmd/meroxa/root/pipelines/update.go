@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
@@ -98,7 +99,7 @@ func (u *Update) Execute(ctx context.Context) error {
 
 			err = json.Unmarshal([]byte(u.flags.Metadata), &metadata)
 			if err != nil {
-				return err
+				return fmt.Errorf("could not parse metadata: %w", err)
 			}
 
 			pi.Metadata = metadata

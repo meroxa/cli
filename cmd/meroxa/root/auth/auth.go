@@ -14,30 +14,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package root
+package auth
 
 import (
-	"fmt"
-
-	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/spf13/cobra"
 )
 
-// LogoutCmd represents the `meroxa logout` command.
-func LogoutCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "logout",
-		Short: "logout of the Meroxa platform",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			// TODO: add confirmation
-			global.Config.Set("ACCESS_TOKEN", "")
-			global.Config.Set("REFRESH_TOKEN", "")
-			err := global.Config.WriteConfig()
-			if err != nil {
-				return err
-			}
-			fmt.Println("Successfully logged out.")
-			return nil
-		},
+var (
+	_ builder.CommandWithDocs        = (*Auth)(nil)
+	_ builder.CommandWithSubCommands = (*Auth)(nil)
+)
+
+type Auth struct{}
+
+func (o *Auth) Usage() string {
+	return "auth"
+}
+
+func (o *Auth) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Authentication commands for Meroxa",
+	}
+}
+
+func (o *Auth) SubCommands() []*cobra.Command {
+	return []*cobra.Command{
+		builder.BuildCobraCommand(&Login{}),
+		builder.BuildCobraCommand(&Logout{}),
+		builder.BuildCobraCommand(&WhoAmI{}),
 	}
 }

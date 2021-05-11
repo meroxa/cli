@@ -24,7 +24,9 @@ import (
 type Endpoints struct{}
 
 var (
-	_ builder.CommandWithAliases = (*Endpoints)(nil)
+	_ builder.CommandWithAliases     = (*Endpoints)(nil)
+	_ builder.CommandWithDocs        = (*Endpoints)(nil)
+	_ builder.CommandWithSubCommands = (*Endpoints)(nil)
 )
 
 func (*Endpoints) Usage() string {

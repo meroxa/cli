@@ -17,9 +17,7 @@ meroxa whoami [flags]
 ### Examples
 
 ```
-
-meroxa whoami'
-
+meroxa whoami
 ```
 
 ### Options

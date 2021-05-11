@@ -24,7 +24,9 @@ import (
 type Pipelines struct{}
 
 var (
-	_ builder.CommandWithAliases = (*Pipelines)(nil)
+	_ builder.CommandWithDocs        = (*Pipelines)(nil)
+	_ builder.CommandWithAliases     = (*Pipelines)(nil)
+	_ builder.CommandWithSubCommands = (*Pipelines)(nil)
 )
 
 func (*Pipelines) Aliases() []string {

@@ -1,6 +1,6 @@
 ## meroxa logout
 
-logout of the Meroxa platform
+Clears local login credentials of the Meroxa Platform
 
 ```
 meroxa logout [flags]

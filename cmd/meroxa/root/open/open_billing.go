@@ -14,14 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package deprecated
+package open
 
 import (
+	"context"
 	"fmt"
 	"os"
 
+	"github.com/meroxa/cli/log"
+
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+
 	"github.com/pkg/browser"
-	"github.com/spf13/cobra"
 )
 
 const (
@@ -29,22 +33,40 @@ const (
 	DashboardStagingURL    = "https://dashboard.staging.meroxa.io"
 )
 
-func getBillingURL() string {
+type Billing struct {
+	logger log.Logger
+}
+
+var (
+	_ builder.CommandWithDocs    = (*Billing)(nil)
+	_ builder.CommandWithExecute = (*Billing)(nil)
+	_ builder.CommandWithLogger  = (*Billing)(nil)
+)
+
+func (b *Billing) Usage() string {
+	return "billing"
+}
+
+func (b *Billing) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Open your billing page in a web browser",
+	}
+}
+
+func (b *Billing) Logger(logger log.Logger) {
+	b.logger = logger
+}
+
+func (b *Billing) Execute(ctx context.Context) error {
+	b.logger.Info(ctx, "Opening your billing page in your browser...")
+	return browser.OpenURL(b.getBillingURL())
+}
+
+func (b *Billing) getBillingURL() string {
 	platformURL := DashboardProductionURL
 
 	if os.Getenv("ENV") == "staging" {
 		platformURL = DashboardStagingURL
 	}
 	return fmt.Sprintf("%s/settings/billing", platformURL)
-}
-
-// OpenBillingCmd represents the `meroxa open billing` command.
-func OpenBillingCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "billing",
-		Short: "Open your billing page in a web browser",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return browser.OpenURL(getBillingURL())
-		},
-	}
 }

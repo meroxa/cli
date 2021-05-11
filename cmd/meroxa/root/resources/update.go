@@ -89,15 +89,24 @@ func (u *Update) Execute(ctx context.Context) error {
 
 	// If metadata was provided, update it
 	if u.flags.Metadata != "" {
-		err := u.setMetadata(&res)
+		var metadata map[string]interface{}
+		err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
 		if err != nil {
 			return fmt.Errorf("can't parse metadata: %w", err)
 		}
+		res.Metadata = metadata
 	}
 
 	// If any of the credential values are being updated
 	if u.isUpdatingCredentials() {
-		u.setCredentials(&res)
+		res.Credentials = &meroxa.Credentials{
+			Username:      u.flags.Username,
+			Password:      u.flags.Password,
+			CACert:        u.flags.CaCert,
+			ClientCert:    u.flags.ClientCert,
+			ClientCertKey: u.flags.ClientKey,
+			UseSSL:        u.flags.SSL,
+		}
 	}
 
 	r, err := u.client.UpdateResource(ctx, u.args.Name, res)
@@ -148,39 +157,4 @@ func (u *Update) isUpdatingCredentials() bool {
 		u.flags.ClientCert != "" ||
 		u.flags.ClientKey != "" ||
 		u.flags.SSL
-}
-
-func (u *Update) setMetadata(res *meroxa.UpdateResourceInput) error {
-	var metadata map[string]interface{}
-	err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
-	res.Metadata = metadata
-	return err
-}
-
-func (u *Update) setCredentials(res *meroxa.UpdateResourceInput) {
-	res.Credentials = &meroxa.Credentials{}
-
-	if u.flags.Username != "" {
-		res.Credentials.Username = u.flags.Username
-	}
-
-	if u.flags.Password != "" {
-		res.Credentials.Password = u.flags.Password
-	}
-
-	if u.flags.CaCert != "" {
-		res.Credentials.CACert = u.flags.CaCert
-	}
-
-	if u.flags.ClientCert != "" {
-		res.Credentials.ClientCert = u.flags.ClientCert
-	}
-
-	if u.flags.ClientKey != "" {
-		res.Credentials.ClientCertKey = u.flags.ClientKey
-	}
-
-	if u.flags.SSL {
-		res.Credentials.UseSSL = u.flags.SSL
-	}
 }

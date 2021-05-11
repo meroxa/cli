@@ -19,6 +19,7 @@ package resources
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/meroxa/cli/log"
 
@@ -125,7 +126,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	if c.flags.Metadata != "" {
 		err := json.Unmarshal([]byte(c.flags.Metadata), &input.Metadata)
 		if err != nil {
-			return err
+			return fmt.Errorf("could not parse metadata: %w", err)
 		}
 	}
 

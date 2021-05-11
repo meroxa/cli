@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package root
+package auth
 
 import (
 	"context"
@@ -22,18 +22,19 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 
-	"github.com/fatih/color"
-	"github.com/meroxa/cli/cmd/meroxa/global"
-	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
 	"github.com/skratchdot/open-golang/open"
-	"github.com/spf13/cobra"
+
+	"github.com/fatih/color"
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/log"
+	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
 	"github.com/spf13/viper"
 )
 
@@ -46,9 +47,44 @@ const (
 	domain   = "auth.meroxa.io"
 )
 
+var (
+	_ builder.CommandWithDocs    = (*Login)(nil)
+	_ builder.CommandWithLogger  = (*Login)(nil)
+	_ builder.CommandWithExecute = (*Login)(nil)
+)
+
+type Login struct {
+	logger log.Logger
+}
+
+func (l *Login) Usage() string {
+	return "login"
+}
+
+func (l *Login) Docs() builder.Docs {
+	return builder.Docs{
+		Short: "Login or Sign up to the Meroxa Platform",
+	}
+}
+
+func (l *Login) Execute(ctx context.Context) error {
+	// initialize the code verifier
+	err := l.login(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (l *Login) Logger(logger log.Logger) {
+	l.logger = logger
+}
+
 // AuthorizeUser implements the PKCE OAuth2 flow.
 // nolint:funlen // this function should be refactored when moving to the new code structure
-func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
+func (l *Login) authorizeUser(ctx context.Context, cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 	// initialize the code verifier
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
@@ -63,7 +99,7 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 			"&code_challenge=%s"+
 			"&code_challenge_method=S256&redirect_uri=%s",
 		authDomain, audience, clientID, codeChallenge, redirectURL)
-	log.Println(color.CyanString(authorizationURL))
+	l.logger.Infof(ctx, color.CyanString(authorizationURL))
 
 	// start a web server to listen on a callback URL
 	server := &http.Server{Addr: redirectURL}
@@ -73,23 +109,23 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 		// get the authorization code
 		code := r.URL.Query().Get("code")
 		if code == "" {
-			fmt.Println("meroxa: Url Param 'code' is missing")
+			l.logger.Errorf(ctx, "meroxa: Url Param 'code' is missing")
 			_, _ = io.WriteString(w, "Error: could not find 'code' URL parameter\n")
 
 			// close the HTTP server and return
-			cleanup(server)
+			l.cleanup(server)
 			return
 		}
 
 		// trade the authorization code and the code verifier for an access token
 		codeVerifier := CodeVerifier.String()
-		accessToken, refreshToken, err := getAccessTokenAuth(r.Context(), clientID, codeVerifier, code, redirectURL)
+		accessToken, refreshToken, err := l.getAccessTokenAuth(r.Context(), clientID, codeVerifier, code, redirectURL)
 		if err != nil {
-			fmt.Println("meroxa: could not get access token")
+			l.logger.Errorf(ctx, "meroxa: could not get access token")
 			_, _ = io.WriteString(w, "Error: could not retrieve tokens\n")
 
 			// close the HTTP server and return
-			cleanup(server)
+			l.cleanup(server)
 			return
 		}
 		cfg.Set("ACCESS_TOKEN", accessToken)
@@ -100,11 +136,11 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 				err = cfg.SafeWriteConfig()
 			}
 			if err != nil {
-				fmt.Printf("meroxa: could not write config file: %v", err)
+				l.logger.Errorf(ctx, "meroxa: could not write config file: %v", err)
 				_, _ = io.WriteString(w, "Error: could not store access token\n")
 
 				// close the HTTP server and return
-				cleanup(server)
+				l.cleanup(server)
 				return
 			}
 		}
@@ -126,54 +162,54 @@ func authorizeUser(cfg *viper.Viper, clientID, authDomain, redirectURL string) {
 				</script>
 			</html>`)
 
-		fmt.Println("Successfully logged in.")
+		l.logger.Infof(ctx, "Successfully logged in.")
 
 		// close the HTTP server
-		cleanup(server)
+		l.cleanup(server)
 	})
 
 	// parse the redirect URL for the port number
 	u, err := url.Parse(redirectURL)
 	if err != nil {
-		fmt.Printf("meroxa: bad redirect URL: %s\n", err)
+		l.logger.Errorf(ctx, "meroxa: bad redirect URL: %s\n", err)
 		os.Exit(1)
 	}
 
 	// set up a listener on the redirect port
 	port := fmt.Sprintf(":%s", u.Port())
-	l, err := net.Listen("tcp", port)
+	listener, err := net.Listen("tcp", port)
 	if err != nil {
-		fmt.Printf("meroxa: can't listen to port %s: %s\n", port, err)
+		l.logger.Errorf(ctx, "meroxa: can't listen to port %s: %s\n", port, err)
 		os.Exit(1)
 	}
 
 	// open a browser window to the authorizationURL
 	err = open.Start(authorizationURL)
 	if err != nil {
-		fmt.Printf("meroxa: can't open browser to URL %s: %s\n", authorizationURL, err)
+		l.logger.Errorf(ctx, "meroxa: can't open browser to URL %s: %s\n", authorizationURL, err)
 		os.Exit(1)
 	}
 
 	// start the blocking web server loop
 	// this will exit when the handler gets fired and calls server.Close()
-	_ = server.Serve(l)
+	_ = server.Serve(listener)
 }
 
-func login() error {
-	log.Println(color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
-	authorizeUser(global.Config, clientID, domain, callbackURL)
+func (l *Login) login(ctx context.Context) error {
+	l.logger.Infof(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
+	l.authorizeUser(ctx, global.Config, clientID, domain, callbackURL)
 	return nil
 }
 
 // cleanup closes the HTTP server.
-func cleanup(server *http.Server) {
+func (l *Login) cleanup(server *http.Server) {
 	// we run this as a goroutine so that this function falls through and
 	// the socket to the browser gets flushed/closed before the server goes away
 	go server.Close()
 }
 
 // getAccessTokenAuth trades the authorization code retrieved from the first OAuth2 leg for an access token.
-func getAccessTokenAuth(
+func (l *Login) getAccessTokenAuth(
 	ctx context.Context,
 	clientID, codeVerifier, authorizationCode, callbackURL string,
 ) (accessToken, refreshToken string, err error) {
@@ -195,7 +231,7 @@ func getAccessTokenAuth(
 	req.Header.Add("content-type", "application/x-www-form-urlencoded")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		fmt.Printf("meroxa: HTTP error: %s", err)
+		l.logger.Errorf(ctx, "meroxa: HTTP error: %s", err)
 		return "", "", err
 	}
 
@@ -207,7 +243,7 @@ func getAccessTokenAuth(
 	// unmarshal the json into a string map
 	err = json.Unmarshal(body, &responseData)
 	if err != nil {
-		fmt.Printf("meroxa: JSON error: %s", err)
+		l.logger.Errorf(ctx, "meroxa: JSON error: %s", err)
 		return "", "", err
 	}
 
@@ -215,19 +251,4 @@ func getAccessTokenAuth(
 	accessToken = responseData["access_token"].(string)
 	refreshToken = responseData["refresh_token"].(string)
 	return accessToken, refreshToken, nil
-}
-
-// LoginCmd represents the `meroxa login` command.
-func LoginCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "login",
-		Short: "login or sign up to the Meroxa platform",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			err := login()
-			if err != nil {
-				return err
-			}
-			return nil
-		},
-	}
 }

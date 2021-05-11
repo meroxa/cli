@@ -11,7 +11,7 @@ The Meroxa CLI
 
 ### Synopsis
 
-The Meroxa CLI allows quick and easy access to the Meroxa data platform.
+The Meroxa CLI allows quick and easy access to the Meroxa Data Platform.
 
 Using the CLI you are able to create and manage sophisticated data pipelines
 with only a few simple commands. You can get started by listing the supported
@@ -39,8 +39,8 @@ meroxa list resource-types
 * [meroxa create](/cli/meroxa-create/)	 - Create Meroxa pipeline components
 * [meroxa describe](/cli/meroxa-describe/)	 - Describe a component
 * [meroxa list](/cli/meroxa-list/)	 - List components
-* [meroxa login](/cli/meroxa-login/)	 - login or sign up to the Meroxa platform
-* [meroxa logout](/cli/meroxa-logout/)	 - logout of the Meroxa platform
+* [meroxa login](/cli/meroxa-login/)	 - Login or Sign up to the Meroxa Platform
+* [meroxa logout](/cli/meroxa-logout/)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa logs](/cli/meroxa-logs/)	 - Print logs for a component
 * [meroxa open](/cli/meroxa-open/)	 - Open in a web browser
 * [meroxa remove](/cli/meroxa-remove/)	 - Remove a component
