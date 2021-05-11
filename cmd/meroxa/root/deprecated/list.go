@@ -131,7 +131,7 @@ func listTransformsCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.List{})
 	cmd.Use = "transforms"
 	cmd.Short = "List transforms"
-	cmd.Aliases = []string{"transforms"}
+	cmd.Aliases = []string{"transform"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `transforms list` instead"
