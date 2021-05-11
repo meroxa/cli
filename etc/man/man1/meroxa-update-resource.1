@@ -18,8 +18,16 @@ Use the update command to update various Meroxa resources.
 
 .SH OPTIONS
 .PP
-\fB\-\-credentials\fP=""
-	new resource credentials
+\fB\-\-ca\-cert\fP=""
+	trusted certificates for verifying resource
+
+.PP
+\fB\-\-client\-cert\fP=""
+	client certificate for authenticating to the resource
+
+.PP
+\fB\-\-client\-key\fP=""
+	client private key for authenticating to the resource
 
 .PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
@@ -34,8 +42,20 @@ Use the update command to update various Meroxa resources.
 	new resource name
 
 .PP
+\fB\-\-password\fP=""
+	password
+
+.PP
+\fB\-\-ssl\fP[=false]
+	use SSL
+
+.PP
 \fB\-u\fP, \fB\-\-url\fP=""
 	new resource url
+
+.PP
+\fB\-\-username\fP=""
+	username
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS

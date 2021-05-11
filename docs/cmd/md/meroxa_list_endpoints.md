@@ -1,15 +1,15 @@
-## meroxa list endpoint
+## meroxa list endpoints
 
 List endpoints
 
 ```
-meroxa list endpoint [flags]
+meroxa list endpoints [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for endpoint
+  -h, --help   help for endpoints
 ```
 
 ### Options inherited from parent commands

@@ -14,23 +14,87 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/* ⚠️ WARN ⚠️
+
+The following commands will be removed once we decide to stop adding support for commands that don't follow
+the `subject-verb-object` design.
+
+*/
+
 package deprecated
 
 import (
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
+	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
+	"github.com/meroxa/cli/cmd/meroxa/root/resources"
 	"github.com/spf13/cobra"
 )
 
-// UpdateCmd represents the `meroxa update` command.
-func UpdateCmd() *cobra.Command {
-	updateCmd := &cobra.Command{
+// updateCmd represents `meroxa update`.
+func updateCmd() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a component",
 		Long:  `Update a component of the Meroxa platform, including connectors`,
 	}
 
-	updateCmd.AddCommand(UpdateConnectorCmd())
-	updateCmd.AddCommand((&UpdatePipeline{}).command())
-	updateCmd.AddCommand((&UpdateResource{}).command())
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] update` instead"
+	}
 
-	return updateCmd
+	cmd.AddCommand(updateConnector())
+	cmd.AddCommand(updatePipeline())
+	cmd.AddCommand(updateResource())
+
+	return cmd
+}
+
+// updateConnector represents `meroxa update connector` -> `meroxa connector update`.
+func updateConnector() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&connectors.Update{})
+	cmd.Use = "connector NAME --state pause | resume | restart"
+	cmd.Short = "Update connector state"
+	cmd.Aliases = []string{"connectors"}
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `connector update` instead"
+	}
+
+	return cmd
+}
+
+// updatePipeline represents `meroxa update pipeline` -> `meroxa pipeline update`.
+func updatePipeline() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&pipelines.Update{})
+	cmd.Use = "pipeline NAME"
+	cmd.Short = "Update pipeline state"
+	cmd.Aliases = []string{"pipelines"}
+
+	cmd.Example = "\n" +
+		"meroxa update pipeline old-name --name new-name\n" +
+		"meroxa update pipeline pipeline-name --state pause\n" +
+		"meroxa update pipeline pipeline-name --metadata '{\"key\":\"value\"}'"
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `pipeline update` instead"
+	}
+
+	return cmd
+}
+
+// updateResource represents `meroxa update resource` -> `meroxa resource update`.
+func updateResource() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&resources.Update{})
+	cmd.Use = "resource NAME"
+	cmd.Short = "Update a resource"
+	cmd.Long = `Use the update command to update various Meroxa resources.`
+	cmd.Aliases = []string{"resources"}
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `resource update` instead"
+	}
+
+	return cmd
 }

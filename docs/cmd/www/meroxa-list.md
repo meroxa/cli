@@ -33,7 +33,7 @@ List the components of the Meroxa platform, including pipelines,
 
 * [meroxa](/cli/meroxa/)	 - The Meroxa CLI
 * [meroxa list connectors](/cli/meroxa-list-connectors/)	 - List connectors
-* [meroxa list endpoint](/cli/meroxa-list-endpoint/)	 - List endpoints
+* [meroxa list endpoints](/cli/meroxa-list-endpoints/)	 - List endpoints
 * [meroxa list pipelines](/cli/meroxa-list-pipelines/)	 - List pipelines
 * [meroxa list resource-types](/cli/meroxa-list-resource-types/)	 - List resource-types
 * [meroxa list resources](/cli/meroxa-list-resources/)	 - List resources

@@ -9,7 +9,8 @@ meroxa list resource-types [flags]
 ### Options
 
 ```
-  -h, --help   help for resource-types
+  -h, --help    help for resource-types
+      --types   list resource types
 ```
 
 ### Options inherited from parent commands

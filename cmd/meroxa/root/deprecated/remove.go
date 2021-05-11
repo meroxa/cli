@@ -14,47 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/* ⚠️ WARN ⚠️
+
+The following commands will be removed once we decide to stop adding support for commands that don't follow
+the `subject-verb-object` design.
+
+*/
+
 package deprecated
 
 import (
-	"bufio"
-	"errors"
-	"fmt"
-	"io"
-	"os"
-	"strings"
-
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
+	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
+	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
+	"github.com/meroxa/cli/cmd/meroxa/root/resources"
 	"github.com/spf13/cobra"
 )
 
-type Remove struct {
-	componentType, confirmableName string
-	force, yolo                    bool
-}
-
-// confirmRemove will prompt for confirmation.
-func (r *Remove) confirmRemove(stdin io.Reader, val string) error {
-	reader := bufio.NewReader(stdin)
-	fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", val)
-	input, _ := reader.ReadString('\n')
-
-	if val != strings.TrimSuffix(input, "\n") {
-		if r.componentType != "" {
-			return fmt.Errorf("removing %s not confirmed", r.componentType)
-		}
-		return errors.New("removing value not confirmed")
-	}
-	return nil
-}
-
-func (r *Remove) setFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().BoolVarP(&r.force, "force", "f", false, "force delete without confirmation prompt")
-	cmd.PersistentFlags().BoolVarP(&r.yolo, "yolo", "", false, "alias to --force")
-	_ = cmd.PersistentFlags().MarkHidden("yolo")
-}
-
-// Command represents the `meroxa remove` command.
-func (r *Remove) Command() *cobra.Command {
+// removeCmd represents `meroxa remove`.
+func removeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove",
 		Short: "Remove a component",
@@ -64,39 +44,69 @@ func (r *Remove) Command() *cobra.Command {
 		Aliases:    []string{"rm", "delete"},
 	}
 
-	cmd.AddCommand((&RemoveEndpoint{removeCmd: r}).command())
-	cmd.AddCommand((&RemovePipeline{removeCmd: r}).command())
-	cmd.AddCommand((&RemoveConnector{removeCmd: r}).command())
-	cmd.AddCommand((&RemoveResource{removeCmd: r}).command())
-
-	// Make sure all subcommands will have a confirmation prompt or make use of --force
-	for _, c := range cmd.Commands() {
-		r.addConfirmation(c)
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] remove` instead"
 	}
 
-	r.setFlags(cmd)
+	cmd.AddCommand(removeConnectorCmd())
+	cmd.AddCommand(removeEndpointCmd())
+	cmd.AddCommand(removePipelineCmd())
+	cmd.AddCommand(removeResourceCmd())
 	return cmd
 }
 
-func (r *Remove) addConfirmation(subCmd *cobra.Command) {
-	preRunE := subCmd.PreRunE
+// removeConnectorCmd represents `meroxa remove connector` -> `meroxa connector remove`.
+func removeConnectorCmd() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&connectors.Remove{})
+	cmd.Use = "connector NAME"
+	cmd.Short = "Remove connector"
+	cmd.Aliases = []string{"connectors"}
 
-	subCmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		err := preRunE(cmd, args)
-		if err != nil {
-			return err
-		}
-
-		// print and confirm
-		if !FlagRootOutputJSON {
-			fmt.Printf("Removing %s...\n", r.confirmableName)
-		}
-
-		// prompts for confirmation when --force (or --yolo 😜) is not set
-		if !r.force && !r.yolo {
-			return r.confirmRemove(os.Stdin, r.confirmableName)
-		}
-
-		return nil
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `connector remove` instead"
 	}
+
+	return cmd
+}
+
+// removeEndpointCmd represents `meroxa remove endpoint` -> `meroxa endpoint remove`.
+func removeEndpointCmd() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&endpoints.Remove{})
+	cmd.Use = "endpoint NAME"
+	cmd.Short = "Remove endpoint"
+	cmd.Aliases = []string{"endpoints"}
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `endpoint remove` instead"
+	}
+
+	return cmd
+}
+
+// removePipelineCmd represents `meroxa remove pipeline` -> `meroxa pipeline remove`.
+func removePipelineCmd() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&pipelines.Remove{})
+	cmd.Use = "pipeline NAME"
+	cmd.Short = "Remove pipeline"
+	cmd.Aliases = []string{"pipelines"}
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `pipeline remove` instead"
+	}
+
+	return cmd
+}
+
+// removeResourceCmd represents `meroxa remove resource` -> `meroxa resource remove`.
+func removeResourceCmd() *cobra.Command {
+	cmd := builder.BuildCobraCommand(&resources.Remove{})
+	cmd.Use = "resource NAME"
+	cmd.Short = "Remove resource"
+	cmd.Aliases = []string{"resources"}
+
+	if global.IsMeroxaV2Released() {
+		cmd.Deprecated = "use `resource remove` instead"
+	}
+
+	return cmd
 }

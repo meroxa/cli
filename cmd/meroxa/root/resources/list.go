@@ -47,6 +47,10 @@ type List struct {
 		Types bool `long:"types" short:"" usage:"list resource types"`
 		Type  bool `long:"type" short:"" usage:"alias to --types" hidden:"true"`
 	}
+
+	// ListTypes is used by the alias `meroxa list resource-types`.
+	// Once we stop giving support to v1 commands, this could be removed
+	ListTypes bool
 }
 
 func (l *List) Usage() string {
@@ -71,7 +75,7 @@ func (l *List) Execute(ctx context.Context) error {
 	var err error
 
 	// What used to be `meroxa list resource-types`
-	if l.flags.Types || l.flags.Type {
+	if l.flags.Types || l.flags.Type || l.ListTypes {
 		var rTypes []string
 
 		rTypes, err = l.client.ListResourceTypes(ctx)

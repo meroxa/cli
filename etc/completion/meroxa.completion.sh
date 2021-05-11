@@ -439,6 +439,10 @@ _meroxa_add()
     commands=()
     commands+=("help")
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resources")
+        aliashash["resources"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
@@ -727,6 +731,10 @@ _meroxa_create()
 
     commands=()
     commands+=("connector")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("connectors")
+        aliashash["connectors"]="connector"
+    fi
     commands+=("endpoint")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("endpoints")
@@ -734,6 +742,10 @@ _meroxa_create()
     fi
     commands+=("help")
     commands+=("pipeline")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("pipelines")
+        aliashash["pipelines"]="pipeline"
+    fi
 
     flags=()
     two_word_flags=()
@@ -875,10 +887,6 @@ _meroxa_describe()
     commands=()
     commands+=("connector")
     commands+=("endpoint")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("endpoints")
-        aliashash["endpoints"]="endpoint"
-    fi
     commands+=("help")
     commands+=("resource")
 
@@ -959,9 +967,9 @@ _meroxa_list_connectors()
     noun_aliases=()
 }
 
-_meroxa_list_endpoint()
+_meroxa_list_endpoints()
 {
-    last_command="meroxa_list_endpoint"
+    last_command="meroxa_list_endpoints"
 
     command_aliases=()
 
@@ -1058,6 +1066,7 @@ _meroxa_list_resource-types()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--types")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1086,6 +1095,7 @@ _meroxa_list_resources()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--types")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1114,6 +1124,7 @@ _meroxa_list_transforms()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--types")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1138,10 +1149,10 @@ _meroxa_list()
         command_aliases+=("connector")
         aliashash["connector"]="connectors"
     fi
-    commands+=("endpoint")
+    commands+=("endpoints")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("endpoints")
-        aliashash["endpoints"]="endpoint"
+        command_aliases+=("endpoint")
+        aliashash["endpoint"]="endpoints"
     fi
     commands+=("help")
     commands+=("pipelines")
@@ -1425,13 +1436,13 @@ _meroxa_remove_connector()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1455,13 +1466,13 @@ _meroxa_remove_endpoint()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1488,8 +1499,6 @@ _meroxa_remove_help()
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1514,13 +1523,13 @@ _meroxa_remove_pipeline()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1544,13 +1553,13 @@ _meroxa_remove_resource()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--json")
     flags+=("--timeout=")
     two_word_flags+=("--timeout")
@@ -1568,6 +1577,10 @@ _meroxa_remove()
 
     commands=()
     commands+=("connector")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("connectors")
+        aliashash["connectors"]="connector"
+    fi
     commands+=("endpoint")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("endpoints")
@@ -1575,7 +1588,15 @@ _meroxa_remove()
     fi
     commands+=("help")
     commands+=("pipeline")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("pipelines")
+        aliashash["pipelines"]="pipeline"
+    fi
     commands+=("resource")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resources")
+        aliashash["resources"]="resource"
+    fi
 
     flags=()
     two_word_flags=()
@@ -1583,8 +1604,6 @@ _meroxa_remove()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--force")
-    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")
@@ -1706,8 +1725,12 @@ _meroxa_update_resource()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--credentials=")
-    two_word_flags+=("--credentials")
+    flags+=("--ca-cert=")
+    two_word_flags+=("--ca-cert")
+    flags+=("--client-cert=")
+    two_word_flags+=("--client-cert")
+    flags+=("--client-key=")
+    two_word_flags+=("--client-key")
     flags+=("--help")
     flags+=("-h")
     flags+=("--metadata=")
@@ -1715,9 +1738,14 @@ _meroxa_update_resource()
     two_word_flags+=("-m")
     flags+=("--name=")
     two_word_flags+=("--name")
+    flags+=("--password=")
+    two_word_flags+=("--password")
+    flags+=("--ssl")
     flags+=("--url=")
     two_word_flags+=("--url")
     two_word_flags+=("-u")
+    flags+=("--username=")
+    two_word_flags+=("--username")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")

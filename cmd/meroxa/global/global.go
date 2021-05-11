@@ -2,6 +2,7 @@ package global
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -19,11 +20,16 @@ var (
 	flagAPIURL  string
 	flagDebug   bool
 	flagTimeout time.Duration
-	FlagJSON    bool // TODO make this private! do not use this variable from other packages
+	flagJSON    bool
 )
 
+func IsMeroxaV2Released() bool {
+	_, ok := os.LookupEnv("MEROXA_V2")
+	return ok
+}
+
 func RegisterGlobalFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().BoolVar(&FlagJSON, "json", false, "output json")
+	cmd.PersistentFlags().BoolVar(&flagJSON, "json", false, "output json")
 	cmd.PersistentFlags().StringVar(&flagConfig, "config", "", "config file")
 	cmd.PersistentFlags().StringVar(&flagAPIURL, "api-url", "", "API url")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")

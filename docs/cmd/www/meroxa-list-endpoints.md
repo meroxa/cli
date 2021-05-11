@@ -1,22 +1,22 @@
 ---
 createdAt: 
 updatedAt: 
-title: "meroxa list endpoint"
-slug: meroxa-list-endpoint
-url: /cli/meroxa-list-endpoint/
+title: "meroxa list endpoints"
+slug: meroxa-list-endpoints
+url: /cli/meroxa-list-endpoints/
 ---
-## meroxa list endpoint
+## meroxa list endpoints
 
 List endpoints
 
 ```
-meroxa list endpoint [flags]
+meroxa list endpoints [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for endpoint
+  -h, --help   help for endpoints
 ```
 
 ### Options inherited from parent commands
