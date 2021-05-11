@@ -61,6 +61,7 @@ func listConnectorsCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&connectors.List{})
 	cmd.Use = "connectors"
 	cmd.Short = "List connectors"
+	cmd.Aliases = []string{"connector"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `connectors list` instead"
@@ -74,6 +75,7 @@ func listEndpointsCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&endpoints.List{})
 	cmd.Use = "endpoints"
 	cmd.Short = "List endpoints"
+	cmd.Aliases = []string{"endpoint"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `endpoints list` instead"
@@ -87,6 +89,7 @@ func listPipelinesCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&pipelines.List{})
 	cmd.Use = "pipelines"
 	cmd.Short = "List pipelines"
+	cmd.Aliases = []string{"pipeline"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `pipelines list` instead"
@@ -100,6 +103,7 @@ func listResourcesCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.List{})
 	cmd.Use = "resources"
 	cmd.Short = "List resources"
+	cmd.Aliases = []string{"resource"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `resources list` instead"
@@ -113,6 +117,7 @@ func listResourceTypesCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.List{ListTypes: true})
 	cmd.Use = "resource-types"
 	cmd.Short = "List resource-types"
+	cmd.Aliases = []string{"resource-type"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `resources list --types` instead"
@@ -126,6 +131,7 @@ func listTransformsCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.List{})
 	cmd.Use = "transforms"
 	cmd.Short = "List transforms"
+	cmd.Aliases = []string{"transforms"}
 
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `transforms list` instead"

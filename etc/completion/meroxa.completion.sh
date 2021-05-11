@@ -1134,34 +1134,34 @@ _meroxa_list()
     commands=()
     commands+=("connectors")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="connectors"
+        command_aliases+=("connector")
+        aliashash["connector"]="connectors"
     fi
     commands+=("endpoints")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="endpoints"
+        command_aliases+=("endpoint")
+        aliashash["endpoint"]="endpoints"
     fi
     commands+=("help")
     commands+=("pipelines")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="pipelines"
+        command_aliases+=("pipeline")
+        aliashash["pipeline"]="pipelines"
     fi
     commands+=("resource-types")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="resource-types"
+        command_aliases+=("resource-type")
+        aliashash["resource-type"]="resource-types"
     fi
     commands+=("resources")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="resources"
+        command_aliases+=("resource")
+        aliashash["resource"]="resources"
     fi
     commands+=("transforms")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="transforms"
+        command_aliases+=("transforms")
+        aliashash["transforms"]="transforms"
     fi
 
     flags=()
