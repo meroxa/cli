@@ -54,7 +54,7 @@ func describeCmd() *cobra.Command {
 // describeConnectorCmd represents `meroxa describe connector` -> `meroxa connector describe`.
 func describeConnectorCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&connectors.Describe{})
-	cmd.Use = "connector NAME"
+	cmd.Use = "connector NAME" //nolint:goconst
 	cmd.Short = "Describe connector"
 
 	if global.IsMeroxaV2Released() {
@@ -80,7 +80,7 @@ func describeEndpointCmd() *cobra.Command {
 // describeResourceCmd represents `meroxa describe resource` -> `meroxa endpoint describe`.
 func describeResourceCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.Describe{})
-	cmd.Use = "resource NAME"
+	cmd.Use = "resource NAME" //nolint:goconst
 	cmd.Short = "Describe resource"
 
 	if global.IsMeroxaV2Released() {

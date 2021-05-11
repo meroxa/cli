@@ -88,7 +88,7 @@ meroxa create endpoint my-endpoint --protocol http --stream my-stream`
 func createPipelineCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&pipelines.Create{})
 
-	cmd.Use = "pipeline NAME"
+	cmd.Use = "pipeline NAME" //nolint:goconst
 	cmd.Short = "Create a pipeline"
 
 	if global.IsMeroxaV2Released() {
