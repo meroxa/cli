@@ -439,10 +439,6 @@ _meroxa_add()
     commands=()
     commands+=("help")
     commands+=("resource")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("add")
-        aliashash["add"]="resource"
-    fi
 
     flags=()
     two_word_flags=()
@@ -1565,34 +1561,10 @@ _meroxa_remove()
 
     commands=()
     commands+=("connector")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("delete")
-        aliashash["delete"]="connector"
-        command_aliases+=("rm")
-        aliashash["rm"]="connector"
-    fi
     commands+=("endpoint")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("delete")
-        aliashash["delete"]="endpoint"
-        command_aliases+=("rm")
-        aliashash["rm"]="endpoint"
-    fi
     commands+=("help")
     commands+=("pipeline")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("delete")
-        aliashash["delete"]="pipeline"
-        command_aliases+=("rm")
-        aliashash["rm"]="pipeline"
-    fi
     commands+=("resource")
-    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
-        command_aliases+=("delete")
-        aliashash["delete"]="resource"
-        command_aliases+=("rm")
-        aliashash["rm"]="resource"
-    fi
 
     flags=()
     two_word_flags=()

@@ -58,6 +58,9 @@ meroxa add resource datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_K
 meroxa add resource warehouse --type redshift -u $REDSHIFT_URL
 meroxa add resource slack --type url -u $WEBHOOK_URL
 `
+	// Unset aliases since the original command didn't have one.
+	cmd.Aliases = nil
+
 	if global.IsMeroxaV2Released() {
 		cmd.Deprecated = "use `resource create` instead"
 	}
