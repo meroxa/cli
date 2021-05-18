@@ -19,6 +19,8 @@ package auth
 import (
 	"context"
 
+	"github.com/cased/cased-go"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
@@ -36,11 +38,12 @@ type WhoAmI struct {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
 	_ builder.CommandWithClient  = (*WhoAmI)(nil)
-	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
-	_ builder.CommandWithExecute = (*WhoAmI)(nil)
 	_ builder.CommandWithConfig  = (*WhoAmI)(nil)
+	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
+	_ builder.CommandWithEvent   = (*WhoAmI)(nil)
+	_ builder.CommandWithExecute = (*WhoAmI)(nil)
+	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
 )
 
 func (w *WhoAmI) Usage() string {
@@ -77,12 +80,19 @@ func (w *WhoAmI) Execute(ctx context.Context) error {
 	w.logger.JSON(ctx, user)
 
 	// Updates config file with actor information.
-	w.config.Set("ACTOR", user.Email)
-	w.config.Set("ACTOR_UUID", user.UUID)
+	w.config.Set("MEROXA_ACTOR", user.Email)
+	w.config.Set("MEROXA_ACTOR_UUID", user.UUID)
 
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// Event is used in cased we need to emit a custom event.
+func (w *WhoAmI) Event() cased.AuditEvent {
+	return cased.AuditEvent{
+		"action": "meroxa.whoami",
+	}
 }

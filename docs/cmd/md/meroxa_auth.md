@@ -2,6 +2,10 @@
 
 Authentication commands for Meroxa
 
+```
+meroxa auth [flags]
+```
+
 ### Options
 
 ```

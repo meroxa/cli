@@ -9,6 +9,10 @@ url: /cli/meroxa-resources/
 
 Manage resources on Meroxa
 
+```
+meroxa resources [flags]
+```
+
 ### Options
 
 ```

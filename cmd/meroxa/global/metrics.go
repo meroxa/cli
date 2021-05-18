@@ -17,29 +17,26 @@ limitations under the License.
 package global
 
 import (
-	"io/ioutil"
 	"os"
+	"time"
 
-	"github.com/meroxa/cli/log"
+	"github.com/cased/cased-go"
 )
 
-func NewLogger() log.Logger {
-	var (
-		logLevel         = log.Info
-		leveledLoggerOut = os.Stdout
-		jsonLoggerOut    = ioutil.Discard
+func NewPublisher() cased.Publisher {
+	CasedAPIKey := os.Getenv("CASED_API_KEY")
+
+	c := cased.NewPublisher(
+		cased.WithTransport(cased.NewHTTPSyncTransport()),
+		cased.WithPublishKey(CasedAPIKey),
+		cased.WithSilence(false),
+
+		// TODO: Replace with PublishURL once the API is ready
+		// cased.WithPublishURL("https://api.meroxa.io/v1/telemetry"),
 	)
 
-	if flagJSON {
-		logLevel = log.Warn
-		jsonLoggerOut = os.Stdout
-	}
-	if flagDebug {
-		logLevel = log.Debug
-	}
-
-	return log.New(
-		log.NewLeveledLogger(leveledLoggerOut, logLevel),
-		log.NewJSONLogger(jsonLoggerOut),
-	)
+	// The process will wait 30 seconds to publish all events to Cased before
+	// exiting the process.
+	defer c.Flush(30 * time.Second) // nolint:gomnd
+	return c
 }

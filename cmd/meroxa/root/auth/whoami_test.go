@@ -69,11 +69,11 @@ func TestWhoAmIExecution(t *testing.T) {
 		t.Fatalf("expected \"%v\", got \"%v\"", u, gotUser)
 	}
 
-	if w.config.GetString("ACTOR") != u.Email {
-		t.Fatalf("expected ACTOR key to be %q", u.Email)
+	if w.config.GetString("MEROXA_ACTOR") != u.Email {
+		t.Fatalf("expected MEROXA_ACTOR key to be %q", u.Email)
 	}
 
-	if w.config.GetString("ACTOR_UUID") != u.UUID {
-		t.Fatalf("expected ACTOR_UUID key to be %q", u.UUID)
+	if w.config.GetString("MEROXA_ACTOR_UUID") != u.UUID {
+		t.Fatalf("expected MEROXA_ACTOR_UUID key to be %q", u.UUID)
 	}
 }

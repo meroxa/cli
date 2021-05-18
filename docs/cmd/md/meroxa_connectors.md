@@ -2,6 +2,10 @@
 
 Manage connectors on Meroxa
 
+```
+meroxa connectors [flags]
+```
+
 ### Options
 
 ```

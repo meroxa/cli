@@ -22,10 +22,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
+	"github.com/cased/cased-go"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
@@ -33,6 +34,7 @@ import (
 	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 )
 
 type Command interface {
@@ -48,22 +50,40 @@ type Command interface {
 	Usage() string
 }
 
-type CommandWithExecute interface {
+type CommandWithAliases interface {
 	Command
-	// Execute is the actual work function. Most commands will implement this.
-	Execute(ctx context.Context) error
+	// Aliases is an array of aliases that can be used instead of the first word in Usage.
+	Aliases() []string
+}
+
+type CommandWithArgs interface {
+	Command
+	// ParseArgs is meant to parse arguments after the command name.
+	ParseArgs([]string) error
+}
+
+type CommandWithClient interface {
+	Command
+	// Client provides the meroxa client to the command.
+	Client(*meroxa.Client)
+}
+
+type CommandWithConfig interface {
+	Command
+	Config(config.Config)
+}
+
+type CommandWithConfirm interface {
+	Command
+	// Confirm adds a prompt before the command is executed where the user is asked to write the exact value as
+	// wantInput. If the user input matches the command will be executed, otherwise processing will be stopped.
+	Confirm(ctx context.Context) (wantInput string)
 }
 
 type CommandWithDocs interface {
 	Command
 	// Docs returns the documentation for the command.
 	Docs() Docs
-}
-
-type CommandWithHidden interface {
-	Command
-	// Hidden returns the desired hidden value for the command.
-	Hidden() bool
 }
 
 // Docs will be shown to the user when typing 'help' as well as in generated docs.
@@ -76,16 +96,10 @@ type Docs struct {
 	Example string
 }
 
-type CommandWithAliases interface {
+type CommandWithExecute interface {
 	Command
-	// Aliases is an array of aliases that can be used instead of the first word in Usage.
-	Aliases() []string
-}
-
-type CommandWithArgs interface {
-	Command
-	// ParseArgs is meant to parse arguments after the command name.
-	ParseArgs([]string) error
+	// Execute is the actual work function. Most commands will implement this.
+	Execute(ctx context.Context) error
 }
 
 type CommandWithFlags interface {
@@ -115,17 +129,10 @@ type Flag struct {
 	Hidden bool
 }
 
-type CommandWithConfirm interface {
+type CommandWithHidden interface {
 	Command
-	// Confirm adds a prompt before the command is executed where the user is asked to write the exact value as
-	// wantInput. If the user input matches the command will be executed, otherwise processing will be stopped.
-	Confirm(ctx context.Context) (wantInput string)
-}
-
-type CommandWithClient interface {
-	Command
-	// Client provides the meroxa client to the command.
-	Client(*meroxa.Client)
+	// Hidden returns the desired hidden value for the command.
+	Hidden() bool
 }
 
 type CommandWithLogger interface {
@@ -134,9 +141,9 @@ type CommandWithLogger interface {
 	Logger(log.Logger)
 }
 
-type CommandWithConfig interface {
+type CommandWithEvent interface {
 	Command
-	Config(config.Config)
+	Event() cased.AuditEvent
 }
 
 type CommandWithSubCommands interface {
@@ -152,19 +159,165 @@ func BuildCobraCommand(c Command) *cobra.Command {
 		Use: c.Usage(),
 	}
 
-	buildCommandWithDocs(cmd, c)
 	buildCommandWithAliases(cmd, c)
-	buildCommandWithFlags(cmd, c)
 	buildCommandWithArgs(cmd, c)
-	buildCommandWithLogger(cmd, c)
 	buildCommandWithClient(cmd, c)
-	buildCommandWithConfirm(cmd, c)
-	buildCommandWithExecute(cmd, c)
-	buildCommandWithHidden(cmd, c)
 	buildCommandWithConfig(cmd, c)
+	buildCommandWithConfirm(cmd, c)
+	buildCommandWithDocs(cmd, c)
+	buildCommandWithExecute(cmd, c)
+	buildCommandWithFlags(cmd, c)
+	buildCommandWithHidden(cmd, c)
+	buildCommandWithLogger(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
 
+	// this has to be the last function so it captures all errors from RunE
+	buildCommandWithEvent(cmd, c)
+
 	return cmd
+}
+
+func buildCommandWithAliases(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithAliases)
+	if !ok {
+		return
+	}
+
+	cmd.Aliases = v.Aliases()
+}
+
+func buildCommandWithArgs(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithArgs)
+	if !ok {
+		return
+	}
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+		return v.ParseArgs(args)
+	}
+}
+
+func buildCommandWithClient(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithClient)
+	if !ok {
+		return
+	}
+
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+		c, err := global.NewClient()
+		if err != nil {
+			return err
+		}
+		v.Client(c)
+		return nil
+	}
+}
+
+func buildCommandWithConfig(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithConfig)
+	if !ok {
+		return
+	}
+
+	// Inject global.Config.
+	oldPreRunE := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if oldPreRunE != nil {
+			err := oldPreRunE(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		v.Config(global.Config)
+		return nil
+	}
+
+	// Make sure writes on file in the end.
+	oldPostRunE := cmd.PostRunE
+	cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
+		if oldPostRunE != nil {
+			err := oldPostRunE(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		err := global.Config.WriteConfig()
+
+		if err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				err = global.Config.SafeWriteConfig()
+			}
+			if err != nil {
+				return fmt.Errorf("meroxa: could not write config file: %v", err)
+			}
+		}
+
+		return nil
+	}
+}
+
+func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithConfirm)
+	if !ok {
+		return
+	}
+
+	var (
+		force bool
+		yolo  bool
+	)
+	cmd.Flags().BoolVarP(&force, "force", "f", false, "skip confirmation")
+	cmd.Flags().BoolVarP(&yolo, "yolo", "", false, "skip confirmation")
+	err := cmd.Flags().MarkHidden("yolo")
+	if err != nil {
+		panic(fmt.Errorf("could not mark flag hidden: %w", err))
+	}
+
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		// do not prompt for confirmation when --force (or --yolo 😜) is set
+		if force || yolo {
+			return nil
+		}
+
+		wantInput := v.Confirm(cmd.Context())
+
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", wantInput)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+
+		if wantInput != strings.TrimSuffix(input, "\n") {
+			return errors.New("action aborted")
+		}
+
+		return nil
+	}
 }
 
 func buildCommandWithDocs(cmd *cobra.Command, c Command) {
@@ -179,22 +332,67 @@ func buildCommandWithDocs(cmd *cobra.Command, c Command) {
 	cmd.Example = docs.Example
 }
 
-func buildCommandWithHidden(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithHidden)
-	if !ok {
-		return
-	}
+func buildCommandWithEvent(cmd *cobra.Command, c Command) {
+	oldRunE := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if oldRunE != nil {
+			err := oldRunE(cmd, args)
 
-	cmd.Hidden = v.Hidden()
+			// build our event
+			event := cased.AuditEvent{
+				"action":   c.Usage(),
+				"actor":    "", // Change config to always be available to all command
+				"actor_id": "", // Change config to always be available to all command
+				"api": map[string]interface{}{
+					"version": "v1",
+				},
+				"command": map[string]interface{}{
+					"use":   cmd.Use,
+					"args":  args,
+					"flags": cmd.Flags(),
+				},
+				"timestamp":  time.Now().UTC(),
+				"user_agent": fmt.Sprintf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH),
+			}
+			if err != nil {
+				event["error"] = err
+			}
+
+			v, ok := c.(CommandWithEvent)
+			if ok {
+				metadata := v.Event()
+
+				// merge default event with what's defined in the command.
+				for k, v := range metadata {
+					event[k] = v
+				}
+			}
+
+			publisher := global.NewPublisher()
+			fmt.Println(event)
+			_ = publisher.Publish(event)
+		}
+
+		return nil
+	}
 }
 
-func buildCommandWithAliases(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithAliases)
+func buildCommandWithExecute(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithExecute)
 	if !ok {
 		return
 	}
 
-	cmd.Aliases = v.Aliases()
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+		return v.Execute(cmd.Context())
+	}
 }
 
 // nolint:funlen,gocyclo // this function has a big switch statement, can't get around that
@@ -318,22 +516,13 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 	}
 }
 
-func buildCommandWithArgs(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithArgs)
+func buildCommandWithHidden(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithHidden)
 	if !ok {
 		return
 	}
 
-	old := cmd.PreRunE
-	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-		return v.ParseArgs(args)
-	}
+	cmd.Hidden = v.Hidden()
 }
 
 func buildCommandWithLogger(cmd *cobra.Command, c Command) {
@@ -352,140 +541,6 @@ func buildCommandWithLogger(cmd *cobra.Command, c Command) {
 		}
 
 		v.Logger(global.NewLogger())
-		return nil
-	}
-}
-
-func buildCommandWithClient(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithClient)
-	if !ok {
-		return
-	}
-
-	old := cmd.RunE
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-		c, err := global.NewClient()
-		if err != nil {
-			return err
-		}
-		v.Client(c)
-		return nil
-	}
-}
-
-func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithConfirm)
-	if !ok {
-		return
-	}
-
-	var (
-		force bool
-		yolo  bool
-	)
-	cmd.Flags().BoolVarP(&force, "force", "f", false, "skip confirmation")
-	cmd.Flags().BoolVarP(&yolo, "yolo", "", false, "skip confirmation")
-	err := cmd.Flags().MarkHidden("yolo")
-	if err != nil {
-		panic(fmt.Errorf("could not mark flag hidden: %w", err))
-	}
-
-	old := cmd.RunE
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-
-		// do not prompt for confirmation when --force (or --yolo 😜) is set
-		if force || yolo {
-			return nil
-		}
-
-		wantInput := v.Confirm(cmd.Context())
-
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", wantInput)
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			return err
-		}
-
-		if wantInput != strings.TrimSuffix(input, "\n") {
-			return errors.New("action aborted")
-		}
-
-		return nil
-	}
-}
-
-func buildCommandWithExecute(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithExecute)
-	if !ok {
-		return
-	}
-
-	old := cmd.RunE
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-		return v.Execute(cmd.Context())
-	}
-}
-
-func buildCommandWithConfig(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithConfig)
-	if !ok {
-		return
-	}
-
-	// Inject global.Config.
-	oldPreRunE := cmd.PreRunE
-	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if oldPreRunE != nil {
-			err := oldPreRunE(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-
-		v.Config(global.Config)
-		return nil
-	}
-
-	// Make sure writes on file in the end.
-	oldPostRunE := cmd.PostRunE
-	cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
-		if oldPostRunE != nil {
-			err := oldPostRunE(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-
-		err := global.Config.WriteConfig()
-
-		if err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-				err = global.Config.SafeWriteConfig()
-			}
-			if err != nil {
-				return fmt.Errorf("meroxa: could not write config file: %v", err)
-			}
-		}
-
 		return nil
 	}
 }
