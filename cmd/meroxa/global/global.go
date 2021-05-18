@@ -41,7 +41,7 @@ func RegisterGlobalFlags(cmd *cobra.Command) {
 }
 
 func PersistentPreRunE(cmd *cobra.Command) error {
-	cfg, err := readConfig()
+	cfg, err := ReadConfig()
 	if err != nil {
 		return err
 	}

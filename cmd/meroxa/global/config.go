@@ -14,7 +14,7 @@ const (
 	envPrefix = "MEROXA"
 )
 
-func readConfig() (*viper.Viper, error) {
+func ReadConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 
 	if flagConfig != "" {

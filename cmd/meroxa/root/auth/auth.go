@@ -42,6 +42,7 @@ func (o *Auth) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Login{}),
 		builder.BuildCobraCommand(&Logout{}),
+		builder.BuildCobraCommand(&Token{}),
 		builder.BuildCobraCommand(&WhoAmI{}),
 	}
 }
