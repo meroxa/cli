@@ -1,0 +1,28 @@
+## meroxa connectors list
+
+List connectors
+
+```
+meroxa connectors list [flags]
+```
+
+### Options
+
+```
+  -h, --help              help for list
+      --pipeline string   filter connectors by pipeline name
+```
+
+### Options inherited from parent commands
+
+```
+      --config string      config file
+      --debug              display any debugging information
+      --json               output json
+      --timeout duration   set the client timeout (default 10s)
+```
+
+### SEE ALSO
+
+* [meroxa connectors](meroxa_connectors.md)	 - Manage connectors on Meroxa
+

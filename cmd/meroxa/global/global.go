@@ -2,7 +2,6 @@ package global
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -23,9 +22,8 @@ var (
 	flagJSON    bool
 )
 
-func IsMeroxaV2Released() bool {
-	_, ok := os.LookupEnv("MEROXA_V2")
-	return ok
+func ShowDeprecationWarning() bool {
+	return false
 }
 
 func RegisterGlobalFlags(cmd *cobra.Command) {

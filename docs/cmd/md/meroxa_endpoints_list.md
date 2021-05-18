@@ -1,22 +1,15 @@
----
-createdAt: 
-updatedAt: 
-title: "meroxa logout"
-slug: meroxa-logout
-url: /cli/meroxa-logout/
----
-## meroxa logout
+## meroxa endpoints list
 
-Clears local login credentials of the Meroxa Platform
+List endpoints
 
 ```
-meroxa logout [flags]
+meroxa endpoints list [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for logout
+  -h, --help   help for list
 ```
 
 ### Options inherited from parent commands
@@ -30,5 +23,5 @@ meroxa logout [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa endpoints](meroxa_endpoints.md)	 - Manage endpoints on Meroxa
 

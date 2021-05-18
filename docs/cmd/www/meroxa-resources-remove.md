@@ -1,29 +1,23 @@
 ---
 createdAt: 
 updatedAt: 
-title: "meroxa whoami"
-slug: meroxa-whoami
-url: /cli/meroxa-whoami/
+title: "meroxa resources remove"
+slug: meroxa-resources-remove
+url: /cli/meroxa-resources-remove/
 ---
-## meroxa whoami
+## meroxa resources remove
 
-Display the current logged in user
-
-
-```
-meroxa whoami [flags]
-```
-
-### Examples
+Remove resource
 
 ```
-meroxa whoami
+meroxa resources remove NAME [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for whoami
+  -f, --force   skip confirmation
+  -h, --help    help for remove
 ```
 
 ### Options inherited from parent commands
@@ -37,5 +31,5 @@ meroxa whoami
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
 

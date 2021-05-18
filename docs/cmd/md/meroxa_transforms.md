@@ -1,22 +1,11 @@
----
-createdAt: 
-updatedAt: 
-title: "meroxa login"
-slug: meroxa-login
-url: /cli/meroxa-login/
----
-## meroxa login
+## meroxa transforms
 
-Login or Sign up to the Meroxa Platform
-
-```
-meroxa login [flags]
-```
+Manage transforms on Meroxa
 
 ### Options
 
 ```
-  -h, --help   help for login
+  -h, --help   help for transforms
 ```
 
 ### Options inherited from parent commands
@@ -30,5 +19,6 @@ meroxa login [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa transforms list](meroxa_transforms_list.md)	 - List transforms
 

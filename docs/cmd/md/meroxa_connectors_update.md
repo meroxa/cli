@@ -1,15 +1,16 @@
-## meroxa login
+## meroxa connectors update
 
-Login or Sign up to the Meroxa Platform
+Update connector state
 
 ```
-meroxa login [flags]
+meroxa connectors update NAME --state pause | resume | restart [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for login
+  -h, --help           help for update
+      --state string   connector state
 ```
 
 ### Options inherited from parent commands
@@ -23,5 +24,5 @@ meroxa login [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa connectors](meroxa_connectors.md)	 - Manage connectors on Meroxa
 

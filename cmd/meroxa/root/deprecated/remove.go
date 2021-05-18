@@ -44,7 +44,7 @@ func removeCmd() *cobra.Command {
 		Aliases:    []string{"rm", "delete"},
 	}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] remove` instead"
 	}
 
@@ -62,7 +62,7 @@ func removeConnectorCmd() *cobra.Command {
 	cmd.Short = "Remove connector"
 	cmd.Aliases = []string{"connectors"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `connector remove` instead"
 	}
 
@@ -76,7 +76,7 @@ func removeEndpointCmd() *cobra.Command {
 	cmd.Short = "Remove endpoint"
 	cmd.Aliases = []string{"endpoints"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `endpoint remove` instead"
 	}
 
@@ -90,7 +90,7 @@ func removePipelineCmd() *cobra.Command {
 	cmd.Short = "Remove pipeline"
 	cmd.Aliases = []string{"pipelines"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `pipeline remove` instead"
 	}
 
@@ -104,7 +104,7 @@ func removeResourceCmd() *cobra.Command {
 	cmd.Short = "Remove resource"
 	cmd.Aliases = []string{"resources"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `resource remove` instead"
 	}
 
