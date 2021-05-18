@@ -1,15 +1,15 @@
-## meroxa logout
+## meroxa resources describe
 
-Clears local login credentials of the Meroxa Platform
+Describe resource
 
 ```
-meroxa logout [flags]
+meroxa resources describe [NAME] [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for logout
+  -h, --help   help for describe
 ```
 
 ### Options inherited from parent commands
@@ -23,5 +23,5 @@ meroxa logout [flags]
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
+* [meroxa resources](meroxa_resources.md)	 - Manage resources on Meroxa
 

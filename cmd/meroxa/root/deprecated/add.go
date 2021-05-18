@@ -38,7 +38,7 @@ func addCmd() *cobra.Command {
 		Short: "Add a resource to your Meroxa resource catalog",
 	}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] create` instead"
 	}
 
@@ -60,7 +60,7 @@ meroxa add resource slack --type url -u $WEBHOOK_URL
 `
 	cmd.Aliases = []string{"resources"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `resource create` instead"
 	}
 

@@ -1,0 +1,71 @@
+.nh
+.TH "Meroxa" "1" "May 2021" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-pipelines\-update \- Update pipeline name, state or metadata
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa pipelines update NAME [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+Update pipeline name, state or metadata
+
+
+.SH OPTIONS
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for update
+
+.PP
+\fB\-m\fP, \fB\-\-metadata\fP=""
+	new pipeline metadata
+
+.PP
+\fB\-\-name\fP=""
+	new pipeline name
+
+.PP
+\fB\-\-state\fP=""
+	new pipeline state
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-config\fP=""
+	config file
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+.PP
+\fB\-\-timeout\fP=10s
+	set the client timeout
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+
+meroxa pipeline update old\-name \-\-name new\-name
+meroxa pipeline update pipeline\-name \-\-state pause
+meroxa pipeline update pipeline\-name \-\-metadata '{"key":"value"}'
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa\-pipelines(1)\fP

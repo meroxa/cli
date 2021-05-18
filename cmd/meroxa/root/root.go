@@ -50,24 +50,17 @@ func Run() {
 
 // Cmd represents the base command when called without any subcommands.
 func Cmd() *cobra.Command {
-	longOutput := `The Meroxa CLI allows quick and easy access to the Meroxa Data Platform.
+	cmd := &cobra.Command{
+		Use:   "meroxa",
+		Short: "The Meroxa CLI",
+		Long: `The Meroxa CLI allows quick and easy access to the Meroxa Data Platform.
 
 Using the CLI you are able to create and manage sophisticated data pipelines
 with only a few simple commands. You can get started by listing the supported
 resource types:
 
-`
-
-	if _, ok := os.LookupEnv("MEROXA_V2"); ok {
-		longOutput += `meroxa resources list --types`
-	} else {
-		longOutput += `meroxa list resource-types`
-	}
-
-	cmd := &cobra.Command{
-		Use:   "meroxa",
-		Short: "The Meroxa CLI",
-		Long:  longOutput,
+meroxa resources list --types
+`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			return global.PersistentPreRunE(cmd)
 		},
@@ -80,12 +73,6 @@ resource types:
 
 	// Subcommands
 
-	if !global.IsMeroxaV2Released() {
-		cmd.AddCommand(builder.BuildCobraCommand(&auth.Login{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&auth.Logout{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&auth.WhoAmI{}))
-	}
-
 	// Once we decide to remove support for old commands, remove the following line and its content
 	deprecated.RegisterCommands(cmd)
 
@@ -93,23 +80,18 @@ resource types:
 	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
 
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&billing.Billing{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&transforms.Transforms{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&version.Version{}))
 
-	// New commands following `subject-verb-object` only shown if using `MEROXA_V2`)
-	if global.IsMeroxaV2Released() {
-		cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
-		cmd.AddCommand(builder.BuildCobraCommand(&transforms.Transforms{}))
-
-		// For meroxa v2 we want these to be under auth (`meroxa auth login`)
-		setAliases(cmd)
-	}
+	setAliases(cmd)
 
 	return cmd
 }

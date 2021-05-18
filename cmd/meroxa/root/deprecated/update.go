@@ -40,7 +40,7 @@ func updateCmd() *cobra.Command {
 		Long:  `Update a component of the Meroxa platform, including connectors`,
 	}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] update` instead"
 	}
 
@@ -58,7 +58,7 @@ func updateConnector() *cobra.Command {
 	cmd.Short = "Update connector state"
 	cmd.Aliases = []string{"connectors"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `connector update` instead"
 	}
 
@@ -77,7 +77,7 @@ func updatePipeline() *cobra.Command {
 		"meroxa update pipeline pipeline-name --state pause\n" +
 		"meroxa update pipeline pipeline-name --metadata '{\"key\":\"value\"}'"
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `pipeline update` instead"
 	}
 
@@ -92,7 +92,7 @@ func updateResource() *cobra.Command {
 	cmd.Long = `Use the update command to update various Meroxa resources.`
 	cmd.Aliases = []string{"resources"}
 
-	if global.IsMeroxaV2Released() {
+	if global.ShowDeprecationWarning() {
 		cmd.Deprecated = "use `resource update` instead"
 	}
 

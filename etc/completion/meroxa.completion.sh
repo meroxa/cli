@@ -492,6 +492,149 @@ _meroxa_api()
     noun_aliases=()
 }
 
+_meroxa_auth_help()
+{
+    last_command="meroxa_auth_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_auth_login()
+{
+    last_command="meroxa_auth_login"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_auth_logout()
+{
+    last_command="meroxa_auth_logout"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_auth_whoami()
+{
+    last_command="meroxa_auth_whoami"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_auth()
+{
+    last_command="meroxa_auth"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("help")
+    commands+=("login")
+    commands+=("logout")
+    commands+=("whoami")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_billing()
 {
     last_command="meroxa_billing"
@@ -586,6 +729,262 @@ _meroxa_connect()
     must_have_one_flag=()
     must_have_one_flag+=("--from=")
     must_have_one_flag+=("--to=")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors_create()
+{
+    last_command="meroxa_connectors_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--from=")
+    two_word_flags+=("--from")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--input=")
+    two_word_flags+=("--input")
+    flags+=("--pipeline=")
+    two_word_flags+=("--pipeline")
+    flags+=("--to=")
+    two_word_flags+=("--to")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--input=")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors_describe()
+{
+    last_command="meroxa_connectors_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors_help()
+{
+    last_command="meroxa_connectors_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_connectors_list()
+{
+    last_command="meroxa_connectors_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--pipeline=")
+    two_word_flags+=("--pipeline")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors_logs()
+{
+    last_command="meroxa_connectors_logs"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors_remove()
+{
+    last_command="meroxa_connectors_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors_update()
+{
+    last_command="meroxa_connectors_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--state=")
+    two_word_flags+=("--state")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--state=")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_connectors()
+{
+    last_command="meroxa_connectors"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("describe")
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("logs")
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("update")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
     must_have_one_noun=()
     noun_aliases=()
 }
@@ -910,6 +1309,200 @@ _meroxa_describe()
     noun_aliases=()
 }
 
+_meroxa_endpoints_create()
+{
+    last_command="meroxa_endpoints_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--protocol=")
+    two_word_flags+=("--protocol")
+    two_word_flags+=("-p")
+    flags+=("--stream=")
+    two_word_flags+=("--stream")
+    two_word_flags+=("-s")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--protocol=")
+    must_have_one_flag+=("-p")
+    must_have_one_flag+=("--stream=")
+    must_have_one_flag+=("-s")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_endpoints_describe()
+{
+    last_command="meroxa_endpoints_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_endpoints_help()
+{
+    last_command="meroxa_endpoints_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_endpoints_list()
+{
+    last_command="meroxa_endpoints_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_endpoints_remove()
+{
+    last_command="meroxa_endpoints_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_endpoints()
+{
+    last_command="meroxa_endpoints"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("describe")
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_help()
 {
     last_command="meroxa_help"
@@ -1196,62 +1789,6 @@ _meroxa_list()
     noun_aliases=()
 }
 
-_meroxa_login()
-{
-    last_command="meroxa_login"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_logout()
-{
-    last_command="meroxa_logout"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
 _meroxa_logs_connector()
 {
     last_command="meroxa_logs_connector"
@@ -1401,6 +1938,200 @@ _meroxa_open()
     commands=()
     commands+=("billing")
     commands+=("help")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_pipelines_create()
+{
+    last_command="meroxa_pipelines_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--metadata=")
+    two_word_flags+=("--metadata")
+    two_word_flags+=("-m")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_pipelines_help()
+{
+    last_command="meroxa_pipelines_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_pipelines_list()
+{
+    last_command="meroxa_pipelines_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_pipelines_remove()
+{
+    last_command="meroxa_pipelines_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_pipelines_update()
+{
+    last_command="meroxa_pipelines_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--metadata=")
+    two_word_flags+=("--metadata")
+    two_word_flags+=("-m")
+    flags+=("--name=")
+    two_word_flags+=("--name")
+    flags+=("--state=")
+    two_word_flags+=("--state")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_pipelines()
+{
+    last_command="meroxa_pipelines"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("update")
 
     flags=()
     two_word_flags=()
@@ -1596,6 +2327,354 @@ _meroxa_remove()
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("resources")
         aliashash["resources"]="resource"
+    fi
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_create()
+{
+    last_command="meroxa_resources_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--ca-cert=")
+    two_word_flags+=("--ca-cert")
+    flags+=("--client-cert=")
+    two_word_flags+=("--client-cert")
+    flags+=("--client-key=")
+    two_word_flags+=("--client-key")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--metadata=")
+    two_word_flags+=("--metadata")
+    two_word_flags+=("-m")
+    flags+=("--password=")
+    two_word_flags+=("--password")
+    flags+=("--ssl")
+    flags+=("--type=")
+    two_word_flags+=("--type")
+    flags+=("--url=")
+    two_word_flags+=("--url")
+    two_word_flags+=("-u")
+    flags+=("--username=")
+    two_word_flags+=("--username")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--type=")
+    must_have_one_flag+=("--url=")
+    must_have_one_flag+=("-u")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_describe()
+{
+    last_command="meroxa_resources_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_help()
+{
+    last_command="meroxa_resources_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_resources_list()
+{
+    last_command="meroxa_resources_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--types")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_remove()
+{
+    last_command="meroxa_resources_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_update()
+{
+    last_command="meroxa_resources_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--ca-cert=")
+    two_word_flags+=("--ca-cert")
+    flags+=("--client-cert=")
+    two_word_flags+=("--client-cert")
+    flags+=("--client-key=")
+    two_word_flags+=("--client-key")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--metadata=")
+    two_word_flags+=("--metadata")
+    two_word_flags+=("-m")
+    flags+=("--name=")
+    two_word_flags+=("--name")
+    flags+=("--password=")
+    two_word_flags+=("--password")
+    flags+=("--ssl")
+    flags+=("--url=")
+    two_word_flags+=("--url")
+    two_word_flags+=("-u")
+    flags+=("--username=")
+    two_word_flags+=("--username")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources()
+{
+    last_command="meroxa_resources"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("add")
+        aliashash["add"]="create"
+    fi
+    commands+=("describe")
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("update")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_transforms_help()
+{
+    last_command="meroxa_transforms_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_transforms_list()
+{
+    last_command="meroxa_transforms_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_transforms()
+{
+    last_command="meroxa_transforms"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
     fi
 
     flags=()
@@ -1830,34 +2909,6 @@ _meroxa_version()
     noun_aliases=()
 }
 
-_meroxa_whoami()
-{
-    last_command="meroxa_whoami"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
 _meroxa_root_command()
 {
     last_command="meroxa"
@@ -1867,17 +2918,31 @@ _meroxa_root_command()
     commands=()
     commands+=("add")
     commands+=("api")
+    commands+=("auth")
     commands+=("billing")
     commands+=("completion")
     commands+=("connect")
+    commands+=("connectors")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("connector")
+        aliashash["connector"]="connectors"
+    fi
     commands+=("create")
     commands+=("describe")
+    commands+=("endpoints")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("endpoint")
+        aliashash["endpoint"]="endpoints"
+    fi
     commands+=("help")
     commands+=("list")
-    commands+=("login")
-    commands+=("logout")
     commands+=("logs")
     commands+=("open")
+    commands+=("pipelines")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("pipeline")
+        aliashash["pipeline"]="pipelines"
+    fi
     commands+=("remove")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("delete")
@@ -1885,9 +2950,18 @@ _meroxa_root_command()
         command_aliases+=("rm")
         aliashash["rm"]="remove"
     fi
+    commands+=("resources")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("resource")
+        aliashash["resource"]="resources"
+    fi
+    commands+=("transforms")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("transform")
+        aliashash["transform"]="transforms"
+    fi
     commands+=("update")
     commands+=("version")
-    commands+=("whoami")
 
     flags=()
     two_word_flags=()
