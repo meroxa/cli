@@ -34,6 +34,8 @@ _Include how it looks now_
 
 *Make sure that our [documentation](https://docs.meroxa.com/) is accordingly updated when necessary.*
 
-- [ ] Suggested an edit to the appropiate CLI version. To see the list of edits (e.g. v1.0): https://dash.readme.com/project/meroxa/v1.0/suggested
+You can do that by opening a pull-request to our (🔒 private, for now) repository: https://github.com/meroxa/meroxa-docs.
 
-*Provide link:*
+✨ In the future, there will be a GitHub action taking care of these updates automatically. ✨
+
+*Provide PR link:* 
