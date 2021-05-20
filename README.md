@@ -4,13 +4,13 @@ We believe that anyone should be empowered to leverage real-time data. Using the
 
 [Website](https://meroxa.io) |
 [Documentation](https://docs.meroxa.com/) |
-[Installation Guide](https://docs.meroxa.com/docs/installation-guide) |
+[Installation Guide](https://docs.meroxa.com/cli/installation-guide) |
 [Contribution Guide](CONTRIBUTING.md) |
 [Twitter](https://twitter.com/meroxadata)
 
 ## Documentation
 
-Meroxa is documented publicly in https://docs.meroxa.com/docs, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/commands/meroxa](docs/commands/meroxa.md).
+Meroxa is documented publicly in https://docs.meroxa.com/, but on each build we also generate Markdown files for each command, exposing the available commands and help for each one. Check it out at [docs/cmd/md/meroxa](docs/cmd/md/meroxa.md).
 
 ## Contributing
 
