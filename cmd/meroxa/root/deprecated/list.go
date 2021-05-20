@@ -46,10 +46,10 @@ func listCmd() *cobra.Command {
 	cmd.AddCommand(listEndpointsCmd())
 	cmd.AddCommand(listPipelinesCmd())
 	cmd.AddCommand(listResourcesCmd())
-	cmd.AddCommand(listResourceTypesCmd()) // WIP
+	cmd.AddCommand(listResourceTypesCmd())
 	cmd.AddCommand(listTransformsCmd())
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `[connectors | endpoints | pipelines | resources | transforms] list` instead"
 	}
 
@@ -63,7 +63,7 @@ func listConnectorsCmd() *cobra.Command {
 	cmd.Short = "List connectors"
 	cmd.Aliases = []string{"connector"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `connectors list` instead"
 	}
 
@@ -77,7 +77,7 @@ func listEndpointsCmd() *cobra.Command {
 	cmd.Short = "List endpoints"
 	cmd.Aliases = []string{"endpoint"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `endpoints list` instead"
 	}
 
@@ -91,7 +91,7 @@ func listPipelinesCmd() *cobra.Command {
 	cmd.Short = "List pipelines"
 	cmd.Aliases = []string{"pipeline"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `pipelines list` instead"
 	}
 
@@ -105,7 +105,7 @@ func listResourcesCmd() *cobra.Command {
 	cmd.Short = "List resources"
 	cmd.Aliases = []string{"resource"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `resources list` instead"
 	}
 
@@ -117,9 +117,9 @@ func listResourceTypesCmd() *cobra.Command {
 	cmd := builder.BuildCobraCommand(&resources.List{ListTypes: true})
 	cmd.Use = "resource-types"
 	cmd.Short = "List resource-types"
-	cmd.Aliases = []string{"resource-type"}
+	cmd.Aliases = []string{"resource-type", "resources-type", "resources-types"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `resources list --types` instead"
 	}
 
@@ -133,7 +133,7 @@ func listTransformsCmd() *cobra.Command {
 	cmd.Short = "List transforms"
 	cmd.Aliases = []string{"transform"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `transforms list` instead"
 	}
 

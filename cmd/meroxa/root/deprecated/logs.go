@@ -48,7 +48,7 @@ func logsConnectorCmd() *cobra.Command {
 	cmd.Use = "connector NAME"
 	cmd.Short = "Print logs for a connector"
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `connector logs` instead"
 	}
 

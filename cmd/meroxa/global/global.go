@@ -22,8 +22,8 @@ var (
 	flagJSON    bool
 )
 
-func ShowDeprecationWarning() bool {
-	return false
+func DeprecateV1Commands() bool {
+	return true
 }
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
