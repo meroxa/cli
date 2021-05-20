@@ -40,7 +40,7 @@ func describeCmd() *cobra.Command {
 		Long:  `Describe a component of the Meroxa data platform, including resources and connectors`,
 	}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] describe` instead"
 	}
 
@@ -57,7 +57,7 @@ func describeConnectorCmd() *cobra.Command {
 	cmd.Use = "connector NAME" //nolint:goconst
 	cmd.Short = "Describe connector"
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `connector describe` instead"
 	}
 
@@ -70,7 +70,7 @@ func describeEndpointCmd() *cobra.Command {
 	cmd.Use = "endpoint NAME"
 	cmd.Short = "Describe endpoint"
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `endpoint describe` instead"
 	}
 
@@ -83,7 +83,7 @@ func describeResourceCmd() *cobra.Command {
 	cmd.Use = "resource NAME" //nolint:goconst
 	cmd.Short = "Describe resource"
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `resource describe` instead"
 	}
 

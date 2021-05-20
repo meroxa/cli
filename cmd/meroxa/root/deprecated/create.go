@@ -38,7 +38,7 @@ func createCmd() *cobra.Command {
 including connectors.`,
 	}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `[connector | endpoint | pipeline | resource] create` instead"
 	}
 
@@ -63,7 +63,7 @@ func createConnectorCmd() *cobra.Command {
 
 	cmd.Aliases = []string{"connectors"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `connector create` instead"
 	}
 
@@ -80,7 +80,7 @@ func createEndpoint() *cobra.Command {
 meroxa create endpoint my-endpoint --protocol http --stream my-stream`
 	cmd.Aliases = []string{"endpoints"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `endpoint create` instead"
 	}
 
@@ -95,7 +95,7 @@ func createPipelineCmd() *cobra.Command {
 	cmd.Short = "Create a pipeline"
 	cmd.Aliases = []string{"pipelines"}
 
-	if global.ShowDeprecationWarning() {
+	if global.DeprecateV1Commands() {
 		cmd.Deprecated = "use `pipelines create` instead"
 	}
 
