@@ -25,6 +25,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/billing"
 	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
 	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
+	"github.com/meroxa/cli/cmd/meroxa/root/env"
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
 	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
 	"github.com/meroxa/cli/cmd/meroxa/root/resources"
@@ -85,6 +86,7 @@ meroxa resources list --types
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&env.Env{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))

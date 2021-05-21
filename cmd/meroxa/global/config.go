@@ -12,6 +12,8 @@ import (
 const (
 	// The environment variable prefix of all environment variables bound to our command line flags.
 	envPrefix = "MEROXA"
+	envName   = "config"
+	envType   = "env"
 )
 
 func readConfig() (*viper.Viper, error) {
@@ -35,8 +37,8 @@ func readConfig() (*viper.Viper, error) {
 		}
 
 		cfg.AddConfigPath(configDir)
-		cfg.SetConfigName("config")
-		cfg.SetConfigType("env")
+		cfg.SetConfigName(envName)
+		cfg.SetConfigType(envType)
 	}
 
 	// Attempt to read the config file, gracefully ignoring errors
