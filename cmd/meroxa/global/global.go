@@ -11,7 +11,7 @@ import (
 
 var (
 	Version string
-	Config  *viper.Viper // TODO remove this global variable, read on demand
+	Config  *viper.Viper
 )
 
 var (

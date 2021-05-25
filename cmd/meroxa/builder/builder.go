@@ -41,6 +41,12 @@ type CommandWithDocs interface {
 	Docs() Docs
 }
 
+type CommandWithHidden interface {
+	Command
+	// Hidden returns the desired hidden value for the command.
+	Hidden() bool
+}
+
 // Docs will be shown to the user when typing 'help' as well as in generated docs.
 type Docs struct {
 	// Short is the short description shown in the 'help' output.
@@ -130,6 +136,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithClient(cmd, c)
 	buildCommandWithConfirm(cmd, c)
 	buildCommandWithExecute(cmd, c)
+	buildCommandWithHidden(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
 
 	return cmd
@@ -145,6 +152,15 @@ func buildCommandWithDocs(cmd *cobra.Command, c Command) {
 	cmd.Long = docs.Long
 	cmd.Short = docs.Short
 	cmd.Example = docs.Example
+}
+
+func buildCommandWithHidden(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithHidden)
+	if !ok {
+		return
+	}
+
+	cmd.Hidden = v.Hidden()
 }
 
 func buildCommandWithAliases(cmd *cobra.Command, c Command) {
