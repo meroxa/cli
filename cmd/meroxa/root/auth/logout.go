@@ -19,20 +19,22 @@ package auth
 import (
 	"context"
 
+	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 )
 
 var (
 	_ builder.CommandWithDocs    = (*Logout)(nil)
 	_ builder.CommandWithExecute = (*Logout)(nil)
 	_ builder.CommandWithLogger  = (*Logout)(nil)
+	_ builder.CommandWithConfig  = (*Logout)(nil)
 )
 
 type Logout struct {
 	logger log.Logger
+	config config.Config
 }
 
 func (l *Logout) Usage() string {
@@ -49,13 +51,16 @@ func (l *Logout) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
+func (l *Logout) Config(cfg config.Config) {
+	l.config = cfg
+}
+
 func (l *Logout) Execute(ctx context.Context) error {
-	global.Config.Set("ACCESS_TOKEN", "")
-	global.Config.Set("REFRESH_TOKEN", "")
-	err := global.Config.WriteConfig()
-	if err != nil {
-		return err
-	}
+	l.config.Set("ACCESS_TOKEN", "")
+	l.config.Set("REFRESH_TOKEN", "")
+	l.config.Set("ACTOR", "")
+	l.config.Set("ACTOR_UUID", "")
+
 	l.logger.Infof(ctx, "Successfully logged out.")
 	return nil
 }

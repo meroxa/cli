@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
-
+	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/meroxa-go"
 
 	"github.com/golang/mock/gomock"
 	mock "github.com/meroxa/cli/mock-cmd"
@@ -21,9 +21,12 @@ func TestWhoAmIExecution(t *testing.T) {
 	client := mock.NewMockGetUserClient(ctrl)
 	logger := log.NewTestLogger()
 
+	cfg := config.NewInMemoryConfig()
+
 	w := WhoAmI{
 		logger: logger,
 		client: client,
+		config: cfg,
 	}
 
 	u := meroxa.User{
@@ -64,5 +67,13 @@ func TestWhoAmIExecution(t *testing.T) {
 
 	if !reflect.DeepEqual(gotUser, u) {
 		t.Fatalf("expected \"%v\", got \"%v\"", u, gotUser)
+	}
+
+	if w.config.GetString("ACTOR") != u.Email {
+		t.Fatalf("expected ACTOR key to be %q", u.Email)
+	}
+
+	if w.config.GetString("ACTOR_UUID") != u.UUID {
+		t.Fatalf("expected ACTOR_UUID key to be %q", u.UUID)
 	}
 }
