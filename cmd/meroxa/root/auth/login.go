@@ -32,10 +32,9 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -51,10 +50,12 @@ var (
 	_ builder.CommandWithDocs    = (*Login)(nil)
 	_ builder.CommandWithLogger  = (*Login)(nil)
 	_ builder.CommandWithExecute = (*Login)(nil)
+	_ builder.CommandWithConfig  = (*Login)(nil)
 )
 
 type Login struct {
 	logger log.Logger
+	config config.Config
 }
 
 func (l *Login) Usage() string {
@@ -82,9 +83,12 @@ func (l *Login) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
+func (l *Login) Config(cfg config.Config) {
+	l.config = cfg
+}
+
 // AuthorizeUser implements the PKCE OAuth2 flow.
-// nolint:funlen // this function should be refactored when moving to the new code structure
-func (l *Login) authorizeUser(ctx context.Context, cfg *viper.Viper, clientID, authDomain, redirectURL string) {
+func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, redirectURL string) {
 	// initialize the code verifier
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
@@ -128,22 +132,9 @@ func (l *Login) authorizeUser(ctx context.Context, cfg *viper.Viper, clientID, a
 			l.cleanup(server)
 			return
 		}
-		cfg.Set("ACCESS_TOKEN", accessToken)
-		cfg.Set("REFRESH_TOKEN", refreshToken)
-		err = cfg.WriteConfig()
-		if err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-				err = cfg.SafeWriteConfig()
-			}
-			if err != nil {
-				l.logger.Errorf(ctx, "meroxa: could not write config file: %v", err)
-				_, _ = io.WriteString(w, "Error: could not store access token\n")
 
-				// close the HTTP server and return
-				l.cleanup(server)
-				return
-			}
-		}
+		l.config.Set("ACCESS_TOKEN", accessToken)
+		l.config.Set("REFRESH_TOKEN", refreshToken)
 
 		// return an indication of success to the caller
 		_, _ = io.WriteString(w, `
@@ -197,7 +188,7 @@ func (l *Login) authorizeUser(ctx context.Context, cfg *viper.Viper, clientID, a
 
 func (l *Login) login(ctx context.Context) error {
 	l.logger.Infof(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
-	l.authorizeUser(ctx, global.Config, clientID, domain, callbackURL)
+	l.authorizeUser(ctx, clientID, domain, callbackURL)
 	return nil
 }
 

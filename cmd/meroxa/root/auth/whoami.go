@@ -20,6 +20,7 @@ import (
 	"context"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
 )
@@ -31,6 +32,7 @@ type getUserClient interface {
 type WhoAmI struct {
 	client getUserClient
 	logger log.Logger
+	config config.Config
 }
 
 var (
@@ -38,6 +40,7 @@ var (
 	_ builder.CommandWithClient  = (*WhoAmI)(nil)
 	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
 	_ builder.CommandWithExecute = (*WhoAmI)(nil)
+	_ builder.CommandWithConfig  = (*WhoAmI)(nil)
 )
 
 func (w *WhoAmI) Usage() string {
@@ -59,6 +62,10 @@ func (w *WhoAmI) Logger(logger log.Logger) {
 	w.logger = logger
 }
 
+func (w *WhoAmI) Config(cfg config.Config) {
+	w.config = cfg
+}
+
 func (w *WhoAmI) Execute(ctx context.Context) error {
 	user, err := w.client.GetUser(ctx)
 
@@ -68,6 +75,14 @@ func (w *WhoAmI) Execute(ctx context.Context) error {
 
 	w.logger.Infof(ctx, "%s", user.Email)
 	w.logger.JSON(ctx, user)
+
+	// Updates config file with actor information.
+	w.config.Set("ACTOR", user.Email)
+	w.config.Set("ACTOR_UUID", user.UUID)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
