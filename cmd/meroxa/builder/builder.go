@@ -340,23 +340,48 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 
 			// build our event
 			event := cased.AuditEvent{
-				"action":   c.Usage(),
-				"actor":    "", // Change config to always be available to all command
-				"actor_id": "", // Change config to always be available to all command
-				"api": map[string]interface{}{
-					"version": "v1",
-				},
-				"command": map[string]interface{}{
-					"use":   cmd.Use,
-					"args":  args,
-					"flags": cmd.Flags(),
-				},
+				"actor":      "", // Change config to always be available to all command
+				"actor_id":   "", // Change config to always be available to all command
 				"timestamp":  time.Now().UTC(),
 				"user_agent": fmt.Sprintf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH),
 			}
+
+			var action string
+
+			// TODO: Implement something that could look up all the way up until meroxa (meroxa create resources...)
+			// something like it determines how many levels since root and then until current cmd
+			if cmd.HasParent() {
+				if cmd.Parent().HasParent() {
+					action = fmt.Sprintf("%s.%s.%s", cmd.Parent().Parent().Use, cmd.Parent().Use, cmd.Use)
+				} else {
+					action = fmt.Sprintf("%s.%s", cmd.Parent().Use, cmd.Use)
+				}
+			} else {
+				action = cmd.Use
+			}
+
+			if cmd.Use != cmd.CalledAs() {
+				event["command.alias"] = cmd.CalledAs()
+			}
+
+			if len(args) > 0 {
+				event["command.args"] = args
+			}
+
+			event["action"] = action
+			event["use"] = action
+
 			if err != nil {
 				event["error"] = err
 			}
+
+			if cmd.HasFlags() {
+				cmd.Flags().Visit(func(flag *pflag.Flag) {
+					event["command.flags"] = flag.Name
+				})
+			}
+
+			// TODO: Grab actor and actor_uuid
 
 			v, ok := c.(CommandWithEvent)
 			if ok {
@@ -368,9 +393,14 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 				}
 			}
 
-			publisher := global.NewPublisher()
 			fmt.Println(event)
-			_ = publisher.Publish(event)
+			// publisher := global.NewPublisher()
+			// cased.SetPublisher(publisher)
+			// err = cased.Publish(event)
+			// if err != nil {
+			//	 fmt.Println(err)
+			//	 return err
+			// }
 		}
 
 		return nil
