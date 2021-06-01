@@ -30,6 +30,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
 	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
 	"github.com/meroxa/cli/cmd/meroxa/root/resources"
+	"github.com/meroxa/cli/cmd/meroxa/root/transforms"
 	"github.com/spf13/cobra"
 )
 
@@ -128,7 +129,7 @@ func listResourceTypesCmd() *cobra.Command {
 
 // listTransformsCmd represents `meroxa list transforms` -> `meroxa transforms list`.
 func listTransformsCmd() *cobra.Command {
-	cmd := builder.BuildCobraCommand(&resources.List{})
+	cmd := builder.BuildCobraCommand(&transforms.List{})
 	cmd.Use = "transforms"
 	cmd.Short = "List transforms"
 	cmd.Aliases = []string{"transform"}
