@@ -20,6 +20,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/cased/cased-go"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/meroxa/cli/log"
@@ -88,6 +90,13 @@ func (u *Update) ParseArgs(args []string) error {
 	return nil
 }
 
+// Event is used in cased we need to emit a custom event.
+func (u *Update) Event() cased.AuditEvent {
+	return cased.AuditEvent{
+		// Fill in information on the update command.
+	}
+}
+
 var (
 	_ builder.CommandWithDocs    = (*Update)(nil)
 	_ builder.CommandWithArgs    = (*Update)(nil)
@@ -95,4 +104,5 @@ var (
 	_ builder.CommandWithClient  = (*Update)(nil)
 	_ builder.CommandWithLogger  = (*Update)(nil)
 	_ builder.CommandWithExecute = (*Update)(nil)
+	_ builder.CommandWithEvent   = (*Update)(nil)
 )

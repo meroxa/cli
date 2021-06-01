@@ -22,15 +22,9 @@ import (
 	"github.com/cased/cased-go"
 )
 
-func NewPublisher(apiKey string) cased.Publisher {
-	c := cased.NewPublisher(
-		cased.WithTransport(cased.NewHTTPSyncTransport()),
-		cased.WithSilence(false),
-		cased.WithPublishKey(apiKey),
-
-		// TODO: Replace with PublishURL once the API is ready
-		// cased.WithPublishURL("https://api.meroxa.io/v1/telemetry"),
-	)
+func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
+	options = append(options, cased.WithTransport(cased.NewHTTPSyncTransport()))
+	c := cased.NewPublisher(options...)
 
 	// The process will wait 30 seconds to publish all events to Cased before
 	// exiting the process.

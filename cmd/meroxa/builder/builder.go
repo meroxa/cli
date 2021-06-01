@@ -467,11 +467,21 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 				}
 			}
 
-			//fmt.Println(event)
+			var options []cased.PublisherOption
 
 			casedAPIKey := global.Config.GetString("CASED_API_KEY")
-			publisher := global.NewPublisher(casedAPIKey)
+			if casedAPIKey != "" {
+				options = append(options, cased.WithPublishKey(casedAPIKey))
+			}
+			options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", global.GetMeroxaAPIURL())))
+
+			if metrics := global.Config.GetString("MEROXA_METRICS_SILENCE"); metrics != "" {
+				options = append(options, cased.WithSilence(false))
+			}
+
+			publisher := global.NewPublisher(options...)
 			cased.SetPublisher(publisher)
+
 			err = cased.Publish(event)
 			if err != nil {
 				return fmt.Errorf("meroxa: couldn't emit audit trail event: %v", err)

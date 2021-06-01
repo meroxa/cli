@@ -26,8 +26,17 @@ import (
 )
 
 const (
-	clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
+	clientID         = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
+	meroxaBaseAPIURL = "https://api.meroxa.io/v1"
 )
+
+func GetMeroxaAPIURL() string {
+	if v := Config.GetString("MEROXA_API_URL"); v != "" {
+		return v
+	}
+
+	return meroxaBaseAPIURL
+}
 
 func RequireLogin() (accessToken, refreshToken string, err error) {
 	accessToken = Config.GetString("ACCESS_TOKEN")

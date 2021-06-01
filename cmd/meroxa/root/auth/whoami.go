@@ -19,8 +19,6 @@ package auth
 import (
 	"context"
 
-	"github.com/cased/cased-go"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
@@ -41,7 +39,6 @@ var (
 	_ builder.CommandWithClient  = (*WhoAmI)(nil)
 	_ builder.CommandWithConfig  = (*WhoAmI)(nil)
 	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
-	_ builder.CommandWithEvent   = (*WhoAmI)(nil)
 	_ builder.CommandWithExecute = (*WhoAmI)(nil)
 	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
 )
@@ -88,11 +85,4 @@ func (w *WhoAmI) Execute(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// Event is used in cased we need to emit a custom event.
-func (w *WhoAmI) Event() cased.AuditEvent {
-	return cased.AuditEvent{
-		"action": "meroxa.whoami",
-	}
 }
