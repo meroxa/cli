@@ -332,18 +332,90 @@ func buildCommandWithDocs(cmd *cobra.Command, c Command) {
 	cmd.Example = docs.Example
 }
 
+func getCLIUserInfo() (actor, actorUUID string, err error) {
+	// Require login
+	_, _, err = global.RequireLogin()
+
+	/*
+		 	We don't report client issues to the customer as it'll likely require `meroxa login` for any command.
+			There are command that don't require client such as `meroxa env`, and we wouldn't like to throw an error,
+			just because we can't emit events.
+	*/
+	if err != nil {
+		return "", "", nil
+	}
+
+	// fetch actor account.
+	actor = global.Config.GetString("MEROXA_ACTOR")
+	actorUUID = global.Config.GetString("MEROXA_ACTOR_UUID")
+
+	if actor == "" || actorUUID == "" {
+		// call api to fetch
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // nolint:gomnd
+		defer cancel()
+
+		m, err := global.NewClient()
+
+		if err != nil {
+			return "", "", fmt.Errorf("meroxa: could not create Meroxa client: %v", err)
+		}
+
+		account, err := m.GetUser(ctx)
+
+		if err != nil {
+			return "", "", fmt.Errorf("meroxa: could not fetch Meroxa user: %v", err)
+		}
+
+		actor = account.Email
+		actorUUID = account.UUID
+
+		global.Config.Set("MEROXA_ACTOR", actor)
+		global.Config.Set("MEROXA_ACTOR_UUID", actorUUID)
+
+		err = global.Config.WriteConfig()
+
+		if err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				err = global.Config.SafeWriteConfig()
+			}
+			if err != nil {
+				return "", "", fmt.Errorf("meroxa: could not write config file: %v", err)
+			}
+		}
+	}
+
+	return actor, actorUUID, nil
+}
+
+// This runs for all commands.
 func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 	oldRunE := cmd.RunE
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if oldRunE != nil {
 			err := oldRunE(cmd, args)
+			if err != nil {
+				return err
+			}
+
+			// This will be empty on logout, maybe do it before?
+			actor, actorUUID, err := getCLIUserInfo()
+
+			if err != nil {
+				return err
+			}
 
 			// build our event
 			event := cased.AuditEvent{
-				"actor":      "", // Change config to always be available to all command
-				"actor_id":   "", // Change config to always be available to all command
 				"timestamp":  time.Now().UTC(),
-				"user_agent": fmt.Sprintf("meroxa/%s %s/%s\n", global.Version, runtime.GOOS, runtime.GOARCH),
+				"user_agent": fmt.Sprintf("meroxa/%s %s/%s", global.Version, runtime.GOOS, runtime.GOARCH),
+			}
+
+			if actor != "" {
+				event["actor"] = actor
+			}
+
+			if actorUUID != "" {
+				event["actor_uuid"] = actorUUID
 			}
 
 			var action string
@@ -381,7 +453,9 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 				})
 			}
 
-			// TODO: Grab actor and actor_uuid
+			if cmd.Deprecated != "" {
+				event["command.deprecated"] = "true"
+			}
 
 			v, ok := c.(CommandWithEvent)
 			if ok {
@@ -393,14 +467,15 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 				}
 			}
 
-			fmt.Println(event)
-			// publisher := global.NewPublisher()
-			// cased.SetPublisher(publisher)
-			// err = cased.Publish(event)
-			// if err != nil {
-			//	 fmt.Println(err)
-			//	 return err
-			// }
+			//fmt.Println(event)
+
+			casedAPIKey := global.Config.GetString("CASED_API_KEY")
+			publisher := global.NewPublisher(casedAPIKey)
+			cased.SetPublisher(publisher)
+			err = cased.Publish(event)
+			if err != nil {
+				return fmt.Errorf("meroxa: couldn't emit audit trail event: %v", err)
+			}
 		}
 
 		return nil

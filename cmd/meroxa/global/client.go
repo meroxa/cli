@@ -29,12 +29,22 @@ const (
 	clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
 )
 
-func NewClient() (*meroxa.Client, error) {
-	accessToken := Config.GetString("ACCESS_TOKEN")
-	refreshToken := Config.GetString("REFRESH_TOKEN")
+func RequireLogin() (accessToken, refreshToken string, err error) {
+	accessToken = Config.GetString("ACCESS_TOKEN")
+	refreshToken = Config.GetString("REFRESH_TOKEN")
 	if accessToken == "" && refreshToken == "" {
 		// we need at least one token for creating an authenticated client
-		return nil, errors.New("please login or signup by running 'meroxa login'")
+		return "", "", errors.New("please login or signup by running 'meroxa login'")
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+func NewClient() (*meroxa.Client, error) {
+	accessToken, refreshToken, err := RequireLogin()
+
+	if err != nil {
+		return nil, err
 	}
 
 	options := []meroxa.Option{

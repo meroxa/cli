@@ -17,19 +17,16 @@ limitations under the License.
 package global
 
 import (
-	"os"
 	"time"
 
 	"github.com/cased/cased-go"
 )
 
-func NewPublisher() cased.Publisher {
-	CasedAPIKey := os.Getenv("CASED_API_KEY")
-
+func NewPublisher(apiKey string) cased.Publisher {
 	c := cased.NewPublisher(
 		cased.WithTransport(cased.NewHTTPSyncTransport()),
-		cased.WithPublishKey(CasedAPIKey),
 		cased.WithSilence(false),
+		cased.WithPublishKey(apiKey),
 
 		// TODO: Replace with PublishURL once the API is ready
 		// cased.WithPublishURL("https://api.meroxa.io/v1/telemetry"),
