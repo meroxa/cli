@@ -17,7 +17,11 @@ limitations under the License.
 package global
 
 import (
+	"fmt"
+	"runtime"
 	"time"
+
+	"github.com/spf13/cobra"
 
 	"github.com/cased/cased-go"
 )
@@ -30,4 +34,48 @@ func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
 	// exiting the process.
 	defer c.Flush(30 * time.Second) // nolint:gomnd
 	return c
+}
+
+func addUserInfo(event *cased.AuditEvent) {
+	actor, actorUUID, _ := GetCLIUserInfo()
+	e := *event
+
+	if actor != "" {
+		e["actor"] = actor
+	}
+
+	if actorUUID != "" {
+		e["actor_uuid"] = actorUUID
+	}
+}
+
+func addAction(event *cased.AuditEvent, cmd *cobra.Command) {
+	var action string
+	e := *event
+
+	// TODO: Implement something that could look up all the way up until meroxa (meroxa create resources...)
+	// something like it determines how many levels since root and then until current cmd
+	if cmd.HasParent() {
+		if cmd.Parent().HasParent() {
+			action = fmt.Sprintf("%s.%s.%s", cmd.Parent().Parent().Use, cmd.Parent().Use, cmd.Use)
+		} else {
+			action = fmt.Sprintf("%s.%s", cmd.Parent().Use, cmd.Use)
+		}
+	} else {
+		action = cmd.Use
+	}
+
+	e["action"] = action
+}
+
+func BuildEvent(cmd *cobra.Command) cased.AuditEvent {
+	event := cased.AuditEvent{
+		"timestamp":  time.Now().UTC(),
+		"user_agent": fmt.Sprintf("meroxa/%s %s/%s", Version, runtime.GOOS, runtime.GOARCH),
+	}
+
+	addUserInfo(&event)
+	addAction(&event, cmd)
+
+	return event
 }

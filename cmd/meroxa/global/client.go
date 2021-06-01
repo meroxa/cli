@@ -17,9 +17,13 @@ limitations under the License.
 package global
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
+	"time"
+
+	"github.com/spf13/viper"
 
 	"github.com/meroxa/meroxa-go"
 	"golang.org/x/oauth2"
@@ -38,7 +42,62 @@ func GetMeroxaAPIURL() string {
 	return meroxaBaseAPIURL
 }
 
-func RequireLogin() (accessToken, refreshToken string, err error) {
+func GetCLIUserInfo() (actor, actorUUID string, err error) {
+	// Require login
+	_, _, err = GetUserToken()
+
+	/*
+		 	We don't report client issues to the customer as it'll likely require `meroxa login` for any command.
+			There are command that don't require client such as `meroxa env`, and we wouldn't like to throw an error,
+			just because we can't emit events.
+	*/
+	if err != nil {
+		return "", "", nil
+	}
+
+	// fetch actor account.
+	actor = Config.GetString("MEROXA_ACTOR")
+	actorUUID = Config.GetString("MEROXA_ACTOR_UUID")
+
+	if actor == "" || actorUUID == "" {
+		// call api to fetch
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // nolint:gomnd
+		defer cancel()
+
+		m, err := NewClient()
+
+		if err != nil {
+			return "", "", fmt.Errorf("meroxa: could not create Meroxa client: %v", err)
+		}
+
+		account, err := m.GetUser(ctx)
+
+		if err != nil {
+			return "", "", fmt.Errorf("meroxa: could not fetch Meroxa user: %v", err)
+		}
+
+		actor = account.Email
+		actorUUID = account.UUID
+
+		Config.Set("MEROXA_ACTOR", actor)
+		Config.Set("MEROXA_ACTOR_UUID", actorUUID)
+
+		err = Config.WriteConfig()
+
+		if err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				err = Config.SafeWriteConfig()
+			}
+			if err != nil {
+				return "", "", fmt.Errorf("meroxa: could not write config file: %v", err)
+			}
+		}
+	}
+
+	return actor, actorUUID, nil
+}
+
+func GetUserToken() (accessToken, refreshToken string, err error) {
 	accessToken = Config.GetString("ACCESS_TOKEN")
 	refreshToken = Config.GetString("REFRESH_TOKEN")
 	if accessToken == "" && refreshToken == "" {
@@ -50,7 +109,7 @@ func RequireLogin() (accessToken, refreshToken string, err error) {
 }
 
 func NewClient() (*meroxa.Client, error) {
-	accessToken, refreshToken, err := RequireLogin()
+	accessToken, refreshToken, err := GetUserToken()
 
 	if err != nil {
 		return nil, err
