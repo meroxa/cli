@@ -29,12 +29,7 @@ import (
 )
 
 func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
-	options = append(options, cased.WithTransport(cased.NewHTTPSyncTransport()))
 	c := cased.NewPublisher(options...)
-
-	// The process will wait 30 seconds to publish all events to Cased before
-	// exiting the process.
-	defer c.Flush(30 * time.Second) // nolint:gomnd
 	return c
 }
 
@@ -176,9 +171,21 @@ func publishEvent(event cased.AuditEvent) {
 		options = append(options, cased.WithSilence(v))
 	}
 
+	if v := Config.GetBool("CASED_DEBUG"); v {
+		options = append(options, cased.WithDebug(v))
+	}
+
 	publisher := NewPublisher(options...)
 	cased.SetPublisher(publisher)
 
 	// cased.Publish could return an error, but we're silently ignoring it for now.
-	_ = cased.Publish(event)
+	err := cased.Publish(event)
+
+	// The process will wait 30 seconds to publish all events to Cased before
+	// exiting the process.
+	defer cased.Flush(30 * time.Second) // nolint:gomnd
+
+	if err != nil && Config.GetBool("CASED_DEBUG") {
+		fmt.Println("error: %w", err)
+	}
 }
