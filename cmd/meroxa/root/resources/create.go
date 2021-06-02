@@ -51,6 +51,7 @@ type Create struct {
 		ClientCert string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
 		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
 		SSL        bool   `long:"ssl"         short:"" usage:"use SSL"`
+		SSHURL     string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
 	}
 }
 
@@ -127,6 +128,12 @@ func (c *Create) Execute(ctx context.Context) error {
 		err := json.Unmarshal([]byte(c.flags.Metadata), &input.Metadata)
 		if err != nil {
 			return fmt.Errorf("could not parse metadata: %w", err)
+		}
+	}
+
+	if sshURL := c.flags.SSHURL; sshURL != "" {
+		input.SSHTunnel = &meroxa.ResourceSSHTunnelInput{
+			Address: sshURL,
 		}
 	}
 

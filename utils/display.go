@@ -68,6 +68,52 @@ func PrintEndpointsTable(ends []meroxa.Endpoint) {
 	fmt.Println(EndpointsTable(ends))
 }
 
+func header(h string) string {
+	header := h + "\n"
+	for range header {
+		header += "="
+	}
+	header += "\n"
+
+	return header
+}
+
+func ResourceTable(res *meroxa.Resource) string {
+	mainHeader := header(fmt.Sprintf("Resource %s", res.Name))
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "ID:"},
+			{Text: fmt.Sprintf("%d", res.ID)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "NAME:"},
+			{Text: res.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "TYPE:"},
+			{Text: res.Type},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "URL:"},
+			{Text: res.URL},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Status"},
+			{Text: res.Status.State},
+		},
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	var tunnelSection string
+	if t := res.SSHTunnel; t != nil {
+		tunnelTableHeader := header(fmt.Sprintf("\n\nSSH tunnel public key for %s", t.Address))
+		tunnelSection = tunnelTableHeader + t.PublicKey
+	}
+
+	return mainHeader + mainTable.String() + tunnelSection
+}
+
 func ResourcesTable(resources []*meroxa.Resource) string {
 	if len(resources) != 0 {
 		table := simpletable.New()
@@ -77,6 +123,7 @@ func ResourcesTable(resources []*meroxa.Resource) string {
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "URL"},
+				{Align: simpletable.AlignCenter, Text: "SSH TUNNELED"},
 			},
 		}
 
@@ -86,6 +133,7 @@ func ResourcesTable(resources []*meroxa.Resource) string {
 				{Text: res.Name},
 				{Text: res.Type},
 				{Text: res.URL},
+				{Align: simpletable.AlignCenter, Text: strings.Title(strconv.FormatBool(res.SSHTunnel != nil))},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)

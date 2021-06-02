@@ -53,6 +53,7 @@ type Update struct {
 		ClientCert string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
 		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
 		SSL        bool   `long:"ssl"         short:"" usage:"use SSL"`
+		SSHURL     string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
 	}
 }
 
@@ -95,6 +96,12 @@ func (u *Update) Execute(ctx context.Context) error {
 			return fmt.Errorf("can't parse metadata: %w", err)
 		}
 		res.Metadata = metadata
+	}
+
+	if sshURL := u.flags.SSHURL; sshURL != "" {
+		res.SSHTunnel = &meroxa.ResourceSSHTunnelInput{
+			Address: sshURL,
+		}
 	}
 
 	// If any of the credential values are being updated

@@ -63,7 +63,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.ResourcesTable([]*meroxa.Resource{resource}))
+	d.logger.Info(ctx, utils.ResourceTable(resource))
 	d.logger.JSON(ctx, resource)
 
 	return nil

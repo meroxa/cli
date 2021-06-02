@@ -9,17 +9,24 @@ import (
 )
 
 type errResponse struct {
-	Code            string              `json:"code,omitempty"`
-	Message         string              `json:"message,omitempty"`
-	Details         map[string][]string `json:"details,omitempty"`
+	Code    string              `json:"code,omitempty"`
+	Message string              `json:"message,omitempty"`
+	Details map[string][]string `json:"details,omitempty"`
 }
 
 func (err *errResponse) Error() string {
 	msg := err.Message
 
-	if len(err.Details) > 0 {
-		msg = fmt.Sprintf("%s\ndetails: %s",
+	if errCount := len(err.Details); errCount > 0 {
+		msg = fmt.Sprintf("%s. %d %s occured:%s",
 			msg,
+			errCount,
+			func() string {
+				if errCount > 1 {
+					return "problems"
+				}
+				return "problem"
+			}(),
 			mapToString(err.Details),
 		)
 	}
@@ -28,8 +35,10 @@ func (err *errResponse) Error() string {
 
 func mapToString(m map[string][]string) string {
 	s := ""
+	count := 1
 	for k, v := range m {
-		s = fmt.Sprintf("%s\n\t%q: [\"%s\"]", s, k, strings.Join(v, `", "`))
+		s = fmt.Sprintf("%s\n%d. %s: \"%s\"", s, count, k, strings.Join(v, `", "`))
+		count++
 	}
 	return s
 }
