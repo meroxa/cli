@@ -28,7 +28,26 @@ import (
 	"github.com/spf13/pflag"
 )
 
-func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
+func NewPublisher() cased.Publisher {
+	var options []cased.PublisherOption
+
+	casedAPIKey := Config.GetString("CASED_API_KEY")
+
+	// if an API Key is provided, we ignore `withPublishURL`
+	if casedAPIKey != "" {
+		options = append(options, cased.WithPublishKey(casedAPIKey))
+	} else {
+		options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
+	}
+
+	if v := Config.GetBool("MEROXA_METRICS_SILENCE"); v {
+		options = append(options, cased.WithSilence(v))
+	}
+
+	if v := Config.GetBool("CASED_DEBUG"); v {
+		options = append(options, cased.WithDebug(v))
+	}
+
 	c := cased.NewPublisher(options...)
 	return c
 }
@@ -156,26 +175,7 @@ func publishEvent(event cased.AuditEvent) {
 		return
 	}
 
-	var options []cased.PublisherOption
-
-	casedAPIKey := Config.GetString("CASED_API_KEY")
-
-	// if an API Key is provided, we ignore `withPublishURL`
-	if casedAPIKey != "" {
-		options = append(options, cased.WithPublishKey(casedAPIKey))
-	} else {
-		options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
-	}
-
-	if v := Config.GetBool("MEROXA_METRICS_SILENCE"); v {
-		options = append(options, cased.WithSilence(v))
-	}
-
-	if v := Config.GetBool("CASED_DEBUG"); v {
-		options = append(options, cased.WithDebug(v))
-	}
-
-	publisher := NewPublisher(options...)
+	publisher := NewPublisher()
 	cased.SetPublisher(publisher)
 
 	// cased.Publish could return an error, but we're silently ignoring it for now.
