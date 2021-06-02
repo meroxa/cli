@@ -19,6 +19,7 @@ package builder
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -145,6 +146,12 @@ type CommandWithEvent interface {
 	Event() cased.AuditEvent
 }
 
+// CommandWithoutEvent is to explicitly make a command not traceable via metrics.
+type CommandWithoutEvent interface {
+	Command
+	Event() bool
+}
+
 type CommandWithSubCommands interface {
 	Command
 	// SubCommands defines subcommands of a command.
@@ -171,7 +178,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithSubCommands(cmd, c)
 
 	// this has to be the last function so it captures all errors from RunE
-	buildCommandWithEvent(cmd, c)
+	buildCommandEvent(cmd, c)
 
 	return cmd
 }
@@ -331,31 +338,52 @@ func buildCommandWithDocs(cmd *cobra.Command, c Command) {
 	cmd.Example = docs.Example
 }
 
+func withEventRunE(cmd *cobra.Command, args []string, c Command, err error) error {
+	event := global.BuildEvent(cmd, args, err)
+
+	// if there's a custom event defined.
+	v, ok := c.(CommandWithEvent)
+	if ok {
+		metadata := v.Event()
+
+		// merge default event with what's defined in the command.
+		for k, v := range metadata {
+			event[k] = v
+		}
+	}
+
+	// If we're emitting metrics.
+	if !global.Config.GetBool("MEROXA_METRICS_SILENCE") {
+		// Only prints out to console
+		if global.Config.GetBool("MEROXA_DEV_ENV") {
+			e, _ := json.Marshal(event)
+			fmt.Printf("\n\nEvent: %v\n\n", string(e))
+		} else {
+			// Actually publish the event.
+			global.PublishEvent(event)
+		}
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // This runs for all commands.
-func buildCommandWithEvent(cmd *cobra.Command, c Command) {
+func buildCommandEvent(cmd *cobra.Command, c Command) {
+	_, ok := c.(CommandWithoutEvent)
+	if ok {
+		return
+	}
+
 	oldRunE := cmd.RunE
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		if oldRunE != nil {
 			err := oldRunE(cmd, args)
-			if err != nil {
-				return err
-			}
-
-			event := global.BuildEvent(cmd, args, err)
-
-			v, ok := c.(CommandWithEvent)
-			if ok {
-				metadata := v.Event()
-
-				// merge default event with what's defined in the command.
-				for k, v := range metadata {
-					event[k] = v
-				}
-			}
-
-			return global.PublishEvent(event)
+			return withEventRunE(cmd, args, c, err)
 		}
-
 		return nil
 	}
 }

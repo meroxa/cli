@@ -127,7 +127,13 @@ func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
 	return event
 }
 
-func PublishEvent(event cased.AuditEvent) error {
+var (
+	// PublishEvent is a public variable so in builder tests we could overwrite it.
+	PublishEvent = publishEvent
+)
+
+// PublishEvent will take care of publishing the event to Cased.
+func publishEvent(event cased.AuditEvent) {
 	var options []cased.PublisherOption
 
 	casedAPIKey := Config.GetString("CASED_API_KEY")
@@ -143,10 +149,6 @@ func PublishEvent(event cased.AuditEvent) error {
 	publisher := NewPublisher(options...)
 	cased.SetPublisher(publisher)
 
-	err := cased.Publish(event)
-	if err != nil {
-		return fmt.Errorf("meroxa: couldn't emit audit trail event: %v", err)
-	}
-
-	return nil
+	// cased.Publish could return an error, but we're silently ignoring it for now.
+	cased.Publish(event)
 }
