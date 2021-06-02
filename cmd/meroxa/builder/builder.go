@@ -341,29 +341,7 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 				return err
 			}
 
-			event := global.BuildEvent(cmd)
-
-			if cmd.Use != cmd.CalledAs() {
-				event["command.alias"] = cmd.CalledAs()
-			}
-
-			if len(args) > 0 {
-				event["command.args"] = args
-			}
-
-			if err != nil {
-				event["error"] = err
-			}
-
-			if cmd.HasFlags() {
-				cmd.Flags().Visit(func(flag *pflag.Flag) {
-					event["command.flags"] = flag.Name
-				})
-			}
-
-			if cmd.Deprecated != "" {
-				event["command.deprecated"] = "true"
-			}
+			event := global.BuildEvent(cmd, args, err)
 
 			v, ok := c.(CommandWithEvent)
 			if ok {
@@ -375,25 +353,7 @@ func buildCommandWithEvent(cmd *cobra.Command, c Command) {
 				}
 			}
 
-			var options []cased.PublisherOption
-
-			casedAPIKey := global.Config.GetString("CASED_API_KEY")
-			if casedAPIKey != "" {
-				options = append(options, cased.WithPublishKey(casedAPIKey))
-			}
-			options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", global.GetMeroxaAPIURL())))
-
-			if metrics := global.Config.GetString("MEROXA_METRICS_SILENCE"); metrics != "" {
-				options = append(options, cased.WithSilence(false))
-			}
-
-			publisher := global.NewPublisher(options...)
-			cased.SetPublisher(publisher)
-
-			err = cased.Publish(event)
-			if err != nil {
-				return fmt.Errorf("meroxa: couldn't emit audit trail event: %v", err)
-			}
+			return global.PublishEvent(event)
 		}
 
 		return nil

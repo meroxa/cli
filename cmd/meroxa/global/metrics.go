@@ -21,9 +21,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/spf13/cobra"
-
 	"github.com/cased/cased-go"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
@@ -34,6 +34,48 @@ func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
 	// exiting the process.
 	defer c.Flush(30 * time.Second) // nolint:gomnd
 	return c
+}
+
+func addAlias(event *cased.AuditEvent, cmd *cobra.Command) {
+	e := *event
+
+	if cmd.Use != cmd.CalledAs() {
+		e["command.alias"] = cmd.CalledAs()
+	}
+}
+
+func addFlags(event *cased.AuditEvent, cmd *cobra.Command) {
+	e := *event
+
+	if cmd.HasFlags() {
+		cmd.Flags().Visit(func(flag *pflag.Flag) {
+			e["command.flags"] = flag.Name
+		})
+	}
+}
+
+func addDeprecated(event *cased.AuditEvent, cmd *cobra.Command) {
+	e := *event
+
+	if cmd.Deprecated != "" {
+		e["command.deprecated"] = "true"
+	}
+}
+
+func addError(event *cased.AuditEvent, err error) {
+	e := *event
+
+	if err != nil {
+		e["error"] = err
+	}
+}
+
+func addArgs(event *cased.AuditEvent, args []string) {
+	e := *event
+
+	if len(args) > 0 {
+		e["command.args"] = args
+	}
 }
 
 func addUserInfo(event *cased.AuditEvent) {
@@ -68,7 +110,7 @@ func addAction(event *cased.AuditEvent, cmd *cobra.Command) {
 	e["action"] = action
 }
 
-func BuildEvent(cmd *cobra.Command) cased.AuditEvent {
+func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
 	event := cased.AuditEvent{
 		"timestamp":  time.Now().UTC(),
 		"user_agent": fmt.Sprintf("meroxa/%s %s/%s", Version, runtime.GOOS, runtime.GOARCH),
@@ -76,6 +118,35 @@ func BuildEvent(cmd *cobra.Command) cased.AuditEvent {
 
 	addUserInfo(&event)
 	addAction(&event, cmd)
+	addAlias(&event, cmd)
+	addArgs(&event, args)
+	addError(&event, err)
+	addFlags(&event, cmd)
+	addDeprecated(&event, cmd)
 
 	return event
+}
+
+func PublishEvent(event cased.AuditEvent) error {
+	var options []cased.PublisherOption
+
+	casedAPIKey := Config.GetString("CASED_API_KEY")
+	if casedAPIKey != "" {
+		options = append(options, cased.WithPublishKey(casedAPIKey))
+	}
+	options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
+
+	if metrics := Config.GetString("MEROXA_METRICS_SILENCE"); metrics != "" {
+		options = append(options, cased.WithSilence(false))
+	}
+
+	publisher := NewPublisher(options...)
+	cased.SetPublisher(publisher)
+
+	err := cased.Publish(event)
+	if err != nil {
+		return fmt.Errorf("meroxa: couldn't emit audit trail event: %v", err)
+	}
+
+	return nil
 }
