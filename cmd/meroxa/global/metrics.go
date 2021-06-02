@@ -17,8 +17,10 @@ limitations under the License.
 package global
 
 import (
+	"encoding/json"
 	"fmt"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/cased/cased-go"
@@ -36,30 +38,29 @@ func NewPublisher(options ...cased.PublisherOption) cased.Publisher {
 	return c
 }
 
-func addAlias(event *cased.AuditEvent, cmd *cobra.Command) {
-	e := *event
-
+func addAlias(cmd *cobra.Command) string {
 	if cmd.Use != cmd.CalledAs() {
-		e["command.alias"] = cmd.CalledAs()
+		return cmd.CalledAs()
 	}
+
+	return ""
 }
 
-func addFlags(event *cased.AuditEvent, cmd *cobra.Command) {
-	e := *event
+func addFlags(cmd *cobra.Command) string {
+	var flags []string
 
 	if cmd.HasFlags() {
+		// TODO: Make sure all of them are returned here
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
-			e["command.flags"] = flag.Name
+			flags = append(flags, flag.Name)
 		})
 	}
+
+	return strings.Join(flags, ",")
 }
 
-func addDeprecated(event *cased.AuditEvent, cmd *cobra.Command) {
-	e := *event
-
-	if cmd.Deprecated != "" {
-		e["command.deprecated"] = "true"
-	}
+func addDeprecated(cmd *cobra.Command) bool {
+	return cmd.Deprecated != ""
 }
 
 func addError(event *cased.AuditEvent, err error) {
@@ -70,12 +71,12 @@ func addError(event *cased.AuditEvent, err error) {
 	}
 }
 
-func addArgs(event *cased.AuditEvent, args []string) {
-	e := *event
-
+func addArgs(args []string) string {
 	if len(args) > 0 {
-		e["command.args"] = args
+		return strings.Join(args, ",")
 	}
+
+	return ""
 }
 
 func addUserInfo(event *cased.AuditEvent) {
@@ -110,19 +111,38 @@ func addAction(event *cased.AuditEvent, cmd *cobra.Command) {
 	e["action"] = action
 }
 
+func buildCommandInfo(cmd *cobra.Command, args []string) map[string]interface{} {
+	c := make(map[string]interface{})
+
+	if v := addAlias(cmd); v != "" {
+		c["alias"] = v
+	}
+
+	if v := addArgs(args); v != "" {
+		c["args"] = v
+	}
+
+	if v := addFlags(cmd); v != "" {
+		c["flags"] = v
+	}
+
+	if v := addDeprecated(cmd); v {
+		c["deprecated"] = v
+	}
+
+	return c
+}
+
 func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
 	event := cased.AuditEvent{
 		"timestamp":  time.Now().UTC(),
 		"user_agent": fmt.Sprintf("meroxa/%s %s/%s", Version, runtime.GOOS, runtime.GOARCH),
+		"command":    buildCommandInfo(cmd, args),
 	}
 
 	addUserInfo(&event)
 	addAction(&event, cmd)
-	addAlias(&event, cmd)
-	addArgs(&event, args)
 	addError(&event, err)
-	addFlags(&event, cmd)
-	addDeprecated(&event, cmd)
 
 	return event
 }
@@ -134,21 +154,31 @@ var (
 
 // PublishEvent will take care of publishing the event to Cased.
 func publishEvent(event cased.AuditEvent) {
+	// Only prints out to console
+	if Config.GetBool("MEROXA_DEV_ENV") && Config.GetBool("MEROXA_METRICS_SILENCE") {
+		e, _ := json.Marshal(event)
+		fmt.Printf("\n\nEvent: %v\n\n", string(e))
+		return
+	}
+
 	var options []cased.PublisherOption
 
 	casedAPIKey := Config.GetString("CASED_API_KEY")
+
+	// if an API Key is provided, we ignore `withPublishURL`
 	if casedAPIKey != "" {
 		options = append(options, cased.WithPublishKey(casedAPIKey))
+	} else {
+		options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
 	}
-	options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
 
-	if metrics := Config.GetString("MEROXA_METRICS_SILENCE"); metrics != "" {
-		options = append(options, cased.WithSilence(false))
+	if v := Config.GetBool("MEROXA_METRICS_SILENCE"); v {
+		options = append(options, cased.WithSilence(v))
 	}
 
 	publisher := NewPublisher(options...)
 	cased.SetPublisher(publisher)
 
 	// cased.Publish could return an error, but we're silently ignoring it for now.
-	cased.Publish(event)
+	_ = cased.Publish(event)
 }

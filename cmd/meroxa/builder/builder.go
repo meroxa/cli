@@ -19,7 +19,6 @@ package builder
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -352,17 +351,7 @@ func withEventRunE(cmd *cobra.Command, args []string, c Command, err error) erro
 		}
 	}
 
-	// If we're emitting metrics.
-	if !global.Config.GetBool("MEROXA_METRICS_SILENCE") {
-		// Only prints out to console
-		if global.Config.GetBool("MEROXA_DEV_ENV") {
-			e, _ := json.Marshal(event)
-			fmt.Printf("\n\nEvent: %v\n\n", string(e))
-		} else {
-			// Actually publish the event.
-			global.PublishEvent(event)
-		}
-	}
+	global.PublishEvent(event)
 
 	if err != nil {
 		return err
