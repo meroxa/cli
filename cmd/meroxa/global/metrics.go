@@ -64,7 +64,6 @@ func addFlags(cmd *cobra.Command) string {
 	var flags []string
 
 	if cmd.HasFlags() {
-		// TODO: Make sure all of them are returned here
 		cmd.Flags().Visit(func(flag *pflag.Flag) {
 			flags = append(flags, flag.Name)
 		})
