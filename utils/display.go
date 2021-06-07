@@ -97,7 +97,7 @@ func ResourceTable(res *meroxa.Resource) string {
 			{Text: tunnel},
 		},
 		{
-			{Align: simpletable.AlignRight, Text: "Status:"},
+			{Align: simpletable.AlignRight, Text: "State:"},
 			{Text: strings.Title(res.Status.State)},
 		},
 	}
@@ -116,6 +116,7 @@ func ResourcesTable(resources []*meroxa.Resource) string {
 				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "URL"},
 				{Align: simpletable.AlignCenter, Text: "TUNNEL"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
 			},
 		}
 
@@ -130,7 +131,8 @@ func ResourcesTable(resources []*meroxa.Resource) string {
 				{Text: res.Name},
 				{Text: res.Type},
 				{Text: res.URL},
-				{Align: simpletable.AlignCenter, Text: strings.Title(tunnel)},
+				{Align: simpletable.AlignCenter, Text: tunnel},
+				{Align: simpletable.AlignCenter, Text: strings.Title(res.Status.State)},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)

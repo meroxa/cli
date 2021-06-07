@@ -150,7 +150,7 @@ func (c *Create) Execute(ctx context.Context) error {
 		c.logger.Infof(ctx, "%q resource created!", res.Name)
 		c.logger.Info(ctx, "Paste the following public key on your host:")
 		c.logger.Info(ctx, tun.PublicKey)
-		c.logger.Info(ctx, "Meroxa will try to connect to the host for 60 minutes and send email confirmation of successful resource validation.")
+		c.logger.Info(ctx, "Meroxa will try to connect to the host for 60 minutes and send email confirmation of a successful resource validation.") //nolint
 	}
 
 	c.logger.JSON(ctx, res)
