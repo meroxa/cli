@@ -144,7 +144,15 @@ func (c *Create) Execute(ctx context.Context) error {
 		return err
 	}
 
-	c.logger.Infof(ctx, "%q resource successfully created!", res.Name)
+	if tun := res.SSHTunnel; tun == nil {
+		c.logger.Infof(ctx, "%q resource successfully created!", res.Name)
+	} else {
+		c.logger.Infof(ctx, "%q resource created!", res.Name)
+		c.logger.Info(ctx, "Paste the following public key on your host:")
+		c.logger.Info(ctx, tun.PublicKey)
+		c.logger.Info(ctx, "Meroxa will try to connect to the host for 60 minutes and send email confirmation of successful resource validation.")
+	}
+
 	c.logger.JSON(ctx, res)
 
 	return nil

@@ -64,6 +64,12 @@ func (d *Describe) Execute(ctx context.Context) error {
 	}
 
 	d.logger.Info(ctx, utils.ResourceTable(resource))
+
+	if tun := resource.SSHTunnel; tun != nil {
+		d.logger.Info(ctx, "\nPaste the following public key on your host:")
+		d.logger.Info(ctx, tun.PublicKey)
+	}
+
 	d.logger.JSON(ctx, resource)
 
 	return nil
