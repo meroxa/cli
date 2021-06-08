@@ -268,3 +268,32 @@ func TestPublishEventOnStdout(t *testing.T) {
 		t.Fatalf("expected %v, got %v", want, got)
 	}
 }
+
+func TestAddAction(t *testing.T) {
+	root := &cobra.Command{Use: "meroxa"}
+
+	list := &cobra.Command{Use: "list"}
+
+	root.AddCommand(list)
+
+	event := cased.AuditEvent{}
+	addAction(&event, list)
+
+	want := fmt.Sprintf("meroxa.%s", list.Use)
+
+	if v := event["action"]; v != want {
+		t.Fatalf("expected event action to be %q, got %q", want, v)
+	}
+
+	resources := &cobra.Command{Use: "resources"}
+
+	list.AddCommand(resources)
+
+	addAction(&event, resources)
+
+	want = fmt.Sprintf("meroxa.%s.%s", list.Use, resources.Use)
+
+	if v := event["action"]; v != want {
+		t.Fatalf("expected event action to be %q, got %q", want, v)
+	}
+}
