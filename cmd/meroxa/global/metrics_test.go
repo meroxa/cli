@@ -271,9 +271,7 @@ func TestPublishEventOnStdout(t *testing.T) {
 
 func TestAddAction(t *testing.T) {
 	root := &cobra.Command{Use: "meroxa"}
-
 	list := &cobra.Command{Use: "list"}
-
 	root.AddCommand(list)
 
 	event := cased.AuditEvent{}
@@ -286,7 +284,6 @@ func TestAddAction(t *testing.T) {
 	}
 
 	resources := &cobra.Command{Use: "resources"}
-
 	list.AddCommand(resources)
 
 	addAction(&event, resources)
@@ -294,6 +291,34 @@ func TestAddAction(t *testing.T) {
 	want = fmt.Sprintf("meroxa.%s.%s", list.Use, resources.Use)
 
 	if v := event["action"]; v != want {
+		t.Fatalf("expected event action to be %q, got %q", want, v)
+	}
+}
+
+func TestAddUserInfo(t *testing.T) {
+	Config = viper.New()
+	defer clearConfiguration()
+
+	meroxaUser := "user@meroxa.io"
+	meroxaUserUUID := "ff45a74a-4fc1-49a5-8fa5-f1762703b7e8"
+
+	// Makes sure user is logged in
+	Config.Set("ACCESS_TOKEN", "access-token")
+	Config.Set("REFRESH_TOKEN", "refresh-token")
+
+	Config.Set("ACTOR", meroxaUser)
+	Config.Set("ACTOR_UUID", meroxaUserUUID)
+
+	event := cased.AuditEvent{}
+	addUserInfo(&event)
+
+	want := meroxaUser
+	if v := event["actor"]; v != want {
+		t.Fatalf("expected event action to be %q, got %q", want, v)
+	}
+
+	want = meroxaUserUUID
+	if v := event["actor_uuid"]; v != want {
 		t.Fatalf("expected event action to be %q, got %q", want, v)
 	}
 }

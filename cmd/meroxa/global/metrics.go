@@ -179,7 +179,7 @@ func publishEvent(event cased.AuditEvent) {
 	publisher := NewPublisher()
 	cased.SetPublisher(publisher)
 
-	// cased.Publish could return an error, but we're silently ignoring it for now.
+	// cased.Publish could return an error, but we only show it when debugging
 	err := cased.Publish(event)
 
 	// The process will wait 30 seconds to publish all events to Cased before
