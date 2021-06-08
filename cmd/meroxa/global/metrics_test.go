@@ -21,6 +21,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/cased/cased-go"
 
 	"github.com/google/go-cmp/cmp"
@@ -152,6 +154,71 @@ func TestBuildBasicEvent(t *testing.T) {
 		}
 		return false
 	})) {
-		t.Fatalf(cmp.Diff(want, got))
+		t.Fatalf(cmp.Diff(got, want))
 	}
+}
+
+func TestNewPublisherWithCasedAPIKey(t *testing.T) {
+	Config = viper.New()
+	defer clearConfiguration()
+
+	apiKey := "8c32e3b7-d0e7-4650-a82b-e85e6a8d56fa"
+	Config.Set("CASED_API_KEY", apiKey)
+
+	got := NewPublisher()
+
+	if got.Options().PublishKey != apiKey {
+		t.Fatalf("expected publisher with API_KEY to be %q", apiKey)
+	}
+}
+
+func TestNewPublisherWithoutCasedAPIKey(t *testing.T) {
+	Config = viper.New()
+	defer clearConfiguration()
+
+	apiURL := fmt.Sprintf("%s/telemetry", meroxaBaseAPIURL)
+	got := NewPublisher()
+
+	if got.Options().PublishKey != "" {
+		t.Fatalf("expected publisher without API_KEY set")
+	}
+
+	if got.Options().PublishURL != apiURL {
+		t.Fatalf("expected publish url to be %q", apiURL)
+	}
+}
+
+func TestNewPublisherPublishing(t *testing.T) {
+	Config = viper.New()
+	defer clearConfiguration()
+
+	Config.Set("PUBLISH_METRICS", "false")
+	got := NewPublisher()
+
+	if !got.Options().Silence {
+		t.Fatalf("expected publisher silence option to be %v", true)
+	}
+
+	Config.Set("PUBLISH_METRICS", "any-other-value")
+	got = NewPublisher()
+
+	if got.Options().Silence {
+		t.Fatalf("expected publisher silence option to be %v", false)
+	}
+}
+
+func TestNewPublisherWithDebug(t *testing.T) {
+	Config = viper.New()
+	defer clearConfiguration()
+
+	Config.Set("CASED_DEBUG", true)
+	got := NewPublisher()
+
+	if !got.Options().Debug {
+		t.Fatalf("expected publisher debug option to be %v", true)
+	}
+}
+
+func clearConfiguration() {
+	Config = nil
 }
