@@ -35,7 +35,7 @@ const (
 )
 
 func GetMeroxaAPIURL() string {
-	if v := Config.GetString("MEROXA_API_URL"); v != "" {
+	if v := Config.GetString("API_URL"); v != "" {
 		return v
 	}
 
@@ -56,8 +56,8 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 	}
 
 	// fetch actor account.
-	actor = Config.GetString("MEROXA_ACTOR")
-	actorUUID = Config.GetString("MEROXA_ACTOR_UUID")
+	actor = Config.GetString("ACTOR")
+	actorUUID = Config.GetString("ACTOR_UUID")
 
 	if actor == "" || actorUUID == "" {
 		// call api to fetch
@@ -79,8 +79,8 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		actor = account.Email
 		actorUUID = account.UUID
 
-		Config.Set("MEROXA_ACTOR", actor)
-		Config.Set("MEROXA_ACTOR_UUID", actorUUID)
+		Config.Set("ACTOR", actor)
+		Config.Set("ACTOR_UUID", actorUUID)
 
 		err = Config.WriteConfig()
 

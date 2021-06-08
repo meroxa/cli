@@ -77,8 +77,8 @@ func (w *WhoAmI) Execute(ctx context.Context) error {
 	w.logger.JSON(ctx, user)
 
 	// Updates config file with actor information.
-	w.config.Set("MEROXA_ACTOR", user.Email)
-	w.config.Set("MEROXA_ACTOR_UUID", user.UUID)
+	w.config.Set("ACTOR", user.Email)
+	w.config.Set("ACTOR_UUID", user.UUID)
 
 	if err != nil {
 		return err
