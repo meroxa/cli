@@ -18,6 +18,7 @@ package global
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 	"time"
 
@@ -166,7 +167,7 @@ func TestBuildBasicEvent(t *testing.T) {
 	want := cased.AuditEvent{
 		"command":    map[string]interface{}{},
 		"timestamp":  time.Now().UTC(),
-		"user_agent": fmt.Sprintf("meroxa/%s darwin/amd64", Version),
+		"user_agent": fmt.Sprintf("meroxa/%s %s/%s", Version, runtime.GOOS, runtime.GOARCH),
 	}
 
 	got := buildBasicEvent(cmd, nil)
