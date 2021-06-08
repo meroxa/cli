@@ -84,6 +84,29 @@ func (tc *metricsTestCase) test(t *testing.T) {
 	}
 }
 
+func TestAddError(t *testing.T) {
+	event := cased.AuditEvent{}
+
+	addError(&event, nil)
+
+	if v, ok := event["error"]; ok {
+		t.Fatalf("not expected event to contain %q key, got %q", "error", v)
+	}
+
+	err := "unexpected error"
+	addError(&event, fmt.Errorf(err))
+
+	if v, ok := event["error"]; !ok || v != err {
+		if !ok {
+			t.Fatalf("expected event error to contain %q key", "error")
+		}
+
+		if v != err {
+			t.Fatalf("expected event error to be %q, got %q", err, v)
+		}
+	}
+}
+
 func TestBuildCommandInfo(t *testing.T) {
 	tests := map[string]metricsTestCase{
 		"withAlias": {

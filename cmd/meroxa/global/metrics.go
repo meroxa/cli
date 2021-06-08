@@ -78,7 +78,7 @@ func addError(event *cased.AuditEvent, err error) {
 	e := *event
 
 	if err != nil {
-		e["error"] = err
+		e["error"] = err.Error()
 	}
 }
 
