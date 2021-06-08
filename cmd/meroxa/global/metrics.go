@@ -146,12 +146,16 @@ func buildCommandInfo(cmd *cobra.Command, args []string) map[string]interface{} 
 	return c
 }
 
-func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
-	event := cased.AuditEvent{
+func buildBasicEvent(cmd *cobra.Command, args []string) cased.AuditEvent {
+	return cased.AuditEvent{
 		"timestamp":  time.Now().UTC(),
 		"user_agent": fmt.Sprintf("meroxa/%s %s/%s", Version, runtime.GOOS, runtime.GOARCH),
 		"command":    buildCommandInfo(cmd, args),
 	}
+}
+
+func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
+	event := buildBasicEvent(cmd, args)
 
 	addUserInfo(&event)
 	addAction(&event, cmd)

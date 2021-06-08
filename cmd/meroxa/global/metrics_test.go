@@ -17,7 +17,11 @@ limitations under the License.
 package global
 
 import (
+	"fmt"
 	"testing"
+	"time"
+
+	"github.com/cased/cased-go"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -49,8 +53,6 @@ func cmdWithFlags(flags []string) *cobra.Command {
 func (tc *metricsTestCase) test(t *testing.T) {
 	var called *cobra.Command
 	run := func(c *cobra.Command, _ []string) {
-		t.Logf("called: %q", c.Name())
-		t.Logf("called as: %q", c.CalledAs())
 		called = c
 	}
 
@@ -127,5 +129,29 @@ func TestBuildCommandInfo(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, tc.test)
+	}
+}
+
+func TestBuildBasicEvent(t *testing.T) {
+	Version = "1.0.0"
+	cmd := &cobra.Command{}
+
+	want := cased.AuditEvent{
+		"command":    map[string]interface{}{},
+		"timestamp":  time.Now().UTC(),
+		"user_agent": fmt.Sprintf("meroxa/%s darwin/amd64", Version),
+	}
+
+	got := buildBasicEvent(cmd, nil)
+	if !cmp.Equal(want, got, cmpopts.IgnoreMapEntries(func(k string, v interface{}) bool {
+		if k == "timestamp" {
+			if _, ok := v.(time.Time); !ok {
+				t.Fatalf("expected %q to be %T got %T", k, time.Time{}, v)
+			}
+			return true
+		}
+		return false
+	})) {
+		t.Fatalf(cmp.Diff(want, got))
 	}
 }
