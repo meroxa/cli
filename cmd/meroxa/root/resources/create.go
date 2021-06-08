@@ -51,6 +51,7 @@ type Create struct {
 		ClientCert string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
 		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
 		SSL        bool   `long:"ssl"         short:"" usage:"use SSL"`
+		SSHURL     string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
 	}
 }
 
@@ -130,6 +131,12 @@ func (c *Create) Execute(ctx context.Context) error {
 		}
 	}
 
+	if sshURL := c.flags.SSHURL; sshURL != "" {
+		input.SSHTunnel = &meroxa.ResourceSSHTunnelInput{
+			Address: sshURL,
+		}
+	}
+
 	c.logger.Infof(ctx, "Creating %q resource...", input.Type)
 
 	res, err := c.client.CreateResource(ctx, &input)
@@ -137,7 +144,15 @@ func (c *Create) Execute(ctx context.Context) error {
 		return err
 	}
 
-	c.logger.Infof(ctx, "%q resource successfully created!", res.Name)
+	if tun := res.SSHTunnel; tun == nil {
+		c.logger.Infof(ctx, "%q resource is successfully created!", res.Name)
+	} else {
+		c.logger.Infof(ctx, "%q resource is successfully created but is pending for validation!", res.Name)
+		c.logger.Info(ctx, "Paste the following public key on your host:")
+		c.logger.Info(ctx, tun.PublicKey)
+		c.logger.Info(ctx, "Meroxa will try to connect to the resource for 60 minutes and send email confirmation after a successful resource validation.") //nolint
+	}
+
 	c.logger.JSON(ctx, res)
 
 	return nil

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const ResourcesBasePath = "/v1/resources"
@@ -27,12 +28,22 @@ type Credentials struct {
 
 // CreateResourceInput represents the input for a Meroxa Resource type we're creating within the Meroxa API
 type CreateResourceInput struct {
-	ID          int                    `json:"id"`
-	Type        string                 `json:"type"`
-	Name        string                 `json:"name,omitempty"`
-	URL         string                 `json:"url"`
-	Credentials *Credentials           `json:"credentials,omitempty"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	ID          int                     `json:"id"`
+	Type        string                  `json:"type"`
+	Name        string                  `json:"name,omitempty"`
+	URL         string                  `json:"url"`
+	Credentials *Credentials            `json:"credentials,omitempty"`
+	Metadata    map[string]interface{}  `json:"metadata,omitempty"`
+	SSHTunnel   *ResourceSSHTunnelInput `json:"ssh_tunnel,omitempty"`
+}
+
+type ResourceSSHTunnelInput struct {
+	Address string `json:"address"`
+}
+
+type ResourceSSHTunnel struct {
+	Address   string `json:"address"`
+	PublicKey string `json:"public_key"`
 }
 
 // Resource represents the Meroxa Resource type within the Meroxa API
@@ -43,14 +54,21 @@ type Resource struct {
 	URL         string                 `json:"url"`
 	Credentials *Credentials           `json:"credentials,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	SSHTunnel   *ResourceSSHTunnel     `json:"ssh_tunnel,omitempty"`
+	Status      struct {
+		State string `json:"state"`
+	} `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // UpdateResourceInput represents the Meroxa Resource we're updating in the Meroxa API
 type UpdateResourceInput struct {
-	Name        string                 `json:"name,omitempty"` // TODO: Update this via CLI
-	URL         string                 `json:"url,omitempty"`
-	Metadata    map[string]interface{} `json:"metadata,omitempty"`
-	Credentials *Credentials           `json:"credentials,omitempty"`
+	Name        string                  `json:"name,omitempty"` // TODO: Update this via CLI
+	URL         string                  `json:"url,omitempty"`
+	Metadata    map[string]interface{}  `json:"metadata,omitempty"`
+	Credentials *Credentials            `json:"credentials,omitempty"`
+	SSHTunnel   *ResourceSSHTunnelInput `json:"ssh_tunnel,omitempty"`
 }
 
 // CreateResource provisions a new Resource from the given CreateResourceInput struct

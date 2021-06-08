@@ -68,6 +68,44 @@ func PrintEndpointsTable(ends []meroxa.Endpoint) {
 	fmt.Println(EndpointsTable(ends))
 }
 
+func ResourceTable(res *meroxa.Resource) string {
+	tunnel := "N/A"
+	if res.SSHTunnel != nil {
+		tunnel = "SSH"
+	}
+
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "ID:"},
+			{Text: fmt.Sprintf("%d", res.ID)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: res.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Type:"},
+			{Text: res.Type},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "URL:"},
+			{Text: res.URL},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Tunnel:"},
+			{Text: tunnel},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "State:"},
+			{Text: strings.Title(res.Status.State)},
+		},
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	return mainTable.String()
+}
+
 func ResourcesTable(resources []*meroxa.Resource) string {
 	if len(resources) != 0 {
 		table := simpletable.New()
@@ -77,15 +115,24 @@ func ResourcesTable(resources []*meroxa.Resource) string {
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "TYPE"},
 				{Align: simpletable.AlignCenter, Text: "URL"},
+				{Align: simpletable.AlignCenter, Text: "TUNNEL"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
 			},
 		}
 
 		for _, res := range resources {
+			tunnel := "N/A"
+			if res.SSHTunnel != nil {
+				tunnel = "SSH"
+			}
+
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
 				{Text: res.Name},
 				{Text: res.Type},
 				{Text: res.URL},
+				{Align: simpletable.AlignCenter, Text: tunnel},
+				{Align: simpletable.AlignCenter, Text: strings.Title(res.Status.State)},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
