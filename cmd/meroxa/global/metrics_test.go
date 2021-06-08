@@ -21,6 +21,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/meroxa/cli/utils"
+
 	"github.com/spf13/viper"
 
 	"github.com/cased/cased-go"
@@ -244,4 +246,25 @@ func TestNewPublisherWithDebug(t *testing.T) {
 
 func clearConfiguration() {
 	Config = nil
+}
+
+func TestPublishEventOnStdout(t *testing.T) {
+	Config = viper.New()
+	defer clearConfiguration()
+
+	Config.Set("PUBLISH_METRICS", "stdout")
+
+	event := cased.AuditEvent{
+		"key": "event",
+	}
+
+	got := utils.CaptureOutput(func() {
+		publishEvent(event)
+	})
+
+	want := "\n\nEvent: {\"key\":\"event\"}\n\n"
+
+	if want != got {
+		t.Fatalf("expected %v, got %v", want, got)
+	}
 }
