@@ -9,6 +9,10 @@ url: /cli/meroxa-transforms/
 
 Manage transforms on Meroxa
 
+```
+meroxa transforms [flags]
+```
+
 ### Options
 
 ```

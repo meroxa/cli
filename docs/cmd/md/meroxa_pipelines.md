@@ -2,6 +2,10 @@
 
 Manage pipelines on Meroxa
 
+```
+meroxa pipelines [flags]
+```
+
 ### Options
 
 ```

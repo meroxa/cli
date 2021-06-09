@@ -36,11 +36,11 @@ type WhoAmI struct {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
 	_ builder.CommandWithClient  = (*WhoAmI)(nil)
-	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
-	_ builder.CommandWithExecute = (*WhoAmI)(nil)
 	_ builder.CommandWithConfig  = (*WhoAmI)(nil)
+	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
+	_ builder.CommandWithExecute = (*WhoAmI)(nil)
+	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
 )
 
 func (w *WhoAmI) Usage() string {

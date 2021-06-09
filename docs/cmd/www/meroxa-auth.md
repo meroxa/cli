@@ -9,6 +9,10 @@ url: /cli/meroxa-auth/
 
 Authentication commands for Meroxa
 
+```
+meroxa auth [flags]
+```
+
 ### Options
 
 ```

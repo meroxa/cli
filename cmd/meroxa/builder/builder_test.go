@@ -8,9 +8,12 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/spf13/cobra"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/spf13/cobra"
 )
 
 type testCmd struct {
@@ -68,21 +71,30 @@ func TestBuildCobraCommand_Structural(t *testing.T) {
 	want.AddCommand(&cobra.Command{Use: "subCmd"})
 
 	got := builder.BuildCobraCommand(cmd)
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf(`expected "%v", got "%v"`, want, got)
+
+	// Since we can't compare functions, we ignore RunE (coming from `buildCommandEvent`)
+	got.RunE = nil
+
+	if v := cmp.Diff(got, want, cmpopts.IgnoreUnexported(cobra.Command{})); v != "" {
+		t.Fatalf(v)
 	}
 }
 
 var (
-	_ builder.CommandWithArgs    = (*mockCommand)(nil)
-	_ builder.CommandWithLogger  = (*mockCommand)(nil)
-	_ builder.CommandWithExecute = (*mockCommand)(nil)
+	_ builder.CommandWithArgs     = (*mockCommand)(nil)
+	_ builder.CommandWithLogger   = (*mockCommand)(nil)
+	_ builder.CommandWithExecute  = (*mockCommand)(nil)
+	_ builder.CommandWithoutEvent = (*mockCommand)(nil)
 )
 
 // mockCommand is a mock of a behavioral command (5 interfaces).
 type mockCommand struct {
 	ctrl     *gomock.Controller
 	recorder *mockCommandMockRecorder
+}
+
+func (m *mockCommand) Event() bool {
+	return false
 }
 
 // mockCommandMockRecorder is the mock recorder for mockCommand.
@@ -268,7 +280,11 @@ func TestBuildCommandWithFlags(t *testing.T) {
 	}
 
 	got := builder.BuildCobraCommand(cmd)
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf(`expected "%v", got "%v"`, want, got)
+
+	// Since we can't compare functions, we ignore RunE (coming from `buildCommandEvent`)
+	got.RunE = nil
+
+	if v := cmp.Diff(got, want, cmpopts.IgnoreUnexported(cobra.Command{})); v != "" {
+		t.Fatalf(v)
 	}
 }
