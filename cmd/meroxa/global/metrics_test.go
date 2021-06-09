@@ -22,16 +22,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/meroxa/cli/utils"
-
-	"github.com/spf13/viper"
-
 	"github.com/cased/cased-go"
-
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-
+	"github.com/meroxa/cli/utils"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type metricsTestCase struct {
@@ -90,14 +86,14 @@ func (tc *metricsTestCase) test(t *testing.T) {
 func TestAddError(t *testing.T) {
 	event := cased.AuditEvent{}
 
-	addError(&event, nil)
+	addError(event, nil)
 
 	if v, ok := event["error"]; ok {
 		t.Fatalf("not expected event to contain %q key, got %q", "error", v)
 	}
 
 	err := "unexpected error"
-	addError(&event, fmt.Errorf(err))
+	addError(event, fmt.Errorf(err))
 
 	if v, ok := event["error"]; !ok || v != err {
 		if !ok {
@@ -276,7 +272,7 @@ func TestAddAction(t *testing.T) {
 	root.AddCommand(list)
 
 	event := cased.AuditEvent{}
-	addAction(&event, list)
+	addAction(event, list)
 
 	want := fmt.Sprintf("meroxa.%s", list.Use)
 
@@ -285,11 +281,13 @@ func TestAddAction(t *testing.T) {
 	}
 
 	resources := &cobra.Command{Use: "resources"}
+	types := &cobra.Command{Use: "types"}
 	list.AddCommand(resources)
+	resources.AddCommand(types)
 
-	addAction(&event, resources)
+	addAction(event, types)
 
-	want = fmt.Sprintf("meroxa.%s.%s", list.Use, resources.Use)
+	want = fmt.Sprintf("meroxa.%s.%s.%s", list.Use, resources.Use, types.Use)
 
 	if v := event["action"]; v != want {
 		t.Fatalf("expected event action to be %q, got %q", want, v)
@@ -311,7 +309,7 @@ func TestAddUserInfo(t *testing.T) {
 	Config.Set("ACTOR_UUID", meroxaUserUUID)
 
 	event := cased.AuditEvent{}
-	addUserInfo(&event)
+	addUserInfo(event)
 
 	want := meroxaUser
 	if v := event["actor"]; v != want {

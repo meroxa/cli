@@ -74,11 +74,9 @@ func addDeprecated(cmd *cobra.Command) bool {
 	return cmd.Deprecated != ""
 }
 
-func addError(event *cased.AuditEvent, err error) {
-	e := *event
-
+func addError(event cased.AuditEvent, err error) {
 	if err != nil {
-		e["error"] = err.Error()
+		event["error"] = err.Error()
 	}
 }
 
@@ -90,36 +88,30 @@ func addArgs(args []string) string {
 	return ""
 }
 
-func addUserInfo(event *cased.AuditEvent) {
+func addUserInfo(event cased.AuditEvent) {
 	actor, actorUUID, _ := GetCLIUserInfo()
-	e := *event
 
 	if actor != "" {
-		e["actor"] = actor
+		event["actor"] = actor
 	}
 
 	if actorUUID != "" {
-		e["actor_uuid"] = actorUUID
+		event["actor_uuid"] = actorUUID
 	}
 }
 
-func addAction(event *cased.AuditEvent, cmd *cobra.Command) {
-	var action string
-	e := *event
-
-	// TODO: Implement something that could look up all the way up until meroxa (meroxa create resources...)
-	// something like it determines how many levels since root and then until current cmd
-	if cmd.HasParent() {
-		if cmd.Parent().HasParent() {
-			action = fmt.Sprintf("%s.%s.%s", cmd.Parent().Parent().Use, cmd.Parent().Use, cmd.Use)
-		} else {
-			action = fmt.Sprintf("%s.%s", cmd.Parent().Use, cmd.Use)
+// addAction looks up all parent commands recursively and builds the action field.
+func addAction(event cased.AuditEvent, cmd *cobra.Command) {
+	var buildAction func(cmd *cobra.Command) string
+	buildAction = func(cmd *cobra.Command) string {
+		if !cmd.HasParent() {
+			return cmd.Use
 		}
-	} else {
-		action = cmd.Use
+		action := buildAction(cmd.Parent())
+		return fmt.Sprintf("%s.%s", action, cmd.Use)
 	}
 
-	e["action"] = action
+	event["action"] = buildAction(cmd)
 }
 
 func buildCommandInfo(cmd *cobra.Command, args []string) map[string]interface{} {
@@ -155,9 +147,9 @@ func buildBasicEvent(cmd *cobra.Command, args []string) cased.AuditEvent {
 func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
 	event := buildBasicEvent(cmd, args)
 
-	addUserInfo(&event)
-	addAction(&event, cmd)
-	addError(&event, err)
+	addUserInfo(event)
+	addAction(event, cmd)
+	addError(event, err)
 
 	return event
 }
@@ -179,14 +171,16 @@ func publishEvent(event cased.AuditEvent) {
 	publisher := NewPublisher()
 	cased.SetPublisher(publisher)
 
-	// cased.Publish could return an error, but we only show it when debugging
 	err := cased.Publish(event)
+	if err != nil {
+		// cased.Publish could return an error, but we only show it when debugging
+		if Config.GetBool("CASED_DEBUG") {
+			fmt.Println("error: %w", err)
+		}
+		return
+	}
 
 	// The process will wait 30 seconds to publish all events to Cased before
 	// exiting the process.
-	defer cased.Flush(30 * time.Second) // nolint:gomnd
-
-	if err != nil && Config.GetBool("CASED_DEBUG") {
-		fmt.Println("error: %w", err)
-	}
+	cased.Flush(30 * time.Second) // nolint:gomnd
 }
