@@ -46,6 +46,10 @@ func NewPublisher() cased.Publisher {
 	if v := Config.GetBool("CASED_DEBUG"); v {
 		options = append(options, cased.WithDebug(v))
 	}
+
+	// TODO: Re-use HTTP Transform from our own Meroxa client
+	options = append(options, cased.WithTransport(cased.NewHTTPTransport()))
+
 	c := cased.NewPublisher(options...)
 	return c
 }
