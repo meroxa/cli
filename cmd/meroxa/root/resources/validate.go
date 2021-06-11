@@ -63,7 +63,8 @@ func (u *Validate) Execute(ctx context.Context) error {
 	if r.SSHTunnel == nil {
 		u.logger.Infof(ctx, "Resource %q is successfully validated!", u.args.Name)
 	} else {
-		u.logger.Infof(ctx, "Resource %q validation is triggerred! Use `meroxa resource describe %s` to check status.", u.args.Name, u.args.Name)
+		u.logger.Infof(ctx, "Resource %q validation is successfully triggered!", u.args.Name)
+		u.logger.Info(ctx, "Meroxa will try to connect to the resource for 60 minutes and send an email confirmation after a successful resource validation.") //nolint
 	}
 
 	u.logger.JSON(ctx, r)

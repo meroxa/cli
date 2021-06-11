@@ -64,7 +64,7 @@ func (u *RotateTunnelKey) Execute(ctx context.Context) error {
 	if tun := r.SSHTunnel; tun != nil {
 		u.logger.Info(ctx, "Paste the following public key on your host:")
 		u.logger.Info(ctx, tun.PublicKey)
-		u.logger.Info(ctx, "Meroxa will try to connect to the resource for 60 minutes and send email confirmation after a successful resource validation.") //nolint
+		u.logger.Info(ctx, "Meroxa will try to connect to the resource for 60 minutes and send an email confirmation after a successful resource validation.") //nolint
 	}
 	u.logger.JSON(ctx, r)
 

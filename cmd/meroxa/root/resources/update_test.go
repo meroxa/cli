@@ -150,7 +150,7 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
-Resource %q successfully updated!
+Resource %q is successfully updated!
 `, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
@@ -206,7 +206,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
-Resource %q successfully updated!
+Resource %q is successfully updated!
 `, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
@@ -259,7 +259,7 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
-Resource %q successfully updated!
+Resource %q is successfully updated!
 `, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
@@ -316,7 +316,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
-Resource %q successfully updated!
+Resource %q is successfully updated!
 `, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
