@@ -64,7 +64,7 @@ type Resource struct {
 
 // UpdateResourceInput represents the Meroxa Resource we're updating in the Meroxa API
 type UpdateResourceInput struct {
-	Name        string                  `json:"name,omitempty"` // TODO: Update this via CLI
+	Name        string                  `json:"name,omitempty"`
 	URL         string                  `json:"url,omitempty"`
 	Metadata    map[string]interface{}  `json:"metadata,omitempty"`
 	Credentials *Credentials            `json:"credentials,omitempty"`
@@ -128,6 +128,41 @@ func (c *Client) UpdateResource(ctx context.Context, key string, resourceToUpdat
 	}
 
 	return &r, nil
+}
+
+func (c *Client) RotateTunnelKeyForResource(ctx context.Context, id string) (*Resource, error) {
+	return c.performResourceAction(ctx, id, "rotate_keys")
+}
+
+func (c *Client) ValidateResource(ctx context.Context, id string) (*Resource, error) {
+	return c.performResourceAction(ctx, id, "validate")
+}
+
+func (c *Client) performResourceAction(ctx context.Context, id string, action string) (*Resource, error) {
+	path := fmt.Sprintf("%s/%s/actions", ResourcesBasePath, id)
+	body := struct {
+		Action string `json:"action"`
+	}{
+		Action: action,
+	}
+
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, body, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var rr Resource
+	err = json.NewDecoder(resp.Body).Decode(&rr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &rr, nil
 }
 
 // ListResources returns an array of Resources (scoped to the calling user)
