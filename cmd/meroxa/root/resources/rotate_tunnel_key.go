@@ -27,6 +27,15 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
+var (
+	_ builder.CommandWithDocs    = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithArgs    = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithFlags   = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithClient  = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithLogger  = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithExecute = (*RotateTunnelKey)(nil)
+)
+
 type rotateKeyActionClient interface {
 	RotateTunnelKeyForResource(ctx context.Context, name string) (*meroxa.Resource, error)
 }
@@ -96,12 +105,3 @@ func (u *RotateTunnelKey) ParseArgs(args []string) error {
 	u.args.Name = args[0]
 	return nil
 }
-
-var (
-	_ builder.CommandWithDocs    = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithArgs    = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithFlags   = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithClient  = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithLogger  = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithExecute = (*RotateTunnelKey)(nil)
-)

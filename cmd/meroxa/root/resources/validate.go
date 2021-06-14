@@ -27,6 +27,15 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
+var (
+	_ builder.CommandWithDocs    = (*Validate)(nil)
+	_ builder.CommandWithArgs    = (*Validate)(nil)
+	_ builder.CommandWithFlags   = (*Validate)(nil)
+	_ builder.CommandWithClient  = (*Validate)(nil)
+	_ builder.CommandWithLogger  = (*Validate)(nil)
+	_ builder.CommandWithExecute = (*Validate)(nil)
+)
+
 type validateResourceClient interface {
 	ValidateResource(ctx context.Context, name string) (*meroxa.Resource, error)
 }
@@ -91,12 +100,3 @@ func (u *Validate) ParseArgs(args []string) error {
 	u.args.Name = args[0]
 	return nil
 }
-
-var (
-	_ builder.CommandWithDocs    = (*Validate)(nil)
-	_ builder.CommandWithArgs    = (*Validate)(nil)
-	_ builder.CommandWithFlags   = (*Validate)(nil)
-	_ builder.CommandWithClient  = (*Validate)(nil)
-	_ builder.CommandWithLogger  = (*Validate)(nil)
-	_ builder.CommandWithExecute = (*Validate)(nil)
-)
