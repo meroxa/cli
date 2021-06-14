@@ -54,6 +54,11 @@ func (u *RotateTunnelKey) Docs() builder.Docs {
 	}
 }
 
+func (u *RotateTunnelKey) Confirm(ctx context.Context) string {
+	u.logger.Infof(ctx, "Rotating tunnel key will restart the tunnel and disconnect existing connections.")
+	return u.args.Name
+}
+
 func (u *RotateTunnelKey) Execute(ctx context.Context) error {
 	r, err := u.client.RotateTunnelKeyForResource(ctx, u.args.Name)
 	if err != nil {
