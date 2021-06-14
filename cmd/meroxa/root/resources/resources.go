@@ -50,5 +50,7 @@ func (*Resources) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&Update{}),
+		builder.BuildCobraCommand(&Validate{}),
+		builder.BuildCobraCommand(&RotateTunnelKey{}),
 	}
 }

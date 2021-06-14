@@ -1405,6 +1405,8 @@ _meroxa_resources_create()
     two_word_flags+=("-m")
     flags+=("--password=")
     two_word_flags+=("--password")
+    flags+=("--ssh-url=")
+    two_word_flags+=("--ssh-url")
     flags+=("--ssl")
     flags+=("--type=")
     two_word_flags+=("--type")
@@ -1542,6 +1544,34 @@ _meroxa_resources_remove()
     noun_aliases=()
 }
 
+_meroxa_resources_rotate-tunnel-key()
+{
+    last_command="meroxa_resources_rotate-tunnel-key"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_resources_update()
 {
     last_command="meroxa_resources_update"
@@ -1571,12 +1601,42 @@ _meroxa_resources_update()
     two_word_flags+=("--name")
     flags+=("--password=")
     two_word_flags+=("--password")
+    flags+=("--ssh-url=")
+    two_word_flags+=("--ssh-url")
     flags+=("--ssl")
     flags+=("--url=")
     two_word_flags+=("--url")
     two_word_flags+=("-u")
     flags+=("--username=")
     two_word_flags+=("--username")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_resources_validate()
+{
+    last_command="meroxa_resources_validate"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
     flags+=("--config=")
     two_word_flags+=("--config")
     flags+=("--debug")
@@ -1615,7 +1675,9 @@ _meroxa_resources()
         command_aliases+=("rm")
         aliashash["rm"]="remove"
     fi
+    commands+=("rotate-tunnel-key")
     commands+=("update")
+    commands+=("validate")
 
     flags=()
     two_word_flags=()

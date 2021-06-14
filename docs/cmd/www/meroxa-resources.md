@@ -35,5 +35,7 @@ meroxa resources [flags]
 * [meroxa resources describe](/cli/meroxa-resources-describe/)	 - Describe resource
 * [meroxa resources list](/cli/meroxa-resources-list/)	 - List resources and resource types
 * [meroxa resources remove](/cli/meroxa-resources-remove/)	 - Remove resource
+* [meroxa resources rotate-tunnel-key](/cli/meroxa-resources-rotate-tunnel-key/)	 - Rotate the tunnel key for a resource
 * [meroxa resources update](/cli/meroxa-resources-update/)	 - Update a resource
+* [meroxa resources validate](/cli/meroxa-resources-validate/)	 - Validate a resource
 

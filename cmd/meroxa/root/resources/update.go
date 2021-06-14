@@ -122,7 +122,13 @@ func (u *Update) Execute(ctx context.Context) error {
 		return err
 	}
 
-	u.logger.Infof(ctx, "Resource %q successfully updated!", u.args.Name)
+	if tun := r.SSHTunnel; tun == nil {
+		u.logger.Infof(ctx, "Resource %q is successfully updated!", r.Name)
+	} else {
+		u.logger.Infof(ctx, "Resource %q is successfully updated but is pending for validation!", r.Name)
+		u.logger.Info(ctx, "Meroxa will try to connect to the resource for 60 minutes and send an email confirmation after a successful resource validation.") //nolint
+	}
+
 	u.logger.JSON(ctx, r)
 	return nil
 }

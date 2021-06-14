@@ -37,6 +37,7 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
   -h, --help                 help for create
   -m, --metadata string      resource metadata
       --password string      password
+      --ssh-url string       SSH tunneling address
       --ssl                  use SSL
       --type string          resource type
   -u, --url string           resource url
