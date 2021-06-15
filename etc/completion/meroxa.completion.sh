@@ -1558,6 +1558,8 @@ _meroxa_resources_rotate-tunnel-key()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--config=")

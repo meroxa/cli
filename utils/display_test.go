@@ -18,6 +18,9 @@ func TestResourcesTable(t *testing.T) {
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
 		Credentials: nil,
 		Metadata:    nil,
+		Status: meroxa.ResourceStatus{
+			State: "error",
+		},
 	}
 	resIDAlign := &meroxa.Resource{
 		ID:          1000,
@@ -26,6 +29,9 @@ func TestResourcesTable(t *testing.T) {
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
 		Credentials: nil,
 		Metadata:    nil,
+		Status: meroxa.ResourceStatus{
+			State: "ready",
+		},
 	}
 
 	tests := map[string][]*meroxa.Resource{
@@ -47,12 +53,18 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, strconv.Itoa(resource.ID)) {
 					t.Errorf("%d, not found", resource.ID)
 				}
+				if !strings.Contains(out, strings.Title(resource.Status.State)) {
+					t.Errorf("state %s, not found", resource.Status.State)
+				}
 			case "ID_Alignment":
 				if !strings.Contains(out, resIDAlign.Name) {
 					t.Errorf("%s, not found", resIDAlign.Name)
 				}
 				if !strings.Contains(out, strconv.Itoa(resIDAlign.ID)) {
 					t.Errorf("%d, not found", resIDAlign.ID)
+				}
+				if !strings.Contains(out, strings.Title(resIDAlign.Status.State)) {
+					t.Errorf("state %s, not found", resource.Status.State)
 				}
 			}
 			fmt.Println(out)

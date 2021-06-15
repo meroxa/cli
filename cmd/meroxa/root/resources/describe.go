@@ -66,7 +66,13 @@ func (d *Describe) Execute(ctx context.Context) error {
 	d.logger.Info(ctx, utils.ResourceTable(resource))
 
 	if tun := resource.SSHTunnel; tun != nil {
-		d.logger.Info(ctx, "\nPaste the following public key on your host:")
+		nextSteps := "\nPaste the following public key on your host:"
+		if resource.Status.State == "error" {
+			nextSteps = "\nDeadline hit, no longer retrying to reconnect to resource." +
+				"\nPlease initiate validation manually after pasting the following public key on your host:"
+		}
+
+		d.logger.Info(ctx, nextSteps)
 		d.logger.Info(ctx, tun.PublicKey)
 	}
 

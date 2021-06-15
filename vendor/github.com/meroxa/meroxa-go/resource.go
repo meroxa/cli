@@ -46,6 +46,12 @@ type ResourceSSHTunnel struct {
 	PublicKey string `json:"public_key"`
 }
 
+type ResourceStatus struct {
+	State         string    `json:"state"`
+	Details       string    `json:"details"`
+	LastUpdatedAt time.Time `json:"last_updated_at"`
+}
+
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
 	ID          int                    `json:"id"`
@@ -55,11 +61,9 @@ type Resource struct {
 	Credentials *Credentials           `json:"credentials,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	SSHTunnel   *ResourceSSHTunnel     `json:"ssh_tunnel,omitempty"`
-	Status      struct {
-		State string `json:"state"`
-	} `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Status      ResourceStatus         `json:"status"`
+	CreatedAt   time.Time              `json:"created_at"`
+	UpdatedAt   time.Time              `json:"updated_at"`
 }
 
 // UpdateResourceInput represents the Meroxa Resource we're updating in the Meroxa API
