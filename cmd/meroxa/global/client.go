@@ -31,7 +31,7 @@ import (
 
 const (
 	clientID         = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
-	meroxaBaseAPIURL = "https://api.meroxa.io/v1"
+	meroxaBaseAPIURL = "https://api.meroxa.io"
 )
 
 func GetMeroxaAPIURL() string {
