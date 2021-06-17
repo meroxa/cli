@@ -38,9 +38,10 @@ jobs:
           AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_CLIENT_SECRET }}
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
+          PG_URL: ${{ secrets.TEST_DB_URL }}
+          MYSQL_URL:  ${{ secrets.TEST_MYSQL_URL }}
+          API_URL: "https://api.staging.meroxa.io"
         run: |
-          MINIKUBE_PG_URL="${{ secrets.TEST_DB_URL }}"
-          MINIKUBE_API_HOST="https://api.staging.meroxa.io"
           docker build -t meroxa/acceptance --build-arg=CLI_PATH=./cli .
           docker run \
             -e AUTH0_DOMAIN=${AUTH0_DOMAIN} \
@@ -49,4 +50,4 @@ jobs:
             -e AUTH0_PASSWORD=${AUTH0_PASSWORD} \
             -e AUTH0_USERNAME=${AUTH0_USERNAME} \
             -e AUTH0_AUDIENCE=${AUTH0_AUDIENCE} \
-            meroxa/acceptance -test.v -postgres-url $MINIKUBE_PG_URL -api-host $MINIKUBE_API_HOST
+            meroxa/acceptance -test.v -postgres-url $PG_URL -api-host $API_URL -mysql-url "$MYSQL_URL"
