@@ -34,6 +34,7 @@ var (
 	_ builder.CommandWithClient  = (*RotateTunnelKey)(nil)
 	_ builder.CommandWithLogger  = (*RotateTunnelKey)(nil)
 	_ builder.CommandWithExecute = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithConfirm = (*RotateTunnelKey)(nil)
 )
 
 type rotateKeyActionClient interface {
