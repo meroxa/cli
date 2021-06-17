@@ -20,7 +20,8 @@ meroxa resources rotate-tunnel-key NAME [flags]
 ### Options
 
 ```
-  -h, --help   help for rotate-tunnel-key
+  -f, --force   skip confirmation
+  -h, --help    help for rotate-tunnel-key
 ```
 
 ### Options inherited from parent commands

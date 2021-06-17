@@ -101,6 +101,13 @@ func ResourceTable(res *meroxa.Resource) string {
 			{Text: strings.Title(res.Status.State)},
 		},
 	}
+
+	if d := res.Status.Details; d != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "State details:"},
+			{Text: strings.Title(d)},
+		})
+	}
 	mainTable.SetStyle(simpletable.StyleCompact)
 
 	return mainTable.String()

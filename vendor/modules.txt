@@ -59,7 +59,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20210611191848-afdcc8beeaeb
+# github.com/meroxa/meroxa-go v0.0.0-20210616141510-06325fbc5f3f
 ## explicit
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/mapstructure v1.4.1
@@ -106,11 +106,11 @@ github.com/spf13/pflag
 github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# golang.org/x/net v0.0.0-20210505024714-0287a6fb4125
+# golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 ## explicit
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
+# golang.org/x/oauth2 v0.0.0-20210615190721-d04028783cf1
 ## explicit
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
