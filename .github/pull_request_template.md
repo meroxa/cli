@@ -2,7 +2,7 @@
 
 *A brief description of the change, what it is and why it was made.*
 
-Fixes <JIRA Issue>
+Fixes <GitHub Issue>
 
 # Type of change
 
