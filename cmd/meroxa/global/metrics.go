@@ -31,7 +31,7 @@ import (
 func NewPublisher() cased.Publisher {
 	var options []cased.PublisherOption
 
-	casedAPIKey := Config.GetString("CASED_API_KEY")
+	casedAPIKey := Config.GetString("CASED_PUBLISH_KEY")
 
 	if casedAPIKey != "" {
 		options = append(options, cased.WithPublishKey(casedAPIKey))

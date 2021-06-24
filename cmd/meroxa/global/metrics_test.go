@@ -185,7 +185,7 @@ func TestNewPublisherWithCasedAPIKey(t *testing.T) {
 	defer clearConfiguration()
 
 	apiKey := "8c32e3b7-d0e7-4650-a82b-e85e6a8d56fa"
-	Config.Set("CASED_API_KEY", apiKey)
+	Config.Set("CASED_PUBLISH_KEY", apiKey)
 
 	got := NewPublisher()
 
