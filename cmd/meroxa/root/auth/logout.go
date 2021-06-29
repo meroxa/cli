@@ -56,8 +56,8 @@ func (l *Logout) Config(cfg config.Config) {
 }
 
 func (l *Logout) Execute(ctx context.Context) error {
-	l.config.Set("ACCESS_TOKEN", "")
-	l.config.Set("REFRESH_TOKEN", "")
+	l.config.Set("MEROXA_ACCESS_TOKEN", "")
+	l.config.Set("MEROXA_REFRESH_TOKEN", "")
 
 	l.logger.Infof(ctx, "Successfully logged out.")
 	return nil

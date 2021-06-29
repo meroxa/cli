@@ -98,8 +98,8 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 }
 
 func GetUserToken() (accessToken, refreshToken string, err error) {
-	accessToken = Config.GetString("ACCESS_TOKEN")
-	refreshToken = Config.GetString("REFRESH_TOKEN")
+	accessToken = Config.GetString("MEROXA_ACCESS_TOKEN")
+	refreshToken = Config.GetString("MEROXA_REFRESH_TOKEN")
 	if accessToken == "" && refreshToken == "" {
 		// we need at least one token for creating an authenticated client
 		return "", "", errors.New("please login or signup by running 'meroxa login'")
@@ -146,7 +146,7 @@ func NewClient() (*meroxa.Client, error) {
 
 // onTokenRefreshed tries to save the new token in the config.
 func onTokenRefreshed(token *oauth2.Token) {
-	Config.Set("ACCESS_TOKEN", token.AccessToken)
-	Config.Set("REFRESH_TOKEN", token.RefreshToken)
+	Config.Set("MEROXA_ACCESS_TOKEN", token.AccessToken)
+	Config.Set("MEROXA_REFRESH_TOKEN", token.RefreshToken)
 	_ = Config.WriteConfig() // ignore error, it's a best effort
 }

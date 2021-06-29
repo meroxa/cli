@@ -302,8 +302,8 @@ func TestAddUserInfo(t *testing.T) {
 	meroxaUserUUID := "ff45a74a-4fc1-49a5-8fa5-f1762703b7e8"
 
 	// Makes sure user is logged in
-	Config.Set("ACCESS_TOKEN", "access-token")
-	Config.Set("REFRESH_TOKEN", "refresh-token")
+	Config.Set("MEROXA_ACCESS_TOKEN", "access-token")
+	Config.Set("MEROXA_REFRESH_TOKEN", "refresh-token")
 
 	Config.Set("ACTOR", meroxaUser)
 	Config.Set("ACTOR_UUID", meroxaUserUUID)
