@@ -1881,7 +1881,7 @@ _meroxa_root_command()
 
 __start_meroxa()
 {
-    local cur prev words cword
+    local cur prev words cword split
     declare -A flaghash 2>/dev/null || :
     declare -A aliashash 2>/dev/null || :
     if declare -F _init_completion >/dev/null 2>&1; then
@@ -1897,11 +1897,13 @@ __start_meroxa()
     local flags_with_completion=()
     local flags_completion=()
     local commands=("meroxa")
+    local command_aliases=()
     local must_have_one_flag=()
     local must_have_one_noun=()
     local has_completion_function
     local last_command
     local nouns=()
+    local noun_aliases=()
 
     __meroxa_handle_word
 }
