@@ -55,7 +55,7 @@ type WorkflowParams struct {
 
 	// Conditions specify the conditions the workflow should match when events
 	// are not published directly to a workflow.
-	Conditions []*WorkflowConditionParams `json:"conditions,omitempty"`
+	Conditions *[]WorkflowConditionParams `json:"conditions,omitempty"`
 
 	// Configure the controls necessary for the workflow to reach the fulfilled
 	// state.
