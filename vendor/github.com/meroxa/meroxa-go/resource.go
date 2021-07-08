@@ -38,7 +38,8 @@ type CreateResourceInput struct {
 }
 
 type ResourceSSHTunnelInput struct {
-	Address string `json:"address"`
+	Address    string `json:"address"`
+	PrivateKey string `json:"private_key"`
 }
 
 type ResourceSSHTunnel struct {
@@ -286,19 +287,22 @@ func encodeURLCreds(u string) (string, error) {
 		return "", ErrMissingScheme
 	}
 
-	rest := strings.Split(s1[1], "@") // pull out everything after the @
-	if len(rest) == 1 {               // no username and password
+	v := strings.Split(s1[1], "@") // pull out everything after the @
+	if len(v) == 1 {               // no username and password
 		return u, nil
 	}
 
-	escapedURL, err := url.Parse(scheme + rest[1])
+	rest := v[len(v)-1]
+	userInfoPart := strings.Join(v[:len(v)-1], "@")
+
+	escapedURL, err := url.Parse(scheme + rest)
 	if err != nil {
 		return "", err
 	}
 
-	if rest[0] != "" {
-		username := strings.Split(rest[0], ":")[0]
-		password := strings.Split(rest[0], ":")[1]
+	if rest != "" {
+		username := strings.Split(userInfoPart, ":")[0]
+		password := strings.Split(userInfoPart, ":")[1]
 		ui := url.UserPassword(username, password)
 		escapedURL.User = ui
 	}

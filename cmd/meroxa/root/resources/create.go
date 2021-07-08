@@ -45,13 +45,14 @@ type Create struct {
 		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
 
 		// credentials
-		Username   string `long:"username"    short:"" usage:"username"`
-		Password   string `long:"password"    short:"" usage:"password"`
-		CaCert     string `long:"ca-cert"     short:"" usage:"trusted certificates for verifying resource"`
-		ClientCert string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
-		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
-		SSL        bool   `long:"ssl"         short:"" usage:"use SSL"`
-		SSHURL     string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
+		Username      string `long:"username"    short:"" usage:"username"`
+		Password      string `long:"password"    short:"" usage:"password"`
+		CaCert        string `long:"ca-cert"     short:"" usage:"trusted certificates for verifying resource"`
+		ClientCert    string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
+		ClientKey     string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
+		SSL           bool   `long:"ssl"         short:"" usage:"use SSL"`
+		SSHURL        string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
+		SSHPrivateKey string `long:"ssh-private-key"     short:"" usage:"SSH tunneling private key"`
 	}
 }
 
@@ -133,7 +134,8 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	if sshURL := c.flags.SSHURL; sshURL != "" {
 		input.SSHTunnel = &meroxa.ResourceSSHTunnelInput{
-			Address: sshURL,
+			Address:    sshURL,
+			PrivateKey: c.flags.SSHPrivateKey,
 		}
 	}
 
