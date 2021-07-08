@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20210616141510-06325fbc5f3f
+	github.com/meroxa/meroxa-go v0.0.0-20210708212340-5754168ecaae
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect

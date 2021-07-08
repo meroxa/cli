@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	baseURL         = "https://api.meroxa.io/v1"
+	baseURL         = "https://api.meroxa.io"
 	jsonContentType = "application/json"
 	textContentType = "text/plain"
 )

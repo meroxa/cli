@@ -12,7 +12,7 @@ import (
 type Option func(*Client) error
 
 // WithBaseURL sets the base url in the client.
-// The default is "https://api.meroxa.io/v1".
+// The default is "https://api.meroxa.io".
 func WithBaseURL(rawurl string) Option {
 	return func(client *Client) error {
 		u, err := url.Parse(rawurl)
