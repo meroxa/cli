@@ -39,8 +39,12 @@ jobs:
           AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
           AUTH0_USERNAME: ${{ secrets.AUTH0_USERNAME }}
           PG_URL: ${{ secrets.TEST_DB_URL }}
+          PRIVATE_PG_URL: ${{ secrets.TEST_PRIVATE_PG_URL }}
           MYSQL_URL:  ${{ secrets.TEST_MYSQL_URL }}
           API_URL: "https://api.staging.meroxa.io"
+          BASTION_PRIVATE_KEY: ${{ secrets.TEST_BASTION_PRIVATE_KEY }}
+          BASTION_USER: "ec2-user"
+          BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
           docker build -t meroxa/acceptance --build-arg=CLI_PATH=./cli .
           docker run \
@@ -50,4 +54,10 @@ jobs:
             -e AUTH0_PASSWORD=${AUTH0_PASSWORD} \
             -e AUTH0_USERNAME=${AUTH0_USERNAME} \
             -e AUTH0_AUDIENCE=${AUTH0_AUDIENCE} \
-            meroxa/acceptance -test.v -postgres-url $PG_URL -api-host $API_URL -mysql-url "$MYSQL_URL"
+            -e ACCEPTANCE_TEST_POSTGRES_URL=${PG_URL} \
+            -e ACCEPTANCE_TEST_PRIVATE_POSTGRES_URL=${PRIVATE_PG_URL} \
+            -e ACCEPTANCE_TEST_MYSQL_URL=${MYSQL_URL} \
+            -e ACCEPTANCE_TEST_BASTION_PRIVATE_KEY="${BASTION_PRIVATE_KEY}" \
+            -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
+            -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
+            meroxa/acceptance -test.v -api-host $API_URL
