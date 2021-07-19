@@ -55,7 +55,7 @@ type Create struct {
 		Metadata    string `long:"metadata"    short:"m" usage:"connector metadata" hidden:"true"`
 		Source      string `long:"from"    short:"" usage:"resource name to use as source"`
 		Destination string `long:"to"    short:"" usage:"resource name to use as destination"`
-		Pipeline    string `long:"pipeline"    short:"" usage:"pipeline name to attach connector to"`
+		Pipeline    string `long:"pipeline"    short:"" usage:"pipeline name to attach connector to" required:"true"`
 	}
 }
 
