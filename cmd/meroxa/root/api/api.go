@@ -53,6 +53,10 @@ type API struct {
 		Path   string
 		Body   string
 	}
+
+	flags struct {
+		JSON bool `long:"json" short:"" usage:"output json"`
+	}
 }
 
 func (a *API) Usage() string {
@@ -108,24 +112,20 @@ func (a *API) Execute(ctx context.Context) error {
 		prettyJSON.Write(b)
 	}
 
-	a.logger.Infof(ctx, "> %s %s", a.args.Method, a.args.Path)
-	a.logger.Infof(ctx, "< %s %s", resp.Status, resp.Proto)
-	for k, v := range resp.Header {
-		a.logger.Infof(ctx, "< %s %s", k, strings.Join(v, " "))
+	// Print headers unless JSON only
+	if !a.flags.JSON {
+		a.logger.Infof(ctx, "> %s %s", a.args.Method, a.args.Path)
+		a.logger.Infof(ctx, "< %s %s", resp.Status, resp.Proto)
+		for k, v := range resp.Header {
+			a.logger.Infof(ctx, "< %s %s", k, strings.Join(v, " "))
+		}
 	}
 
 	a.logger.Info(ctx, prettyJSON.String())
 
-	var bodyJSON map[string]interface{}
-
-	err = json.Unmarshal(prettyJSON.Bytes(), &bodyJSON)
-
-	if err != nil {
-		a.logger.Errorf(ctx, "could not unmarshal: %w", err)
-		return err
-	}
-
-	a.logger.JSON(ctx, bodyJSON)
-
 	return nil
+}
+
+func (a *API) Flags() []builder.Flag {
+	return builder.BuildFlags(&a.flags)
 }
