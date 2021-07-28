@@ -198,7 +198,7 @@ func TestNewPublisherWithoutCasedAPIKey(t *testing.T) {
 	Config = viper.New()
 	defer clearConfiguration()
 
-	apiURL := fmt.Sprintf("%s/telemetry", meroxaBaseAPIURL)
+	apiURL := fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())
 	got := NewPublisher()
 
 	if got.Options().PublishKey != "" {

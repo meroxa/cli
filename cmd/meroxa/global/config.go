@@ -32,6 +32,26 @@ const (
 	envType   = "env"
 )
 
+func GetMeroxaAPIURL() string {
+	return getEnv("MEROXA_API_URL", "https://api.meroxa.io")
+}
+func GetMeroxaAudience() string {
+	return getEnv("MEROXA_AUDIENCE", "https://api.meroxa.io/v1")
+}
+func GetMeroxaDomain() string {
+	return getEnv("MEROXA_DOMAIN", "auth.meroxa.io")
+}
+func GetMeroxaClientID() string {
+	return getEnv("MEROXA_CLIENT_ID", "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
+}
+
+func getEnv(key, defaultVal string) string {
+	if val, ok := os.LookupEnv(key); ok {
+		return val
+	}
+	return defaultVal
+}
+
 func readConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 
