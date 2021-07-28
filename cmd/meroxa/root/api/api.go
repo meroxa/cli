@@ -116,16 +116,5 @@ func (a *API) Execute(ctx context.Context) error {
 
 	a.logger.Info(ctx, prettyJSON.String())
 
-	var bodyJSON map[string]interface{}
-
-	err = json.Unmarshal(prettyJSON.Bytes(), &bodyJSON)
-
-	if err != nil {
-		a.logger.Errorf(ctx, "could not unmarshal: %w", err)
-		return err
-	}
-
-	a.logger.JSON(ctx, bodyJSON)
-
 	return nil
 }
