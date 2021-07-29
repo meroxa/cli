@@ -32,6 +32,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
@@ -39,11 +40,6 @@ import (
 
 const (
 	callbackURL = "http://localhost:21900/oauth/callback"
-	audience    = "https://api.meroxa.io/v1"
-
-	// TODO refactor this and move to global client.
-	clientID = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
-	domain   = "auth.meroxa.io"
 )
 
 var (
@@ -88,7 +84,7 @@ func (l *Login) Config(cfg config.Config) {
 }
 
 // AuthorizeUser implements the PKCE OAuth2 flow.
-func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, redirectURL string) {
+func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audience, redirectURL string) {
 	// initialize the code verifier
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
@@ -188,7 +184,13 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, redirec
 
 func (l *Login) login(ctx context.Context) error {
 	l.logger.Infof(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
-	l.authorizeUser(ctx, clientID, domain, callbackURL)
+	l.authorizeUser(
+		ctx,
+		global.GetMeroxaClientID(),
+		global.GetMeroxaDomain(),
+		global.GetMeroxaAudience(),
+		callbackURL,
+	)
 	return nil
 }
 
@@ -205,7 +207,8 @@ func (l *Login) getAccessTokenAuth(
 	clientID, codeVerifier, authorizationCode, callbackURL string,
 ) (accessToken, refreshToken string, err error) {
 	// set the url and form-encoded data for the POST to the access token endpoint
-	tokenURL := "https://auth.meroxa.io/oauth/token" // nolint:gosec // this URL should actually be taken from meroxa.OAuth2Endpoint
+	// this URL should actually be taken from meroxa.OAuth2Endpoint
+	tokenURL := fmt.Sprintf("https://%s/oauth/token", global.GetMeroxaDomain())
 	data := fmt.Sprintf(
 		"grant_type=authorization_code&client_id=%s"+
 			"&code_verifier=%s"+

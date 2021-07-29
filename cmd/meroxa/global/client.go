@@ -29,19 +29,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	clientID         = "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb"
-	meroxaBaseAPIURL = "https://api.meroxa.io"
-)
-
-func GetMeroxaAPIURL() string {
-	if v := Config.GetString("API_URL"); v != "" {
-		return v
-	}
-
-	return meroxaBaseAPIURL
-}
-
 func GetCLIUserInfo() (actor, actorUUID string, err error) {
 	// Require login
 	_, _, err = GetUserToken()
@@ -133,8 +120,8 @@ func NewClient() (*meroxa.Client, error) {
 	// to catch requests to auth0
 	options = append(options, meroxa.WithAuthentication(
 		&oauth2.Config{
-			ClientID: clientID,
-			Endpoint: meroxa.OAuth2Endpoint,
+			ClientID: GetMeroxaClientID(),
+			Endpoint: oauthEndpoint(GetMeroxaDomain()),
 		},
 		accessToken,
 		refreshToken,
@@ -142,6 +129,13 @@ func NewClient() (*meroxa.Client, error) {
 	))
 
 	return meroxa.New(options...)
+}
+
+func oauthEndpoint(domain string) oauth2.Endpoint {
+	return oauth2.Endpoint{
+		AuthURL:  fmt.Sprintf("https://%s/authorize", domain),
+		TokenURL: fmt.Sprintf("https://%s/oauth/token", domain),
+	}
 }
 
 // onTokenRefreshed tries to save the new token in the config.
