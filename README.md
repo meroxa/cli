@@ -6,7 +6,10 @@ We believe that anyone should be empowered to leverage real-time data. Using the
 [Documentation](https://docs.meroxa.com/) |
 [Installation Guide](https://docs.meroxa.com/cli/installation-guide) |
 [Contribution Guide](CONTRIBUTING.md) |
-[Twitter](https://twitter.com/meroxadata)
+[Twitter](https://twitter.com/meroxadata)  
+
+[![Support Server](https://img.shields.io/discord/591914197219016707.svg?label=Meroxa%20Community&logo=Discord&colorB=7289da&style=for-the-badge)](https://discord.meroxa.com)
+
 
 ## Documentation
 
