@@ -119,3 +119,4 @@ Verify the correct setup, by running ` cat ~/.gitconfig`. You should see the fol
 ```
 
 Run the `make gomod` command again, and you should see all depedencies being downloaded successfully.
+
