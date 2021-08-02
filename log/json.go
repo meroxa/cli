@@ -20,6 +20,11 @@ type jsonLogger struct {
 }
 
 func (l *jsonLogger) JSON(ctx context.Context, data interface{}) {
+	if raw, ok := data.(string); ok {
+		l.l.Print(raw)
+		return
+	}
+
 	p, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		l.l.Printf("could not marshal JSON: %s", err.Error())
