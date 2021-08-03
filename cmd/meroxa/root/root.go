@@ -32,8 +32,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/transforms"
 	"github.com/meroxa/cli/cmd/meroxa/root/version"
 
-	"github.com/meroxa/cli/cmd/meroxa/root/deprecated"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -73,11 +71,6 @@ meroxa resources list --types
 	global.RegisterGlobalFlags(cmd)
 
 	// Subcommands
-
-	// Once we decide to remove support for old commands, remove the following line and its content
-	deprecated.RegisterCommands(cmd)
-
-	// v2
 	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
 
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
