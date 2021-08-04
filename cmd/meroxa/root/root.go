@@ -20,21 +20,24 @@ import (
 	"context"
 	"os"
 
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+
 	"github.com/meroxa/cli/cmd/meroxa/root/api"
 	"github.com/meroxa/cli/cmd/meroxa/root/auth"
 	"github.com/meroxa/cli/cmd/meroxa/root/billing"
 	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
 	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
 	"github.com/meroxa/cli/cmd/meroxa/root/env"
+	"github.com/meroxa/cli/cmd/meroxa/root/login"
+	"github.com/meroxa/cli/cmd/meroxa/root/logout"
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
 	"github.com/meroxa/cli/cmd/meroxa/root/pipelines"
 	"github.com/meroxa/cli/cmd/meroxa/root/resources"
 	"github.com/meroxa/cli/cmd/meroxa/root/transforms"
 	"github.com/meroxa/cli/cmd/meroxa/root/version"
+	"github.com/meroxa/cli/cmd/meroxa/root/whoami"
 
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/spf13/cobra"
 )
 
@@ -80,30 +83,14 @@ meroxa resources list --types
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&env.Env{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&login.Login{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&logout.Logout{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&transforms.Transforms{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&version.Version{}))
-
-	setAliases(cmd)
+	cmd.AddCommand(builder.BuildCobraCommand(&whoami.WhoAmI{}))
 
 	return cmd
-}
-
-// setAliases includes command to root but not shown in help
-// e.g.: `meroxa login` -> `meroxa auth login`.
-func setAliases(cmd *cobra.Command) {
-	aliases := map[string]builder.Command{
-		"login":  &auth.Login{},
-		"logout": &auth.Logout{},
-		"whoami": &auth.WhoAmI{},
-	}
-
-	for v, c := range aliases {
-		cc := builder.BuildCobraCommand(c)
-		cc.Hidden = true
-		cc.Use = v
-		cmd.AddCommand(cc)
-	}
 }
