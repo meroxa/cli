@@ -1099,6 +1099,62 @@ _meroxa_help()
     noun_aliases=()
 }
 
+_meroxa_login()
+{
+    last_command="meroxa_login"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_logout()
+{
+    last_command="meroxa_logout"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_open_billing()
 {
     last_command="meroxa_open_billing"
@@ -1820,6 +1876,34 @@ _meroxa_version()
     noun_aliases=()
 }
 
+_meroxa_whoami()
+{
+    last_command="meroxa_whoami"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_root_command()
 {
     last_command="meroxa"
@@ -1843,6 +1927,8 @@ _meroxa_root_command()
         aliashash["endpoint"]="endpoints"
     fi
     commands+=("help")
+    commands+=("login")
+    commands+=("logout")
     commands+=("open")
     commands+=("pipelines")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
@@ -1860,6 +1946,7 @@ _meroxa_root_command()
         aliashash["transform"]="transforms"
     fi
     commands+=("version")
+    commands+=("whoami")
 
     flags=()
     two_word_flags=()

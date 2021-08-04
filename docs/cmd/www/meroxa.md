@@ -39,9 +39,13 @@ meroxa resources list --types
 * [meroxa connect](/cli/meroxa-connect/)	 - Connect two resources together
 * [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
 * [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
+* [meroxa login](/cli/meroxa-login/)	 - Login or Sign up to the Meroxa Platform
+* [meroxa logout](/cli/meroxa-logout/)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](/cli/meroxa-open/)	 - Open in a web browser
 * [meroxa pipelines](/cli/meroxa-pipelines/)	 - Manage pipelines on Meroxa
 * [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
 * [meroxa transforms](/cli/meroxa-transforms/)	 - Manage transforms on Meroxa
 * [meroxa version](/cli/meroxa-version/)	 - Display the Meroxa CLI version
+* [meroxa whoami](/cli/meroxa-whoami/)	 - Display the current logged in user
+
 
