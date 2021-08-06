@@ -654,7 +654,6 @@ _meroxa_connectors_create()
     two_word_flags+=("--timeout")
 
     must_have_one_flag=()
-    must_have_one_flag+=("--input=")
     must_have_one_noun=()
     noun_aliases=()
 }
