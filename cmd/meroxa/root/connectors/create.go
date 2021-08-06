@@ -50,7 +50,7 @@ type Create struct {
 	}
 
 	flags struct {
-		Input       string `long:"input"      short:""  usage:"command delimited list of input streams" required:"true"`
+		Input       string `long:"input"      short:""  usage:"command delimited list of input streams"`
 		Config      string `long:"config"      short:"c"  usage:"connector configuration"`
 		Metadata    string `long:"metadata"    short:"m" usage:"connector metadata" hidden:"true"`
 		Source      string `long:"from"    short:"" usage:"resource name to use as source"`
@@ -94,7 +94,9 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 	}
 
 	// merge in input
-	config["input"] = c.flags.Input
+	if c.flags.Input != "" {
+		config["input"] = c.flags.Input
+	}
 
 	// merge in connector type
 	var resourceName string

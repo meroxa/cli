@@ -64,7 +64,7 @@ func TestCreateConnectorFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "input", required: true, shorthand: "", hidden: false},
+		{name: "input", required: false, shorthand: "", hidden: false},
 		{name: "config", required: false, shorthand: "c", hidden: false},
 		{name: "from", required: false, shorthand: "", hidden: false},
 		{name: "to", required: false, shorthand: "", hidden: false},
