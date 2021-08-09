@@ -9,10 +9,6 @@ url: /cli/meroxa-endpoints/
 
 Manage endpoints on Meroxa
 
-```
-meroxa endpoints [flags]
-```
-
 ### Options
 
 ```

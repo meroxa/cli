@@ -9,10 +9,6 @@ url: /cli/meroxa-connectors/
 
 Manage connectors on Meroxa
 
-```
-meroxa connectors [flags]
-```
-
 ### Options
 
 ```

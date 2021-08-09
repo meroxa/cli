@@ -215,8 +215,8 @@ func buildCommandWithClient(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	old := cmd.RunE
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
 		if old != nil {
 			err := old(cmd, args)
 			if err != nil {
@@ -367,13 +367,12 @@ func buildCommandEvent(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	oldRunE := cmd.RunE
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if oldRunE != nil {
+	if cmd.RunE != nil {
+		oldRunE := cmd.RunE
+		cmd.RunE = func(cmd *cobra.Command, args []string) error {
 			err := oldRunE(cmd, args)
 			return withEventRunE(cmd, args, c, err)
 		}
-		return nil
 	}
 }
 
