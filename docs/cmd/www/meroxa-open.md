@@ -9,10 +9,6 @@ url: /cli/meroxa-open/
 
 Open in a web browser
 
-```
-meroxa open [flags]
-```
-
 ### Options
 
 ```

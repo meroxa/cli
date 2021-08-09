@@ -2,10 +2,6 @@
 
 Manage transforms on Meroxa
 
-```
-meroxa transforms [flags]
-```
-
 ### Options
 
 ```
