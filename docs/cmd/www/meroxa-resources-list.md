@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources list"
 slug: meroxa-resources-list
-url: /cli/meroxa-resources-list/
+url: /cli/cmd/meroxa-resources-list/
 ---
 ## meroxa resources list
 
@@ -31,5 +31,5 @@ meroxa resources list [flags]
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 

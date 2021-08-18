@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa auth"
 slug: meroxa-auth
-url: /cli/meroxa-auth/
+url: /cli/cmd/meroxa-auth/
 ---
 ## meroxa auth
 
@@ -26,9 +26,9 @@ Authentication commands for Meroxa
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
-* [meroxa auth login](/cli/meroxa-auth-login/)	 - Login or Sign up to the Meroxa Platform
-* [meroxa auth logout](/cli/meroxa-auth-logout/)	 - Clears local login credentials of the Meroxa Platform
-* [meroxa auth whoami](/cli/meroxa-auth-whoami/)	 - Display the current logged in user
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa auth login](/cli/cmd/meroxa-auth-login/)	 - Login or Sign up to the Meroxa Platform
+* [meroxa auth logout](/cli/cmd/meroxa-auth-logout/)	 - Clears local login credentials of the Meroxa Platform
+* [meroxa auth whoami](/cli/cmd/meroxa-auth-whoami/)	 - Display the current logged in user
 
 

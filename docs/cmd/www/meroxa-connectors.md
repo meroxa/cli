@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connectors"
 slug: meroxa-connectors
-url: /cli/meroxa-connectors/
+url: /cli/cmd/meroxa-connectors/
 ---
 ## meroxa connectors
 
@@ -26,11 +26,11 @@ Manage connectors on Meroxa
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
-* [meroxa connectors create](/cli/meroxa-connectors-create/)	 - Create a connector
-* [meroxa connectors describe](/cli/meroxa-connectors-describe/)	 - Describe connector
-* [meroxa connectors list](/cli/meroxa-connectors-list/)	 - List connectors
-* [meroxa connectors logs](/cli/meroxa-connectors-logs/)	 - Print logs for a connector
-* [meroxa connectors remove](/cli/meroxa-connectors-remove/)	 - Remove connector
-* [meroxa connectors update](/cli/meroxa-connectors-update/)	 - Update connector state
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa connectors create](/cli/cmd/meroxa-connectors-create/)	 - Create a connector
+* [meroxa connectors describe](/cli/cmd/meroxa-connectors-describe/)	 - Describe connector
+* [meroxa connectors list](/cli/cmd/meroxa-connectors-list/)	 - List connectors
+* [meroxa connectors logs](/cli/cmd/meroxa-connectors-logs/)	 - Print logs for a connector
+* [meroxa connectors remove](/cli/cmd/meroxa-connectors-remove/)	 - Remove connector
+* [meroxa connectors update](/cli/cmd/meroxa-connectors-update/)	 - Update connector state
 

@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources create"
 slug: meroxa-resources-create
-url: /cli/meroxa-resources-create/
+url: /cli/cmd/meroxa-resources-create/
 ---
 ## meroxa resources create
 
@@ -56,5 +56,5 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 

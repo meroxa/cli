@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa api"
 slug: meroxa-api
-url: /cli/meroxa-api/
+url: /cli/cmd/meroxa-api/
 ---
 ## meroxa api
 
@@ -38,5 +38,5 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

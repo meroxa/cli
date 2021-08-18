@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa auth whoami"
 slug: meroxa-auth-whoami
-url: /cli/meroxa-auth-whoami/
+url: /cli/cmd/meroxa-auth-whoami/
 ---
 ## meroxa auth whoami
 
@@ -37,5 +37,5 @@ meroxa whoami
 
 ### SEE ALSO
 
-* [meroxa auth](/cli/meroxa-auth/)	 - Authentication commands for Meroxa
+* [meroxa auth](/cli/cmd/meroxa-auth/)	 - Authentication commands for Meroxa
 

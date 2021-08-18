@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa completion"
 slug: meroxa-completion
-url: /cli/meroxa-completion/
+url: /cli/cmd/meroxa-completion/
 ---
 ## meroxa completion
 
@@ -64,5 +64,5 @@ meroxa completion [bash|zsh|fish|powershell]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

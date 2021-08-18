@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa endpoints remove"
 slug: meroxa-endpoints-remove
-url: /cli/meroxa-endpoints-remove/
+url: /cli/cmd/meroxa-endpoints-remove/
 ---
 ## meroxa endpoints remove
 
@@ -31,5 +31,5 @@ meroxa endpoints remove NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
+* [meroxa endpoints](/cli/cmd/meroxa-endpoints/)	 - Manage endpoints on Meroxa
 

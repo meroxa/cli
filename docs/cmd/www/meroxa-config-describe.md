@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa config describe"
 slug: meroxa-config-describe
-url: /cli/meroxa-config-describe/
+url: /cli/cmd/meroxa-config-describe/
 ---
 ## meroxa config describe
 
@@ -30,5 +30,5 @@ meroxa config describe [flags]
 
 ### SEE ALSO
 
-* [meroxa config](/cli/meroxa-config/)	 - Manage your Meroxa CLI configuration
+* [meroxa config](/cli/cmd/meroxa-config/)	 - Manage your Meroxa CLI configuration
 

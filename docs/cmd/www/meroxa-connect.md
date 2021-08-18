@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connect"
 slug: meroxa-connect
-url: /cli/meroxa-connect/
+url: /cli/cmd/meroxa-connect/
 ---
 ## meroxa connect
 
@@ -50,5 +50,5 @@ meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

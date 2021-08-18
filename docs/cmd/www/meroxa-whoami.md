@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa whoami"
 slug: meroxa-whoami
-url: /cli/meroxa-whoami/
+url: /cli/cmd/meroxa-whoami/
 ---
 ## meroxa whoami
 
@@ -37,5 +37,5 @@ meroxa whoami
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

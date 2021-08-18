@@ -65,14 +65,14 @@ func generateDocsDotComPages(rootCmd *cobra.Command) error {
 		name := filepath.Base(filename)
 		base := strings.TrimSuffix(name, path.Ext(name))
 		slug := strings.Replace(base, "_", "-", -1)
-		url := "/cli/" + strings.ToLower(slug) + "/"
+		url := "/cli/cmd/" + strings.ToLower(slug) + "/"
 		return fmt.Sprintf(fmTemplate, "", "", strings.Replace(base, "_", " ", -1), slug, url)
 	}
 
 	linkHandler := func(name string) string {
 		base := strings.TrimSuffix(name, path.Ext(name))
 		slug := strings.Replace(base, "_", "-", -1)
-		return "/cli/" + strings.ToLower(slug) + "/"
+		return "/cli/cmd/" + strings.ToLower(slug) + "/"
 	}
 
 	return doc.GenMarkdownTreeCustom(rootCmd, "./docs/cmd/www", filePrepender, linkHandler)

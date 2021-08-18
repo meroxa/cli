@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa billing"
 slug: meroxa-billing
-url: /cli/meroxa-billing/
+url: /cli/cmd/meroxa-billing/
 ---
 ## meroxa billing
 
@@ -30,5 +30,5 @@ meroxa billing [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

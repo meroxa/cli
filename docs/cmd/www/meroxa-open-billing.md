@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa open billing"
 slug: meroxa-open-billing
-url: /cli/meroxa-open-billing/
+url: /cli/cmd/meroxa-open-billing/
 ---
 ## meroxa open billing
 
@@ -30,5 +30,5 @@ meroxa open billing [flags]
 
 ### SEE ALSO
 
-* [meroxa open](/cli/meroxa-open/)	 - Open in a web browser
+* [meroxa open](/cli/cmd/meroxa-open/)	 - Open in a web browser
 

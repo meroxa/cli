@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa endpoints create"
 slug: meroxa-endpoints-create
-url: /cli/meroxa-endpoints-create/
+url: /cli/cmd/meroxa-endpoints-create/
 ---
 ## meroxa endpoints create
 
@@ -42,5 +42,5 @@ meroxa endpoints create my-endpoint --protocol http --stream my-stream
 
 ### SEE ALSO
 
-* [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
+* [meroxa endpoints](/cli/cmd/meroxa-endpoints/)	 - Manage endpoints on Meroxa
 

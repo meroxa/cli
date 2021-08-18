@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connectors logs"
 slug: meroxa-connectors-logs
-url: /cli/meroxa-connectors-logs/
+url: /cli/cmd/meroxa-connectors-logs/
 ---
 ## meroxa connectors logs
 
@@ -30,5 +30,5 @@ meroxa connectors logs NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
+* [meroxa connectors](/cli/cmd/meroxa-connectors/)	 - Manage connectors on Meroxa
 

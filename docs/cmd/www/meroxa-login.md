@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa login"
 slug: meroxa-login
-url: /cli/meroxa-login/
+url: /cli/cmd/meroxa-login/
 ---
 ## meroxa login
 
@@ -30,5 +30,5 @@ meroxa login [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

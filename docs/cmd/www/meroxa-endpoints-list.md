@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa endpoints list"
 slug: meroxa-endpoints-list
-url: /cli/meroxa-endpoints-list/
+url: /cli/cmd/meroxa-endpoints-list/
 ---
 ## meroxa endpoints list
 
@@ -30,5 +30,5 @@ meroxa endpoints list [flags]
 
 ### SEE ALSO
 
-* [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
+* [meroxa endpoints](/cli/cmd/meroxa-endpoints/)	 - Manage endpoints on Meroxa
 

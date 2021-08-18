@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa transforms"
 slug: meroxa-transforms
-url: /cli/meroxa-transforms/
+url: /cli/cmd/meroxa-transforms/
 ---
 ## meroxa transforms
 
@@ -26,6 +26,6 @@ Manage transforms on Meroxa
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
-* [meroxa transforms list](/cli/meroxa-transforms-list/)	 - List transforms
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa transforms list](/cli/cmd/meroxa-transforms-list/)	 - List transforms
 

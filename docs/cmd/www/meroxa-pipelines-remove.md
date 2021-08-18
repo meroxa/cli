@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa pipelines remove"
 slug: meroxa-pipelines-remove
-url: /cli/meroxa-pipelines-remove/
+url: /cli/cmd/meroxa-pipelines-remove/
 ---
 ## meroxa pipelines remove
 
@@ -31,5 +31,5 @@ meroxa pipelines remove NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa pipelines](/cli/meroxa-pipelines/)	 - Manage pipelines on Meroxa
+* [meroxa pipelines](/cli/cmd/meroxa-pipelines/)	 - Manage pipelines on Meroxa
 

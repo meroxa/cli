@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connectors list"
 slug: meroxa-connectors-list
-url: /cli/meroxa-connectors-list/
+url: /cli/cmd/meroxa-connectors-list/
 ---
 ## meroxa connectors list
 
@@ -31,5 +31,5 @@ meroxa connectors list [flags]
 
 ### SEE ALSO
 
-* [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
+* [meroxa connectors](/cli/cmd/meroxa-connectors/)	 - Manage connectors on Meroxa
 

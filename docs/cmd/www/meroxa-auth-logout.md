@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa auth logout"
 slug: meroxa-auth-logout
-url: /cli/meroxa-auth-logout/
+url: /cli/cmd/meroxa-auth-logout/
 ---
 ## meroxa auth logout
 
@@ -30,5 +30,5 @@ meroxa auth logout [flags]
 
 ### SEE ALSO
 
-* [meroxa auth](/cli/meroxa-auth/)	 - Authentication commands for Meroxa
+* [meroxa auth](/cli/cmd/meroxa-auth/)	 - Authentication commands for Meroxa
 

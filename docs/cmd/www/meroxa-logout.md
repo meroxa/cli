@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa logout"
 slug: meroxa-logout
-url: /cli/meroxa-logout/
+url: /cli/cmd/meroxa-logout/
 ---
 ## meroxa logout
 
@@ -30,5 +30,5 @@ meroxa logout [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

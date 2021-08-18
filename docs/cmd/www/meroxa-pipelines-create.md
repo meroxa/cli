@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa pipelines create"
 slug: meroxa-pipelines-create
-url: /cli/meroxa-pipelines-create/
+url: /cli/cmd/meroxa-pipelines-create/
 ---
 ## meroxa pipelines create
 
@@ -31,5 +31,5 @@ meroxa pipelines create NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa pipelines](/cli/meroxa-pipelines/)	 - Manage pipelines on Meroxa
+* [meroxa pipelines](/cli/cmd/meroxa-pipelines/)	 - Manage pipelines on Meroxa
 

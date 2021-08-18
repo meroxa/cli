@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources validate"
 slug: meroxa-resources-validate
-url: /cli/meroxa-resources-validate/
+url: /cli/cmd/meroxa-resources-validate/
 ---
 ## meroxa resources validate
 
@@ -34,5 +34,5 @@ meroxa resources validate NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 

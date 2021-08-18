@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources update"
 slug: meroxa-resources-update
-url: /cli/meroxa-resources-update/
+url: /cli/cmd/meroxa-resources-update/
 ---
 ## meroxa resources update
 
@@ -44,5 +44,5 @@ meroxa resources update NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 

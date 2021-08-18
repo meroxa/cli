@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa auth login"
 slug: meroxa-auth-login
-url: /cli/meroxa-auth-login/
+url: /cli/cmd/meroxa-auth-login/
 ---
 ## meroxa auth login
 
@@ -30,5 +30,5 @@ meroxa auth login [flags]
 
 ### SEE ALSO
 
-* [meroxa auth](/cli/meroxa-auth/)	 - Authentication commands for Meroxa
+* [meroxa auth](/cli/cmd/meroxa-auth/)	 - Authentication commands for Meroxa
 

@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa config"
 slug: meroxa-config
-url: /cli/meroxa-config/
+url: /cli/cmd/meroxa-config/
 ---
 ## meroxa config
 
@@ -30,6 +30,6 @@ meroxa config [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
-* [meroxa config describe](/cli/meroxa-config-describe/)	 - Show Meroxa CLI configuration details
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa config describe](/cli/cmd/meroxa-config-describe/)	 - Show Meroxa CLI configuration details
 

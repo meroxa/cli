@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connectors update"
 slug: meroxa-connectors-update
-url: /cli/meroxa-connectors-update/
+url: /cli/cmd/meroxa-connectors-update/
 ---
 ## meroxa connectors update
 
@@ -31,5 +31,5 @@ meroxa connectors update NAME --state pause | resume | restart [flags]
 
 ### SEE ALSO
 
-* [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
+* [meroxa connectors](/cli/cmd/meroxa-connectors/)	 - Manage connectors on Meroxa
 

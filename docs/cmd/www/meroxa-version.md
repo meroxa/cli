@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa version"
 slug: meroxa-version
-url: /cli/meroxa-version/
+url: /cli/cmd/meroxa-version/
 ---
 ## meroxa version
 
@@ -30,5 +30,5 @@ meroxa version [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources remove"
 slug: meroxa-resources-remove
-url: /cli/meroxa-resources-remove/
+url: /cli/cmd/meroxa-resources-remove/
 ---
 ## meroxa resources remove
 
@@ -31,5 +31,5 @@ meroxa resources remove NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 
