@@ -36,6 +36,7 @@ meroxa resources list --types
 * [meroxa auth](/cli/meroxa-auth/)	 - Authentication commands for Meroxa
 * [meroxa billing](/cli/meroxa-billing/)	 - Open your billing page in a web browser
 * [meroxa completion](/cli/meroxa-completion/)	 - Generate completion script
+* [meroxa config](/cli/meroxa-config/)	 - Manage your Meroxa CLI configuration
 * [meroxa connect](/cli/meroxa-connect/)	 - Connect two resources together
 * [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
 * [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
