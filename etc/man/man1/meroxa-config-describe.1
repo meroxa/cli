@@ -13,7 +13,7 @@ meroxa\-config\-describe \- Show Meroxa CLI configuration details
 
 .SH DESCRIPTION
 .PP
-Show Meroxa CLI configuration details
+This command will return the content of your configuration file where you could find your \fB\fCaccess\_token\fR and then \fB\fCrefresh\_token\fR for your \fB\fCmeroxa login\fR\&. They're stored in the home directory on your machine. On Unix, including MacOS, it's stored in \fB\fC$HOME\fR, and on Windows is stored in \fB\fC%USERPROFILE%\fR\&.
 
 
 .SH OPTIONS
@@ -38,6 +38,24 @@ Show Meroxa CLI configuration details
 .PP
 \fB\-\-timeout\fP=10s
 	set the duration of the client timeout in seconds (default 10s)
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+$ meroxa config describe
+Using meroxa config located in "/Users/my\-name/Library/Application Support/meroxa/config.env
+
+access\_token: c0f928b...c337a0d
+actor: user@email.com
+actor\_uuid: c0f928ba\-d40e\-40c5\-a7fa\-cf281c337a0d
+refresh\_token: c337a0d...c0f928b
+
+
+.fi
+.RE
 
 
 .SH SEE ALSO
