@@ -20,7 +20,7 @@ meroxa resources list --types
       --debug              display any debugging information
   -h, --help               help for meroxa
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
@@ -29,6 +29,7 @@ meroxa resources list --types
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
 * [meroxa billing](meroxa_billing.md)	 - Open your billing page in a web browser
 * [meroxa completion](meroxa_completion.md)	 - Generate completion script
+* [meroxa config](meroxa_config.md)	 - Manage your Meroxa CLI configuration
 * [meroxa connect](meroxa_connect.md)	 - Connect two resources together
 * [meroxa connectors](meroxa_connectors.md)	 - Manage connectors on Meroxa
 * [meroxa endpoints](meroxa_endpoints.md)	 - Manage endpoints on Meroxa

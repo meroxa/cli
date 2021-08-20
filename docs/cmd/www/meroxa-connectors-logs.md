@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connectors logs"
 slug: meroxa-connectors-logs
-url: /cli/meroxa-connectors-logs/
+url: /cli/cmd/meroxa-connectors-logs/
 ---
 ## meroxa connectors logs
 
@@ -25,10 +25,10 @@ meroxa connectors logs NAME [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
+* [meroxa connectors](/cli/cmd/meroxa-connectors/)	 - Manage connectors on Meroxa
 

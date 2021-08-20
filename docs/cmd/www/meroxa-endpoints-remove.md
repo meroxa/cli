@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa endpoints remove"
 slug: meroxa-endpoints-remove
-url: /cli/meroxa-endpoints-remove/
+url: /cli/cmd/meroxa-endpoints-remove/
 ---
 ## meroxa endpoints remove
 
@@ -26,10 +26,10 @@ meroxa endpoints remove NAME [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
+* [meroxa endpoints](/cli/cmd/meroxa-endpoints/)	 - Manage endpoints on Meroxa
 

@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources create"
 slug: meroxa-resources-create
-url: /cli/meroxa-resources-create/
+url: /cli/cmd/meroxa-resources-create/
 ---
 ## meroxa resources create
 
@@ -51,10 +51,10 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 

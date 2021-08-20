@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa pipelines update"
 slug: meroxa-pipelines-update
-url: /cli/meroxa-pipelines-update/
+url: /cli/cmd/meroxa-pipelines-update/
 ---
 ## meroxa pipelines update
 
@@ -37,10 +37,10 @@ meroxa pipeline update pipeline-name --metadata '{"key":"value"}'
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa pipelines](/cli/meroxa-pipelines/)	 - Manage pipelines on Meroxa
+* [meroxa pipelines](/cli/cmd/meroxa-pipelines/)	 - Manage pipelines on Meroxa
 

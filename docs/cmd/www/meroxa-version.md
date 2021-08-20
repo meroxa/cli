@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa version"
 slug: meroxa-version
-url: /cli/meroxa-version/
+url: /cli/cmd/meroxa-version/
 ---
 ## meroxa version
 
@@ -25,10 +25,10 @@ meroxa version [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa](/cli/meroxa/)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

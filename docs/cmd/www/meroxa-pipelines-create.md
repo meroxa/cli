@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa pipelines create"
 slug: meroxa-pipelines-create
-url: /cli/meroxa-pipelines-create/
+url: /cli/cmd/meroxa-pipelines-create/
 ---
 ## meroxa pipelines create
 
@@ -26,10 +26,10 @@ meroxa pipelines create NAME [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa pipelines](/cli/meroxa-pipelines/)	 - Manage pipelines on Meroxa
+* [meroxa pipelines](/cli/cmd/meroxa-pipelines/)	 - Manage pipelines on Meroxa
 

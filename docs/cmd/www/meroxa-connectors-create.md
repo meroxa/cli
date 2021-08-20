@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa connectors create"
 slug: meroxa-connectors-create
-url: /cli/meroxa-connectors-create/
+url: /cli/cmd/meroxa-connectors-create/
 ---
 ## meroxa connectors create
 
@@ -43,10 +43,10 @@ meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pi
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa connectors](/cli/meroxa-connectors/)	 - Manage connectors on Meroxa
+* [meroxa connectors](/cli/cmd/meroxa-connectors/)	 - Manage connectors on Meroxa
 

@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa transforms list"
 slug: meroxa-transforms-list
-url: /cli/meroxa-transforms-list/
+url: /cli/cmd/meroxa-transforms-list/
 ---
 ## meroxa transforms list
 
@@ -25,10 +25,10 @@ meroxa transforms list [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa transforms](/cli/meroxa-transforms/)	 - Manage transforms on Meroxa
+* [meroxa transforms](/cli/cmd/meroxa-transforms/)	 - Manage transforms on Meroxa
 

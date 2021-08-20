@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa endpoints create"
 slug: meroxa-endpoints-create
-url: /cli/meroxa-endpoints-create/
+url: /cli/cmd/meroxa-endpoints-create/
 ---
 ## meroxa endpoints create
 
@@ -37,10 +37,10 @@ meroxa endpoints create my-endpoint --protocol http --stream my-stream
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa endpoints](/cli/meroxa-endpoints/)	 - Manage endpoints on Meroxa
+* [meroxa endpoints](/cli/cmd/meroxa-endpoints/)	 - Manage endpoints on Meroxa
 

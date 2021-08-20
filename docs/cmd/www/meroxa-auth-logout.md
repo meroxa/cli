@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa auth logout"
 slug: meroxa-auth-logout
-url: /cli/meroxa-auth-logout/
+url: /cli/cmd/meroxa-auth-logout/
 ---
 ## meroxa auth logout
 
@@ -25,10 +25,10 @@ meroxa auth logout [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa auth](/cli/meroxa-auth/)	 - Authentication commands for Meroxa
+* [meroxa auth](/cli/cmd/meroxa-auth/)	 - Authentication commands for Meroxa
 

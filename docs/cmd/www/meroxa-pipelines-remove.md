@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa pipelines remove"
 slug: meroxa-pipelines-remove
-url: /cli/meroxa-pipelines-remove/
+url: /cli/cmd/meroxa-pipelines-remove/
 ---
 ## meroxa pipelines remove
 
@@ -26,10 +26,10 @@ meroxa pipelines remove NAME [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa pipelines](/cli/meroxa-pipelines/)	 - Manage pipelines on Meroxa
+* [meroxa pipelines](/cli/cmd/meroxa-pipelines/)	 - Manage pipelines on Meroxa
 

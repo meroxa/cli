@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa open billing"
 slug: meroxa-open-billing
-url: /cli/meroxa-open-billing/
+url: /cli/cmd/meroxa-open-billing/
 ---
 ## meroxa open billing
 
@@ -25,10 +25,10 @@ meroxa open billing [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa open](/cli/meroxa-open/)	 - Open in a web browser
+* [meroxa open](/cli/cmd/meroxa-open/)	 - Open in a web browser
 

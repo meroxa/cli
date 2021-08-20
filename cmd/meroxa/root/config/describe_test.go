@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package env
+package config
 
 import (
 	"context"
@@ -29,7 +29,7 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-func TestEnvExecution(t *testing.T) {
+func TestConfigDescribeExecution(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
 
@@ -52,7 +52,7 @@ func TestEnvExecution(t *testing.T) {
 	cfg.SetConfigFile(env.Path)
 	global.Config = cfg
 
-	e := &Env{
+	e := &Describe{
 		logger: logger,
 	}
 

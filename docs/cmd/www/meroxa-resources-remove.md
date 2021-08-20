@@ -3,7 +3,7 @@ createdAt:
 updatedAt: 
 title: "meroxa resources remove"
 slug: meroxa-resources-remove
-url: /cli/meroxa-resources-remove/
+url: /cli/cmd/meroxa-resources-remove/
 ---
 ## meroxa resources remove
 
@@ -26,10 +26,10 @@ meroxa resources remove NAME [flags]
       --config string      config file
       --debug              display any debugging information
       --json               output json
-      --timeout duration   set the client timeout (default 10s)
+      --timeout duration   set the duration of the client timeout in seconds (default 10s) (default 10s)
 ```
 
 ### SEE ALSO
 
-* [meroxa resources](/cli/meroxa-resources/)	 - Manage resources on Meroxa
+* [meroxa resources](/cli/cmd/meroxa-resources/)	 - Manage resources on Meroxa
 
