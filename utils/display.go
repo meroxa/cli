@@ -144,8 +144,8 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 	return ""
 }
 
-func PrintResourcesTable(resources []*meroxa.Resource) {
-	fmt.Println(ResourcesTable(resources, false))
+func PrintResourcesTable(resources []*meroxa.Resource, hideHeaders bool) {
+	fmt.Println(ResourcesTable(resources, hideHeaders))
 }
 
 func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
@@ -245,8 +245,8 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 	return ""
 }
 
-func PrintConnectorsTable(connectors []*meroxa.Connector) {
-	fmt.Println(ConnectorsTable(connectors, false))
+func PrintConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) {
+	fmt.Println(ConnectorsTable(connectors, hideHeaders))
 }
 
 func ResourceTypesTable(types []string, hideHeaders bool) string {
@@ -271,8 +271,8 @@ func ResourceTypesTable(types []string, hideHeaders bool) string {
 	return table.String()
 }
 
-func PrintResourceTypesTable(types []string) {
-	fmt.Println(ResourceTypesTable(types, false))
+func PrintResourceTypesTable(types []string, hideHeaders bool) {
+	fmt.Println(ResourceTypesTable(types, hideHeaders))
 }
 
 func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
@@ -304,6 +304,6 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 	return ""
 }
 
-func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
-	fmt.Println(PipelinesTable(pipelines, false))
+func PrintPipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) {
+	fmt.Println(PipelinesTable(pipelines, hideHeaders))
 }
