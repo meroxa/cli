@@ -19,20 +19,20 @@ package connectors
 import (
 	"context"
 
-	"github.com/meroxa/cli/utils"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
 )
 
 var (
-	_ builder.CommandWithDocs    = (*List)(nil)
-	_ builder.CommandWithClient  = (*List)(nil)
-	_ builder.CommandWithLogger  = (*List)(nil)
-	_ builder.CommandWithExecute = (*List)(nil)
-	_ builder.CommandWithFlags   = (*List)(nil)
-	_ builder.CommandWithAliases = (*List)(nil)
+	_ builder.CommandWithDocs      = (*List)(nil)
+	_ builder.CommandWithClient    = (*List)(nil)
+	_ builder.CommandWithLogger    = (*List)(nil)
+	_ builder.CommandWithExecute   = (*List)(nil)
+	_ builder.CommandWithFlags     = (*List)(nil)
+	_ builder.CommandWithAliases   = (*List)(nil)
+	_ builder.CommandWithNoHeaders = (*List)(nil)
 )
 
 type listConnectorsClient interface {
@@ -42,11 +42,12 @@ type listConnectorsClient interface {
 }
 
 type List struct {
-	client listConnectorsClient
-	logger log.Logger
+	client      listConnectorsClient
+	logger      log.Logger
+	hideHeaders bool
 
 	flags struct {
-		Pipeline string `long:"pipeline"        short:""  usage:"filter connectors by pipeline name"`
+		Pipeline string `long:"pipeline" short:""  usage:"filter connectors by pipeline name"`
 	}
 }
 
@@ -92,7 +93,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, connectors)
-	l.logger.Info(ctx, utils.ConnectorsTable(connectors))
+	l.logger.Info(ctx, utils.ConnectorsTable(connectors, l.hideHeaders))
 
 	return nil
 }
@@ -107,4 +108,8 @@ func (l *List) Logger(logger log.Logger) {
 
 func (l *List) Client(client *meroxa.Client) {
 	l.client = client
+}
+
+func (l *List) HideHeaders(hide bool) {
+	l.hideHeaders = hide
 }

@@ -9,8 +9,9 @@ meroxa resources list [flags]
 ### Options
 
 ```
-  -h, --help    help for list
-      --types   list resource types
+  -h, --help         help for list
+      --no-headers   display output without headers
+      --types        list resource types
 ```
 
 ### Options inherited from parent commands

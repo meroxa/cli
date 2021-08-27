@@ -26,11 +26,12 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*List)(nil)
-	_ builder.CommandWithClient  = (*List)(nil)
-	_ builder.CommandWithLogger  = (*List)(nil)
-	_ builder.CommandWithExecute = (*List)(nil)
-	_ builder.CommandWithAliases = (*List)(nil)
+	_ builder.CommandWithDocs      = (*List)(nil)
+	_ builder.CommandWithClient    = (*List)(nil)
+	_ builder.CommandWithLogger    = (*List)(nil)
+	_ builder.CommandWithExecute   = (*List)(nil)
+	_ builder.CommandWithAliases   = (*List)(nil)
+	_ builder.CommandWithNoHeaders = (*List)(nil)
 )
 
 type listPipelinesClient interface {
@@ -38,8 +39,9 @@ type listPipelinesClient interface {
 }
 
 type List struct {
-	client listPipelinesClient
-	logger log.Logger
+	client      listPipelinesClient
+	logger      log.Logger
+	hideHeaders bool
 }
 
 func (l *List) Usage() string {
@@ -64,7 +66,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, pipelines)
-	l.logger.Info(ctx, utils.PipelinesTable(pipelines))
+	l.logger.Info(ctx, utils.PipelinesTable(pipelines, l.hideHeaders))
 
 	return nil
 }
@@ -75,4 +77,8 @@ func (l *List) Logger(logger log.Logger) {
 
 func (l *List) Client(client *meroxa.Client) {
 	l.client = client
+}
+
+func (l *List) HideHeaders(hide bool) {
+	l.hideHeaders = hide
 }

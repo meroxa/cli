@@ -17,6 +17,7 @@ meroxa connectors list [flags]
 
 ```
   -h, --help              help for list
+      --no-headers        display output without headers
       --pipeline string   filter connectors by pipeline name
 ```
 
