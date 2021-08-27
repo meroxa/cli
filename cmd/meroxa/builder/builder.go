@@ -305,7 +305,6 @@ func buildCommandWithNoHeaders(cmd *cobra.Command, c Command) {
 		}
 
 		v.HideHeaders(noHeaders)
-
 		return nil
 	}
 }

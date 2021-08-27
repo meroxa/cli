@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -10,15 +9,6 @@ import (
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go"
 )
-
-func JSONPrint(data interface{}) {
-	p, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("%s\n", p)
-}
 
 func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
 	if len(ends) == 0 {
@@ -66,9 +56,6 @@ func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
 	table.SetStyle(simpletable.StyleCompact)
 
 	return table.String()
-}
-func PrintEndpointsTable(ends []meroxa.Endpoint) {
-	fmt.Println(EndpointsTable(ends, false))
 }
 
 func ResourceTable(res *meroxa.Resource) string {
@@ -159,10 +146,6 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 
 func PrintResourcesTable(resources []*meroxa.Resource) {
 	fmt.Println(ResourcesTable(resources, false))
-}
-
-func PrintTransformsTable(transforms []*meroxa.Transform) {
-	TransformsTable(transforms, false)
 }
 
 func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
