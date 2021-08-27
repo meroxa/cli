@@ -211,20 +211,28 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 			var streamStr string
 
 			if streamInput, ok := conn.Streams["input"]; ok {
-				streamStr += "input:\n"
+				streamStr += "(input) "
 
 				streamInterface := streamInput.([]interface{})
-				for _, v := range streamInterface {
-					streamStr += fmt.Sprintf("%v\n", v)
+				for i, v := range streamInterface {
+					streamStr += fmt.Sprintf("%v", v)
+
+					if i < len(streamInterface)-1 {
+						streamStr += ", "
+					}
 				}
 			}
 
 			if streamOutput, ok := conn.Streams["output"]; ok {
-				streamStr += "output:\n"
+				streamStr += "(output) "
 
 				streamInterface := streamOutput.([]interface{})
-				for _, v := range streamInterface {
-					streamStr += fmt.Sprintf("%v\n", v)
+				for i, v := range streamInterface {
+					streamStr += fmt.Sprintf("%v", v)
+
+					if i < len(streamInterface)-1 {
+						streamStr += ", "
+					}
 				}
 			}
 			r := []*simpletable.Cell{
