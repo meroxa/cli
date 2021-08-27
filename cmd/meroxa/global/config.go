@@ -33,21 +33,24 @@ const (
 )
 
 func GetMeroxaAPIURL() string {
-	return getEnv("MEROXA_API_URL", "https://api.meroxa.io")
+	return getEnvVal([]string{"MEROXA_API_URL"}, "https://api.meroxa.io")
 }
-func GetMeroxaAudience() string {
-	return getEnv("MEROXA_AUDIENCE", "https://api.meroxa.io/v1")
+func GetMeroxaAuthAudience() string {
+	return getEnvVal([]string{"MEROXA_AUTH_AUDIENCE", "MEROXA_AUDIENCE"}, "https://api.meroxa.io/v1")
 }
-func GetMeroxaDomain() string {
-	return getEnv("MEROXA_DOMAIN", "auth.meroxa.io")
+func GetMeroxaAuthDomain() string {
+	return getEnvVal([]string{"MEROXA_AUTH_DOMAIN", "MEROXA_DOMAIN"}, "auth.meroxa.io")
 }
-func GetMeroxaClientID() string {
-	return getEnv("MEROXA_CLIENT_ID", "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
+func GetMeroxaAuthClientID() string {
+	return getEnvVal([]string{"MEROXA_AUTH_CLIENT_ID", "MEROXA_CLIENT_ID"}, "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
 }
 
-func getEnv(key, defaultVal string) string {
-	if val, ok := os.LookupEnv(key); ok {
-		return val
+// getEnvVal returns the value of either the first existing key specified in keys, or defaultVal if none were present.
+func getEnvVal(keys []string, defaultVal string) string {
+	for _, key := range keys {
+		if val, ok := os.LookupEnv(key); ok {
+			return val
+		}
 	}
 	return defaultVal
 }

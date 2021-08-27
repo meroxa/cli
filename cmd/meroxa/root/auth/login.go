@@ -186,9 +186,9 @@ func (l *Login) login(ctx context.Context) error {
 	l.logger.Infof(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
 	l.authorizeUser(
 		ctx,
-		global.GetMeroxaClientID(),
-		global.GetMeroxaDomain(),
-		global.GetMeroxaAudience(),
+		global.GetMeroxaAuthClientID(),
+		global.GetMeroxaAuthDomain(),
+		global.GetMeroxaAuthAudience(),
 		callbackURL,
 	)
 	return nil
@@ -208,7 +208,7 @@ func (l *Login) getAccessTokenAuth(
 ) (accessToken, refreshToken string, err error) {
 	// set the url and form-encoded data for the POST to the access token endpoint
 	// this URL should actually be taken from meroxa.OAuth2Endpoint
-	tokenURL := fmt.Sprintf("https://%s/oauth/token", global.GetMeroxaDomain())
+	tokenURL := fmt.Sprintf("https://%s/oauth/token", global.GetMeroxaAuthDomain())
 	data := fmt.Sprintf(
 		"grant_type=authorization_code&client_id=%s"+
 			"&code_verifier=%s"+
