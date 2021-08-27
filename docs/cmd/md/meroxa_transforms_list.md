@@ -9,7 +9,8 @@ meroxa transforms list [flags]
 ### Options
 
 ```
-  -h, --help   help for list
+  -h, --help         help for list
+      --no-headers   display output without headers
 ```
 
 ### Options inherited from parent commands

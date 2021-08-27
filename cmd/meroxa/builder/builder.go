@@ -72,6 +72,11 @@ type CommandWithConfig interface {
 	Config(config.Config)
 }
 
+type CommandWithNoHeaders interface {
+	Command
+	HideHeaders(hide bool)
+}
+
 type CommandWithConfirm interface {
 	Command
 	// Confirm adds a prompt before the command is executed where the user is asked to write the exact value as
@@ -174,6 +179,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithFlags(cmd, c)
 	buildCommandWithHidden(cmd, c)
 	buildCommandWithLogger(cmd, c)
+	buildCommandWithNoHeaders(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
 
 	// this has to be the last function so it captures all errors from RunE
@@ -273,6 +279,32 @@ func buildCommandWithConfig(cmd *cobra.Command, c Command) {
 			}
 		}
 
+		return nil
+	}
+}
+
+func buildCommandWithNoHeaders(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithNoHeaders)
+	if !ok {
+		return
+	}
+
+	var (
+		noHeaders bool
+	)
+
+	cmd.Flags().BoolVar(&noHeaders, "no-headers", false, "display output without headers")
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		v.HideHeaders(noHeaders)
 		return nil
 	}
 }

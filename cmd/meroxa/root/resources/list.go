@@ -26,12 +26,13 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*List)(nil)
-	_ builder.CommandWithClient  = (*List)(nil)
-	_ builder.CommandWithLogger  = (*List)(nil)
-	_ builder.CommandWithExecute = (*List)(nil)
-	_ builder.CommandWithAliases = (*List)(nil)
-	_ builder.CommandWithFlags   = (*List)(nil)
+	_ builder.CommandWithDocs      = (*List)(nil)
+	_ builder.CommandWithClient    = (*List)(nil)
+	_ builder.CommandWithLogger    = (*List)(nil)
+	_ builder.CommandWithExecute   = (*List)(nil)
+	_ builder.CommandWithAliases   = (*List)(nil)
+	_ builder.CommandWithFlags     = (*List)(nil)
+	_ builder.CommandWithNoHeaders = (*List)(nil)
 )
 
 type listResourcesClient interface {
@@ -40,8 +41,9 @@ type listResourcesClient interface {
 }
 
 type List struct {
-	client listResourcesClient
-	logger log.Logger
+	client      listResourcesClient
+	logger      log.Logger
+	hideHeaders bool
 
 	flags struct {
 		Types bool `long:"types" short:"" usage:"list resource types"`
@@ -85,7 +87,7 @@ func (l *List) Execute(ctx context.Context) error {
 		}
 
 		l.logger.JSON(ctx, rTypes)
-		l.logger.Info(ctx, utils.ResourceTypesTable(rTypes))
+		l.logger.Info(ctx, utils.ResourceTypesTable(rTypes, l.hideHeaders))
 
 		return nil
 	}
@@ -96,7 +98,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, resources)
-	l.logger.Info(ctx, utils.ResourcesTable(resources))
+	l.logger.Info(ctx, utils.ResourcesTable(resources, l.hideHeaders))
 
 	return nil
 }
@@ -107,4 +109,8 @@ func (l *List) Logger(logger log.Logger) {
 
 func (l *List) Client(client *meroxa.Client) {
 	l.client = client
+}
+
+func (l *List) HideHeaders(hide bool) {
+	l.hideHeaders = hide
 }
