@@ -73,7 +73,7 @@ func TestResourcesTable(t *testing.T) {
 }
 
 func TestEmptyTables(t *testing.T) {
-	emptyResourcesList := []*meroxa.Resource{}
+	var emptyResourcesList []*meroxa.Resource
 	out := CaptureOutput(func() {
 		PrintResourcesTable(emptyResourcesList)
 	})
@@ -82,7 +82,7 @@ func TestEmptyTables(t *testing.T) {
 		t.Errorf("Output for resources should be blank")
 	}
 
-	emptyConnectorsList := []*meroxa.Connector{}
+	var emptyConnectorsList []*meroxa.Connector
 	out = CaptureOutput(func() {
 		PrintConnectorsTable(emptyConnectorsList)
 	})
@@ -91,7 +91,7 @@ func TestEmptyTables(t *testing.T) {
 		t.Errorf("Output for connectors should be blank")
 	}
 
-	emptyPipelinesList := []*meroxa.Pipeline{}
+	var emptyPipelinesList []*meroxa.Pipeline
 
 	out = CaptureOutput(func() {
 		PrintPipelinesTable(emptyPipelinesList)

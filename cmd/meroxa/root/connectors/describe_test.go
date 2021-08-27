@@ -85,7 +85,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ConnectorsTable([]*meroxa.Connector{&c})
+	wantLeveledOutput := utils.ConnectorsTable([]*meroxa.Connector{&c}, false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

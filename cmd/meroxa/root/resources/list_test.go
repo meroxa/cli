@@ -90,7 +90,7 @@ func TestListResourcesExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ResourcesTable(resources)
+	wantLeveledOutput := utils.ResourcesTable(resources, false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -152,7 +152,7 @@ func TestListResourceTypesExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ResourceTypesTable(types)
+	wantLeveledOutput := utils.ResourceTypesTable(types, false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

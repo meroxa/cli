@@ -20,20 +20,23 @@ func JSONPrint(data interface{}) {
 	fmt.Printf("%s\n", p)
 }
 
-func EndpointsTable(ends []meroxa.Endpoint) string {
+func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
 	if len(ends) == 0 {
 		return ""
 	}
 
 	table := simpletable.New()
-	table.Header = &simpletable.Header{
-		Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignCenter, Text: "NAME"},
-			{Align: simpletable.AlignCenter, Text: "PROTOCOL"},
-			{Align: simpletable.AlignCenter, Text: "STREAM"},
-			{Align: simpletable.AlignCenter, Text: "URL"},
-			{Align: simpletable.AlignCenter, Text: "READY"},
-		},
+
+	if !hideHeaders {
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "PROTOCOL"},
+				{Align: simpletable.AlignCenter, Text: "STREAM"},
+				{Align: simpletable.AlignCenter, Text: "URL"},
+				{Align: simpletable.AlignCenter, Text: "READY"},
+			},
+		}
 	}
 
 	for _, end := range ends {
@@ -65,7 +68,7 @@ func EndpointsTable(ends []meroxa.Endpoint) string {
 	return table.String()
 }
 func PrintEndpointsTable(ends []meroxa.Endpoint) {
-	fmt.Println(EndpointsTable(ends))
+	fmt.Println(EndpointsTable(ends, false))
 }
 
 func ResourceTable(res *meroxa.Resource) string {
@@ -113,18 +116,21 @@ func ResourceTable(res *meroxa.Resource) string {
 	return mainTable.String()
 }
 
-func ResourcesTable(resources []*meroxa.Resource) string {
+func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 	if len(resources) != 0 {
 		table := simpletable.New()
-		table.Header = &simpletable.Header{
-			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "NAME"},
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
-				{Align: simpletable.AlignCenter, Text: "URL"},
-				{Align: simpletable.AlignCenter, Text: "TUNNEL"},
-				{Align: simpletable.AlignCenter, Text: "STATE"},
-			},
+
+		if !hideHeaders {
+			table.Header = &simpletable.Header{
+				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "ID"},
+					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "TYPE"},
+					{Align: simpletable.AlignCenter, Text: "URL"},
+					{Align: simpletable.AlignCenter, Text: "TUNNEL"},
+					{Align: simpletable.AlignCenter, Text: "STATE"},
+				},
+			}
 		}
 
 		for _, res := range resources {
@@ -152,24 +158,27 @@ func ResourcesTable(resources []*meroxa.Resource) string {
 }
 
 func PrintResourcesTable(resources []*meroxa.Resource) {
-	fmt.Println(ResourcesTable(resources))
+	fmt.Println(ResourcesTable(resources, false))
 }
 
 func PrintTransformsTable(transforms []*meroxa.Transform) {
-	TransformsTable(transforms)
+	TransformsTable(transforms, false)
 }
 
-func TransformsTable(transforms []*meroxa.Transform) string {
+func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
 	if len(transforms) != 0 {
 		table := simpletable.New()
-		table.Header = &simpletable.Header{
-			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "NAME"},
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
-				{Align: simpletable.AlignCenter, Text: "REQUIRED"},
-				{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
-				{Align: simpletable.AlignCenter, Text: "PROPERTIES"},
-			},
+
+		if !hideHeaders {
+			table.Header = &simpletable.Header{
+				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "TYPE"},
+					{Align: simpletable.AlignCenter, Text: "REQUIRED"},
+					{Align: simpletable.AlignCenter, Text: "DESCRIPTION"},
+					{Align: simpletable.AlignCenter, Text: "PROPERTIES"},
+				},
+			}
 		}
 
 		for _, res := range transforms {
@@ -198,18 +207,21 @@ func TransformsTable(transforms []*meroxa.Transform) string {
 	return ""
 }
 
-func ConnectorsTable(connectors []*meroxa.Connector) string {
+func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 	if len(connectors) != 0 {
 		table := simpletable.New()
-		table.Header = &simpletable.Header{
-			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "NAME"},
-				{Align: simpletable.AlignCenter, Text: "TYPE"},
-				{Align: simpletable.AlignCenter, Text: "STREAMS"},
-				{Align: simpletable.AlignCenter, Text: "STATE"},
-				{Align: simpletable.AlignCenter, Text: "PIPELINE"},
-			},
+
+		if !hideHeaders {
+			table.Header = &simpletable.Header{
+				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "ID"},
+					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "TYPE"},
+					{Align: simpletable.AlignCenter, Text: "STREAMS"},
+					{Align: simpletable.AlignCenter, Text: "STATE"},
+					{Align: simpletable.AlignCenter, Text: "PIPELINE"},
+				},
+			}
 		}
 
 		for _, conn := range connectors {
@@ -251,16 +263,18 @@ func ConnectorsTable(connectors []*meroxa.Connector) string {
 }
 
 func PrintConnectorsTable(connectors []*meroxa.Connector) {
-	fmt.Println(ConnectorsTable(connectors))
+	fmt.Println(ConnectorsTable(connectors, false))
 }
 
-func ResourceTypesTable(types []string) string {
+func ResourceTypesTable(types []string, hideHeaders bool) string {
 	table := simpletable.New()
 
-	table.Header = &simpletable.Header{
-		Cells: []*simpletable.Cell{
-			{Align: simpletable.AlignCenter, Text: "TYPES"},
-		},
+	if !hideHeaders {
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "TYPES"},
+			},
+		}
 	}
 
 	for _, t := range types {
@@ -275,19 +289,21 @@ func ResourceTypesTable(types []string) string {
 }
 
 func PrintResourceTypesTable(types []string) {
-	fmt.Println(ResourceTypesTable(types))
+	fmt.Println(ResourceTypesTable(types, false))
 }
 
-func PipelinesTable(pipelines []*meroxa.Pipeline) string {
+func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 	if len(pipelines) != 0 {
 		table := simpletable.New()
 
-		table.Header = &simpletable.Header{
-			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "ID"},
-				{Align: simpletable.AlignCenter, Text: "NAME"},
-				{Align: simpletable.AlignCenter, Text: "STATE"},
-			},
+		if !hideHeaders {
+			table.Header = &simpletable.Header{
+				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "ID"},
+					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "STATE"},
+				},
+			}
 		}
 
 		for _, p := range pipelines {
@@ -306,5 +322,5 @@ func PipelinesTable(pipelines []*meroxa.Pipeline) string {
 }
 
 func PrintPipelinesTable(pipelines []*meroxa.Pipeline) {
-	fmt.Println(PipelinesTable(pipelines))
+	fmt.Println(PipelinesTable(pipelines, false))
 }
