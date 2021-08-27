@@ -169,7 +169,7 @@ func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
 				{Text: res.Name},
 				{Text: res.Type},
 				{Text: strconv.FormatBool(res.Required)},
-				{Text: strings.ReplaceAll(res.Description, ". ", ". \n")},
+				{Text: truncateString(res.Description, 151)},
 			}
 
 			var properties []string
@@ -314,4 +314,14 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 
 func PrintPipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) {
 	fmt.Println(PipelinesTable(pipelines, hideHeaders))
+}
+
+func truncateString(oldString string, l int) string {
+	str := oldString
+
+	if len(oldString) > l {
+		str = oldString[:l] + "..."
+	}
+
+	return str
 }
