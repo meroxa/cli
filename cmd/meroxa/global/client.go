@@ -120,8 +120,8 @@ func NewClient() (*meroxa.Client, error) {
 	// to catch requests to auth0
 	options = append(options, meroxa.WithAuthentication(
 		&oauth2.Config{
-			ClientID: GetMeroxaClientID(),
-			Endpoint: oauthEndpoint(GetMeroxaDomain()),
+			ClientID: GetMeroxaAuthClientID(),
+			Endpoint: oauthEndpoint(GetMeroxaAuthDomain()),
 		},
 		accessToken,
 		refreshToken,
