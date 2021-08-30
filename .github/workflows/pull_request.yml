@@ -41,6 +41,7 @@ jobs:
           PG_URL: ${{ secrets.TEST_DB_URL }}
           PRIVATE_PG_URL: ${{ secrets.TEST_PRIVATE_PG_URL }}
           MYSQL_URL:  ${{ secrets.TEST_MYSQL_URL }}
+          SQLSERVER_URL: ${{ secrets.TEST_SQLSERVER_URL }}
           API_URL: "https://api.staging.meroxa.io"
           BASTION_PRIVATE_KEY: ${{ secrets.TEST_BASTION_PRIVATE_KEY }}
           BASTION_USER: "ec2-user"
@@ -57,6 +58,7 @@ jobs:
             -e ACCEPTANCE_TEST_POSTGRES_URL=${PG_URL} \
             -e ACCEPTANCE_TEST_PRIVATE_POSTGRES_URL=${PRIVATE_PG_URL} \
             -e ACCEPTANCE_TEST_MYSQL_URL=${MYSQL_URL} \
+            -e ACCEPTANCE_TEST_SQLSERVER_URL=${SQLSERVER_URL} \
             -e ACCEPTANCE_TEST_BASTION_PRIVATE_KEY="${BASTION_PRIVATE_KEY}" \
             -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
             -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
