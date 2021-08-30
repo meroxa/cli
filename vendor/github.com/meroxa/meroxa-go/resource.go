@@ -301,10 +301,12 @@ func encodeURLCreds(u string) (string, error) {
 	}
 
 	if rest != "" {
-		username := strings.Split(userInfoPart, ":")[0]
-		password := strings.Split(userInfoPart, ":")[1]
-		ui := url.UserPassword(username, password)
-		escapedURL.User = ui
+		userinfo := strings.Split(userInfoPart, ":")
+		if len(userinfo) > 1 {
+			escapedURL.User = url.UserPassword(userinfo[0], userinfo[1])
+		} else {
+			escapedURL.User = url.UserPassword(userinfo[0], "")
+		}
 	}
 
 	return escapedURL.String(), nil

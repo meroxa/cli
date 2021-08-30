@@ -7,7 +7,7 @@ github.com/cased/cased-go
 # github.com/cpuguy83/go-md2man/v2 v2.0.0
 ## explicit; go 1.12
 github.com/cpuguy83/go-md2man/v2/md2man
-# github.com/cristalhq/jwt/v3 v3.0.14
+# github.com/cristalhq/jwt/v3 v3.1.0
 ## explicit; go 1.13
 github.com/cristalhq/jwt/v3
 # github.com/dewski/jsonpath v0.0.0-20210103075638-af6da8f1a897
@@ -66,8 +66,8 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20210708212340-5754168ecaae
-## explicit; go 1.16
+# github.com/meroxa/meroxa-go v0.0.0-20210830161919-635b49fdf1f4
+## explicit; go 1.17
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/mapstructure v1.4.1
 ## explicit; go 1.14
@@ -120,7 +120,7 @@ github.com/subosito/gotenv
 ## explicit; go 1.17
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
-# golang.org/x/oauth2 v0.0.0-20210615190721-d04028783cf1
+# golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 ## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
@@ -146,7 +146,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/protobuf v1.26.0
+# google.golang.org/protobuf v1.27.1
 ## explicit; go 1.9
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
