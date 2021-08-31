@@ -61,7 +61,7 @@ func TestListTransformsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.TransformsTable(transforms)
+	wantLeveledOutput := utils.TransformsTable(transforms, false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

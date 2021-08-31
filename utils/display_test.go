@@ -39,11 +39,19 @@ func TestResourcesTable(t *testing.T) {
 		"ID_Alignment": {resource, resIDAlign},
 	}
 
+	tableHeaders := []string{"ID", "NAME", "TYPE", "URL", "TUNNEL", "STATE"}
+
 	for name, resources := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := CaptureOutput(func() {
-				PrintResourcesTable(resources)
+				PrintResourcesTable(resources, false)
 			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%s header is missing", header)
+				}
+			}
 
 			switch name {
 			case "Base":
@@ -72,29 +80,68 @@ func TestResourcesTable(t *testing.T) {
 	}
 }
 
-func TestEmptyTables(t *testing.T) {
-	emptyResourcesList := []*meroxa.Resource{}
+func TestResourcesTableWithoutHeaders(t *testing.T) {
+	resource := &meroxa.Resource{
+		ID:          0,
+		Type:        "jdbc",
+		Name:        "my-db-jdbc-source",
+		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
+		Credentials: nil,
+		Metadata:    nil,
+		Status: meroxa.ResourceStatus{
+			State: "error",
+		},
+	}
+
+	var resources []*meroxa.Resource
+	resources = append(resources, resource)
+
+	tableHeaders := []string{"ID", "NAME", "TYPE", "URL", "TUNNEL", "STATE"}
+
 	out := CaptureOutput(func() {
-		PrintResourcesTable(emptyResourcesList)
+		PrintResourcesTable(resources, true)
+	})
+
+	for _, header := range tableHeaders {
+		if strings.Contains(out, header) {
+			t.Errorf("%s header should not be displayed", header)
+		}
+	}
+
+	if !strings.Contains(out, resource.Name) {
+		t.Errorf("%s, not found", resource.Name)
+	}
+	if !strings.Contains(out, strconv.Itoa(resource.ID)) {
+		t.Errorf("%d, not found", resource.ID)
+	}
+	if !strings.Contains(out, strings.Title(resource.Status.State)) {
+		t.Errorf("state %s, not found", resource.Status.State)
+	}
+}
+
+func TestEmptyTables(t *testing.T) {
+	var emptyResourcesList []*meroxa.Resource
+	out := CaptureOutput(func() {
+		PrintResourcesTable(emptyResourcesList, true)
 	})
 
 	if out != "\n" {
 		t.Errorf("Output for resources should be blank")
 	}
 
-	emptyConnectorsList := []*meroxa.Connector{}
+	var emptyConnectorsList []*meroxa.Connector
 	out = CaptureOutput(func() {
-		PrintConnectorsTable(emptyConnectorsList)
+		PrintConnectorsTable(emptyConnectorsList, true)
 	})
 
 	if out != "\n" {
 		t.Errorf("Output for connectors should be blank")
 	}
 
-	emptyPipelinesList := []*meroxa.Pipeline{}
+	var emptyPipelinesList []*meroxa.Pipeline
 
 	out = CaptureOutput(func() {
-		PrintPipelinesTable(emptyPipelinesList)
+		PrintPipelinesTable(emptyPipelinesList, true)
 	})
 
 	if out != "\n" {
@@ -103,7 +150,37 @@ func TestEmptyTables(t *testing.T) {
 }
 func TestResourceTypesTable(t *testing.T) {
 	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
-	PrintResourceTypesTable(types)
+
+	out := CaptureOutput(func() {
+		PrintResourceTypesTable(types, false)
+	})
+
+	if !strings.Contains(out, "TYPES") {
+		t.Errorf("table headers is missing")
+	}
+
+	for _, rType := range types {
+		if !strings.Contains(out, rType) {
+			t.Errorf("%s, not found", rType)
+		}
+	}
+}
+
+func TestResourceTypesTableWithoutHeaders(t *testing.T) {
+	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
+	out := CaptureOutput(func() {
+		PrintResourceTypesTable(types, true)
+	})
+
+	if strings.Contains(out, "TYPES") {
+		t.Errorf("table header should not be displayed")
+	}
+
+	for _, rType := range types {
+		if !strings.Contains(out, rType) {
+			t.Errorf("%s, not found", rType)
+		}
+	}
 }
 
 func TestConnectionsTable(t *testing.T) {
@@ -142,11 +219,19 @@ func TestConnectionsTable(t *testing.T) {
 		"Input_Output": {connection, connectionInputOutput},
 	}
 
+	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := CaptureOutput(func() {
-				PrintConnectorsTable(connections)
+				PrintConnectorsTable(connections, false)
 			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%s header is missing", header)
+				}
+			}
 
 			switch name {
 			case "Base":
@@ -179,6 +264,45 @@ func TestConnectionsTable(t *testing.T) {
 	}
 }
 
+func TestConnectionsTableWithoutHeaders(t *testing.T) {
+	connection := &meroxa.Connector{
+		ID:            0,
+		Type:          "jdbc",
+		Name:          "base",
+		Configuration: nil,
+		Metadata:      nil,
+		Streams: map[string]interface{}{
+			"dynamic": "false",
+			"output":  []interface{}{"output-foo", "output-bar"},
+		},
+		State:      "running",
+		Trace:      "",
+		PipelineID: 1,
+	}
+
+	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+
+	var connections []*meroxa.Connector
+	connections = append(connections, connection)
+
+	out := CaptureOutput(func() {
+		PrintConnectorsTable(connections, true)
+	})
+
+	for _, header := range tableHeaders {
+		if strings.Contains(out, header) {
+			t.Errorf("%s header should not be displayed", header)
+		}
+	}
+
+	if !strings.Contains(out, connection.Name) {
+		t.Errorf("%s, not found", connection.Name)
+	}
+	if !strings.Contains(out, strconv.Itoa(connection.ID)) {
+		t.Errorf("%d, not found", connection.ID)
+	}
+}
+
 func TestPipelinesTable(t *testing.T) {
 	pipelineIDAlign := &meroxa.Pipeline{}
 	pipelineBase := &meroxa.Pipeline{
@@ -195,11 +319,20 @@ func TestPipelinesTable(t *testing.T) {
 		"ID_Alignment": {pipelineBase, pipelineIDAlign},
 	}
 
+	tableHeaders := []string{"ID", "NAME", "STATE"}
+
 	for name, pipelines := range tests {
 		t.Run(name, func(t *testing.T) {
 			out := CaptureOutput(func() {
-				PrintPipelinesTable(pipelines)
+				PrintPipelinesTable(pipelines, false)
 			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%s header is missing", header)
+				}
+			}
+
 			switch name {
 			case "Base":
 				if !strings.Contains(out, pipelineBase.Name) {
@@ -218,6 +351,36 @@ func TestPipelinesTable(t *testing.T) {
 			}
 			fmt.Println(out)
 		})
+	}
+}
+
+func TestPipelinesTableWithoutHeaders(t *testing.T) {
+	pipeline := &meroxa.Pipeline{
+		ID:       0,
+		Name:     "pipeline-base",
+		Metadata: nil,
+	}
+
+	var pipelines []*meroxa.Pipeline
+	tableHeaders := []string{"ID", "NAME", "STATE"}
+
+	pipelines = append(pipelines, pipeline)
+
+	out := CaptureOutput(func() {
+		PrintPipelinesTable(pipelines, true)
+	})
+
+	for _, header := range tableHeaders {
+		if strings.Contains(out, header) {
+			t.Errorf("%s header should not be displayed", header)
+		}
+	}
+
+	if !strings.Contains(out, pipeline.Name) {
+		t.Errorf("%s, not found", pipeline.Name)
+	}
+	if !strings.Contains(out, strconv.Itoa(pipeline.ID)) {
+		t.Errorf("%d, not found", pipeline.ID)
 	}
 }
 

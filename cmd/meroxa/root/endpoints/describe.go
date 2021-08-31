@@ -63,7 +63,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.EndpointsTable([]meroxa.Endpoint{*endpoint}))
+	d.logger.Info(ctx, utils.EndpointsTable([]meroxa.Endpoint{*endpoint}, false))
 	d.logger.JSON(ctx, endpoint)
 
 	return nil
