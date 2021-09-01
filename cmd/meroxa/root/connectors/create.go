@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -50,12 +51,12 @@ type Create struct {
 	}
 
 	flags struct {
-		Input       string `long:"input"      short:""  usage:"command delimited list of input streams"`
-		Config      string `long:"config"      short:"c"  usage:"connector configuration"`
-		Metadata    string `long:"metadata"    short:"m" usage:"connector metadata" hidden:"true"`
-		Source      string `long:"from"    short:"" usage:"resource name to use as source"`
-		Destination string `long:"to"    short:"" usage:"resource name to use as destination"`
-		Pipeline    string `long:"pipeline"    short:"" usage:"pipeline name to attach connector to"`
+		Input       string `long:"input" usage:"command delimited list of input streams"`
+		Config      string `long:"config" short:"c" usage:"connector configuration"`
+		Metadata    string `long:"metadata" short:"m" usage:"connector metadata" hidden:"true"`
+		Source      string `long:"from" usage:"resource name to use as source"`
+		Destination string `long:"to" usage:"resource name to use as destination"`
+		Pipeline    string `long:"pipeline" usage:"pipeline name or ID to attach connector to" required:"true"`
 	}
 }
 
@@ -66,11 +67,11 @@ func (c *Create) Usage() string {
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create a connector",
-		Long:  "Use `connectors create` to create a connector from a source (--from) or to a destination (--to)",
+		Long:  "Use `connectors create` to create a connector from a source (--from) or to a destination (--to) within a pipeline (--pipeline)",
 		Example: "\n" +
-			"meroxa connectors create [NAME] --from pg2kafka --input accounts \n" +
-			"meroxa connectors create [NAME] --to pg2redshift --input orders # --input will be the desired stream \n" +
-			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline\n",
+			"meroxa connectors create [NAME] --from pg2kafka --input accounts --pipeline my-pipeline\n" +
+			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline # --input will be the desired stream\n" +
+			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline 762\n",
 	}
 }
 
@@ -123,13 +124,20 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		c.logger.Infof(ctx, "Creating connector to destination %q...\n", resourceName)
 	}
 
-	return c.client.CreateConnector(ctx, meroxa.CreateConnectorInput{
+	ci := meroxa.CreateConnectorInput{
 		Name:          c.args.Name,
 		ResourceID:    res.ID,
-		PipelineName:  c.flags.Pipeline,
 		Configuration: config,
 		Metadata:      metadata,
-	})
+	}
+
+	if pipelineID, err := strconv.Atoi(c.flags.Pipeline); err == nil {
+		ci.PipelineID = pipelineID
+	} else {
+		ci.PipelineName = c.flags.Pipeline
+	}
+
+	return c.client.CreateConnector(ctx, ci)
 }
 
 func (c *Create) Execute(ctx context.Context) error {

@@ -64,11 +64,12 @@ func TestCreateConnectorFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "input", required: false, shorthand: "", hidden: false},
-		{name: "config", required: false, shorthand: "c", hidden: false},
-		{name: "from", required: false, shorthand: "", hidden: false},
-		{name: "to", required: false, shorthand: "", hidden: false},
+		{name: "input", required: false},
+		{name: "config", required: false, shorthand: "c"},
+		{name: "from", required: false},
+		{name: "to", required: false},
 		{name: "metadata", required: false, shorthand: "m", hidden: true},
+		{name: "pipeline", required: true},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -134,6 +135,82 @@ func TestCreateConnectorExecution(t *testing.T) {
 				Name:         "",
 				ResourceID:   123,
 				PipelineName: "my-pipeline",
+				Configuration: map[string]interface{}{
+					"key":   "value",
+					"input": "foo",
+				},
+				Metadata: map[string]interface{}{
+					"metakey":          "metavalue",
+					"mx:connectorType": "source",
+				},
+			},
+		).
+		Return(&cr, nil)
+
+	err := c.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q...
+Connector %q successfully created!
+`, sourceName, cr.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotConnector meroxa.Connector
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotConnector)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotConnector, cr) {
+		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotConnector)
+	}
+}
+
+func TestCreateConnectorExecutionWithPipelineID(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockCreateConnectorClient(ctrl)
+	logger := log.NewTestLogger()
+
+	sourceName := "my-resource"
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	c.flags.Input = "foo"
+	c.flags.Config = `{"key":"value"}`
+	c.flags.Metadata = `{"metakey":"metavalue"}`
+	c.flags.Source = sourceName
+	c.flags.Pipeline = "456"
+
+	cr := utils.GenerateConnector(0, "")
+
+	client.
+		EXPECT().
+		GetResourceByName(
+			ctx,
+			sourceName,
+		).
+		Return(&meroxa.Resource{ID: 123}, nil)
+
+	client.
+		EXPECT().
+		CreateConnector(
+			ctx,
+			meroxa.CreateConnectorInput{
+				Name:       "",
+				ResourceID: 123,
+				PipelineID: 456,
 				Configuration: map[string]interface{}{
 					"key":   "value",
 					"input": "foo",
