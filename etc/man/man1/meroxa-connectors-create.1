@@ -31,7 +31,7 @@ Use \fB\fCconnectors create\fR to create a connector from a source (\-\-from) or
 
 .PP
 \fB\-\-pipeline\fP=""
-	pipeline name or ID to attach connector to
+	pipeline name to attach connector to
 
 .PP
 \fB\-\-to\fP=""
@@ -64,7 +64,7 @@ Use \fB\fCconnectors create\fR to create a connector from a source (\-\-from) or
 
 meroxa connectors create [NAME] \-\-from pg2kafka \-\-input accounts \-\-pipeline my\-pipeline
 meroxa connectors create [NAME] \-\-to pg2redshift \-\-input orders \-\-pipeline my\-pipeline # \-\-input will be the desired stream
-meroxa connectors create [NAME] \-\-to pg2redshift \-\-input orders \-\-pipeline 762
+meroxa connectors create [NAME] \-\-to pg2redshift \-\-input orders \-\-pipeline my\-pipeline
 
 
 .fi

@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -56,7 +55,7 @@ type Create struct {
 		Metadata    string `long:"metadata" short:"m" usage:"connector metadata" hidden:"true"`
 		Source      string `long:"from" usage:"resource name to use as source"`
 		Destination string `long:"to" usage:"resource name to use as destination"`
-		Pipeline    string `long:"pipeline" usage:"pipeline name or ID to attach connector to" required:"true"`
+		Pipeline    string `long:"pipeline" usage:"pipeline name to attach connector to" required:"true"`
 	}
 }
 
@@ -71,7 +70,7 @@ func (c *Create) Docs() builder.Docs {
 		Example: "\n" +
 			"meroxa connectors create [NAME] --from pg2kafka --input accounts --pipeline my-pipeline\n" +
 			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline # --input will be the desired stream\n" +
-			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline 762\n",
+			"meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline\n",
 	}
 }
 
@@ -129,12 +128,7 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		ResourceID:    res.ID,
 		Configuration: config,
 		Metadata:      metadata,
-	}
-
-	if pipelineID, err := strconv.Atoi(c.flags.Pipeline); err == nil {
-		ci.PipelineID = pipelineID
-	} else {
-		ci.PipelineName = c.flags.Pipeline
+		PipelineName:  c.flags.Pipeline,
 	}
 
 	return c.client.CreateConnector(ctx, ci)
