@@ -169,7 +169,7 @@ func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
 				{Text: res.Name},
 				{Text: res.Type},
 				{Text: strconv.FormatBool(res.Required)},
-				{Text: truncateString(res.Description, 151)},
+				{Text: truncateString(res.Description, 151)}, // nolint:gomnd
 			}
 
 			var properties []string

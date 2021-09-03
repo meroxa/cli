@@ -211,7 +211,11 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 	cfg := map[string]interface{}{}
 
 	u.flags.Config = newConfig
-	json.Unmarshal([]byte(u.flags.Config), &cfg)
+	err := json.Unmarshal([]byte(u.flags.Config), &cfg)
+
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
 
 	cu := meroxa.UpdateConnectorInput{
 		Configuration: cfg,
@@ -222,7 +226,7 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 		UpdateConnector(ctx, u.args.Name, cu).
 		Return(&c, nil)
 
-	err := u.Execute(ctx)
+	err = u.Execute(ctx)
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
