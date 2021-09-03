@@ -32,5 +32,5 @@ Manage connectors on Meroxa
 * [meroxa connectors list](/cli/cmd/meroxa-connectors-list/)	 - List connectors
 * [meroxa connectors logs](/cli/cmd/meroxa-connectors-logs/)	 - Print logs for a connector
 * [meroxa connectors remove](/cli/cmd/meroxa-connectors-remove/)	 - Remove connector
-* [meroxa connectors update](/cli/cmd/meroxa-connectors-update/)	 - Update connector state
+* [meroxa connectors update](/cli/cmd/meroxa-connectors-update/)	 - Update connector name, configuration or state
 

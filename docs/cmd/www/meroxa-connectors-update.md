@@ -7,17 +7,28 @@ url: /cli/cmd/meroxa-connectors-update/
 ---
 ## meroxa connectors update
 
-Update connector state
+Update connector name, configuration or state
 
 ```
-meroxa connectors update NAME --state pause | resume | restart [flags]
+meroxa connectors update NAME --state pause | resume | restart --name new-name --config new-configuration [flags]
+```
+
+### Examples
+
+```
+
+meroxa connector update old-name --name new-name' 
+meroxa connector update connector-name --state pause' 
+meroxa connector update connector-name --config '{"table.name.format":"public.copy"}' 
+
 ```
 
 ### Options
 
 ```
   -h, --help           help for update
-      --state string   connector state
+      --name string    new connector name
+      --state string   new connector state
 ```
 
 ### Options inherited from parent commands

@@ -94,7 +94,7 @@ func TestUpdateConnectorFlags(t *testing.T) {
 	}
 }
 
-func TestUpdateConnectorExecution(t *testing.T) {
+func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockUpdateConnectorClient(ctrl)
@@ -112,6 +112,114 @@ func TestUpdateConnectorExecution(t *testing.T) {
 	client.
 		EXPECT().
 		UpdateConnectorStatus(ctx, u.args.Name, u.flags.State).
+		Return(&c, nil)
+
+	err := u.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Updating connector %q...
+Connector %q successfully updated!
+`, u.args.Name, u.args.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotConnector meroxa.Connector
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotConnector)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotConnector, c) {
+		t.Fatalf("expected \"%v\", got \"%v\"", c, gotConnector)
+	}
+}
+
+func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdateConnectorClient(ctrl)
+	logger := log.NewTestLogger()
+
+	u := &Update{
+		client: client,
+		logger: logger,
+	}
+
+	c := utils.GenerateConnector(0, "")
+	u.args.Name = c.Name
+
+	newName := "new-name"
+	u.flags.Name = newName
+	cu := meroxa.UpdateConnectorInput{
+		Name: newName,
+	}
+
+	client.
+		EXPECT().
+		UpdateConnector(ctx, u.args.Name, cu).
+		Return(&c, nil)
+
+	err := u.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Updating connector %q...
+Connector %q successfully updated!
+`, u.args.Name, u.args.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotConnector meroxa.Connector
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotConnector)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotConnector, c) {
+		t.Fatalf("expected \"%v\", got \"%v\"", c, gotConnector)
+	}
+}
+
+func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockUpdateConnectorClient(ctrl)
+	logger := log.NewTestLogger()
+
+	u := &Update{
+		client: client,
+		logger: logger,
+	}
+
+	c := utils.GenerateConnector(0, "")
+	u.args.Name = c.Name
+
+	newConfig := "{\"table.name.format\":\"public.copy\"}"
+	cfg := map[string]interface{}{}
+
+	u.flags.Config = newConfig
+	json.Unmarshal([]byte(u.flags.Config), &cfg)
+
+	cu := meroxa.UpdateConnectorInput{
+		Configuration: cfg,
+	}
+
+	client.
+		EXPECT().
+		UpdateConnector(ctx, u.args.Name, cu).
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
