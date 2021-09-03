@@ -903,6 +903,8 @@ _meroxa_connectors_update()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--name=")
+    two_word_flags+=("--name")
     flags+=("--state=")
     two_word_flags+=("--state")
     flags+=("--config=")
@@ -913,7 +915,6 @@ _meroxa_connectors_update()
     two_word_flags+=("--timeout")
 
     must_have_one_flag=()
-    must_have_one_flag+=("--state=")
     must_have_one_noun=()
     noun_aliases=()
 }
