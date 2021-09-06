@@ -65,7 +65,9 @@ func TestUpdateConnectorFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "state", required: true, shorthand: "", hidden: false},
+		{name: "config", required: false, shorthand: "c", hidden: false},
+		{name: "name", required: false, shorthand: "", hidden: false},
+		{name: "state", required: false, shorthand: "", hidden: false},
 	}
 
 	c := builder.BuildCobraCommand(&Update{})
@@ -91,6 +93,19 @@ func TestUpdateConnectorFlags(t *testing.T) {
 				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
 			}
 		}
+	}
+}
+
+func TestUpdateConnectorExecutionNoFlags(t *testing.T) {
+	ctx := context.Background()
+	u := &Update{}
+
+	err := u.Execute(ctx)
+
+	expected := "requires either --config, --name or --state"
+
+	if err != nil && err.Error() != expected {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
 }
 
