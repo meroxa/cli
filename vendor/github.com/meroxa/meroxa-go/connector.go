@@ -31,6 +31,11 @@ type CreateConnectorInput struct {
 	Metadata      map[string]interface{} `json:"metadata,omitempty"`
 }
 
+type UpdateConnectorInput struct {
+	Name          string                 `json:"name,omitempty"`
+	Configuration map[string]interface{} `json:"config,omitempty"`
+}
+
 // CreateConnector provisions a connector between the Resource and the Meroxa
 // platform
 func (c *Client) CreateConnector(ctx context.Context, input CreateConnectorInput) (*Connector, error) {
@@ -64,6 +69,29 @@ func (c *Client) UpdateConnectorStatus(ctx context.Context, connectorKey, state 
 	}
 
 	resp, err := c.MakeRequest(ctx, http.MethodPost, path, cr, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var con Connector
+	err = json.NewDecoder(resp.Body).Decode(&con)
+	if err != nil {
+		return nil, err
+	}
+
+	return &con, nil
+}
+
+// UpdateConnector updates the name, or a configuration of a connector
+func (c *Client) UpdateConnector(ctx context.Context, connectorKey string, connectorToUpdate UpdateConnectorInput) (*Connector, error) {
+	path := fmt.Sprintf("%s/%s", connectorsBasePath, connectorKey)
+
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, connectorToUpdate, nil)
 	if err != nil {
 		return nil, err
 	}

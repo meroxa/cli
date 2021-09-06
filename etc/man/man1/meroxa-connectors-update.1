@@ -1,19 +1,19 @@
 .nh
-.TH "Meroxa" "1" "Aug 2021" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Sep 2021" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
-meroxa\-connectors\-update \- Update connector state
+meroxa\-connectors\-update \- Update connector name, configuration or state
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa connectors update NAME \-\-state pause | resume | restart [flags]\fP
+\fBmeroxa connectors update NAME \-\-state pause | resume | restart \-\-name new\-name \-\-config new\-configuration [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Update connector state
+Update connector name, configuration or state
 
 
 .SH OPTIONS
@@ -22,8 +22,12 @@ Update connector state
 	help for update
 
 .PP
+\fB\-\-name\fP=""
+	new connector name
+
+.PP
 \fB\-\-state\fP=""
-	connector state
+	new connector state
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -42,6 +46,21 @@ Update connector state
 .PP
 \fB\-\-timeout\fP=10s
 	set the duration of the client timeout in seconds (default 10s)
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+
+meroxa connector update old\-name \-\-name new\-name' 
+meroxa connector update connector\-name \-\-state pause' 
+meroxa connector update connector\-name \-\-config '{"table.name.format":"public.copy"}' 
+
+
+.fi
+.RE
 
 
 .SH SEE ALSO

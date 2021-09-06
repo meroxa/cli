@@ -25,5 +25,5 @@ Manage connectors on Meroxa
 * [meroxa connectors list](meroxa_connectors_list.md)	 - List connectors
 * [meroxa connectors logs](meroxa_connectors_logs.md)	 - Print logs for a connector
 * [meroxa connectors remove](meroxa_connectors_remove.md)	 - Remove connector
-* [meroxa connectors update](meroxa_connectors_update.md)	 - Update connector state
+* [meroxa connectors update](meroxa_connectors_update.md)	 - Update connector name, configuration or state
 
