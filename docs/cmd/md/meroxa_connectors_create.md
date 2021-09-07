@@ -4,7 +4,7 @@ Create a connector
 
 ### Synopsis
 
-Use `connectors create` to create a connector from a source (--from) or to a destination (--to)
+Use `connectors create` to create a connector from a source (--from) or to a destination (--to) within a pipeline (--pipeline)
 
 ```
 meroxa connectors create [NAME] [flags]
@@ -14,8 +14,8 @@ meroxa connectors create [NAME] [flags]
 
 ```
 
-meroxa connectors create [NAME] --from pg2kafka --input accounts 
-meroxa connectors create [NAME] --to pg2redshift --input orders # --input will be the desired stream 
+meroxa connectors create [NAME] --from pg2kafka --input accounts --pipeline my-pipeline
+meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline # --input will be the desired stream
 meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pipeline
 
 ```

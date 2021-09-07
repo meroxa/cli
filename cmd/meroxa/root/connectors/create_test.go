@@ -64,11 +64,12 @@ func TestCreateConnectorFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "input", required: false, shorthand: "", hidden: false},
-		{name: "config", required: false, shorthand: "c", hidden: false},
-		{name: "from", required: false, shorthand: "", hidden: false},
-		{name: "to", required: false, shorthand: "", hidden: false},
+		{name: "input", required: false},
+		{name: "config", required: false, shorthand: "c"},
+		{name: "from", required: false},
+		{name: "to", required: false},
 		{name: "metadata", required: false, shorthand: "m", hidden: true},
+		{name: "pipeline", required: true},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
