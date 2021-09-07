@@ -118,9 +118,9 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 
 	switch {
 	case c.flags.Source != "":
-		c.logger.Infof(ctx, "Creating connector from source %q...\n", resourceName)
+		c.logger.Infof(ctx, "Creating connector from source %q in pipeline %q...\n", resourceName, c.flags.Pipeline)
 	case c.flags.Destination != "":
-		c.logger.Infof(ctx, "Creating connector to destination %q...\n", resourceName)
+		c.logger.Infof(ctx, "Creating connector to destination %q in pipeline %q...\n", resourceName, c.flags.Pipeline)
 	}
 
 	ci := meroxa.CreateConnectorInput{
