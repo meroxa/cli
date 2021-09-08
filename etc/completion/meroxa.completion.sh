@@ -702,6 +702,7 @@ _meroxa_connect()
 
     must_have_one_flag=()
     must_have_one_flag+=("--from=")
+    must_have_one_flag+=("--pipeline=")
     must_have_one_flag+=("--to=")
     must_have_one_noun=()
     noun_aliases=()

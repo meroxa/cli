@@ -10,12 +10,12 @@ from one resource (source) to another (destination).
 This command is equivalent to creating two connectors separately, 
 one from the source to Meroxa and another from Meroxa to the destination:
 
-meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT
+meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME --input SOURCE-INPUT --pipeline my-pipeline
 
 or
 
-meroxa connector create --from postgres --input accounts # Creates source connector
-meroxa connector create --to redshift --input orders # Creates destination connector
+meroxa connector create --from postgres --input accounts --pipeline my-pipeline # Creates source connector
+meroxa connector create --to redshift --input orders --pipeline my-pipeline # Creates destination connector
 
 
 ```
