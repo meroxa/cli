@@ -111,6 +111,10 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		return nil, errors.New("requires either a source (--from) or a destination (--to)")
 	}
 
+	if c.flags.Pipeline == "" {
+		return nil, errors.New("requires pipeline name (--pipeline)")
+	}
+
 	res, err := c.client.GetResourceByName(ctx, resourceName)
 	if err != nil {
 		return nil, fmt.Errorf("can't fetch resource with name %q: %w", resourceName, err)
@@ -118,9 +122,9 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 
 	switch {
 	case c.flags.Source != "":
-		c.logger.Infof(ctx, "Creating connector from source %q...\n", resourceName)
+		c.logger.Infof(ctx, "Creating connector from source %q in pipeline %q...\n", resourceName, c.flags.Pipeline)
 	case c.flags.Destination != "":
-		c.logger.Infof(ctx, "Creating connector to destination %q...\n", resourceName)
+		c.logger.Infof(ctx, "Creating connector to destination %q in pipeline %q...\n", resourceName, c.flags.Pipeline)
 	}
 
 	ci := meroxa.CreateConnectorInput{

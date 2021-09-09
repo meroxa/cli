@@ -134,7 +134,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 			meroxa.CreateConnectorInput{
 				Name:         "",
 				ResourceID:   123,
-				PipelineName: "my-pipeline",
+				PipelineName: c.flags.Pipeline,
 				Configuration: map[string]interface{}{
 					"key":   "value",
 					"input": "foo",
@@ -154,9 +154,9 @@ func TestCreateConnectorExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q...
+	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q in pipeline %q...
 Connector %q successfully created!
-`, sourceName, cr.Name)
+`, sourceName, c.flags.Pipeline, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

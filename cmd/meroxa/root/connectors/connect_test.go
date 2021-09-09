@@ -42,7 +42,7 @@ func TestConnectFlags(t *testing.T) {
 		{name: "to", required: true, shorthand: ""},
 		{name: "config", required: false, shorthand: "c"},
 		{name: "input", required: false, shorthand: ""},
-		{name: "pipeline", required: false, shorthand: ""},
+		{name: "pipeline", required: true, shorthand: ""},
 	}
 
 	c := builder.BuildCobraCommand(&Connect{})
@@ -82,6 +82,7 @@ func TestConnectExecution(t *testing.T) {
 	c.flags.Config = `{"key":"value"}`
 	c.flags.Source = rSource.Name
 	c.flags.Destination = rDestination.Name
+	c.flags.Pipeline = "my-pipeline"
 
 	cSource := utils.GenerateConnector(0, "")
 	cSource.Metadata = map[string]interface{}{"mx:connectorType": "source"}
@@ -112,6 +113,7 @@ func TestConnectExecution(t *testing.T) {
 				Metadata: map[string]interface{}{
 					"mx:connectorType": "source",
 				},
+				PipelineName: c.flags.Pipeline,
 			},
 		).
 		Return(&cSource, nil)
@@ -139,6 +141,7 @@ func TestConnectExecution(t *testing.T) {
 				Metadata: map[string]interface{}{
 					"mx:connectorType": "destination",
 				},
+				PipelineName: c.flags.Pipeline,
 			},
 		).
 		Return(&cDestination, nil)
@@ -150,10 +153,10 @@ func TestConnectExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q...
-Creating connector to destination %q...
+	wantLeveledOutput := fmt.Sprintf(`Creating connector from source %q in pipeline %q...
+Creating connector to destination %q in pipeline %q...
 Source connector %q and destination connector %q successfully created!
-`, rSource.Name, rDestination.Name, cSource.Name, cDestination.Name)
+`, rSource.Name, c.flags.Pipeline, rDestination.Name, c.flags.Pipeline, cSource.Name, cDestination.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
