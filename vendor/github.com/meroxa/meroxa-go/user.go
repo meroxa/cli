@@ -18,6 +18,7 @@ type User struct {
 	FamilyName string    `json:"family_name,omitempty"`
 	Verified   bool      `json:"email_verified,omitempty"`
 	LastLogin  time.Time `json:"last_login,omitempty"`
+	Features   []string  `json:"features,omitempty"`
 }
 
 // GetUser returns a User with

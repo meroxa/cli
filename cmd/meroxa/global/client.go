@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -45,8 +46,9 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 	// fetch actor account.
 	actor = Config.GetString("ACTOR")
 	actorUUID = Config.GetString("ACTOR_UUID")
+	featureFlags := Config.GetString("FEATURE_FLAGS")
 
-	if actor == "" || actorUUID == "" {
+	if actor == "" || actorUUID == "" || featureFlags == "" {
 		// call api to fetch
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // nolint:gomnd
 		defer cancel()
@@ -66,8 +68,12 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		actor = account.Email
 		actorUUID = account.UUID
 
+		// write user information in config file
 		Config.Set("ACTOR", actor)
 		Config.Set("ACTOR_UUID", actorUUID)
+
+		// write existing feature flags enabled
+		Config.Set("FEATURE_FLAGS", strings.Join(account.Features, ","))
 
 		err = Config.WriteConfig()
 
