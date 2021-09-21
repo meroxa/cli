@@ -129,8 +129,8 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audienc
 			return
 		}
 
-		l.config.Set("ACCESS_TOKEN", accessToken)
-		l.config.Set("REFRESH_TOKEN", refreshToken)
+		l.config.Set(global.AccessTokenEnv, accessToken)
+		l.config.Set(global.RefreshTokenEnv, refreshToken)
 
 		// return an indication of success to the caller
 		_, _ = io.WriteString(w, `

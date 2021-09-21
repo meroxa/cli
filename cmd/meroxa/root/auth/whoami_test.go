@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/cmd/meroxa/global"
+
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
@@ -69,11 +71,11 @@ func TestWhoAmIExecution(t *testing.T) {
 		t.Fatalf("expected \"%v\", got \"%v\"", u, gotUser)
 	}
 
-	if w.config.GetString("ACTOR") != u.Email {
-		t.Fatalf("expected ACTOR key to be %q", u.Email)
+	if w.config.GetString(global.ActorEnv) != u.Email {
+		t.Fatalf("expected %q key to be %q", global.ActorEnv, u.Email)
 	}
 
-	if w.config.GetString("ACTOR_UUID") != u.UUID {
-		t.Fatalf("expected ACTOR_UUID key to be %q", u.UUID)
+	if w.config.GetString(global.ActorUUIDEnv) != u.UUID {
+		t.Fatalf("expected %q key to be %q", global.ActorUUIDEnv, u.UUID)
 	}
 }

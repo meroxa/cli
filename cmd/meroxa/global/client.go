@@ -30,13 +30,28 @@ import (
 	"golang.org/x/oauth2"
 )
 
+func noUserInfo(actor, actorUUID string) bool {
+	return actor == "" || actorUUID == ""
+}
+
+// userInfoStale checks if user information was updated within a 24h period.
+func userInfoStale() bool {
+	updatedAt := Config.GetTime(UserInfoUpdatedAtEnv)
+	if updatedAt.IsZero() {
+		return true
+	}
+
+	duration := time.Now().UTC().Sub(updatedAt)
+	return duration.Hours() > 24 // nolint:gomnd
+}
+
 func GetCLIUserInfo() (actor, actorUUID string, err error) {
 	// Require login
 	_, _, err = GetUserToken()
 
 	/*
 		 	We don't report client issues to the customer as it'll likely require `meroxa login` for any command.
-			There are command that don't require client such as `meroxa env`, and we wouldn't like to throw an error,
+			There are command that don't require client such as `meroxa config`, and we wouldn't like to throw an error,
 			just because we can't emit events.
 	*/
 	if err != nil {
@@ -44,11 +59,10 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 	}
 
 	// fetch actor account.
-	actor = Config.GetString("ACTOR")
-	actorUUID = Config.GetString("ACTOR_UUID")
-	featureFlags := Config.GetString("FEATURE_FLAGS")
+	actor = Config.GetString(ActorEnv)
+	actorUUID = Config.GetString(ActorUUIDEnv)
 
-	if actor == "" || actorUUID == "" || featureFlags == "" {
+	if noUserInfo(actor, actorUUID) || userInfoStale() {
 		// call api to fetch
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // nolint:gomnd
 		defer cancel()
@@ -69,11 +83,14 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		actorUUID = account.UUID
 
 		// write user information in config file
-		Config.Set("ACTOR", actor)
-		Config.Set("ACTOR_UUID", actorUUID)
+		Config.Set(ActorEnv, actor)
+		Config.Set(ActorUUIDEnv, actorUUID)
 
 		// write existing feature flags enabled
-		Config.Set("FEATURE_FLAGS", strings.Join(account.Features, ","))
+		Config.Set(UserFeatureFlagsEnv, strings.Join(account.Features, ","))
+
+		// write when was the last time we updated user info
+		Config.Set(UserInfoUpdatedAtEnv, time.Now().UTC())
 
 		err = Config.WriteConfig()
 
@@ -91,8 +108,8 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 }
 
 func GetUserToken() (accessToken, refreshToken string, err error) {
-	accessToken = Config.GetString("ACCESS_TOKEN")
-	refreshToken = Config.GetString("REFRESH_TOKEN")
+	accessToken = Config.GetString(AccessTokenEnv)
+	refreshToken = Config.GetString(RefreshTokenEnv)
 	if accessToken == "" && refreshToken == "" {
 		// we need at least one token for creating an authenticated client
 		return "", "", errors.New("please login or signup by running 'meroxa login'")
@@ -146,7 +163,7 @@ func oauthEndpoint(domain string) oauth2.Endpoint {
 
 // onTokenRefreshed tries to save the new token in the config.
 func onTokenRefreshed(token *oauth2.Token) {
-	Config.Set("ACCESS_TOKEN", token.AccessToken)
-	Config.Set("REFRESH_TOKEN", token.RefreshToken)
+	Config.Set(AccessTokenEnv, token.AccessToken)
+	Config.Set(RefreshTokenEnv, token.RefreshToken)
 	_ = Config.WriteConfig() // ignore error, it's a best effort
 }

@@ -31,7 +31,7 @@ import (
 func NewPublisher() cased.Publisher {
 	var options []cased.PublisherOption
 
-	casedAPIKey := Config.GetString("CASED_PUBLISH_KEY")
+	casedAPIKey := Config.GetString(CasedPublishKeyEnv)
 
 	if casedAPIKey != "" {
 		options = append(options, cased.WithPublishKey(casedAPIKey))
@@ -39,11 +39,11 @@ func NewPublisher() cased.Publisher {
 		options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
 	}
 
-	if v := Config.GetString("PUBLISH_METRICS"); v == "false" {
+	if v := Config.GetString(PublishMetricsEnv); v == "false" {
 		options = append(options, cased.WithSilence(true))
 	}
 
-	if v := Config.GetBool("CASED_DEBUG"); v {
+	if v := Config.GetBool(CasedDebugEnv); v {
 		options = append(options, cased.WithDebug(v))
 	}
 
@@ -166,7 +166,7 @@ var (
 // PublishEvent will take care of publishing the event to Cased.
 func publishEvent(event cased.AuditEvent) {
 	// Only prints out to console
-	if v := Config.GetString("PUBLISH_METRICS"); v == "stdout" {
+	if v := Config.GetString(PublishMetricsEnv); v == "stdout" {
 		e, _ := json.Marshal(event)
 		fmt.Printf("\n\nEvent: %v\n\n", string(e))
 		return
@@ -178,7 +178,7 @@ func publishEvent(event cased.AuditEvent) {
 	err := cased.Publish(event)
 	if err != nil {
 		// cased.Publish could return an error, but we only show it when debugging
-		if Config.GetBool("CASED_DEBUG") {
+		if Config.GetBool(CasedDebugEnv) {
 			fmt.Println("error: %w", err)
 		}
 		return

@@ -185,7 +185,7 @@ func TestNewPublisherWithCasedAPIKey(t *testing.T) {
 	defer clearConfiguration()
 
 	apiKey := "8c32e3b7-d0e7-4650-a82b-e85e6a8d56fa"
-	Config.Set("CASED_PUBLISH_KEY", apiKey)
+	Config.Set(CasedPublishKeyEnv, apiKey)
 
 	got := NewPublisher()
 
@@ -214,14 +214,14 @@ func TestNewPublisherPublishing(t *testing.T) {
 	Config = viper.New()
 	defer clearConfiguration()
 
-	Config.Set("PUBLISH_METRICS", "false")
+	Config.Set(PublishMetricsEnv, "false")
 	got := NewPublisher()
 
 	if !got.Options().Silence {
 		t.Fatalf("expected publisher silence option to be %v", true)
 	}
 
-	Config.Set("PUBLISH_METRICS", "any-other-value")
+	Config.Set(PublishMetricsEnv, "any-other-value")
 	got = NewPublisher()
 
 	if got.Options().Silence {
@@ -233,7 +233,7 @@ func TestNewPublisherWithDebug(t *testing.T) {
 	Config = viper.New()
 	defer clearConfiguration()
 
-	Config.Set("CASED_DEBUG", true)
+	Config.Set(CasedDebugEnv, true)
 	got := NewPublisher()
 
 	if !got.Options().Debug {
@@ -249,7 +249,7 @@ func TestPublishEventOnStdout(t *testing.T) {
 	Config = viper.New()
 	defer clearConfiguration()
 
-	Config.Set("PUBLISH_METRICS", "stdout")
+	Config.Set(PublishMetricsEnv, "stdout")
 
 	event := cased.AuditEvent{
 		"key": "event",
@@ -302,22 +302,25 @@ func TestAddUserInfo(t *testing.T) {
 	meroxaUserUUID := "ff45a74a-4fc1-49a5-8fa5-f1762703b7e8"
 
 	// Makes sure user is logged in
-	Config.Set("ACCESS_TOKEN", "access-token")
-	Config.Set("REFRESH_TOKEN", "refresh-token")
+	Config.Set(AccessTokenEnv, "access-token")
+	Config.Set(RefreshTokenEnv, "refresh-token")
 
-	Config.Set("ACTOR", meroxaUser)
-	Config.Set("ACTOR_UUID", meroxaUserUUID)
+	Config.Set(ActorEnv, meroxaUser)
+	Config.Set(ActorUUIDEnv, meroxaUserUUID)
+
+	// Makes sure there's no need to fetch for user info
+	Config.Set(UserInfoUpdatedAtEnv, time.Now().UTC())
 
 	event := cased.AuditEvent{}
 	addUserInfo(event)
 
 	want := meroxaUser
 	if v := event["actor"]; v != want {
-		t.Fatalf("expected event action to be %q, got %q", want, v)
+		t.Fatalf("expected event \"actor\" to be %q, got %q", want, v)
 	}
 
 	want = meroxaUserUUID
 	if v := event["actor_uuid"]; v != want {
-		t.Fatalf("expected event action to be %q, got %q", want, v)
+		t.Fatalf("expected event \"actor_uuid\" to be %q, got %q", want, v)
 	}
 }
