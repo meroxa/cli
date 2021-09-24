@@ -81,10 +81,9 @@ func (w *WhoAmI) Execute(ctx context.Context) error {
 	w.logger.JSON(ctx, user)
 
 	// Updates config file with actor information.
-
 	w.config.Set(global.ActorEnv, user.Email)
 	w.config.Set(global.ActorUUIDEnv, user.UUID)
-	w.config.Set(global.UserFeatureFlagsEnv, strings.Join(user.Features, ","))
+	w.config.Set(global.UserFeatureFlagsEnv, strings.Join(user.Features, " "))
 	w.config.Set(global.UserInfoUpdatedAtEnv, time.Now().UTC())
 
 	if err != nil {

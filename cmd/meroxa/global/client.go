@@ -87,7 +87,7 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		Config.Set(ActorUUIDEnv, actorUUID)
 
 		// write existing feature flags enabled
-		Config.Set(UserFeatureFlagsEnv, strings.Join(account.Features, ","))
+		Config.Set(UserFeatureFlagsEnv, strings.Join(account.Features, " "))
 
 		// write when was the last time we updated user info
 		Config.Set(UserInfoUpdatedAtEnv, time.Now().UTC())
