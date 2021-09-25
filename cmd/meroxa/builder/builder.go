@@ -38,7 +38,7 @@ import (
 
 type Command interface {
 	// Usage is the one-line usage message.
-	// Recommended syntax is as follow:
+	// Recommended syntax is as follows:
 	//   [ ] identifies an optional argument. Arguments that are not enclosed in brackets are required.
 	//   ... indicates that you can specify multiple values for the previous argument.
 	//   |   indicates mutually exclusive information. You can use the argument to the left of the separator or the
@@ -162,6 +162,11 @@ type CommandWithSubCommands interface {
 	SubCommands() []*cobra.Command
 }
 
+type CommandWithFeatureFlag interface {
+	Command
+	FeatureFlag() string
+}
+
 // BuildCobraCommand takes a Command and builds a *cobra.Command from it. It figures out if the command implements any
 // other CommandWith* interfaces and configures the cobra command accordingly.
 func BuildCobraCommand(c Command) *cobra.Command {
@@ -173,16 +178,21 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithArgs(cmd, c)
 	buildCommandWithClient(cmd, c)
 	buildCommandWithConfig(cmd, c)
+
+	// buildCommandWithConfirm needs to go before buildCommandWithExecute to make sure there's a confirmation prompt
+	// prior to execution.
 	buildCommandWithConfirm(cmd, c)
-	buildCommandWithDocs(cmd, c)
+	buildCommandWithFeatureFlag(cmd, c)
 	buildCommandWithExecute(cmd, c)
+
+	buildCommandWithDocs(cmd, c)
 	buildCommandWithFlags(cmd, c)
 	buildCommandWithHidden(cmd, c)
 	buildCommandWithLogger(cmd, c)
 	buildCommandWithNoHeaders(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
 
-	// this has to be the last function so it captures all errors from RunE
+	// this has to be the last function, so it captures all errors from RunE
 	buildCommandEvent(cmd, c)
 
 	return cmd
@@ -584,5 +594,45 @@ func buildCommandWithSubCommands(cmd *cobra.Command, c Command) {
 
 	for _, sub := range v.SubCommands() {
 		cmd.AddCommand(sub)
+	}
+}
+
+func hasFeatureFlag(flags []string, f string) bool {
+	for _, v := range flags {
+		if v == f {
+			return true
+		}
+	}
+
+	return false
+}
+
+func buildCommandWithFeatureFlag(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithFeatureFlag)
+	if !ok {
+		return
+	}
+
+	// Considering a command with feature flags not ready to be documented and
+	// publicly available.
+	cmd.Hidden = true
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		flagRequired := v.FeatureFlag()
+		userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
+
+		if !hasFeatureFlag(userFeatureFlags, flagRequired) {
+			return fmt.Errorf("feature flag %q required. reach out to support@meroxa.com for more information", flagRequired)
+		}
+
+		return nil
 	}
 }
