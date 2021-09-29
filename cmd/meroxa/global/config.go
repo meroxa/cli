@@ -58,9 +58,9 @@ func getEnvVal(keys []string, defaultVal string) string {
 func readConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 
-	if flagConfig != "" {
+	if flagCLIConfigFile != "" {
 		// Use config file from the flag.
-		cfg.SetConfigFile(flagConfig)
+		cfg.SetConfigFile(flagCLIConfigFile)
 	} else {
 		// Find home directory.
 		configDir, err := os.UserConfigDir()
