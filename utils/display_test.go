@@ -198,15 +198,17 @@ func TestConnectorRunningTable(t *testing.T) {
 		Trace:      "",
 		PipelineID: 1,
 	}
-	var failedConnector *meroxa.Connector
+	failedConnector := &meroxa.Connector{}
 	deepCopy(connector, failedConnector)
 	failedConnector.State = "failed"
 	failedConnector.Trace = "exception goes here"
 
 	tests := map[string]*meroxa.Connector{
-		"running": connector, failedConnector}
+		"running": connector,
+		"failed":  failedConnector,
+	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+	tableHeaders := []string{"ID", "Name", "Type", "Streams", "State", "Pipeline"}
 
 	for name, connector := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -221,29 +223,22 @@ func TestConnectorRunningTable(t *testing.T) {
 			}
 
 			switch name {
-			case "Base":
-				if !strings.Contains(out, connection.Name) {
-					t.Errorf("%s, not found", connection.Name)
+			case "running":
+				if !strings.Contains(out, connector.Name) {
+					t.Errorf("%s, not found", connector.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(connection.ID)) {
-					t.Errorf("%d, not found", connection.ID)
+				if !strings.Contains(out, strconv.Itoa(connector.ID)) {
+					t.Errorf("%d, not found", connector.ID)
 				}
-			case "ID_Alignment":
-				if !strings.Contains(out, connectionIDAlign.Name) {
-					t.Errorf("%s, not found", connectionIDAlign.Name)
+			case "failed":
+				if !strings.Contains(out, connector.Name) {
+					t.Errorf("%s, not found", connector.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(connectionIDAlign.ID)) {
-					t.Errorf("%d, not found", connectionIDAlign.ID)
+				if !strings.Contains(out, strconv.Itoa(connector.ID)) {
+					t.Errorf("%d, not found", connector.ID)
 				}
-			case "Input_Output":
-				if !strings.Contains(out, connectionInputOutput.Name) {
-					t.Errorf("%s, not found", connection.Name)
-				}
-				if !strings.Contains(out, "input-foo") {
-					t.Errorf("%s, not found", "input-foo")
-				}
-				if !strings.Contains(out, "output-foo") {
-					t.Errorf("%s, not found", "output-foo")
+				if !strings.Contains(out, connector.Trace) {
+					t.Errorf("%s, not found", connector.Trace)
 				}
 			}
 			fmt.Println(out)

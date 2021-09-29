@@ -222,7 +222,7 @@ func ConnectorTable(connector *meroxa.Connector) string {
 	if connector.Trace != "" {
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "Trace:"},
-			{Text: strings.Title(connector.Trace)},
+			{Text: connector.Trace},
 		})
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
