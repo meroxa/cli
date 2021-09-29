@@ -19,9 +19,10 @@ meroxa connector update connector-name --config '{"table.name.format":"public.co
 ### Options
 
 ```
-  -h, --help           help for update
-      --name string    new connector name
-      --state string   new connector state
+  -c, --config string   new connector configuration
+  -h, --help            help for update
+      --name string     new connector name
+      --state string    new connector state
 ```
 
 ### Options inherited from parent commands
