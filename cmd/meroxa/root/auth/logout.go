@@ -19,10 +19,10 @@ package auth
 import (
 	"context"
 
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-
-	"github.com/meroxa/cli/cmd/meroxa/builder"
 )
 
 var (
@@ -56,8 +56,8 @@ func (l *Logout) Config(cfg config.Config) {
 }
 
 func (l *Logout) Execute(ctx context.Context) error {
-	l.config.Set("ACCESS_TOKEN", "")
-	l.config.Set("REFRESH_TOKEN", "")
+	l.config.Set(global.AccessTokenEnv, "")
+	l.config.Set(global.RefreshTokenEnv, "")
 
 	l.logger.Infof(ctx, "Successfully logged out.")
 	return nil

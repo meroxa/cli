@@ -38,9 +38,17 @@ var (
 	flagJSON          bool
 )
 
-func DeprecateV1Commands() bool {
-	return true
-}
+const (
+	AccessTokenEnv       = "ACCESS_TOKEN"
+	ActorEnv             = "ACTOR"
+	ActorUUIDEnv         = "ACTOR_UUID"
+	CasedDebugEnv        = "CASED_DEBUG"
+	CasedPublishKeyEnv   = "CASED_PUBLISH_KEY"
+	PublishMetricsEnv    = "PUBLISH_METRICS"
+	RefreshTokenEnv      = "REFRESH_TOKEN"
+	UserFeatureFlagsEnv  = "USER_FEATURE_FLAGS"
+	UserInfoUpdatedAtEnv = "USER_INFO_UPDATED_AT"
+)
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&flagJSON, "json", false, "output json")
