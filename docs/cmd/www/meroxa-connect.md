@@ -32,6 +32,7 @@ meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
 ### Options
 
 ```
+  -c, --config string     connector configuration
       --from string       source resource name
   -h, --help              help for connect
       --input string      command delimited list of input streams

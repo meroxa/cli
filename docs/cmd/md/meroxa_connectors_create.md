@@ -23,6 +23,7 @@ meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pi
 ### Options
 
 ```
+  -c, --config string     connector configuration
       --from string       resource name to use as source
   -h, --help              help for create
       --input string      command delimited list of input streams
