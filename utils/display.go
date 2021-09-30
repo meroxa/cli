@@ -215,7 +215,7 @@ func ConnectorTable(connector *meroxa.Connector) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Pipeline:"},
-			{Text: strings.Title(connector.PipelineName)},
+			{Text: connector.PipelineName},
 		},
 	}
 
