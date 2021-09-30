@@ -64,7 +64,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.ConnectorsTable([]*meroxa.Connector{connector}, false))
+	d.logger.Info(ctx, utils.ConnectorTable(connector))
 	d.logger.JSON(ctx, connector)
 
 	return nil

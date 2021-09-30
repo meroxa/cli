@@ -190,6 +190,46 @@ func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
 	return ""
 }
 
+func ConnectorTable(connector *meroxa.Connector) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "ID:"},
+			{Text: fmt.Sprintf("%d", connector.ID)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: connector.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Type:"},
+			{Text: connector.Type},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Streams:"},
+			{Text: formatStreams(connector.Streams)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "State:"},
+			{Text: connector.State},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Pipeline:"},
+			{Text: connector.PipelineName},
+		},
+	}
+
+	if connector.Trace != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Trace:"},
+			{Text: connector.Trace},
+		})
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	return mainTable.String()
+}
+
 func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 	if len(connectors) != 0 {
 		table := simpletable.New()
@@ -208,33 +248,7 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 		}
 
 		for _, conn := range connectors {
-			var streamStr string
-
-			if streamInput, ok := conn.Streams["input"]; ok {
-				streamStr += "(input) "
-
-				streamInterface := streamInput.([]interface{})
-				for i, v := range streamInterface {
-					streamStr += fmt.Sprintf("%v", v)
-
-					if i < len(streamInterface)-1 {
-						streamStr += ", "
-					}
-				}
-			}
-
-			if streamOutput, ok := conn.Streams["output"]; ok {
-				streamStr += "(output) "
-
-				streamInterface := streamOutput.([]interface{})
-				for i, v := range streamInterface {
-					streamStr += fmt.Sprintf("%v", v)
-
-					if i < len(streamInterface)-1 {
-						streamStr += ", "
-					}
-				}
-			}
+			streamStr := formatStreams(conn.Streams)
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
 				{Text: conn.Name},
@@ -251,6 +265,37 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 	}
 
 	return ""
+}
+
+func formatStreams(ss map[string]interface{}) string {
+	var streamStr string
+
+	if streamInput, ok := ss["input"]; ok {
+		streamStr += "(input) "
+
+		streamInterface := streamInput.([]interface{})
+		for i, v := range streamInterface {
+			streamStr += fmt.Sprintf("%v", v)
+
+			if i < len(streamInterface)-1 {
+				streamStr += ", "
+			}
+		}
+	}
+
+	if streamOutput, ok := ss["output"]; ok {
+		streamStr += "(output) "
+
+		streamInterface := streamOutput.([]interface{})
+		for i, v := range streamInterface {
+			streamStr += fmt.Sprintf("%v", v)
+
+			if i < len(streamInterface)-1 {
+				streamStr += ", "
+			}
+		}
+	}
+	return streamStr
 }
 
 func PrintConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) {

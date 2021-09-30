@@ -183,7 +183,70 @@ func TestResourceTypesTableWithoutHeaders(t *testing.T) {
 	}
 }
 
-func TestConnectionsTable(t *testing.T) {
+func TestConnectorRunningTable(t *testing.T) {
+	connector := &meroxa.Connector{
+		ID:            0,
+		Type:          "jdbc",
+		Name:          "base",
+		Configuration: nil,
+		Metadata:      nil,
+		Streams: map[string]interface{}{
+			"dynamic": "false",
+			"output":  []interface{}{"output-foo", "output-bar"},
+		},
+		State:      "running",
+		Trace:      "",
+		PipelineID: 1,
+	}
+	failedConnector := &meroxa.Connector{}
+	deepCopy(connector, failedConnector)
+	failedConnector.State = "failed"
+	failedConnector.Trace = "exception goes here"
+
+	tests := map[string]*meroxa.Connector{
+		"running": connector,
+		"failed":  failedConnector,
+	}
+
+	tableHeaders := []string{"ID", "Name", "Type", "Streams", "State", "Pipeline"}
+
+	for name, connector := range tests {
+		t.Run(name, func(t *testing.T) {
+			out := CaptureOutput(func() {
+				fmt.Println(ConnectorTable(connector))
+			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%s header is missing", header)
+				}
+			}
+
+			switch name {
+			case "running":
+				if !strings.Contains(out, connector.Name) {
+					t.Errorf("%s, not found", connector.Name)
+				}
+				if !strings.Contains(out, strconv.Itoa(connector.ID)) {
+					t.Errorf("%d, not found", connector.ID)
+				}
+			case "failed":
+				if !strings.Contains(out, connector.Name) {
+					t.Errorf("%s, not found", connector.Name)
+				}
+				if !strings.Contains(out, strconv.Itoa(connector.ID)) {
+					t.Errorf("%d, not found", connector.ID)
+				}
+				if !strings.Contains(out, connector.Trace) {
+					t.Errorf("%s, not found", connector.Trace)
+				}
+			}
+			fmt.Println(out)
+		})
+	}
+}
+
+func TestConnectorsTable(t *testing.T) {
 	connectionIDAlign := &meroxa.Connector{}
 	connectionInputOutput := &meroxa.Connector{}
 	connection := &meroxa.Connector{
@@ -264,7 +327,7 @@ func TestConnectionsTable(t *testing.T) {
 	}
 }
 
-func TestConnectionsTableWithoutHeaders(t *testing.T) {
+func TestConnectorsTableWithoutHeaders(t *testing.T) {
 	connection := &meroxa.Connector{
 		ID:            0,
 		Type:          "jdbc",

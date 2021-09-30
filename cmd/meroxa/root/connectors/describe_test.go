@@ -65,6 +65,8 @@ func TestDescribeConnectorExecution(t *testing.T) {
 	connectorName := "my-connector"
 
 	c := utils.GenerateConnector(0, connectorName)
+	c.State = "failed"
+	c.Trace = "exception goes here"
 	client.
 		EXPECT().
 		GetConnectorByName(
@@ -85,7 +87,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ConnectorsTable([]*meroxa.Connector{&c}, false)
+	wantLeveledOutput := utils.ConnectorTable(&c)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
