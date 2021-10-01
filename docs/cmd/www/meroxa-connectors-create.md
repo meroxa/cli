@@ -34,7 +34,7 @@ meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pi
       --from string       resource name to use as source
   -h, --help              help for create
       --input string      command delimited list of input streams
-      --pipeline string   pipeline name to attach connector to
+      --pipeline string   pipeline name to attach connector to (required)
       --to string         resource name to use as destination
 ```
 
@@ -44,7 +44,7 @@ meroxa connectors create [NAME] --to pg2redshift --input orders --pipeline my-pi
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
-      --timeout duration         set the duration of the client timeout in seconds (default 10s) (default 10s)
+      --timeout duration         set the duration of the client timeout in seconds (default 10s)
 ```
 
 ### SEE ALSO

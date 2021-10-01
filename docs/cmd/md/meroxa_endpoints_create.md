@@ -20,8 +20,8 @@ meroxa endpoints create my-endpoint --protocol http --stream my-stream
 
 ```
   -h, --help              help for create
-  -p, --protocol string   protocol, value can be http or grpc
-  -s, --stream string     stream name
+  -p, --protocol string   protocol, value can be http or grpc (required)
+  -s, --stream string     stream name (required)
 ```
 
 ### Options inherited from parent commands
@@ -30,7 +30,7 @@ meroxa endpoints create my-endpoint --protocol http --stream my-stream
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
-      --timeout duration         set the duration of the client timeout in seconds (default 10s) (default 10s)
+      --timeout duration         set the duration of the client timeout in seconds (default 10s)
 ```
 
 ### SEE ALSO

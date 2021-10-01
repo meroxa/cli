@@ -56,7 +56,7 @@ func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&flagCLIConfigFile, "cli-config-file", "", "meroxa configuration file")
 	cmd.PersistentFlags().StringVar(&flagAPIURL, "api-url", "", "API url")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
-	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", time.Second*10, "set the duration of the client timeout in seconds (default 10s)") // nolint:gomnd,lll
+	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", time.Second*10, "set the duration of the client timeout in seconds") // nolint:gomnd,lll
 
 	if err := cmd.PersistentFlags().MarkHidden("api-url"); err != nil {
 		panic(fmt.Sprintf("could not mark flag as hidden: %v", err))

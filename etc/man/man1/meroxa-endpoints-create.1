@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Sep 2021" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Oct 2021" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -23,11 +23,11 @@ Use create endpoint to expose an endpoint to a connector stream
 
 .PP
 \fB\-p\fP, \fB\-\-protocol\fP=""
-	protocol, value can be http or grpc
+	protocol, value can be http or grpc (required)
 
 .PP
 \fB\-s\fP, \fB\-\-stream\fP=""
-	stream name
+	stream name (required)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -45,7 +45,7 @@ Use create endpoint to expose an endpoint to a connector stream
 
 .PP
 \fB\-\-timeout\fP=10s
-	set the duration of the client timeout in seconds (default 10s)
+	set the duration of the client timeout in seconds
 
 
 .SH EXAMPLE

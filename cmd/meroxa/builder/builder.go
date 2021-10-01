@@ -451,6 +451,10 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			flags = cmd.Flags()
 		}
 
+		if f.Required {
+			f.Usage += " (required)"
+		}
+
 		switch val := f.Ptr.(type) {
 		case *string:
 			if f.Default == nil {
