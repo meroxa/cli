@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Sep 2021" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Oct 2021" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -38,7 +38,7 @@ meroxa connector create \-\-to redshift \-\-input orders \-\-pipeline my\-pipeli
 
 .PP
 \fB\-\-from\fP=""
-	source resource name
+	source resource name (required)
 
 .PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
@@ -50,11 +50,11 @@ meroxa connector create \-\-to redshift \-\-input orders \-\-pipeline my\-pipeli
 
 .PP
 \fB\-\-pipeline\fP=""
-	pipeline name to attach connectors to
+	pipeline name to attach connectors to (required)
 
 .PP
 \fB\-\-to\fP=""
-	destination resource name
+	destination resource name (required)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -72,7 +72,7 @@ meroxa connector create \-\-to redshift \-\-input orders \-\-pipeline my\-pipeli
 
 .PP
 \fB\-\-timeout\fP=10s
-	set the duration of the client timeout in seconds (default 10s)
+	set the duration of the client timeout in seconds
 
 
 .SH SEE ALSO

@@ -27,7 +27,7 @@ meroxa resources list --types
       --debug                    display any debugging information
   -h, --help                     help for meroxa
       --json                     output json
-      --timeout duration         set the duration of the client timeout in seconds (default 10s) (default 10s)
+      --timeout duration         set the duration of the client timeout in seconds (default 10s)
 ```
 
 ### SEE ALSO

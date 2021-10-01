@@ -26,11 +26,11 @@ meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
 
 ```
   -c, --config string     connector configuration
-      --from string       source resource name
+      --from string       source resource name (required)
   -h, --help              help for connect
       --input string      command delimited list of input streams
-      --pipeline string   pipeline name to attach connectors to
-      --to string         destination resource name
+      --pipeline string   pipeline name to attach connectors to (required)
+      --to string         destination resource name (required)
 ```
 
 ### Options inherited from parent commands
@@ -39,7 +39,7 @@ meroxa connect --from RESOURCE-NAME --to RESOURCE-NAME [flags]
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
-      --timeout duration         set the duration of the client timeout in seconds (default 10s) (default 10s)
+      --timeout duration         set the duration of the client timeout in seconds (default 10s)
 ```
 
 ### SEE ALSO

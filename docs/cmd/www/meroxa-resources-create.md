@@ -40,8 +40,8 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
       --ssh-private-key string   SSH tunneling private key
       --ssh-url string           SSH tunneling address
       --ssl                      use SSL
-      --type string              resource type
-  -u, --url string               resource url
+      --type string              resource type (required)
+  -u, --url string               resource url (required)
       --username string          username
 ```
 
@@ -51,7 +51,7 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
-      --timeout duration         set the duration of the client timeout in seconds (default 10s) (default 10s)
+      --timeout duration         set the duration of the client timeout in seconds (default 10s)
 ```
 
 ### SEE ALSO
