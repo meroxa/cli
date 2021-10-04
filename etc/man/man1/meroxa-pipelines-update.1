@@ -31,7 +31,7 @@ Update pipeline name, state or metadata
 
 .PP
 \fB\-\-state\fP=""
-	new pipeline state
+	new pipeline state (pause | resume | restart)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -61,6 +61,7 @@ Update pipeline name, state or metadata
 meroxa pipeline update old\-name \-\-name new\-name
 meroxa pipeline update pipeline\-name \-\-state pause
 meroxa pipeline update pipeline\-name \-\-metadata '{"key":"value"}'
+meroxa pipeline update pipeline\-name \-\-state restart
 
 .fi
 .RE

@@ -13,6 +13,7 @@ meroxa pipelines update NAME [flags]
 meroxa pipeline update old-name --name new-name
 meroxa pipeline update pipeline-name --state pause
 meroxa pipeline update pipeline-name --metadata '{"key":"value"}'
+meroxa pipeline update pipeline-name --state restart
 ```
 
 ### Options
@@ -21,7 +22,7 @@ meroxa pipeline update pipeline-name --metadata '{"key":"value"}'
   -h, --help              help for update
   -m, --metadata string   new pipeline metadata
       --name string       new pipeline name
-      --state string      new pipeline state
+      --state string      new pipeline state (pause | resume | restart)
 ```
 
 ### Options inherited from parent commands

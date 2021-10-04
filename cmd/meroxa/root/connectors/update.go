@@ -45,12 +45,12 @@ type Update struct {
 	flags struct {
 		Config string `long:"config" short:"c" usage:"new connector configuration"`
 		Name   string `long:"name" usage:"new connector name"`
-		State  string `long:"state" usage:"new connector state"`
+		State  string `long:"state" usage:"new connector state (pause | resume | restart)"`
 	}
 }
 
 func (u *Update) Usage() string {
-	return "update NAME --state pause | resume | restart --name new-name --config new-configuration"
+	return "update NAME"
 }
 
 func (u *Update) Docs() builder.Docs {
@@ -59,7 +59,8 @@ func (u *Update) Docs() builder.Docs {
 		Example: "\n" +
 			"meroxa connector update old-name --name new-name' \n" +
 			"meroxa connector update connector-name --state pause' \n" +
-			"meroxa connector update connector-name --config '{\"table.name.format\":\"public.copy\"}' \n",
+			"meroxa connector update connector-name --config '{\"table.name.format\":\"public.copy\"}' \n" +
+			"meroxa connector update connector-name --state restart' \n",
 	}
 }
 
