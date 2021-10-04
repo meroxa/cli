@@ -44,7 +44,7 @@ type Update struct {
 	}
 
 	flags struct {
-		State    string `long:"state" usage:"new pipeline state"`
+		State    string `long:"state" usage:"new pipeline state (pause | resume | restart)"`
 		Name     string `long:"name" usage:"new pipeline name"`
 		Metadata string `long:"metadata" short:"m" usage:"new pipeline metadata"`
 	}
@@ -60,7 +60,8 @@ func (u *Update) Docs() builder.Docs {
 		Example: "\n" +
 			"meroxa pipeline update old-name --name new-name\n" +
 			"meroxa pipeline update pipeline-name --state pause\n" +
-			"meroxa pipeline update pipeline-name --metadata '{\"key\":\"value\"}'",
+			"meroxa pipeline update pipeline-name --metadata '{\"key\":\"value\"}'\n" +
+			"meroxa pipeline update pipeline-name --state restart",
 	}
 }
 

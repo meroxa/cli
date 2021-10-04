@@ -3,7 +3,7 @@
 Update connector name, configuration or state
 
 ```
-meroxa connectors update NAME --state pause | resume | restart --name new-name --config new-configuration [flags]
+meroxa connectors update NAME [flags]
 ```
 
 ### Examples
@@ -13,6 +13,7 @@ meroxa connectors update NAME --state pause | resume | restart --name new-name -
 meroxa connector update old-name --name new-name' 
 meroxa connector update connector-name --state pause' 
 meroxa connector update connector-name --config '{"table.name.format":"public.copy"}' 
+meroxa connector update connector-name --state restart' 
 
 ```
 
@@ -22,7 +23,7 @@ meroxa connector update connector-name --config '{"table.name.format":"public.co
   -c, --config string   new connector configuration
   -h, --help            help for update
       --name string     new connector name
-      --state string    new connector state
+      --state string    new connector state (pause | resume | restart)
 ```
 
 ### Options inherited from parent commands

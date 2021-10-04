@@ -8,7 +8,7 @@ meroxa\-connectors\-update \- Update connector name, configuration or state
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa connectors update NAME \-\-state pause | resume | restart \-\-name new\-name \-\-config new\-configuration [flags]\fP
+\fBmeroxa connectors update NAME [flags]\fP
 
 
 .SH DESCRIPTION
@@ -31,7 +31,7 @@ Update connector name, configuration or state
 
 .PP
 \fB\-\-state\fP=""
-	new connector state
+	new connector state (pause | resume | restart)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -61,6 +61,7 @@ Update connector name, configuration or state
 meroxa connector update old\-name \-\-name new\-name' 
 meroxa connector update connector\-name \-\-state pause' 
 meroxa connector update connector\-name \-\-config '{"table.name.format":"public.copy"}' 
+meroxa connector update connector\-name \-\-state restart' 
 
 
 .fi
