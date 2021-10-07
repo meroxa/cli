@@ -139,9 +139,17 @@ func TestEmptyTables(t *testing.T) {
 	}
 
 	var emptyPipelinesList []*meroxa.Pipeline
-
 	out = CaptureOutput(func() {
 		PrintPipelinesTable(emptyPipelinesList, true)
+	})
+
+	if out != "\n" {
+		t.Errorf("Output for pipelines should be blank")
+	}
+
+	var emptyEnvironmentsList []*meroxa.Environment
+	out = CaptureOutput(func() {
+		PrintEnvironmentsTable(emptyEnvironmentsList, true)
 	})
 
 	if out != "\n" {
@@ -444,6 +452,103 @@ func TestPipelinesTableWithoutHeaders(t *testing.T) {
 	}
 	if !strings.Contains(out, strconv.Itoa(pipeline.ID)) {
 		t.Errorf("%d, not found", pipeline.ID)
+	}
+}
+
+func TestEnvironmentsTable(t *testing.T) {
+	e := &meroxa.Environment{
+		Type:     "dedicated",
+		Name:     "environment-1234",
+		Provider: "aws",
+		Region:   "aws:us-east",
+		State:    "provisioned",
+		ID:       "1234",
+	}
+
+	tests := map[string][]*meroxa.Environment{
+		"Base": {e},
+	}
+
+	tableHeaders := []string{"ID", "NAME", "TYPE", "PROVIDER", "REGION", "STATE"}
+
+	for name, environments := range tests {
+		t.Run(name, func(t *testing.T) {
+			out := CaptureOutput(func() {
+				PrintEnvironmentsTable(environments, false)
+			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%s header is missing", header)
+				}
+			}
+
+			if !strings.Contains(out, e.ID) {
+				t.Errorf("%s, not found", e.ID)
+			}
+			if !strings.Contains(out, e.Name) {
+				t.Errorf("%s, not found", e.Name)
+			}
+			if !strings.Contains(out, e.Type) {
+				t.Errorf("%s, not found", e.Type)
+			}
+			if !strings.Contains(out, e.Region) {
+				t.Errorf("%s, not found", e.Region)
+			}
+			if !strings.Contains(out, e.State) {
+				t.Errorf("%s, not found", e.State)
+			}
+			if !strings.Contains(out, e.ID) {
+				t.Errorf("%s, not found", e.ID)
+			}
+
+			fmt.Println(out)
+		})
+	}
+}
+
+func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
+	e := &meroxa.Environment{
+		Type:     "dedicated",
+		Name:     "environment-1234",
+		Provider: "aws",
+		Region:   "aws:us-east",
+		State:    "provisioned",
+		ID:       "1234",
+	}
+
+	var environments []*meroxa.Environment
+	tableHeaders := []string{"ID", "NAME", "TYPE", "PROVIDER", "REGION", "STATE"}
+
+	environments = append(environments, e)
+
+	out := CaptureOutput(func() {
+		PrintEnvironmentsTable(environments, true)
+	})
+
+	for _, header := range tableHeaders {
+		if strings.Contains(out, header) {
+			t.Errorf("%s header should not be displayed", header)
+		}
+	}
+
+	if !strings.Contains(out, e.ID) {
+		t.Errorf("%s, not found", e.ID)
+	}
+	if !strings.Contains(out, e.Name) {
+		t.Errorf("%s, not found", e.Name)
+	}
+	if !strings.Contains(out, e.Type) {
+		t.Errorf("%s, not found", e.Type)
+	}
+	if !strings.Contains(out, e.Region) {
+		t.Errorf("%s, not found", e.Region)
+	}
+	if !strings.Contains(out, e.State) {
+		t.Errorf("%s, not found", e.State)
+	}
+	if !strings.Contains(out, e.ID) {
+		t.Errorf("%s, not found", e.ID)
 	}
 }
 

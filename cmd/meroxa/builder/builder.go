@@ -634,7 +634,7 @@ func buildCommandWithFeatureFlag(cmd *cobra.Command, c Command) {
 		userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
 
 		if !hasFeatureFlag(userFeatureFlags, flagRequired) {
-			return fmt.Errorf("your account does not have access to the %q feature."+
+			return fmt.Errorf("your account does not have access to the %q feature. "+
 				"Reach out to support@meroxa.com for more information", flagRequired)
 		}
 
