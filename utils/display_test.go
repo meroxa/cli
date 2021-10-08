@@ -461,7 +461,7 @@ func TestEnvironmentsTable(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: "aws",
 		Region:   "aws:us-east",
-		State:    "provisioned",
+		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
 		ID:       "1234",
 	}
 
@@ -495,8 +495,8 @@ func TestEnvironmentsTable(t *testing.T) {
 			if !strings.Contains(out, e.Region) {
 				t.Errorf("%s, not found", e.Region)
 			}
-			if !strings.Contains(out, e.State) {
-				t.Errorf("%s, not found", e.State)
+			if !strings.Contains(out, e.Status.State) {
+				t.Errorf("%s, not found", e.Status.State)
 			}
 			if !strings.Contains(out, e.ID) {
 				t.Errorf("%s, not found", e.ID)
@@ -513,7 +513,7 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: "aws",
 		Region:   "aws:us-east",
-		State:    "provisioned",
+		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
 		ID:       "1234",
 	}
 
@@ -544,8 +544,8 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, e.Region) {
 		t.Errorf("%s, not found", e.Region)
 	}
-	if !strings.Contains(out, e.State) {
-		t.Errorf("%s, not found", e.State)
+	if !strings.Contains(out, e.Status.State) {
+		t.Errorf("%s, not found", e.Status.State)
 	}
 	if !strings.Contains(out, e.ID) {
 		t.Errorf("%s, not found", e.ID)

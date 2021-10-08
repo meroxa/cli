@@ -8,14 +8,19 @@ import (
 
 const environmentsBasePath = "/v1/environments"
 
+type EnvironmentStatus struct {
+	Details string `json:"details,omitempty"`
+	State   string `json:"state"`
+}
+
 // Environment represents the Meroxa Environment type within the Meroxa API
 type Environment struct {
-	Type     string `json:"type"`
-	Name     string `json:"name"`
-	Provider string `json:"provider"`
-	Region   string `json:"region"`
-	State    string `json:"state"`
-	ID       string `json:"id"`
+	Type     string            `json:"type"`
+	Name     string            `json:"name"`
+	Provider string            `json:"provider"`
+	Region   string            `json:"region"`
+	Status   EnvironmentStatus `json:"status"`
+	ID       string            `json:"id"`
 }
 
 // ListEnvironments returns an array of Pipelines (scoped to the calling user)

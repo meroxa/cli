@@ -385,7 +385,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 				{Align: simpletable.AlignCenter, Text: p.Type},
 				{Align: simpletable.AlignCenter, Text: p.Provider},
 				{Align: simpletable.AlignCenter, Text: p.Region},
-				{Align: simpletable.AlignCenter, Text: p.State},
+				{Align: simpletable.AlignCenter, Text: p.Status.State},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)

@@ -43,7 +43,7 @@ func TestListEnvironmentsExecution(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: "aws",
 		Region:   "aws:us-east",
-		State:    "provisioned",
+		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
 		ID:       "1234",
 	}
 
