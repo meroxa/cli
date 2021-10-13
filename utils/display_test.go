@@ -462,7 +462,7 @@ func TestEnvironmentsTable(t *testing.T) {
 		Provider: "aws",
 		Region:   "aws:us-east",
 		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
-		ID:       "1234",
+		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
 	tests := map[string][]*meroxa.Environment{
@@ -483,8 +483,8 @@ func TestEnvironmentsTable(t *testing.T) {
 				}
 			}
 
-			if !strings.Contains(out, e.ID) {
-				t.Errorf("%s, not found", e.ID)
+			if !strings.Contains(out, e.UUID) {
+				t.Errorf("%s, not found", e.UUID)
 			}
 			if !strings.Contains(out, e.Name) {
 				t.Errorf("%s, not found", e.Name)
@@ -498,8 +498,8 @@ func TestEnvironmentsTable(t *testing.T) {
 			if !strings.Contains(out, e.Status.State) {
 				t.Errorf("%s, not found", e.Status.State)
 			}
-			if !strings.Contains(out, e.ID) {
-				t.Errorf("%s, not found", e.ID)
+			if !strings.Contains(out, e.UUID) {
+				t.Errorf("%s, not found", e.UUID)
 			}
 
 			fmt.Println(out)
@@ -514,7 +514,7 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 		Provider: "aws",
 		Region:   "aws:us-east",
 		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
-		ID:       "1234",
+		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
 	var environments []*meroxa.Environment
@@ -532,8 +532,8 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(out, e.ID) {
-		t.Errorf("%s, not found", e.ID)
+	if !strings.Contains(out, e.UUID) {
+		t.Errorf("%s, not found", e.UUID)
 	}
 	if !strings.Contains(out, e.Name) {
 		t.Errorf("%s, not found", e.Name)
@@ -547,8 +547,8 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, e.Status.State) {
 		t.Errorf("%s, not found", e.Status.State)
 	}
-	if !strings.Contains(out, e.ID) {
-		t.Errorf("%s, not found", e.ID)
+	if !strings.Contains(out, e.UUID) {
+		t.Errorf("%s, not found", e.UUID)
 	}
 }
 

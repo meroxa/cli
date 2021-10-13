@@ -36,18 +36,16 @@ func TestListEnvironmentsExecution(t *testing.T) {
 	client := mock.NewMockListEnvironmentsClient(ctrl)
 	logger := log.NewTestLogger()
 
-	var environments []*meroxa.Environment
-
-	ee := meroxa.Environment{
+	ee := &meroxa.Environment{
 		Type:     "dedicated",
 		Name:     "environment-1234",
 		Provider: "aws",
 		Region:   "aws:us-east",
 		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
-		ID:       "1234",
+		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
-	environments = append(environments, &ee)
+	environments := []*meroxa.Environment{ee}
 
 	client.
 		EXPECT().

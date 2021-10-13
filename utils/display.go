@@ -368,7 +368,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
-					{Align: simpletable.AlignCenter, Text: "ID"},
+					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "TYPE"},
 					{Align: simpletable.AlignCenter, Text: "PROVIDER"},
@@ -380,7 +380,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 
 		for _, p := range environments {
 			r := []*simpletable.Cell{
-				{Align: simpletable.AlignRight, Text: p.ID},
+				{Align: simpletable.AlignRight, Text: p.UUID},
 				{Align: simpletable.AlignCenter, Text: p.Name},
 				{Align: simpletable.AlignCenter, Text: p.Type},
 				{Align: simpletable.AlignCenter, Text: p.Provider},

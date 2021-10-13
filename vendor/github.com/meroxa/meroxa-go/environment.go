@@ -4,26 +4,30 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 const environmentsBasePath = "/v1/environments"
 
 type EnvironmentStatus struct {
-	Details string `json:"details,omitempty"`
 	State   string `json:"state"`
+	Details string `json:"details,omitempty"`
 }
 
 // Environment represents the Meroxa Environment type within the Meroxa API
 type Environment struct {
-	Type     string            `json:"type"`
-	Name     string            `json:"name"`
-	Provider string            `json:"provider"`
-	Region   string            `json:"region"`
-	Status   EnvironmentStatus `json:"status"`
-	ID       string            `json:"id"`
+	UUID          string                 `json:"uuid"`
+	Name          string                 `json:"name"`
+	Provider      string                 `json:"provider"`
+	Region        string                 `json:"region"`
+	Type          string                 `json:"type"`
+	Configuration map[string]interface{} `json:"config,omitempty"`
+	Status        EnvironmentStatus      `json:"status"`
+	CreatedAt     time.Time              `json:"created_at"`
+	UpdatedAt     time.Time              `json:"updated_at"`
 }
 
-// ListEnvironments returns an array of Pipelines (scoped to the calling user)
+// ListEnvironments returns an array of Environments (scoped to the calling user)
 func (c *Client) ListEnvironments(ctx context.Context) ([]*Environment, error) {
 	resp, err := c.MakeRequest(ctx, http.MethodGet, environmentsBasePath, nil, nil)
 	if err != nil {
