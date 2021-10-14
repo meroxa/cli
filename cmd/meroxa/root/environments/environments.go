@@ -17,8 +17,7 @@ limitations under the License.
 package environments
 
 import (
-	"context"
-	"fmt"
+	"github.com/spf13/cobra"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -31,8 +30,8 @@ type Environments struct {
 var (
 	_ builder.CommandWithAliases     = (*Environments)(nil)
 	_ builder.CommandWithDocs        = (*Environments)(nil)
-	_ builder.CommandWithExecute     = (*Environments)(nil)
 	_ builder.CommandWithFeatureFlag = (*Environments)(nil)
+	_ builder.CommandWithSubCommands = (*Environments)(nil)
 )
 
 func (*Environments) Usage() string {
@@ -57,7 +56,8 @@ func (e *Environments) Logger(logger log.Logger) {
 	e.logger = logger
 }
 
-func (e *Environments) Execute(ctx context.Context) error {
-	fmt.Println("Welcome to a new world")
-	return nil
+func (*Environments) SubCommands() []*cobra.Command {
+	return []*cobra.Command{
+		builder.BuildCobraCommand(&List{}),
+	}
 }

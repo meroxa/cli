@@ -361,6 +361,45 @@ func PrintPipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) {
 	fmt.Println(PipelinesTable(pipelines, hideHeaders))
 }
 
+func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) string {
+	if len(environments) != 0 {
+		table := simpletable.New()
+
+		if !hideHeaders {
+			table.Header = &simpletable.Header{
+				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "UUID"},
+					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "TYPE"},
+					{Align: simpletable.AlignCenter, Text: "PROVIDER"},
+					{Align: simpletable.AlignCenter, Text: "REGION"},
+					{Align: simpletable.AlignCenter, Text: "STATE"},
+				},
+			}
+		}
+
+		for _, p := range environments {
+			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: p.UUID},
+				{Align: simpletable.AlignCenter, Text: p.Name},
+				{Align: simpletable.AlignCenter, Text: p.Type},
+				{Align: simpletable.AlignCenter, Text: p.Provider},
+				{Align: simpletable.AlignCenter, Text: p.Region},
+				{Align: simpletable.AlignCenter, Text: p.Status.State},
+			}
+
+			table.Body.Cells = append(table.Body.Cells, r)
+		}
+		table.SetStyle(simpletable.StyleCompact)
+		return table.String()
+	}
+	return ""
+}
+
+func PrintEnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) {
+	fmt.Println(EnvironmentsTable(environments, hideHeaders))
+}
+
 func truncateString(oldString string, l int) string {
 	str := oldString
 
