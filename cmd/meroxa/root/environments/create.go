@@ -18,10 +18,6 @@ package environments
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-
-	"github.com/manifoldco/promptui"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -56,10 +52,11 @@ type Create struct {
 	}
 
 	flags struct {
-		Type          string `long:"type" usage:"environment type (\"dedicated\", when not specified, it can also be \"hosted\"")"`
-		Provider      string `long:"provider" usage:"provider to use (e.g.: AWS)"`
-		Region        string `long:"region" usage:"desired region (e.g.: us-east-1)"`
-		Configuration string `long:"config" usage:"configuration used for the provider (e.g.: aws_access_key_id=my_access_key)"`
+		Type          string `long:"type" usage:"environment type (\"dedicated\", when not specified. It can also be \"hosted\")"`
+		Provider      string `long:"provider" usage:"environment cloud provider to use (e.g.: AWS)"`
+		Region        string `long:"region" usage:"environment region (e.g.: us-east-1)"`
+		Configuration string `long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
+		Interactive   bool   `long:"interactive" short:"i" usage:"Interactive mode""`
 	}
 }
 
@@ -82,22 +79,11 @@ func (c *Create) ParseArgs(args []string) error {
 	return nil
 }
 
-func (c *Create) Execute(ctx context.Context) error {
-	c.logger.Infof(ctx, "We are going to create an environment that will look like this:\n"+
-		"\t type: %q\n"+
-		"\t provider: %q\n"+
-		"\t region: %q", DefaultType, DefaultProvider, DefaultRegion)
+func (c *Create) userSpecifiedValues() bool {
+	return c.flags.Type == "" || c.flags.Provider == "" || c.flags.Region == "" || c.flags.Configuration == ""
+}
 
-	prompt := promptui.Prompt{
-		Label:     "Do you want to proceed?",
-		IsConfirm: true,
-	}
-
-	prompt.Run()
-
-	e := &meroxa.CreateEnvironmentInput{}
-
-	// TODO: Move all this to a function
+func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 	if c.args.Name != "" {
 		e.Name = c.args.Name
 	}
@@ -113,25 +99,57 @@ func (c *Create) Execute(ctx context.Context) error {
 	if c.flags.Region != "" {
 		e.Region = c.flags.Region
 	}
+}
 
-	if c.flags.Configuration != "" {
-		var config map[string]interface{}
-		err := json.Unmarshal([]byte(c.flags.Configuration), &config)
-		if err != nil {
-			return fmt.Errorf("could not parse configuration: %w", err)
-		}
+func (c *Create) Execute(ctx context.Context) error {
+	c.logger.Infof(ctx, "%b", c.flags.Interactive)
+	if c.flags.Interactive {
+		// TODO: Call interactive mode and set values
 
-		e.Configuration = config
 	}
 
-	environment, err := c.client.CreateEnvironment(ctx, e)
-
-	if err != nil {
-		return err
-	}
-
-	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %q` for status", c.args.Name, c.args.Name)
-	c.logger.JSON(ctx, environment)
+	//e := &meroxa.CreateEnvironmentInput{}
+	//c.setUserValues(e)
+	//
+	//// Show specified values (either default or specified by user)
+	//c.logger.Infof(ctx, "We are going to create an environment that will look like this:\n"+
+	//	"\t type: %q\n"+
+	//	"\t provider: %q\n"+
+	//	"\t region: %q", DefaultType, DefaultProvider, DefaultRegion)
+	//
+	//prompt := promptui.Prompt{
+	//	Label:     "Do you want to proceed?",
+	//	IsConfirm: true,
+	//}
+	//
+	//_, error := prompt.Run()
+	//
+	//if error != nil {
+	//	c.logger.Infof(ctx, "If you want to configure an environment with different settings,\n "+
+	//		"please run \"meroxa help env create\". \n"+
+	//		"For a more guided approach, run in interactive mode: \"meroxa env create -i\"")
+	//}
+	//
+	//if c.flags.Configuration != "" {
+	//	var config map[string]interface{}
+	//	err := json.Unmarshal([]byte(c.flags.Configuration), &config)
+	//	if err != nil {
+	//		return fmt.Errorf("could not parse configuration: %w", err)
+	//	}
+	//
+	//	e.Configuration = config
+	//}
+	//
+	//c.logger.Infof(ctx, "Provisioning environment...")
+	//
+	//environment, err := c.client.CreateEnvironment(ctx, e)
+	//
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %q` for status", environment.Name, environment.Name)
+	//c.logger.JSON(ctx, environment)
 
 	return nil
 }
