@@ -58,6 +58,7 @@ func (e *Environments) Logger(logger log.Logger) {
 
 func (*Environments) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
+		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&List{}),
 	}
 }

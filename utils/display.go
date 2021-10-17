@@ -396,6 +396,46 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 	return ""
 }
 
+func EnvironmentTable(environment *meroxa.Environment) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: fmt.Sprintf("%s", environment.UUID)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: environment.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Type:"},
+			{Text: environment.Type},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Provider:"},
+			{Text: environment.Provider},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Region:"},
+			{Text: environment.Region},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Status:"},
+			{Text: environment.Status.State},
+		},
+	}
+
+	if environment.Status.Details != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Details:"},
+			{Text: environment.Status.Details},
+		})
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	return mainTable.String()
+}
+
 func PrintEnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) {
 	fmt.Println(EnvironmentsTable(environments, hideHeaders))
 }
