@@ -66,7 +66,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20211013160423-7447f282edb1 => ../meroxa-go
+# github.com/meroxa/meroxa-go v0.0.0-20211018163256-17c772923706
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go
 # github.com/mitchellh/mapstructure v1.4.1
@@ -181,4 +181,3 @@ gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
-# github.com/meroxa/meroxa-go => ../meroxa-go
