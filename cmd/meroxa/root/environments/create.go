@@ -148,7 +148,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	//	return err
 	//}
 	//
-	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %q` for status", environment.Name, environment.Name)
+	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
 	//c.logger.JSON(ctx, environment)
 
 	return nil
