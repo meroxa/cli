@@ -399,7 +399,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
 
-	envStatus := fmt.Sprintf("%s", environment.Status.State)
+	envStatus := environment.Status.State
 
 	if environment.Status.Details != "" {
 		envStatus += fmt.Sprintf("\n\nDetails: %s", environment.Status.Details)
@@ -408,7 +408,7 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
 			{Align: simpletable.AlignRight, Text: "UUID:"},
-			{Text: fmt.Sprintf("%s", environment.UUID)},
+			{Text: environment.UUID},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Name:"},

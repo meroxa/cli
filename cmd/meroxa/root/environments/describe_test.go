@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	mock "github.com/meroxa/cli/mock-cmd"

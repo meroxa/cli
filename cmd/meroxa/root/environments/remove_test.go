@@ -20,14 +20,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
+
 	"fmt"
+	"reflect"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
-	"reflect"
-	"testing"
 )
 
 func TestRemoveEnvironmentArgs(t *testing.T) {
@@ -87,11 +90,10 @@ func TestRemoveEnvironmentExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Removing environment %q...
-Environment %q successfully removed
-`, e.Name, e.Name)
+	wantLeveledOutput := fmt.Sprintf("Environment %q is being removed...\n", e.Name)
+	wantLeveledOutput += fmt.Sprintf("Run `meroxa env describe %s` for status.", e.Name)
 
-	if gotLeveledOutput != wantLeveledOutput {
+	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 

@@ -19,6 +19,7 @@ package environments
 import (
 	"context"
 	"errors"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
@@ -64,7 +65,7 @@ func (r *Remove) Confirm(_ context.Context) (wantInput string) {
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
-	r.logger.Infof(ctx, "Removing environment %q...", r.args.Name)
+	r.logger.Infof(ctx, "Environment %q is being removed...", r.args.Name)
 
 	// TODO: Check if this could return also env
 	err := r.client.DeleteEnvironment(ctx, r.args.Name)
@@ -72,7 +73,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		return err
 	}
 
-	r.logger.Infof(ctx, "Environment %q successfully removed", r.args.Name)
+	r.logger.Infof(ctx, "Run `meroxa env describe %s` for status.", r.args.Name)
 
 	e, err := r.client.GetEnvironment(ctx, r.args.Name)
 	if err != nil {
