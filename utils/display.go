@@ -398,6 +398,13 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
+
+	envStatus := fmt.Sprintf("%s", environment.Status.State)
+
+	if environment.Status.Details != "" {
+		envStatus += fmt.Sprintf("\n\nDetails: %s", environment.Status.Details)
+	}
+
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
 			{Align: simpletable.AlignRight, Text: "UUID:"},
@@ -408,10 +415,6 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 			{Text: environment.Name},
 		},
 		{
-			{Align: simpletable.AlignRight, Text: "Type:"},
-			{Text: environment.Type},
-		},
-		{
 			{Align: simpletable.AlignRight, Text: "Provider:"},
 			{Text: environment.Provider},
 		},
@@ -420,8 +423,20 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 			{Text: environment.Region},
 		},
 		{
+			{Align: simpletable.AlignRight, Text: "Type:"},
+			{Text: environment.Type},
+		},
+		{
 			{Align: simpletable.AlignRight, Text: "Status:"},
-			{Text: environment.Status.State},
+			{Text: envStatus},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Created At:"},
+			{Text: environment.CreatedAt.String()},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Updated At:"},
+			{Text: environment.UpdatedAt.String()},
 		},
 	}
 

@@ -79,13 +79,13 @@ func GenerateEnvironment(environmentName string) meroxa.Environment {
 	}
 
 	return meroxa.Environment{
-		UUID:       "fd572375-77ce-4448-a071-ee4707a599d6",
-		Type:       "dedicated",
-		Name:       environmentName,
+		UUID:     "fd572375-77ce-4448-a071-ee4707a599d6",
+		Type:     "dedicated",
+		Name:     environmentName,
 		Region:   "us-east",
 		Provider: "aws",
 		Status: meroxa.EnvironmentStatus{
-			State:   "provisioned",
+			State: "provisioned",
 		},
 	}
 }
