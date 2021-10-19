@@ -18,6 +18,8 @@ package environments
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -25,12 +27,13 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Create)(nil)
-	_ builder.CommandWithArgs    = (*Create)(nil)
-	_ builder.CommandWithFlags   = (*Create)(nil)
-	_ builder.CommandWithClient  = (*Create)(nil)
-	_ builder.CommandWithLogger  = (*Create)(nil)
-	_ builder.CommandWithExecute = (*Create)(nil)
+	_ builder.CommandWithDocs                = (*Create)(nil)
+	_ builder.CommandWithArgs                = (*Create)(nil)
+	_ builder.CommandWithFlags               = (*Create)(nil)
+	_ builder.CommandWithClient              = (*Create)(nil)
+	_ builder.CommandWithLogger              = (*Create)(nil)
+	_ builder.CommandWithExecute             = (*Create)(nil)
+	_ builder.CommandWithConfirmWithoutValue = (*Create)(nil)
 )
 
 const (
@@ -56,7 +59,6 @@ type Create struct {
 		Provider      string `long:"provider" usage:"environment cloud provider to use (e.g.: AWS)"`
 		Region        string `long:"region" usage:"environment region (e.g.: us-east-1)"`
 		Configuration string `long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
-		Interactive   bool   `long:"interactive" short:"i" usage:"Interactive mode""`
 	}
 }
 
@@ -102,56 +104,44 @@ func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 }
 
 func (c *Create) Execute(ctx context.Context) error {
-	c.logger.Infof(ctx, "%b", c.flags.Interactive)
-	if c.flags.Interactive {
-		// TODO: Call interactive mode and set values
+	e := &meroxa.CreateEnvironmentInput{}
+	c.setUserValues(e)
 
+	if c.flags.Configuration != "" {
+		var config map[string]interface{}
+		err := json.Unmarshal([]byte(c.flags.Configuration), &config)
+		if err != nil {
+			return fmt.Errorf("could not parse configuration: %w", err)
+		}
+
+		e.Configuration = config
 	}
 
-	//e := &meroxa.CreateEnvironmentInput{}
-	//c.setUserValues(e)
-	//
-	//// Show specified values (either default or specified by user)
-	//c.logger.Infof(ctx, "We are going to create an environment that will look like this:\n"+
-	//	"\t type: %q\n"+
-	//	"\t provider: %q\n"+
-	//	"\t region: %q", DefaultType, DefaultProvider, DefaultRegion)
-	//
-	//prompt := promptui.Prompt{
-	//	Label:     "Do you want to proceed?",
-	//	IsConfirm: true,
-	//}
-	//
-	//_, error := prompt.Run()
-	//
-	//if error != nil {
-	//	c.logger.Infof(ctx, "If you want to configure an environment with different settings,\n "+
-	//		"please run \"meroxa help env create\". \n"+
-	//		"For a more guided approach, run in interactive mode: \"meroxa env create -i\"")
-	//}
-	//
-	//if c.flags.Configuration != "" {
-	//	var config map[string]interface{}
-	//	err := json.Unmarshal([]byte(c.flags.Configuration), &config)
-	//	if err != nil {
-	//		return fmt.Errorf("could not parse configuration: %w", err)
-	//	}
-	//
-	//	e.Configuration = config
-	//}
-	//
-	//c.logger.Infof(ctx, "Provisioning environment...")
-	//
-	//environment, err := c.client.CreateEnvironment(ctx, e)
-	//
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-	//c.logger.JSON(ctx, environment)
+	c.logger.Infof(ctx, "Provisioning environment...")
+
+	environment, err := c.client.CreateEnvironment(ctx, e)
+
+	if err != nil {
+		return err
+	}
+
+	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
+	c.logger.JSON(ctx, environment)
 
 	return nil
+}
+
+func (c *Create) NotConfirmed() string {
+	return fmt.Sprintf("If you want to configure an environment with different settings,\n " +
+		"please run \"meroxa help env create\". \n" +
+		"For a more guided approach, run in interactive mode: \"meroxa env create -i\"")
+}
+
+func (c *Create) Prompt() string {
+	return fmt.Sprintf("We are going to create an environment that will look like this:\n"+
+		"\t type: %q\n"+
+		"\t provider: %q\n"+
+		"\t region: %q", DefaultType, DefaultProvider, DefaultRegion)
 }
 
 func (c *Create) Usage() string {

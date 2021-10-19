@@ -51,7 +51,7 @@ func (r *Remove) Docs() builder.Docs {
 	}
 }
 
-func (r *Remove) Confirm(_ context.Context) (wantInput string) {
+func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 	return r.args.Name
 }
 
@@ -97,11 +97,11 @@ func (r *Remove) Aliases() []string {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*Remove)(nil)
-	_ builder.CommandWithAliases = (*Remove)(nil)
-	_ builder.CommandWithArgs    = (*Remove)(nil)
-	_ builder.CommandWithClient  = (*Remove)(nil)
-	_ builder.CommandWithLogger  = (*Remove)(nil)
-	_ builder.CommandWithExecute = (*Remove)(nil)
-	_ builder.CommandWithConfirm = (*Remove)(nil)
+	_ builder.CommandWithDocs             = (*Remove)(nil)
+	_ builder.CommandWithAliases          = (*Remove)(nil)
+	_ builder.CommandWithArgs             = (*Remove)(nil)
+	_ builder.CommandWithClient           = (*Remove)(nil)
+	_ builder.CommandWithLogger           = (*Remove)(nil)
+	_ builder.CommandWithExecute          = (*Remove)(nil)
+	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)
 )

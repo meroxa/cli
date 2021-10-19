@@ -28,13 +28,13 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithArgs    = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithFlags   = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithClient  = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithLogger  = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithExecute = (*RotateTunnelKey)(nil)
-	_ builder.CommandWithConfirm = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithDocs             = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithArgs             = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithFlags            = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithClient           = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithLogger           = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithExecute          = (*RotateTunnelKey)(nil)
+	_ builder.CommandWithConfirmWithValue = (*RotateTunnelKey)(nil)
 )
 
 type rotateKeyActionClient interface {
@@ -64,7 +64,7 @@ func (u *RotateTunnelKey) Docs() builder.Docs {
 	}
 }
 
-func (u *RotateTunnelKey) Confirm(ctx context.Context) string {
+func (u *RotateTunnelKey) ValueToConfirm(ctx context.Context) string {
 	u.logger.Infof(ctx, "Rotating tunnel key will restart the tunnel and disconnect existing connections.")
 	return u.args.Name
 }
