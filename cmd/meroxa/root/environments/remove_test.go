@@ -74,13 +74,6 @@ func TestRemoveEnvironmentExecution(t *testing.T) {
 	client.
 		EXPECT().
 		DeleteEnvironment(ctx, e.Name).
-		Return(nil)
-
-	e.Status.State = "deprovisioning"
-
-	client.
-		EXPECT().
-		GetEnvironment(ctx, e.Name).
 		Return(&e, nil)
 
 	err := r.Execute(ctx)

@@ -36,30 +36,16 @@ func (m *MockRemoveEnvironmentClient) EXPECT() *MockRemoveEnvironmentClientMockR
 }
 
 // DeleteEnvironment mocks base method.
-func (m *MockRemoveEnvironmentClient) DeleteEnvironment(ctx context.Context, nameOrUUID string) error {
+func (m *MockRemoveEnvironmentClient) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteEnvironment", ctx, nameOrUUID)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*meroxa.Environment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // DeleteEnvironment indicates an expected call of DeleteEnvironment.
 func (mr *MockRemoveEnvironmentClientMockRecorder) DeleteEnvironment(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEnvironment", reflect.TypeOf((*MockRemoveEnvironmentClient)(nil).DeleteEnvironment), ctx, nameOrUUID)
-}
-
-// GetEnvironment mocks base method.
-func (m *MockRemoveEnvironmentClient) GetEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetEnvironment", ctx, nameOrUUID)
-	ret0, _ := ret[0].(*meroxa.Environment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetEnvironment indicates an expected call of GetEnvironment.
-func (mr *MockRemoveEnvironmentClientMockRecorder) GetEnvironment(ctx, nameOrUUID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEnvironment", reflect.TypeOf((*MockRemoveEnvironmentClient)(nil).GetEnvironment), ctx, nameOrUUID)
 }

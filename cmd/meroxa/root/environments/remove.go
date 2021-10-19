@@ -36,9 +36,7 @@ var (
 )
 
 type removeEnvironmentClient interface {
-	DeleteEnvironment(ctx context.Context, nameOrUUID string) error
-	// GetEnvironment TODO: Remove this one if Env can be returned by Delete
-	GetEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error)
+	DeleteEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error)
 }
 
 type Remove struct {
@@ -67,18 +65,12 @@ func (r *Remove) Confirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Environment %q is being removed...", r.args.Name)
 
-	// TODO: Check if this could return also env
-	err := r.client.DeleteEnvironment(ctx, r.args.Name)
+	e, err := r.client.DeleteEnvironment(ctx, r.args.Name)
 	if err != nil {
 		return err
 	}
 
 	r.logger.Infof(ctx, "Run `meroxa env describe %s` for status.", r.args.Name)
-
-	e, err := r.client.GetEnvironment(ctx, r.args.Name)
-	if err != nil {
-		return err
-	}
 	r.logger.JSON(ctx, e)
 
 	return nil

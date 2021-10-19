@@ -100,12 +100,20 @@ func (c *Client) GetEnvironment(ctx context.Context, nameOrUUID string) (*Enviro
 	return e, nil
 }
 
-func (c *Client) DeleteEnvironment(ctx context.Context, nameOrUUID string) error {
+func (c *Client) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
 	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return handleAPIErrors(resp)
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var e *Environment
+	err = json.NewDecoder(resp.Body).Decode(&e)
+
+	return e, nil
 }
