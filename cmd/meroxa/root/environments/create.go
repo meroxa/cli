@@ -119,29 +119,44 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	c.logger.Infof(ctx, "Provisioning environment...")
 
-	environment, err := c.client.CreateEnvironment(ctx, e)
+	//environment, err := c.client.CreateEnvironment(ctx, e)
 
-	if err != nil {
-		return err
-	}
-
-	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-	c.logger.JSON(ctx, environment)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
+	//c.logger.JSON(ctx, environment)
+	c.logger.Infof(ctx, "foo")
 
 	return nil
 }
 
 func (c *Create) NotConfirmed() string {
 	return fmt.Sprintf("If you want to configure an environment with different settings,\n " +
-		"please run \"meroxa help env create\". \n" +
+		"please run \"meroxa help env create\" to see the available options. \n" +
 		"For a more guided approach, run in interactive mode: \"meroxa env create -i\"")
 }
 
 func (c *Create) Prompt() string {
+	var eType, eProvider, eRegion string
+
+	if eType = DefaultType; c.flags.Type != "" {
+		eType = c.flags.Type
+	}
+
+	if eProvider = DefaultProvider; c.flags.Provider != "" {
+		eProvider = c.flags.Provider
+	}
+
+	if eRegion = DefaultRegion; c.flags.Region != "" {
+		eRegion = c.flags.Region
+	}
+
 	return fmt.Sprintf("We are going to create an environment that will look like this:\n"+
 		"\t type: %q\n"+
 		"\t provider: %q\n"+
-		"\t region: %q", DefaultType, DefaultProvider, DefaultRegion)
+		"\t region: %q", eType, eProvider, eRegion)
 }
 
 func (c *Create) Usage() string {

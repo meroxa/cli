@@ -413,7 +413,7 @@ func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
 		_, error := prompt.Run()
 
 		if error != nil {
-			fmt.Println(v.NotConfirmed())
+			return fmt.Errorf(v.NotConfirmed())
 		}
 
 		return nil
