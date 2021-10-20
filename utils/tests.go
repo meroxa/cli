@@ -73,6 +73,23 @@ func GenerateTransform() meroxa.Transform {
 	}
 }
 
+func GenerateEnvironment(environmentName string) meroxa.Environment {
+	if environmentName == "" {
+		environmentName = "environment-1234"
+	}
+
+	return meroxa.Environment{
+		UUID:     "fd572375-77ce-4448-a071-ee4707a599d6",
+		Type:     "dedicated",
+		Name:     environmentName,
+		Region:   "us-east",
+		Provider: "aws",
+		Status: meroxa.EnvironmentStatus{
+			State: "provisioned",
+		},
+	}
+}
+
 func IsFlagRequired(flag *pflag.Flag) bool {
 	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
 
