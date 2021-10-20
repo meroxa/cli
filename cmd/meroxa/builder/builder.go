@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"github.com/cased/cased-go"
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -85,10 +84,13 @@ type CommandWithConfirmWithValue interface {
 	ValueToConfirm(ctx context.Context) (wantInput string)
 }
 
-type CommandWithConfirmWithoutValue interface {
+type CommandWithPrompt interface {
 	Command
 	// Prompt adds a prompt before the command is executed where the user is asked to answer y/N to proceed
-	Prompt() (prompt string)
+	Prompt() error
+
+	// SkipPrompt will return logic around when to skip prompt (e.g.: when all flags and arguments are specified)
+	SkipPrompt() bool
 
 	// NotConfirmed indicates what to show in case user declines the answer
 	NotConfirmed() (prompt string)
@@ -379,7 +381,7 @@ func buildCommandWithConfirmWithValue(cmd *cobra.Command, c Command) {
 }
 
 func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithConfirmWithoutValue)
+	v, ok := c.(CommandWithPrompt)
 	if !ok {
 		return
 	}
@@ -398,22 +400,16 @@ func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
 			}
 		}
 
-		// do not prompt for confirmation when --yes
-		if skip {
+		// do not prompt for confirmation when --yes or when we explicitly want to skip prompt
+		if skip || v.SkipPrompt() {
 			return nil
 		}
 
-		fmt.Println(v.Prompt())
+		e := v.Prompt()
 
-		prompt := promptui.Prompt{
-			Label:     "Do you want to proceed?",
-			IsConfirm: true,
-		}
-
-		_, error := prompt.Run()
-
-		if error != nil {
-			return fmt.Errorf(v.NotConfirmed())
+		if e != nil {
+			fmt.Println(v.NotConfirmed())
+			os.Exit(1)
 		}
 
 		return nil

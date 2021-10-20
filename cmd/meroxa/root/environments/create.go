@@ -19,21 +19,23 @@ package environments
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
+	"github.com/manifoldco/promptui"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
 )
 
 var (
-	_ builder.CommandWithDocs                = (*Create)(nil)
-	_ builder.CommandWithArgs                = (*Create)(nil)
-	_ builder.CommandWithFlags               = (*Create)(nil)
-	_ builder.CommandWithClient              = (*Create)(nil)
-	_ builder.CommandWithLogger              = (*Create)(nil)
-	_ builder.CommandWithExecute             = (*Create)(nil)
-	_ builder.CommandWithConfirmWithoutValue = (*Create)(nil)
+	_ builder.CommandWithDocs    = (*Create)(nil)
+	_ builder.CommandWithArgs    = (*Create)(nil)
+	_ builder.CommandWithFlags   = (*Create)(nil)
+	_ builder.CommandWithClient  = (*Create)(nil)
+	_ builder.CommandWithLogger  = (*Create)(nil)
+	_ builder.CommandWithExecute = (*Create)(nil)
+	_ builder.CommandWithPrompt  = (*Create)(nil)
 )
 
 const (
@@ -55,9 +57,9 @@ type Create struct {
 	}
 
 	flags struct {
-		Type          string `long:"type" usage:"environment type (\"dedicated\", when not specified. It can also be \"hosted\")"`
-		Provider      string `long:"provider" usage:"environment cloud provider to use (e.g.: AWS)"`
-		Region        string `long:"region" usage:"environment region (e.g.: us-east-1)"`
+		Type          string `long:"type" usage:"environment type, when not specified"`
+		Provider      string `long:"provider" usage:"environment cloud provider to use"`
+		Region        string `long:"region" usage:"environment region"`
 		Configuration string `long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
 	}
 }
@@ -81,8 +83,8 @@ func (c *Create) ParseArgs(args []string) error {
 	return nil
 }
 
-func (c *Create) userSpecifiedValues() bool {
-	return c.flags.Type == "" || c.flags.Provider == "" || c.flags.Region == "" || c.flags.Configuration == ""
+func (c *Create) SkipPrompt() bool {
+	return c.args.Name != "" && c.flags.Type != "" && c.flags.Provider != "" && c.flags.Region != "" && c.flags.Configuration != ""
 }
 
 func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
@@ -127,36 +129,91 @@ func (c *Create) Execute(ctx context.Context) error {
 	//
 	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
 	//c.logger.JSON(ctx, environment)
-	c.logger.Infof(ctx, "foo")
+	c.logger.Infof(ctx, "call API to create env")
 
 	return nil
 }
 
 func (c *Create) NotConfirmed() string {
-	return fmt.Sprintf("If you want to configure an environment with different settings,\n " +
-		"please run \"meroxa help env create\" to see the available options. \n" +
-		"For a more guided approach, run in interactive mode: \"meroxa env create -i\"")
+	return "\nIf you want to configure an environment with different settings,\n " +
+		"please run \"meroxa help env create\" to see the available options. \n"
 }
 
-func (c *Create) Prompt() string {
-	var eType, eProvider, eRegion string
+func (c *Create) Prompt() error {
+	if c.args.Name == "" {
+		p := promptui.Prompt{
+			Label:   "Environment name (optional)",
+			Default: "",
+		}
 
-	if eType = DefaultType; c.flags.Type != "" {
-		eType = c.flags.Type
+		c.args.Name, _ = p.Run()
 	}
 
-	if eProvider = DefaultProvider; c.flags.Provider != "" {
-		eProvider = c.flags.Provider
+	if c.flags.Type == "" {
+		vType := func(input string) error {
+			switch input {
+			case "hosted", "dedicated":
+				return nil
+			default:
+				return errors.New("unsupported environment type")
+			}
+		}
+
+		p := promptui.Prompt{
+			Label:    "Environment type (hosted or dedicated)",
+			Default:  "hosted",
+			Validate: vType,
+		}
+
+		c.flags.Type, _ = p.Run()
 	}
 
-	if eRegion = DefaultRegion; c.flags.Region != "" {
-		eRegion = c.flags.Region
+	if c.flags.Provider == "" {
+		p := promptui.Prompt{
+			Label:   "Environment provider",
+			Default: "aws",
+		}
+
+		c.flags.Provider, _ = p.Run()
 	}
 
-	return fmt.Sprintf("We are going to create an environment that will look like this:\n"+
-		"\t type: %q\n"+
-		"\t provider: %q\n"+
-		"\t region: %q", eType, eProvider, eRegion)
+	if c.flags.Region == "" {
+		p := promptui.Prompt{
+			Label:   "Environment region",
+			Default: "us-east-1",
+		}
+
+		c.flags.Region, _ = p.Run()
+	}
+
+	// TODO
+	if c.flags.Configuration == "" {
+		//
+	}
+
+	eventToConfirm := "We are going to create an environment that will look like this:\n"
+
+	if c.args.Name != "" {
+		eventToConfirm += fmt.Sprintf("\t Name: %q\n", c.args.Name)
+	}
+
+	eventToConfirm += fmt.Sprintf("\t Type: %q\n\t Provider: %q\n\t Region: %q\n", c.flags.Type, c.flags.Provider, c.flags.Region)
+
+	fmt.Printf(eventToConfirm)
+
+	prompt := promptui.Prompt{
+		Label:     "Do you want to proceed?",
+		IsConfirm: true,
+	}
+
+	_, error := prompt.Run()
+
+	if error != nil {
+		return error
+	}
+
+	return nil
+
 }
 
 func (c *Create) Usage() string {
