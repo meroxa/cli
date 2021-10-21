@@ -38,12 +38,6 @@ var (
 	_ builder.CommandWithPrompt  = (*Create)(nil)
 )
 
-const (
-	DefaultProvider = "aws"
-	DefaultType     = "dedicated"
-	DefaultRegion   = "us-east-1"
-)
-
 type createEnvironmentClient interface {
 	CreateEnvironment(ctx context.Context, body *meroxa.CreateEnvironmentInput) (*meroxa.Environment, error)
 }
@@ -62,6 +56,8 @@ type Create struct {
 		Region        string `long:"region" usage:"environment region"`
 		Configuration string `long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
 	}
+
+	eventConfiguration map[string]interface{}
 }
 
 func (c *Create) Logger(logger log.Logger) {
@@ -103,12 +99,17 @@ func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 	if c.flags.Region != "" {
 		e.Region = c.flags.Region
 	}
+
+	if c.eventConfiguration != nil {
+		e.Configuration = c.eventConfiguration
+	}
 }
 
 func (c *Create) Execute(ctx context.Context) error {
 	e := &meroxa.CreateEnvironmentInput{}
 	c.setUserValues(e)
 
+	// In case user skipped prompt and configuration was specified via flags
 	if c.flags.Configuration != "" {
 		var config map[string]interface{}
 		err := json.Unmarshal([]byte(c.flags.Configuration), &config)
@@ -139,6 +140,27 @@ func (c *Create) NotConfirmed() string {
 		"please run \"meroxa help env create\" to see the available options. \n"
 }
 
+func (c *Create) showEventConfirmation() {
+	var eventToConfirm string
+
+	eventToConfirm = "We are going to create an environment that will look like this:\n"
+
+	if c.args.Name != "" {
+		eventToConfirm += fmt.Sprintf("\t Name: %q\n", c.args.Name)
+	}
+
+	eventToConfirm += fmt.Sprintf("\t Type: %q\n\t Provider: %q\n\t Region: %q\n", c.flags.Type, c.flags.Provider, c.flags.Region)
+
+	if len(c.eventConfiguration) > 1 {
+		eventToConfirm += "\t Configuration: "
+		for k, v := range c.eventConfiguration {
+			eventToConfirm += fmt.Sprintf("%s=%s", k, v)
+		}
+	}
+
+	fmt.Println(eventToConfirm)
+}
+
 func (c *Create) Prompt() error {
 	if c.args.Name == "" {
 		p := promptui.Prompt{
@@ -160,7 +182,7 @@ func (c *Create) Prompt() error {
 		}
 
 		p := promptui.Prompt{
-			Label:    "Environment type (hosted or dedicated)",
+			Label:    "Type (hosted or dedicated)",
 			Default:  "hosted",
 			Validate: vType,
 		}
@@ -170,7 +192,7 @@ func (c *Create) Prompt() error {
 
 	if c.flags.Provider == "" {
 		p := promptui.Prompt{
-			Label:   "Environment provider",
+			Label:   "Cloud provider",
 			Default: "aws",
 		}
 
@@ -179,27 +201,43 @@ func (c *Create) Prompt() error {
 
 	if c.flags.Region == "" {
 		p := promptui.Prompt{
-			Label:   "Environment region",
+			Label:   "Region",
 			Default: "us-east-1",
 		}
 
 		c.flags.Region, _ = p.Run()
 	}
 
-	// TODO
 	if c.flags.Configuration == "" {
-		//
+		c.eventConfiguration = make(map[string]interface{})
+
+		p := promptui.Prompt{
+			Label:     "Does your environment require configuration",
+			IsConfirm: true,
+		}
+
+		_, error := p.Run()
+
+		// user responded yes to confirmation prompt
+		if error == nil {
+			// TODO: loop through adding configuration until user says no
+			p = promptui.Prompt{
+				Label: "\tKey",
+			}
+
+			k, _ := p.Run()
+
+			p = promptui.Prompt{
+				Label: "\tValue",
+			}
+
+			v, _ := p.Run()
+			c.eventConfiguration[k] = v
+		}
+
 	}
 
-	eventToConfirm := "We are going to create an environment that will look like this:\n"
-
-	if c.args.Name != "" {
-		eventToConfirm += fmt.Sprintf("\t Name: %q\n", c.args.Name)
-	}
-
-	eventToConfirm += fmt.Sprintf("\t Type: %q\n\t Provider: %q\n\t Region: %q\n", c.flags.Type, c.flags.Provider, c.flags.Region)
-
-	fmt.Printf(eventToConfirm)
+	c.showEventConfirmation()
 
 	prompt := promptui.Prompt{
 		Label:     "Do you want to proceed?",
