@@ -54,11 +54,10 @@ type Create struct {
 		Type     string `long:"type" usage:"environment type, when not specified"`
 		Provider string `long:"provider" usage:"environment cloud provider to use"`
 		Region   string `long:"region" usage:"environment region"`
-		// TODO: Check that passing that as a value does the right thing
-		Configuration string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
+		Config   string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config {\"aws_access_key_id\":\"my_access_key\", \"aws_access_secret\":\"my_access_secret\"})"`
 	}
 
-	eventConfiguration map[string]interface{}
+	envCfg map[string]interface{}
 }
 
 func (c *Create) Logger(logger log.Logger) {
@@ -81,7 +80,7 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (c *Create) SkipPrompt() bool {
-	return c.args.Name != "" && c.flags.Type != "" && c.flags.Provider != "" && c.flags.Region != "" && c.flags.Configuration != ""
+	return c.args.Name != "" && c.flags.Type != "" && c.flags.Provider != "" && c.flags.Region != "" && c.flags.Config != ""
 }
 
 func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
@@ -101,8 +100,8 @@ func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 		e.Region = c.flags.Region
 	}
 
-	if c.eventConfiguration != nil {
-		e.Configuration = c.eventConfiguration
+	if c.envCfg != nil {
+		e.Configuration = c.envCfg
 	}
 }
 
@@ -111,9 +110,9 @@ func (c *Create) Execute(ctx context.Context) error {
 	c.setUserValues(e)
 
 	// In case user skipped prompt and configuration was specified via flags
-	if c.flags.Configuration != "" {
+	if c.flags.Config != "" {
 		var config map[string]interface{}
-		err := json.Unmarshal([]byte(c.flags.Configuration), &config)
+		err := json.Unmarshal([]byte(c.flags.Config), &config)
 		if err != nil {
 			return fmt.Errorf("could not parse configuration: %w", err)
 		}
@@ -123,15 +122,15 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	c.logger.Infof(ctx, "Provisioning environment...")
 
-	//environment, err := c.client.CreateEnvironment(ctx, e)
+	environment, err := c.client.CreateEnvironment(ctx, e)
 
-	//if err != nil {
-	//	return err
-	//}
-	//
-	//c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-	//c.logger.JSON(ctx, environment)
-	c.logger.Infof(ctx, "call API to create env")
+	if err != nil {
+		return err
+	}
+
+	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
+	c.logger.JSON(ctx, environment)
+	//c.logger.Infof(ctx, "call API to create env")
 
 	return nil
 }
@@ -152,9 +151,9 @@ func (c *Create) showEventConfirmation() {
 
 	eventToConfirm += fmt.Sprintf("\t Type: %q\n\t Provider: %q\n\t Region: %q\n", c.flags.Type, c.flags.Provider, c.flags.Region)
 
-	if len(c.eventConfiguration) > 1 {
-		eventToConfirm += "\t Configuration: "
-		for k, v := range c.eventConfiguration {
+	if len(c.envCfg) > 1 {
+		eventToConfirm += "\t Config: "
+		for k, v := range c.envCfg {
 			eventToConfirm += fmt.Sprintf("%s=%s", k, v)
 		}
 	}
@@ -209,8 +208,8 @@ func (c *Create) Prompt() error {
 		c.flags.Region, _ = p.Run()
 	}
 
-	if c.flags.Configuration == "" {
-		c.eventConfiguration = make(map[string]interface{})
+	if c.flags.Config == "" {
+		c.envCfg = make(map[string]interface{})
 
 		p := promptui.Prompt{
 			Label:     "Does your environment require configuration",
@@ -235,7 +234,7 @@ func (c *Create) Prompt() error {
 				}
 
 				v, _ := p.Run()
-				c.eventConfiguration[k] = v
+				c.envCfg[k] = v
 
 				p := promptui.Prompt{
 					Label:     "Do you want to add another configuration",

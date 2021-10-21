@@ -17,9 +17,19 @@ limitations under the License.
 package environments
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
+	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go"
+	"reflect"
+	"strings"
 	"testing"
+	"time"
 )
 
 func TestCreateEnvironmentArgs(t *testing.T) {
@@ -82,5 +92,85 @@ func TestCreateEnvironmentFlags(t *testing.T) {
 				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
 			}
 		}
+	}
+}
+
+func TestCreateEnvironmentExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockCreateEnvironmentClient(ctrl)
+	logger := log.NewTestLogger()
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	c.args.Name = "my-env"
+	c.flags.Type = "dedicated"
+	c.flags.Provider = "aws"
+	c.flags.Region = "aws"
+	c.flags.Config = `{"aws_access_key_id":"my_access_key", "aws_access_secret":"my_access_secret"}`
+
+	cfg := map[string]interface{}{}
+	err := json.Unmarshal([]byte(c.flags.Config), &cfg)
+
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	e := &meroxa.CreateEnvironmentInput{
+		Type:          c.flags.Type,
+		Provider:      c.flags.Provider,
+		Name:          c.args.Name,
+		Configuration: cfg,
+		Region:        c.flags.Region,
+	}
+
+	rE := &meroxa.Environment{
+		UUID:          "602c4608-0c71-43c7-9d0a-0cb2ab9c9ccd",
+		Name:          e.Name,
+		Provider:      e.Provider,
+		Region:        e.Region,
+		Type:          e.Type,
+		Configuration: e.Configuration,
+		Status: meroxa.EnvironmentStatus{
+			State: "provisioning",
+		},
+		CreatedAt: time.Time{},
+		UpdatedAt: time.Time{},
+	}
+
+	client.
+		EXPECT().
+		CreateEnvironment(
+			ctx,
+			e,
+		).
+		Return(rE, nil)
+
+	err = c.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf("Provisioning environment...\n"+
+		"Environment %q is being provisioned. Run `meroxa env describe %s` for status", e.Name, e.Name)
+
+	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotEnviroment meroxa.Environment
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotEnviroment)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotEnviroment, *rE) {
+		t.Fatalf("expected \"%v\", got \"%v\"", *rE, gotEnviroment)
 	}
 }
