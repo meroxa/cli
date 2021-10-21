@@ -17,6 +17,8 @@ limitations under the License.
 package environments
 
 import (
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/utils"
 	"testing"
 )
 
@@ -40,6 +42,45 @@ func TestCreateEnvironmentArgs(t *testing.T) {
 
 		if tt.name != cc.args.Name {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		}
+	}
+}
+
+func TestCreateEnvironmentFlags(t *testing.T) {
+	expectedFlags := []struct {
+		name      string
+		required  bool
+		shorthand string
+		hidden    bool
+	}{
+		{name: "type", required: false, hidden: false},
+		{name: "provider", required: false, hidden: false},
+		{name: "region", required: false, hidden: false},
+		{name: "config", shorthand: "c", required: false, hidden: false},
+	}
+
+	c := builder.BuildCobraCommand(&Create{})
+
+	for _, f := range expectedFlags {
+		cf := c.Flags().Lookup(f.name)
+		if cf == nil {
+			t.Fatalf("expected flag \"%s\" to be present", f.name)
+		}
+
+		if f.shorthand != cf.Shorthand {
+			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+		}
+
+		if f.required && !utils.IsFlagRequired(cf) {
+			t.Fatalf("expected flag \"%s\" to be required", f.name)
+		}
+
+		if cf.Hidden != f.hidden {
+			if cf.Hidden {
+				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+			} else {
+				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+			}
 		}
 	}
 }

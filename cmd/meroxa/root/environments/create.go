@@ -51,10 +51,11 @@ type Create struct {
 	}
 
 	flags struct {
-		Type          string `long:"type" usage:"environment type, when not specified"`
-		Provider      string `long:"provider" usage:"environment cloud provider to use"`
-		Region        string `long:"region" usage:"environment region"`
-		Configuration string `long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
+		Type     string `long:"type" usage:"environment type, when not specified"`
+		Provider string `long:"provider" usage:"environment cloud provider to use"`
+		Region   string `long:"region" usage:"environment region"`
+		// TODO: Check that passing that as a value does the right thing
+		Configuration string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key)"`
 	}
 
 	eventConfiguration map[string]interface{}
@@ -220,19 +221,34 @@ func (c *Create) Prompt() error {
 
 		// user responded yes to confirmation prompt
 		if error == nil {
-			// TODO: loop through adding configuration until user says no
-			p = promptui.Prompt{
-				Label: "\tKey",
+			cfgIsNeeded := true
+
+			for cfgIsNeeded {
+				p = promptui.Prompt{
+					Label: "\tKey",
+				}
+
+				k, _ := p.Run()
+
+				p = promptui.Prompt{
+					Label: "\tValue",
+				}
+
+				v, _ := p.Run()
+				c.eventConfiguration[k] = v
+
+				p := promptui.Prompt{
+					Label:     "Do you want to add another configuration",
+					IsConfirm: true,
+				}
+
+				_, error := p.Run()
+
+				if error != nil {
+					fmt.Println("set cfgIsNeeded to false")
+					cfgIsNeeded = false
+				}
 			}
-
-			k, _ := p.Run()
-
-			p = promptui.Prompt{
-				Label: "\tValue",
-			}
-
-			v, _ := p.Run()
-			c.eventConfiguration[k] = v
 		}
 
 	}
@@ -240,7 +256,7 @@ func (c *Create) Prompt() error {
 	c.showEventConfirmation()
 
 	prompt := promptui.Prompt{
-		Label:     "Do you want to proceed?",
+		Label:     "Do you want to proceed",
 		IsConfirm: true,
 	}
 
