@@ -130,14 +130,13 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
 	c.logger.JSON(ctx, environment)
-	//c.logger.Infof(ctx, "call API to create env")
 
 	return nil
 }
 
 func (c *Create) NotConfirmed() string {
-	return "\nIf you want to configure an environment with different settings,\n " +
-		"please run \"meroxa help env create\" to see the available options. \n"
+	return "\nTo see all different options to create a Meroxa Environment,\n " +
+		"please run \"meroxa help env create\". \n"
 }
 
 func (c *Create) showEventConfirmation() {
@@ -146,15 +145,16 @@ func (c *Create) showEventConfirmation() {
 	eventToConfirm = "We are going to create an environment that will look like this:\n"
 
 	if c.args.Name != "" {
-		eventToConfirm += fmt.Sprintf("\t Name: %q\n", c.args.Name)
+		eventToConfirm += fmt.Sprintf("\tName: %s\n", c.args.Name)
 	}
 
-	eventToConfirm += fmt.Sprintf("\t Type: %q\n\t Provider: %q\n\t Region: %q\n", c.flags.Type, c.flags.Provider, c.flags.Region)
+	eventToConfirm += fmt.Sprintf("\tType: %s\n\tProvider: %s\n\tRegion: %s\n", c.flags.Type, c.flags.Provider, c.flags.Region)
 
-	if len(c.envCfg) > 1 {
-		eventToConfirm += "\t Config: "
+	if len(c.envCfg) > 0 {
+		eventToConfirm += "\tConfig:"
+
 		for k, v := range c.envCfg {
-			eventToConfirm += fmt.Sprintf("%s=%s", k, v)
+			eventToConfirm += fmt.Sprintf("\n\t  %s: %s", k, v)
 		}
 	}
 
@@ -218,19 +218,19 @@ func (c *Create) Prompt() error {
 
 		_, error := p.Run()
 
-		// user responded yes to confirmation prompt
+		// user responded "yes" to confirmation prompt
 		if error == nil {
 			cfgIsNeeded := true
 
 			for cfgIsNeeded {
 				p = promptui.Prompt{
-					Label: "\tKey",
+					Label: "\tConfiguration key",
 				}
 
 				k, _ := p.Run()
 
 				p = promptui.Prompt{
-					Label: "\tValue",
+					Label: fmt.Sprintf("%s", k),
 				}
 
 				v, _ := p.Run()
@@ -242,9 +242,7 @@ func (c *Create) Prompt() error {
 				}
 
 				_, error := p.Run()
-
 				if error != nil {
-					fmt.Println("set cfgIsNeeded to false")
 					cfgIsNeeded = false
 				}
 			}
@@ -260,7 +258,6 @@ func (c *Create) Prompt() error {
 	}
 
 	_, error := prompt.Run()
-
 	if error != nil {
 		return error
 	}
