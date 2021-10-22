@@ -440,12 +440,6 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 		},
 	}
 
-	if environment.Status.Details != "" {
-		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: "Details:"},
-			{Text: environment.Status.Details},
-		})
-	}
 	mainTable.SetStyle(simpletable.StyleCompact)
 
 	return mainTable.String()
