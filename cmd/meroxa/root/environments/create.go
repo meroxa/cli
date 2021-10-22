@@ -237,7 +237,7 @@ func (c *Create) Prompt() error {
 				c.envCfg[k] = v
 
 				p := promptui.Prompt{
-					Label:     "Do you want to add another configuration",
+					Label:     "Add another configuration?",
 					IsConfirm: true,
 				}
 
