@@ -135,14 +135,14 @@ func (c *Create) Execute(ctx context.Context) error {
 }
 
 func (c *Create) NotConfirmed() string {
-	return "\nTo see all different options to create a Meroxa Environment,\n " +
+	return "\nTo view all options for creating a Meroxa Environment,\n " +
 		"please run \"meroxa help env create\". \n"
 }
 
 func (c *Create) showEventConfirmation() {
 	var eventToConfirm string
 
-	eventToConfirm = "We are going to create an environment that will look like this:\n"
+	eventToConfirm = "Environment details:\n"
 
 	if c.args.Name != "" {
 		eventToConfirm += fmt.Sprintf("\tName: %s\n", c.args.Name)
@@ -237,7 +237,7 @@ func (c *Create) Prompt() error {
 				c.envCfg[k] = v
 
 				p := promptui.Prompt{
-					Label:     "Add another configuration?",
+					Label:     "Add another configuration",
 					IsConfirm: true,
 				}
 
@@ -253,7 +253,7 @@ func (c *Create) Prompt() error {
 	c.showEventConfirmation()
 
 	prompt := promptui.Prompt{
-		Label:     "Do you want to proceed",
+		Label:     "Create this environment",
 		IsConfirm: true,
 	}
 
