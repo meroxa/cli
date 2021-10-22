@@ -36,6 +36,18 @@ import (
 	"github.com/meroxa/meroxa-go"
 )
 
+type ErrPromptAbort struct {
+	Err error
+}
+
+func (e *ErrPromptAbort) Error() string {
+	return e.Err.Error()
+}
+
+func NewErrPromptAbort(err error) *ErrPromptAbort {
+	return &ErrPromptAbort{Err: err}
+}
+
 type Command interface {
 	// Usage is the one-line usage message.
 	// Recommended syntax is as follows:
@@ -87,13 +99,7 @@ type CommandWithConfirmWithValue interface {
 type CommandWithPrompt interface {
 	Command
 	// Prompt adds a prompt before the command is executed where the user is asked to answer y/N to proceed
-	Prompt() error
-
-	// SkipPrompt will return logic around when to skip prompt (e.g.: when all flags and arguments are specified)
-	SkipPrompt() bool
-
-	// NotConfirmed indicates what to show in case user declines the answer
-	NotConfirmed() (prompt string)
+	Prompt(ctx context.Context) error
 }
 
 type CommandWithDocs interface {
@@ -194,7 +200,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	// buildCommandWithConfirmWithValue needs to go before buildCommandWithExecute to make sure there's a confirmation prompt
 	// prior to execution.
 	buildCommandWithConfirmWithValue(cmd, c)
-	buildCommandWithConfirmWithoutValue(cmd, c)
+	buildCommandWithPrompt(cmd, c)
 	buildCommandWithFeatureFlag(cmd, c)
 	buildCommandWithExecute(cmd, c)
 
@@ -380,7 +386,7 @@ func buildCommandWithConfirmWithValue(cmd *cobra.Command, c Command) {
 	}
 }
 
-func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
+func buildCommandWithPrompt(cmd *cobra.Command, c Command) {
 	v, ok := c.(CommandWithPrompt)
 	if !ok {
 		return
@@ -401,18 +407,17 @@ func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
 		}
 
 		// do not prompt for confirmation when --yes or when we explicitly want to skip prompt
-		if skip || v.SkipPrompt() {
+		if skip {
 			return nil
 		}
 
-		e := v.Prompt()
-
-		if e != nil {
-			fmt.Println(v.NotConfirmed())
+		err := v.Prompt(cmd.Context())
+		var perr *ErrPromptAbort
+		if errors.As(err, &perr) {
+			fmt.Println(perr.Error())
 			os.Exit(1)
 		}
-
-		return nil
+		return err
 	}
 }
 
@@ -428,7 +433,12 @@ func buildCommandWithDocs(cmd *cobra.Command, c Command) {
 	cmd.Example = docs.Example
 }
 
-func withEventRunE(cmd *cobra.Command, args []string, c Command, err error) error {
+func withEventRunE(cmd *cobra.Command, args []string, c Command, err error) {
+	if strings.HasSuffix(err.Error(), "^C") {
+		// don't send event if user pressed CTRL+C
+		return
+	}
+
 	event := global.BuildEvent(cmd, args, err)
 
 	// if there's a custom event defined.
@@ -443,12 +453,6 @@ func withEventRunE(cmd *cobra.Command, args []string, c Command, err error) erro
 	}
 
 	global.PublishEvent(event)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // This runs for all commands.
@@ -462,7 +466,8 @@ func buildCommandEvent(cmd *cobra.Command, c Command) {
 		oldRunE := cmd.RunE
 		cmd.RunE = func(cmd *cobra.Command, args []string) error {
 			err := oldRunE(cmd, args)
-			return withEventRunE(cmd, args, c, err)
+			withEventRunE(cmd, args, c, err)
+			return err
 		}
 	}
 }
