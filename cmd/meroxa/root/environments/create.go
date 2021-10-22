@@ -54,7 +54,7 @@ type Create struct {
 		Type     string `long:"type" usage:"environment type, when not specified"`
 		Provider string `long:"provider" usage:"environment cloud provider to use"`
 		Region   string `long:"region" usage:"environment region"`
-		Config   string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config {\"aws_access_key_id\":\"my_access_key\", \"aws_access_secret\":\"my_access_secret\"})"`
+		Config   string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config {\"aws_access_key_id\":\"my_access_key\", \"aws_access_secret\":\"my_access_secret\"})"` // nolint:lll
 	}
 
 	envCfg map[string]interface{}
@@ -216,10 +216,10 @@ func (c *Create) Prompt() error {
 			IsConfirm: true,
 		}
 
-		_, error := p.Run()
+		_, err := p.Run()
 
 		// user responded "yes" to confirmation prompt
-		if error == nil {
+		if err == nil {
 			cfgIsNeeded := true
 
 			for cfgIsNeeded {
@@ -230,7 +230,7 @@ func (c *Create) Prompt() error {
 				k, _ := p.Run()
 
 				p = promptui.Prompt{
-					Label: fmt.Sprintf("%s", k),
+					Label: k,
 				}
 
 				v, _ := p.Run()
@@ -241,13 +241,12 @@ func (c *Create) Prompt() error {
 					IsConfirm: true,
 				}
 
-				_, error := p.Run()
-				if error != nil {
+				_, err := p.Run()
+				if err != nil {
 					cfgIsNeeded = false
 				}
 			}
 		}
-
 	}
 
 	c.showEventConfirmation()
@@ -257,13 +256,8 @@ func (c *Create) Prompt() error {
 		IsConfirm: true,
 	}
 
-	_, error := prompt.Run()
-	if error != nil {
-		return error
-	}
-
-	return nil
-
+	_, err := prompt.Run()
+	return err
 }
 
 func (c *Create) Usage() string {

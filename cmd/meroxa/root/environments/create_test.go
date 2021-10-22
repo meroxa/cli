@@ -20,16 +20,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go"
-	"reflect"
-	"strings"
-	"testing"
-	"time"
 )
 
 func TestCreateEnvironmentArgs(t *testing.T) {
