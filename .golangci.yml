@@ -21,8 +21,6 @@ linters-settings:
       - hugeParam
   gocyclo:
     min-complexity: 15
-  golint:
-    min-confidence: 0
   gomnd:
     settings:
       mnd:
@@ -69,7 +67,6 @@ linters:
     - godot
     - gofmt
     - goimports
-    - golint
     - gomnd
     - goprintffuncname
     - gosec
@@ -81,6 +78,7 @@ linters:
     - nakedret
     - noctx
     - nolintlint
+    - revive
     - rowserrcheck
     - staticcheck
     - structcheck

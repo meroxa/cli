@@ -26,14 +26,14 @@ import (
 	"time"
 
 	"github.com/cased/cased-go"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 )
 
 type Command interface {
@@ -77,11 +77,23 @@ type CommandWithNoHeaders interface {
 	HideHeaders(hide bool)
 }
 
-type CommandWithConfirm interface {
+type CommandWithConfirmWithValue interface {
 	Command
-	// Confirm adds a prompt before the command is executed where the user is asked to write the exact value as
+	// ValueToConfirm adds a prompt before the command is executed where the user is asked to write the exact value as
 	// wantInput. If the user input matches the command will be executed, otherwise processing will be stopped.
-	Confirm(ctx context.Context) (wantInput string)
+	ValueToConfirm(ctx context.Context) (wantInput string)
+}
+
+type CommandWithPrompt interface {
+	Command
+	// Prompt adds a prompt before the command is executed where the user is asked to answer y/N to proceed
+	Prompt() error
+
+	// SkipPrompt will return logic around when to skip prompt (e.g.: when all flags and arguments are specified)
+	SkipPrompt() bool
+
+	// NotConfirmed indicates what to show in case user declines the answer
+	NotConfirmed() (prompt string)
 }
 
 type CommandWithDocs interface {
@@ -179,9 +191,10 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithClient(cmd, c)
 	buildCommandWithConfig(cmd, c)
 
-	// buildCommandWithConfirm needs to go before buildCommandWithExecute to make sure there's a confirmation prompt
+	// buildCommandWithConfirmWithValue needs to go before buildCommandWithExecute to make sure there's a confirmation prompt
 	// prior to execution.
-	buildCommandWithConfirm(cmd, c)
+	buildCommandWithConfirmWithValue(cmd, c)
+	buildCommandWithConfirmWithoutValue(cmd, c)
 	buildCommandWithFeatureFlag(cmd, c)
 	buildCommandWithExecute(cmd, c)
 
@@ -319,8 +332,8 @@ func buildCommandWithNoHeaders(cmd *cobra.Command, c Command) {
 	}
 }
 
-func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithConfirm)
+func buildCommandWithConfirmWithValue(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithConfirmWithValue)
 	if !ok {
 		return
 	}
@@ -350,7 +363,7 @@ func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
 			return nil
 		}
 
-		wantInput := v.Confirm(cmd.Context())
+		wantInput := v.ValueToConfirm(cmd.Context())
 
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", wantInput)
@@ -361,6 +374,42 @@ func buildCommandWithConfirm(cmd *cobra.Command, c Command) {
 
 		if wantInput != strings.TrimSuffix(input, "\n") {
 			return errors.New("action aborted")
+		}
+
+		return nil
+	}
+}
+
+func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithPrompt)
+	if !ok {
+		return
+	}
+
+	var (
+		skip bool
+	)
+	cmd.Flags().BoolVarP(&skip, "yes", "y", false, "skip confirmation prompt")
+
+	old := cmd.RunE
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		// do not prompt for confirmation when --yes or when we explicitly want to skip prompt
+		if skip || v.SkipPrompt() {
+			return nil
+		}
+
+		e := v.Prompt()
+
+		if e != nil {
+			fmt.Println(v.NotConfirmed())
+			os.Exit(1)
 		}
 
 		return nil
