@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -507,6 +508,7 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 
 		if f.Required {
 			f.Usage += " (required)"
+			cmd.MarkFlagRequired(f.Long)
 		}
 
 		switch val := f.Ptr.(type) {
@@ -554,7 +556,8 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			if f.Default == nil {
 				f.Default = false
 			}
-			flags.BoolVarP(val, f.Long, f.Short, f.Default.(bool), f.Usage)
+			def, _ := strconv.ParseBool(f.Default.(string)) // nonsense, but ok
+			flags.BoolVarP(val, f.Long, f.Short, def, f.Usage)
 		case *time.Duration:
 			if f.Default == nil {
 				f.Default = time.Duration(0)
@@ -591,10 +594,8 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.IntSliceVarP(val, f.Long, f.Short, f.Default.([]int), f.Usage)
 		case *[]string:
-			if f.Default == nil {
-				f.Default = []string(nil)
-			}
-			flags.StringSliceVarP(val, f.Long, f.Short, f.Default.([]string), f.Usage)
+			// ignore default
+			flags.StringSliceVarP(val, f.Long, f.Short, make([]string, 0), f.Usage)
 		default:
 			panic(fmt.Errorf("unexpected flag value type: %T", val))
 		}
