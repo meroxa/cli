@@ -21,6 +21,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/prompt"
@@ -55,13 +57,16 @@ type Create struct {
 	}
 
 	flags struct {
-		Type     string `long:"type" usage:"environment type, when not specified"`
-		Provider string `long:"provider" usage:"environment cloud provider to use"`
-		Region   string `long:"region" usage:"environment region"`
-		Config   string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config {\"aws_access_key_id\":\"my_access_key\", \"aws_access_secret\":\"my_access_secret\"})"` // nolint:lll
+		Type           string   `long:"type" usage:"environment type" default:"hosted"`
+		Provider       string   `long:"provider" usage:"environment cloud provider to use" default:"aws"`
+		Region         string   `long:"region" usage:"environment region" default:"us-east-1"`
+		Config         string   `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config \"{\"aws_access_key_id\":\"my_access_key\" \"aws_access_secret\":\"my_access_secret\"}\")"`      // nolint:lll
+		ConfigSlice    []string `short:"s" long:"config-slice" usage:"environment configuration based on type and provider (e.g.: --config-slice aws_access_key_id=my_access_key --config-slice aws_access_secret=my_access_secret)"` // nolint:lll
+		NonInteractive bool     `long:"no-input" usage:"skipping any prompts" default:"false"`
 	}
 
-	envCfg map[interface{}]interface{}
+	envCfg    map[string]interface{}
+	promptCfg map[interface{}]interface{}
 }
 
 func (c *Create) Logger(logger log.Logger) {
@@ -83,7 +88,7 @@ func (c *Create) ParseArgs(args []string) error {
 	return nil
 }
 
-func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
+func (c *Create) setUserValues(ctx context.Context, e *meroxa.CreateEnvironmentInput) {
 	if c.args.Name != "" {
 		e.Name = c.args.Name
 	}
@@ -100,28 +105,68 @@ func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 		e.Region = c.flags.Region
 	}
 
-	if c.envCfg != nil {
-		envCfg := make(map[string]interface{})
-		for k, v := range c.envCfg {
-			envCfg[k.(string)] = v
+	c.envCfg = make(map[string]interface{})
+	if c.flags.Config != "" {
+		if err := json.Unmarshal([]byte(c.flags.Config), &c.envCfg); err != nil {
+			c.logger.Errorf(ctx, "could not parse configuration: %v", err)
+			os.Exit(1) // @todo make this more graceful?
 		}
-		e.Configuration = envCfg
+		e.Configuration = c.envCfg
+	} else if len(c.promptCfg) != 0 {
+		for k, v := range c.promptCfg {
+			c.envCfg[k.(string)] = v
+		}
+		e.Configuration = c.envCfg
+	} else if len(c.flags.ConfigSlice) != 0 {
+		for _, config := range c.flags.ConfigSlice {
+			parts := strings.Split(config, "=")
+			if len(parts) >= 2 {
+				c.envCfg[parts[0]] = c.envCfg[parts[1]]
+			}
+		}
 	}
+}
+
+func (c *Create) toString() string {
+	str := ""
+
+	if c.args.Name != "" {
+		str += c.args.Name + " "
+	}
+
+	if c.flags.Type != "" {
+		str += fmt.Sprintf("--type %s ", c.flags.Type)
+	}
+
+	if c.flags.Provider != "" {
+		str += fmt.Sprintf("--provider %s ", c.flags.Provider)
+	}
+
+	if c.flags.Region != "" {
+		str += fmt.Sprintf("--region %s ", c.flags.Region)
+	}
+
+	if c.envCfg != nil {
+		// @todo change to easier format?
+		str += "--config \"{"
+		for k, v := range c.envCfg {
+			fmt.Printf("key: %s; val: %s\n", k, v)
+			str += fmt.Sprintf(`\"%s\":\"%s\" `, k, v)
+		}
+		str += "}\" "
+	}
+	str += " --no-input"
+	return str
 }
 
 func (c *Create) Execute(ctx context.Context) error {
 	e := &meroxa.CreateEnvironmentInput{}
-	c.setUserValues(e)
+	c.setUserValues(ctx, e)
 
-	// In case user skipped prompt and configuration was specified via flags
-	if c.flags.Config != "" {
-		var config map[string]interface{}
-		err := json.Unmarshal([]byte(c.flags.Config), &config)
-		if err != nil {
-			return fmt.Errorf("could not parse configuration: %w", err)
-		}
-
-		e.Configuration = config
+	// if interactive, print command for future copy and paste
+	if !c.flags.NonInteractive {
+		// @todo would some colors be nice? the logger doesn't seem to do any formatting
+		c.logger.Infof(ctx, "Executing command:\n\tmeroxa env create %s\n", c.toString())
 	}
 
 	c.logger.Infof(ctx, "Provisioning environment...")
@@ -161,7 +206,11 @@ func (c *Create) showEventConfirmation() {
 }
 
 func (c *Create) Prompt(ctx context.Context) error {
-	c.envCfg = make(map[interface{}]interface{})
+	if c.flags.NonInteractive {
+		return nil
+	}
+
+	c.promptCfg = make(map[interface{}]interface{})
 
 	err := prompt.Show(ctx, []prompt.Prompt{
 		prompt.StringPrompt{
@@ -214,12 +263,13 @@ func (c *Create) Prompt(ctx context.Context) error {
 				ValuePrompt: prompt.StringPrompt{
 					Label: "\tConfiguration value",
 				},
-				Value:     c.envCfg,
+				Value:     c.promptCfg,
 				NextLabel: "Add another configuration",
 			},
 			Skip: c.flags.Config != "",
 		},
 	})
+
 	if err != nil {
 		return err
 	}
@@ -246,14 +296,15 @@ func (c *Create) Prompt(ctx context.Context) error {
 }
 
 func (c *Create) Usage() string {
-	return "create NAME"
+	return "create <NAME>"
 }
 
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
 		Example: `
-meroxa env create my-env --type hosted --provider aws --region us-east-1 --config aws_access_key_id=1234 --config aws_secret_access_key=5678
+meroxa env create my-env --type hosted --provider aws --region us-east-1 --config \"{\"aws_access_key_id\":\"1234\" \"aws_secret_access_key\":\"5678\"}\"
+meroxa env create my-env --type hosted --provider aws --region us-east-1 --config aws_access_key_id=1234 --config aws_secret_access_key=5678"
 `,
 	}
 }
