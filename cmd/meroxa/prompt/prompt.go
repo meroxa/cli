@@ -160,3 +160,32 @@ func (mp MapPrompt) Show(ctx context.Context) (interface{}, error) {
 func (mp MapPrompt) IsSkipped() bool {
 	return mp.Skip
 }
+
+type SelectPrompt struct {
+	Label   string
+	Options []string
+	Value   *string
+	Skip    bool
+}
+
+func (mp SelectPrompt) Show(ctx context.Context) (interface{}, error) {
+	p := promptui.Select{
+		Label: mp.Label,
+		Items: mp.Options,
+	}
+
+	_, val, err := p.Run()
+	switch {
+	case errors.Is(err, promptui.ErrAbort):
+		*mp.Value = ""
+	case err != nil:
+		return nil, err
+	}
+
+	*mp.Value = val
+	return val, err
+}
+
+func (mp SelectPrompt) IsSkipped() bool {
+	return mp.Skip
+}
