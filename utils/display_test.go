@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func TestResourcesTable(t *testing.T) {
@@ -61,7 +61,7 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, strconv.Itoa(resource.ID)) {
 					t.Errorf("%d, not found", resource.ID)
 				}
-				if !strings.Contains(out, strings.Title(resource.Status.State)) {
+				if !strings.Contains(out, strings.Title(string(resource.Status.State))) {
 					t.Errorf("state %s, not found", resource.Status.State)
 				}
 			case "ID_Alignment":
@@ -71,7 +71,7 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, strconv.Itoa(resIDAlign.ID)) {
 					t.Errorf("%d, not found", resIDAlign.ID)
 				}
-				if !strings.Contains(out, strings.Title(resIDAlign.Status.State)) {
+				if !strings.Contains(out, strings.Title(string(resIDAlign.Status.State))) {
 					t.Errorf("state %s, not found", resource.Status.State)
 				}
 			}
@@ -114,7 +114,7 @@ func TestResourcesTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, strconv.Itoa(resource.ID)) {
 		t.Errorf("%d, not found", resource.ID)
 	}
-	if !strings.Contains(out, strings.Title(resource.Status.State)) {
+	if !strings.Contains(out, strings.Title(string(resource.Status.State))) {
 		t.Errorf("state %s, not found", resource.Status.State)
 	}
 }
@@ -379,7 +379,6 @@ func TestPipelinesTable(t *testing.T) {
 	pipelineBase := &meroxa.Pipeline{
 		ID:       0,
 		Name:     "pipeline-base",
-		Metadata: nil,
 	}
 	deepCopy(pipelineBase, pipelineIDAlign)
 	pipelineIDAlign.ID = 1000
@@ -429,7 +428,6 @@ func TestPipelinesTableWithoutHeaders(t *testing.T) {
 	pipeline := &meroxa.Pipeline{
 		ID:       0,
 		Name:     "pipeline-base",
-		Metadata: nil,
 	}
 
 	var pipelines []*meroxa.Pipeline
@@ -457,11 +455,11 @@ func TestPipelinesTableWithoutHeaders(t *testing.T) {
 
 func TestEnvironmentsTable(t *testing.T) {
 	e := &meroxa.Environment{
-		Type:     "dedicated",
+		Type:     meroxa.EnvironmentTypeDedicated,
 		Name:     "environment-1234",
-		Provider: "aws",
-		Region:   "aws:us-east",
-		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
+		Provider: meroxa.EnvironmentProviderAws,
+		Region:   meroxa.EnvironmentRegionUsEast2,
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
@@ -489,13 +487,13 @@ func TestEnvironmentsTable(t *testing.T) {
 			if !strings.Contains(out, e.Name) {
 				t.Errorf("%s, not found", e.Name)
 			}
-			if !strings.Contains(out, e.Type) {
+			if !strings.Contains(out, string(e.Type)) {
 				t.Errorf("%s, not found", e.Type)
 			}
-			if !strings.Contains(out, e.Region) {
+			if !strings.Contains(out, string(e.Region)) {
 				t.Errorf("%s, not found", e.Region)
 			}
-			if !strings.Contains(out, e.Status.State) {
+			if !strings.Contains(out, string(e.Status.State)) {
 				t.Errorf("%s, not found", e.Status.State)
 			}
 			if !strings.Contains(out, e.UUID) {
@@ -509,11 +507,11 @@ func TestEnvironmentsTable(t *testing.T) {
 
 func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 	e := &meroxa.Environment{
-		Type:     "dedicated",
+		Type:     meroxa.EnvironmentTypeDedicated,
 		Name:     "environment-1234",
-		Provider: "aws",
-		Region:   "aws:us-east",
-		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
+		Provider: meroxa.EnvironmentProviderAws,
+		Region:   meroxa.EnvironmentRegionUsEast2,
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
@@ -538,13 +536,13 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, e.Name) {
 		t.Errorf("%s, not found", e.Name)
 	}
-	if !strings.Contains(out, e.Type) {
+	if !strings.Contains(out, string(e.Type)) {
 		t.Errorf("%s, not found", e.Type)
 	}
-	if !strings.Contains(out, e.Region) {
+	if !strings.Contains(out, string(e.Region)) {
 		t.Errorf("%s, not found", e.Region)
 	}
-	if !strings.Contains(out, e.Status.State) {
+	if !strings.Contains(out, string(e.Status.State)) {
 		t.Errorf("%s, not found", e.Status.State)
 	}
 	if !strings.Contains(out, e.UUID) {

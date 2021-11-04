@@ -18,14 +18,15 @@ package endpoints
 
 import (
 	"context"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	mock "github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreateEndpointArgs(t *testing.T) {
@@ -92,16 +93,14 @@ func TestCreateEndpointFlags(t *testing.T) {
 func TestCreateEndpointExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreateEndpointClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	client.
 		EXPECT().
 		CreateEndpoint(
 			ctx,
-			"",
-			"",
-			"",
+			&meroxa.CreateEndpointInput{},
 		).
 		Return(nil)
 

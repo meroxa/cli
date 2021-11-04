@@ -1,3 +1,0 @@
-# Official Meroxa Go Client
-
-

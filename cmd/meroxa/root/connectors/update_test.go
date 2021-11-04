@@ -24,14 +24,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
-
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestUpdateConnectorArgs(t *testing.T) {
@@ -112,7 +111,7 @@ func TestUpdateConnectorExecutionNoFlags(t *testing.T) {
 func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	u := &Update{
@@ -126,7 +125,7 @@ func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 
 	client.
 		EXPECT().
-		UpdateConnectorStatus(ctx, u.args.Name, u.flags.State).
+		UpdateConnectorStatus(ctx, u.args.Name, meroxa.Action(u.flags.State)).
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
@@ -159,7 +158,7 @@ Connector %q successfully updated!
 func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	u := &Update{
@@ -178,7 +177,7 @@ func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 
 	client.
 		EXPECT().
-		UpdateConnector(ctx, u.args.Name, cu).
+		UpdateConnector(ctx, u.args.Name, &cu).
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
@@ -211,7 +210,7 @@ Connector %q successfully updated!
 func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	u := &Update{
@@ -238,7 +237,7 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 
 	client.
 		EXPECT().
-		UpdateConnector(ctx, u.args.Name, cu).
+		UpdateConnector(ctx, u.args.Name, &cu).
 		Return(&c, nil)
 
 	err = u.Execute(ctx)

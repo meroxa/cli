@@ -24,7 +24,7 @@ import (
 	"github.com/meroxa/cli/log"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type createResourceClient interface {
@@ -83,7 +83,7 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
 	}
 }
 
-func (c *Create) Client(client *meroxa.Client) {
+func (c *Create) Client(client meroxa.Client) {
 	c.client = client
 }
 
@@ -108,7 +108,7 @@ func (c *Create) ParseArgs(args []string) error {
 
 func (c *Create) Execute(ctx context.Context) error {
 	input := meroxa.CreateResourceInput{
-		Type:     c.flags.Type,
+		Type:     meroxa.ResourceType(c.flags.Type),
 		Name:     c.args.Name,
 		URL:      c.flags.URL,
 		Metadata: nil,

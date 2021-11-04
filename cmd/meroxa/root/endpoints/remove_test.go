@@ -24,8 +24,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestRemoveEndpointArgs(t *testing.T) {
@@ -55,7 +55,7 @@ func TestRemoveEndpointArgs(t *testing.T) {
 func TestRemoveEndpointExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockRemoveEndpointClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := &Remove{

@@ -25,23 +25,23 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestListEnvironmentsExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListEnvironmentsClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	ee := &meroxa.Environment{
-		Type:     "dedicated",
+		Type:     meroxa.EnvironmentTypeDedicated,
 		Name:     "environment-1234",
-		Provider: "aws",
-		Region:   "aws:us-east",
-		Status:   meroxa.EnvironmentStatus{State: "provisioned"},
+		Provider: meroxa.EnvironmentProviderAws,
+		Region:   meroxa.EnvironmentRegionUsEast2,
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 

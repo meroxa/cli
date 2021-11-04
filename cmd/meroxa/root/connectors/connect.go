@@ -19,7 +19,7 @@ package connectors
 import (
 	"context"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -37,7 +37,7 @@ type Connect struct {
 	}
 }
 
-func (c *Connect) Client(client *meroxa.Client) {
+func (c *Connect) Client(client meroxa.Client) {
 	c.client = client
 }
 

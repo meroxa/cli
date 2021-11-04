@@ -18,11 +18,8 @@ package pipelines
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
-
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -31,14 +28,13 @@ import (
 var (
 	_ builder.CommandWithDocs    = (*Create)(nil)
 	_ builder.CommandWithArgs    = (*Create)(nil)
-	_ builder.CommandWithFlags   = (*Create)(nil)
 	_ builder.CommandWithClient  = (*Create)(nil)
 	_ builder.CommandWithLogger  = (*Create)(nil)
 	_ builder.CommandWithExecute = (*Create)(nil)
 )
 
 type createPipelineClient interface {
-	CreatePipeline(ctx context.Context, pipeline *meroxa.Pipeline) (*meroxa.Pipeline, error)
+	CreatePipeline(ctx context.Context, input *meroxa.CreatePipelineInput) (*meroxa.Pipeline, error)
 }
 
 type Create struct {
@@ -48,27 +44,13 @@ type Create struct {
 	args struct {
 		Name string
 	}
-
-	flags struct {
-		Metadata string `long:"metadata"    short:"m" usage:"pipeline metadata"`
-	}
 }
 
 func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Creating pipeline %q...", c.args.Name)
 
-	p := &meroxa.Pipeline{
+	p := &meroxa.CreatePipelineInput{
 		Name: c.args.Name,
-	}
-
-	if c.flags.Metadata != "" {
-		var metadata map[string]interface{}
-		err := json.Unmarshal([]byte(c.flags.Metadata), &metadata)
-		if err != nil {
-			return fmt.Errorf("could not parse metadata: %w", err)
-		}
-
-		p.Metadata = metadata
 	}
 
 	pipeline, err := c.client.CreatePipeline(ctx, p)
@@ -87,12 +69,8 @@ func (c *Create) Logger(logger log.Logger) {
 	c.logger = logger
 }
 
-func (c *Create) Client(client *meroxa.Client) {
+func (c *Create) Client(client meroxa.Client) {
 	c.client = client
-}
-
-func (c *Create) Flags() []builder.Flag {
-	return builder.BuildFlags(&c.flags)
 }
 
 func (c *Create) ParseArgs(args []string) error {

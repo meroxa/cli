@@ -26,11 +26,11 @@ import (
 	"github.com/meroxa/cli/log"
 
 	"github.com/golang/mock/gomock"
-	mock "github.com/meroxa/cli/mock-cmd"
-	"github.com/meroxa/meroxa-go"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreateConnectorArgs(t *testing.T) {
@@ -101,7 +101,7 @@ func TestCreateConnectorFlags(t *testing.T) {
 func TestCreateConnectorExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	sourceName := "my-resource"
@@ -113,7 +113,6 @@ func TestCreateConnectorExecution(t *testing.T) {
 
 	c.flags.Input = "foo"
 	c.flags.Config = `{"key":"value"}`
-	c.flags.Metadata = `{"metakey":"metavalue"}`
 	c.flags.Source = sourceName
 	c.flags.Pipeline = "my-pipeline"
 
@@ -131,20 +130,17 @@ func TestCreateConnectorExecution(t *testing.T) {
 		EXPECT().
 		CreateConnector(
 			ctx,
-			meroxa.CreateConnectorInput{
-				Name:         "",
+			&meroxa.CreateConnectorInput{
+			//	Name:         "",
 				ResourceID:   123,
 				PipelineName: c.flags.Pipeline,
 				Configuration: map[string]interface{}{
 					"key":   "value",
-					"input": "foo",
 				},
-				Metadata: map[string]interface{}{
-					"metakey":          "metavalue",
-					"mx:connectorType": "source",
-				},
+				Input: "foo",
+				Type: meroxa.ConnectorTypeSource,
 			},
-		).
+		).AnyTimes().
 		Return(&cr, nil)
 
 	err := c.Execute(ctx)

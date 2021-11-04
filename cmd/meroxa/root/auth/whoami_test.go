@@ -11,16 +11,16 @@ import (
 
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/golang/mock/gomock"
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestWhoAmIExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockGetUserClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	cfg := config.NewInMemoryConfig()

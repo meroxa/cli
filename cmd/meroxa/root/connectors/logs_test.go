@@ -27,7 +27,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestLogsConnectorArgs(t *testing.T) {
@@ -57,7 +57,7 @@ func TestLogsConnectorArgs(t *testing.T) {
 func TestLogsConnectorExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockLogsConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	connectorName := "connector-name"

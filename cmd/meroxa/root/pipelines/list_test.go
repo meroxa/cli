@@ -25,15 +25,15 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestListPipelinesExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListPipelinesClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	var pipelines []*meroxa.Pipeline
@@ -41,7 +41,6 @@ func TestListPipelinesExecution(t *testing.T) {
 	rP := meroxa.Pipeline{
 		ID:       1,
 		Name:     "my-pipeline",
-		Metadata: nil,
 		State:    "healthy",
 	}
 

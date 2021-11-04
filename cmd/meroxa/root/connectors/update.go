@@ -26,12 +26,12 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type updateConnectorClient interface {
-	UpdateConnectorStatus(ctx context.Context, connectorKey, state string) (*meroxa.Connector, error)
-	UpdateConnector(ctx context.Context, connectorKey string, connector meroxa.UpdateConnectorInput) (*meroxa.Connector, error)
+	UpdateConnectorStatus(ctx context.Context, nameOrID string, state meroxa.Action) (*meroxa.Connector, error)
+	UpdateConnector(ctx context.Context, nameOrID string, input *meroxa.UpdateConnectorInput) (*meroxa.Connector, error)
 }
 
 type Update struct {
@@ -65,7 +65,7 @@ func (u *Update) Docs() builder.Docs {
 }
 
 func (u *Update) Execute(ctx context.Context) error {
-	// TODO: Implement something like dependant flags in Builder
+	// TODO: Implement something like dependent flags in Builder
 	if u.flags.Config == "" && u.flags.Name == "" && u.flags.State == "" {
 		return errors.New("requires either --config, --name or --state")
 	}
@@ -75,14 +75,14 @@ func (u *Update) Execute(ctx context.Context) error {
 	var err error
 
 	if u.flags.State != "" {
-		con, err = u.client.UpdateConnectorStatus(ctx, u.args.Name, u.flags.State)
+		con, err = u.client.UpdateConnectorStatus(ctx, u.args.Name, meroxa.Action(u.flags.State))
 		if err != nil {
 			return err
 		}
 	}
 
 	if u.flags.Name != "" || u.flags.Config != "" {
-		var cu meroxa.UpdateConnectorInput
+		cu := &meroxa.UpdateConnectorInput{}
 
 		// wants to update name
 		if u.flags.Name != "" {
@@ -120,7 +120,7 @@ func (u *Update) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *Update) Client(client *meroxa.Client) {
+func (u *Update) Client(client meroxa.Client) {
 	u.client = client
 }
 

@@ -24,14 +24,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/cli/log"
-
 	"github.com/golang/mock/gomock"
-	mock "github.com/meroxa/cli/mock-cmd"
-	"github.com/meroxa/meroxa-go"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestUpdateResourceArgs(t *testing.T) {
@@ -119,13 +118,13 @@ func TestUpdateResourceExecutionNoFlags(t *testing.T) {
 func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
 
 	newName := "my-new-resource-name"
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		Name: newName,
 	}
 
@@ -172,7 +171,7 @@ Resource %q is successfully updated!
 func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
@@ -181,7 +180,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	var metadata map[string]interface{}
 
 	_ = json.Unmarshal([]byte(newMetadata), &metadata)
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		Metadata: metadata,
 	}
 
@@ -228,13 +227,13 @@ Resource %q is successfully updated!
 func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
 	newURL := "https://newUrl.io"
 
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		URL: newURL,
 	}
 
@@ -281,7 +280,7 @@ Resource %q is successfully updated!
 func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	newUsername := "newUsername"
@@ -291,7 +290,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	// Updating one of their values only
 	newCred := meroxa.Credentials{Username: newUsername}
 
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		Credentials: &newCred,
 	}
 

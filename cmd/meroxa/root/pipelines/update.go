@@ -18,21 +18,18 @@ package pipelines
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"fmt"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type updatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
-	UpdatePipelineStatus(ctx context.Context, pipelineID int, state string) (*meroxa.Pipeline, error)
-	UpdatePipeline(ctx context.Context, pipelineID int, pipeline meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
+	UpdatePipelineStatus(ctx context.Context, pipelineID int, state meroxa.Action) (*meroxa.Pipeline, error)
+	UpdatePipeline(ctx context.Context, pipelineID int, pipeline *meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
 }
 
 type Update struct {
@@ -46,7 +43,6 @@ type Update struct {
 	flags struct {
 		State    string `long:"state" usage:"new pipeline state (pause | resume | restart)"`
 		Name     string `long:"name" usage:"new pipeline name"`
-		Metadata string `long:"metadata" short:"m" usage:"new pipeline metadata"`
 	}
 }
 
@@ -66,8 +62,8 @@ func (u *Update) Docs() builder.Docs {
 }
 
 func (u *Update) Execute(ctx context.Context) error {
-	// TODO: Implement something like dependant flags in Builder
-	if u.flags.Name == "" && u.flags.Metadata == "" && u.flags.State == "" {
+	// TODO: Implement something like dependent flags in Builder
+	if u.flags.Name == "" && u.flags.State == "" {
 		return errors.New("requires either --name, --state or --metadata")
 	}
 
@@ -81,29 +77,16 @@ func (u *Update) Execute(ctx context.Context) error {
 
 	// update state/status separately
 	if u.flags.State != "" {
-		p, err = u.client.UpdatePipelineStatus(ctx, p.ID, u.flags.State)
+		p, err = u.client.UpdatePipelineStatus(ctx, p.ID, meroxa.Action(u.flags.State))
 		if err != nil {
 			return err
 		}
 	}
 
 	// call meroxa-go to update either name or metadata
-	if u.flags.Name != "" || u.flags.Metadata != "" {
-		var pi meroxa.UpdatePipelineInput
-
-		if u.flags.Name != "" {
-			pi.Name = u.flags.Name
-		}
-
-		if u.flags.Metadata != "" {
-			metadata := map[string]interface{}{}
-
-			err = json.Unmarshal([]byte(u.flags.Metadata), &metadata)
-			if err != nil {
-				return fmt.Errorf("could not parse metadata: %w", err)
-			}
-
-			pi.Metadata = metadata
+	if u.flags.Name != "" {
+		pi := &meroxa.UpdatePipelineInput{
+			Name: u.flags.Name,
 		}
 
 		p, err = u.client.UpdatePipeline(ctx, p.ID, pi)
@@ -125,7 +108,7 @@ func (u *Update) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *Update) Client(client *meroxa.Client) {
+func (u *Update) Client(client meroxa.Client) {
 	u.client = client
 }
 

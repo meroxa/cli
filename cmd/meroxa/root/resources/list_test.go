@@ -27,9 +27,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func getResources() []*meroxa.Resource {
@@ -68,7 +68,7 @@ func TestListResourcesFlags(t *testing.T) {
 func TestListResourcesExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListResourcesClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	resources := getResources()
@@ -118,7 +118,7 @@ func TestListResourcesExecution(t *testing.T) {
 func TestListResourceTypesExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListResourcesClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	var types = []string{

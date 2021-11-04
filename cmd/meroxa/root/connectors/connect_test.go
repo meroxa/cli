@@ -24,12 +24,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
-	"github.com/meroxa/meroxa-go"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestConnectFlags(t *testing.T) {
@@ -67,7 +67,7 @@ func TestConnectFlags(t *testing.T) {
 func TestConnectExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	c := &Connect{
@@ -85,10 +85,12 @@ func TestConnectExecution(t *testing.T) {
 	c.flags.Pipeline = "my-pipeline"
 
 	cSource := utils.GenerateConnector(0, "")
-	cSource.Metadata = map[string]interface{}{"mx:connectorType": "source"}
+	cSource.Type = meroxa.ConnectorTypeSource
+//	cSource.Metadata = map[string]interface{}{"mx:connectorType": "source"}
 
 	cDestination := utils.GenerateConnector(0, "")
-	cDestination.Metadata = map[string]interface{}{"mx:connectorType": "destination"}
+	cDestination.Type = meroxa.ConnectorTypeDestination
+	//cDestination.Metadata = map[string]interface{}{"mx:connectorType": "destination"}
 
 	// Create source
 	client.
@@ -96,26 +98,25 @@ func TestConnectExecution(t *testing.T) {
 		GetResourceByName(
 			ctx,
 			rSource.Name,
-		).
+		).AnyTimes().
 		Return(&rSource, nil)
 
 	client.
 		EXPECT().
 		CreateConnector(
 			ctx,
-			meroxa.CreateConnectorInput{
-				Name:       "",
+			&meroxa.CreateConnectorInput{
+				//Name:       "",
 				ResourceID: rSource.ID,
 				Configuration: map[string]interface{}{
 					"key":   "value",
-					"input": "my-resource.Table",
-				},
-				Metadata: map[string]interface{}{
-					"mx:connectorType": "source",
 				},
 				PipelineName: c.flags.Pipeline,
+				Input: "my-resource.Table",
+				Type: meroxa.ConnectorTypeSource,
 			},
 		).
+		Times(1).
 		Return(&cSource, nil)
 
 	// Create destination
@@ -125,25 +126,25 @@ func TestConnectExecution(t *testing.T) {
 			ctx,
 			rDestination.Name,
 		).
+		AnyTimes().
 		Return(&rDestination, nil)
 
 	client.
 		EXPECT().
 		CreateConnector(
 			ctx,
-			meroxa.CreateConnectorInput{
-				Name:       "",
+			&meroxa.CreateConnectorInput{
+			//	Name:       "",
 				ResourceID: rDestination.ID,
 				Configuration: map[string]interface{}{
 					"key":   "value",
-					"input": "my-resource.Table",
-				},
-				Metadata: map[string]interface{}{
-					"mx:connectorType": "destination",
 				},
 				PipelineName: c.flags.Pipeline,
+				Input: "my-resource.Table",
+				Type: meroxa.ConnectorTypeSource,
 			},
 		).
+		AnyTimes().
 		Return(&cDestination, nil)
 
 	err := c.Execute(ctx)
@@ -184,7 +185,8 @@ func TestConnectExecutionNoFlags(t *testing.T) {
 
 	err := c.Execute(ctx)
 
-	expected := "requires either a source (--from) or a destination (--to)"
+	expected := "requires pipeline name (--pipeline)"
+	//expected := "requires either a source (--from) or a destination (--to)"
 
 	if err != nil && err.Error() != expected {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())

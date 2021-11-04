@@ -24,12 +24,12 @@ import (
 	"strings"
 	"testing"
 
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func TestDescribeConnectorArgs(t *testing.T) {
@@ -59,7 +59,7 @@ func TestDescribeConnectorArgs(t *testing.T) {
 func TestDescribeConnectorExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockDescribeConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	connectorName := "my-connector"

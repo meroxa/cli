@@ -33,7 +33,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type Command interface {
@@ -64,7 +64,7 @@ type CommandWithArgs interface {
 type CommandWithClient interface {
 	Command
 	// Client provides the meroxa client to the command.
-	Client(*meroxa.Client)
+	Client(meroxa.Client)
 }
 
 type CommandWithConfig interface {

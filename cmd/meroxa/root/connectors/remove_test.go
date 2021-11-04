@@ -24,13 +24,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/utils"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestRemoveConnectorArgs(t *testing.T) {
@@ -60,7 +60,7 @@ func TestRemoveConnectorArgs(t *testing.T) {
 func TestRemoveConnectorExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockRemoveConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := &Remove{

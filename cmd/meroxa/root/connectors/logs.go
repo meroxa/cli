@@ -22,7 +22,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -83,7 +83,7 @@ func (l *Logs) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
-func (l *Logs) Client(client *meroxa.Client) {
+func (l *Logs) Client(client meroxa.Client) {
 	l.client = client
 }
 

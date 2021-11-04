@@ -25,7 +25,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
@@ -64,7 +64,7 @@ func (c *Create) Logger(logger log.Logger) {
 	c.logger = logger
 }
 
-func (c *Create) Client(client *meroxa.Client) {
+func (c *Create) Client(client meroxa.Client) {
 	c.client = client
 }
 
@@ -89,15 +89,15 @@ func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 	}
 
 	if c.flags.Type != "" {
-		e.Type = c.flags.Type
+		e.Type = meroxa.EnvironmentType(c.flags.Type)
 	}
 
 	if c.flags.Provider != "" {
-		e.Provider = c.flags.Provider
+		e.Provider = meroxa.EnvironmentProvider(c.flags.Provider)
 	}
 
 	if c.flags.Region != "" {
-		e.Region = c.flags.Region
+		e.Region = meroxa.EnvironmentRegion(c.flags.Region)
 	}
 
 	if c.envCfg != nil {

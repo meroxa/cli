@@ -24,7 +24,7 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type removeConnectorClient interface {
@@ -79,7 +79,7 @@ func (r *Remove) Logger(logger log.Logger) {
 	r.logger = logger
 }
 
-func (r *Remove) Client(client *meroxa.Client) {
+func (r *Remove) Client(client meroxa.Client) {
 	r.client = client
 }
 

@@ -26,11 +26,11 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type updateResourceClient interface {
-	UpdateResource(ctx context.Context, key string, resourceToUpdate meroxa.UpdateResourceInput) (*meroxa.Resource, error)
+	UpdateResource(ctx context.Context, key string, resourceToUpdate *meroxa.UpdateResourceInput) (*meroxa.Resource, error)
 }
 
 type Update struct {
@@ -69,14 +69,14 @@ func (u *Update) Docs() builder.Docs {
 }
 
 func (u *Update) Execute(ctx context.Context) error {
-	// TODO: Implement something like dependant flags in Builder
+	// TODO: Implement something like dependent flags in Builder
 	if u.flags.Name == "" && u.flags.URL == "" && u.flags.Metadata == "" && !u.isUpdatingCredentials() {
 		return errors.New("requires either `--name`, `--url`, `--metadata` or one of the credential flags")
 	}
 
 	u.logger.Infof(ctx, "Updating resource %q...", u.args.Name)
 
-	var res meroxa.UpdateResourceInput
+	res := &meroxa.UpdateResourceInput{}
 
 	// If name was provided, update it
 	if u.flags.Name != "" {
@@ -141,7 +141,7 @@ func (u *Update) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *Update) Client(client *meroxa.Client) {
+func (u *Update) Client(client meroxa.Client) {
 	u.client = client
 }
 

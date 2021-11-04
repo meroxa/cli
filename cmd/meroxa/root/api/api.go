@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 )
@@ -68,7 +68,7 @@ meroxa api POST /v1/endpoints '{"protocol": "HTTP", "stream": "resource-2-499379
 	}
 }
 
-func (a *API) Client(client *meroxa.Client) {
+func (a *API) Client(client meroxa.Client) {
 	a.client = client
 }
 

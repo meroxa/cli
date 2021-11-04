@@ -24,14 +24,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
-
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreatePipelineArgs(t *testing.T) {
@@ -58,57 +55,20 @@ func TestCreatePipelineArgs(t *testing.T) {
 	}
 }
 
-func TestCreatePipelineFlags(t *testing.T) {
-	expectedFlags := []struct {
-		name      string
-		required  bool
-		shorthand string
-		hidden    bool
-	}{
-		{name: "metadata", required: false, shorthand: "m", hidden: false},
-	}
-
-	c := builder.BuildCobraCommand(&Create{})
-
-	for _, f := range expectedFlags {
-		cf := c.Flags().Lookup(f.name)
-		if cf == nil {
-			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
-
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
-
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
-		}
-
-		if cf.Hidden != f.hidden {
-			if cf.Hidden {
-				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
-			} else {
-				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
-			}
-		}
-	}
-}
-
 func TestCreateEndpointExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreatePipelineClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 	pName := "my-pipeline"
 
-	p := &meroxa.Pipeline{
+	p := &meroxa.CreatePipelineInput{
 		Name: pName,
 	}
 
 	rP := &meroxa.Pipeline{
 		ID:       1,
 		Name:     pName,
-		Metadata: nil,
 		State:    "healthy",
 	}
 

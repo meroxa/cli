@@ -22,7 +22,7 @@ type User struct {
 }
 
 // GetUser returns a User with
-func (c *Client) GetUser(ctx context.Context) (*User, error) {
+func (c *client) GetUser(ctx context.Context) (*User, error) {
 	path := fmt.Sprintf("%s/me", usersPath)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)

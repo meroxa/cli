@@ -24,7 +24,7 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
@@ -38,7 +38,7 @@ var (
 
 type createConnectorClient interface {
 	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
-	CreateConnector(ctx context.Context, input meroxa.CreateConnectorInput) (*meroxa.Connector, error)
+	CreateConnector(ctx context.Context, input *meroxa.CreateConnectorInput) (*meroxa.Connector, error)
 }
 
 type Create struct {
@@ -93,26 +93,22 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		return nil, fmt.Errorf("could not parse metadata: %w", err)
 	}
 
-	// merge in input
-	if c.flags.Input != "" {
-		config["input"] = c.flags.Input
+	if c.flags.Pipeline == "" {
+		return nil, errors.New("requires pipeline name (--pipeline)")
 	}
 
+	var connectorType meroxa.ConnectorType
 	// merge in connector type
 	var resourceName string
 	switch {
 	case c.flags.Source != "":
 		resourceName = c.flags.Source
-		metadata["mx:connectorType"] = "source"
+		connectorType = meroxa.ConnectorTypeSource
 	case c.flags.Destination != "":
 		resourceName = c.flags.Destination
-		metadata["mx:connectorType"] = "destination"
+		connectorType = meroxa.ConnectorTypeDestination
 	default:
 		return nil, errors.New("requires either a source (--from) or a destination (--to)")
-	}
-
-	if c.flags.Pipeline == "" {
-		return nil, errors.New("requires pipeline name (--pipeline)")
 	}
 
 	res, err := c.client.GetResourceByName(ctx, resourceName)
@@ -127,19 +123,21 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		c.logger.Infof(ctx, "Creating connector to destination %q in pipeline %q...\n", resourceName, c.flags.Pipeline)
 	}
 
-	ci := meroxa.CreateConnectorInput{
+	ci := &meroxa.CreateConnectorInput{
 		Name:          c.args.Name,
 		ResourceID:    res.ID,
+		PipelineName:  c.flags.Pipeline,
 		Configuration: config,
 		Metadata:      metadata,
-		PipelineName:  c.flags.Pipeline,
+		Type: connectorType,
+		Input: c.flags.Input,
 	}
 
 	return c.client.CreateConnector(ctx, ci)
 }
 
 func (c *Create) Execute(ctx context.Context) error {
-	// TODO: Implement something like dependant flags in Builder
+	// TODO: Implement something like dependent flags in Builder
 	if c.flags.Source == "" && c.flags.Destination == "" {
 		return errors.New("requires either a source (--from) or a destination (--to)")
 	}
@@ -156,7 +154,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (c *Create) Client(client *meroxa.Client) {
+func (c *Create) Client(client meroxa.Client) {
 	c.client = client
 }
 

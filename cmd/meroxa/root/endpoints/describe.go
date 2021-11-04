@@ -23,7 +23,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
@@ -69,7 +69,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (d *Describe) Client(client *meroxa.Client) {
+func (d *Describe) Client(client meroxa.Client) {
 	d.client = client
 }
 
