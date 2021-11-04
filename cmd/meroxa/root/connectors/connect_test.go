@@ -107,12 +107,12 @@ func TestConnectExecution(t *testing.T) {
 				Name:       "",
 				ResourceID: rSource.ID,
 				Configuration: map[string]interface{}{
-					"key":   "value",
+					"key": "value",
 				},
-				Metadata: map[string]interface{}{},
+				Metadata:     map[string]interface{}{},
 				PipelineName: c.flags.Pipeline,
-				Input: "my-resource.Table",
-				Type: meroxa.ConnectorTypeSource,
+				Input:        "my-resource.Table",
+				Type:         meroxa.ConnectorTypeSource,
 			},
 		).
 		Return(&cSource, nil)
@@ -135,12 +135,12 @@ func TestConnectExecution(t *testing.T) {
 				Name:       "",
 				ResourceID: rDestination.ID,
 				Configuration: map[string]interface{}{
-					"key":   "value",
+					"key": "value",
 				},
-				Metadata: map[string]interface{}{},
+				Metadata:     map[string]interface{}{},
 				PipelineName: c.flags.Pipeline,
-				Input: "my-resource.Table",
-				Type: meroxa.ConnectorTypeDestination,
+				Input:        "my-resource.Table",
+				Type:         meroxa.ConnectorTypeDestination,
 			},
 		).
 		Return(&cDestination, nil)

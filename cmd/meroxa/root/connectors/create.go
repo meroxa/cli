@@ -129,8 +129,8 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		PipelineName:  c.flags.Pipeline,
 		Configuration: config,
 		Metadata:      metadata,
-		Type: connectorType,
-		Input: c.flags.Input,
+		Type:          connectorType,
+		Input:         c.flags.Input,
 	}
 
 	return c.client.CreateConnector(ctx, ci)

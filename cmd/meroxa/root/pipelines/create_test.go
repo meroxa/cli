@@ -67,9 +67,9 @@ func TestCreateEndpointExecution(t *testing.T) {
 	}
 
 	rP := &meroxa.Pipeline{
-		ID:       1,
-		Name:     pName,
-		State:    "healthy",
+		ID:    1,
+		Name:  pName,
+		State: "healthy",
 	}
 
 	rP.Name = pName

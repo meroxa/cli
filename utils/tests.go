@@ -12,9 +12,9 @@ import (
 
 func GeneratePipeline() meroxa.Pipeline {
 	return meroxa.Pipeline{
-		ID:       1,
-		Name:     "pipeline-name",
-		State:    "healthy",
+		ID:    1,
+		Name:  "pipeline-name",
+		State: "healthy",
 	}
 }
 

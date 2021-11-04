@@ -377,8 +377,8 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 func TestPipelinesTable(t *testing.T) {
 	pipelineIDAlign := &meroxa.Pipeline{}
 	pipelineBase := &meroxa.Pipeline{
-		ID:       0,
-		Name:     "pipeline-base",
+		ID:   0,
+		Name: "pipeline-base",
 	}
 	deepCopy(pipelineBase, pipelineIDAlign)
 	pipelineIDAlign.ID = 1000
@@ -426,8 +426,8 @@ func TestPipelinesTable(t *testing.T) {
 
 func TestPipelinesTableWithoutHeaders(t *testing.T) {
 	pipeline := &meroxa.Pipeline{
-		ID:       0,
-		Name:     "pipeline-base",
+		ID:   0,
+		Name: "pipeline-base",
 	}
 
 	var pipelines []*meroxa.Pipeline

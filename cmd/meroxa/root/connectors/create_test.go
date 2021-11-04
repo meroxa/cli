@@ -135,11 +135,11 @@ func TestCreateConnectorExecution(t *testing.T) {
 				ResourceID:   123,
 				PipelineName: c.flags.Pipeline,
 				Configuration: map[string]interface{}{
-					"key":   "value",
+					"key": "value",
 				},
 				Metadata: map[string]interface{}{},
-				Input: "foo",
-				Type: meroxa.ConnectorTypeSource,
+				Input:    "foo",
+				Type:     meroxa.ConnectorTypeSource,
 			},
 		).
 		Return(&cr, nil)

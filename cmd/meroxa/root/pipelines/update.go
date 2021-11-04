@@ -41,8 +41,8 @@ type Update struct {
 	}
 
 	flags struct {
-		State    string `long:"state" usage:"new pipeline state (pause | resume | restart)"`
-		Name     string `long:"name" usage:"new pipeline name"`
+		State string `long:"state" usage:"new pipeline state (pause | resume | restart)"`
+		Name  string `long:"name" usage:"new pipeline name"`
 	}
 }
 

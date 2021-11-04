@@ -39,9 +39,9 @@ func TestListPipelinesExecution(t *testing.T) {
 	var pipelines []*meroxa.Pipeline
 
 	rP := meroxa.Pipeline{
-		ID:       1,
-		Name:     "my-pipeline",
-		State:    "healthy",
+		ID:    1,
+		Name:  "my-pipeline",
+		State: "healthy",
 	}
 
 	pipelines = append(pipelines, &rP)

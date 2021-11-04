@@ -59,9 +59,9 @@ func (c *Create) Docs() builder.Docs {
 func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Info(ctx, "Creating endpoint...")
 	input := &meroxa.CreateEndpointInput{
-		Name: c.args.Name,
+		Name:     c.args.Name,
 		Protocol: meroxa.EndpointProtocol(c.flags.Protocol),
-		Stream: c.flags.Stream,
+		Stream:   c.flags.Stream,
 	}
 
 	err := c.client.CreateEndpoint(ctx, input)
