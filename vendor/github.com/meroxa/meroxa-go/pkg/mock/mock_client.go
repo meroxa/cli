@@ -112,17 +112,17 @@ func (mr *MockClientMockRecorder) CreateResource(ctx, input interface{}) *gomock
 }
 
 // DeleteConnector mocks base method.
-func (m *MockClient) DeleteConnector(ctx context.Context, id int) error {
+func (m *MockClient) DeleteConnector(ctx context.Context, nameOrID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteConnector", ctx, id)
+	ret := m.ctrl.Call(m, "DeleteConnector", ctx, nameOrID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteConnector indicates an expected call of DeleteConnector.
-func (mr *MockClientMockRecorder) DeleteConnector(ctx, id interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteConnector(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConnector", reflect.TypeOf((*MockClient)(nil).DeleteConnector), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConnector", reflect.TypeOf((*MockClient)(nil).DeleteConnector), ctx, nameOrID)
 }
 
 // DeleteEndpoint mocks base method.
@@ -169,17 +169,17 @@ func (mr *MockClientMockRecorder) DeletePipeline(ctx, id interface{}) *gomock.Ca
 }
 
 // DeleteResource mocks base method.
-func (m *MockClient) DeleteResource(ctx context.Context, id int) error {
+func (m *MockClient) DeleteResource(ctx context.Context, nameOrID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteResource", ctx, id)
+	ret := m.ctrl.Call(m, "DeleteResource", ctx, nameOrID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteResource indicates an expected call of DeleteResource.
-func (mr *MockClientMockRecorder) DeleteResource(ctx, id interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteResource(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteResource", reflect.TypeOf((*MockClient)(nil).DeleteResource), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteResource", reflect.TypeOf((*MockClient)(nil).DeleteResource), ctx, nameOrID)
 }
 
 // GetConnector mocks base method.
@@ -468,48 +468,48 @@ func (mr *MockClientMockRecorder) MakeRequest(ctx, method, path, body, params in
 }
 
 // RotateTunnelKeyForResource mocks base method.
-func (m *MockClient) RotateTunnelKeyForResource(ctx context.Context, id int) (*meroxa.Resource, error) {
+func (m *MockClient) RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RotateTunnelKeyForResource", ctx, id)
+	ret := m.ctrl.Call(m, "RotateTunnelKeyForResource", ctx, nameOrID)
 	ret0, _ := ret[0].(*meroxa.Resource)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // RotateTunnelKeyForResource indicates an expected call of RotateTunnelKeyForResource.
-func (mr *MockClientMockRecorder) RotateTunnelKeyForResource(ctx, id interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) RotateTunnelKeyForResource(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RotateTunnelKeyForResource", reflect.TypeOf((*MockClient)(nil).RotateTunnelKeyForResource), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RotateTunnelKeyForResource", reflect.TypeOf((*MockClient)(nil).RotateTunnelKeyForResource), ctx, nameOrID)
 }
 
 // UpdateConnector mocks base method.
-func (m *MockClient) UpdateConnector(ctx context.Context, nameOrId string, input *meroxa.UpdateConnectorInput) (*meroxa.Connector, error) {
+func (m *MockClient) UpdateConnector(ctx context.Context, nameOrID string, input *meroxa.UpdateConnectorInput) (*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateConnector", ctx, nameOrId, input)
+	ret := m.ctrl.Call(m, "UpdateConnector", ctx, nameOrID, input)
 	ret0, _ := ret[0].(*meroxa.Connector)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateConnector indicates an expected call of UpdateConnector.
-func (mr *MockClientMockRecorder) UpdateConnector(ctx, nameOrId, input interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) UpdateConnector(ctx, nameOrID, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConnector", reflect.TypeOf((*MockClient)(nil).UpdateConnector), ctx, nameOrId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConnector", reflect.TypeOf((*MockClient)(nil).UpdateConnector), ctx, nameOrID, input)
 }
 
 // UpdateConnectorStatus mocks base method.
-func (m *MockClient) UpdateConnectorStatus(ctx context.Context, nameOrId string, state meroxa.Action) (*meroxa.Connector, error) {
+func (m *MockClient) UpdateConnectorStatus(ctx context.Context, nameOrID string, state meroxa.Action) (*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateConnectorStatus", ctx, nameOrId, state)
+	ret := m.ctrl.Call(m, "UpdateConnectorStatus", ctx, nameOrID, state)
 	ret0, _ := ret[0].(*meroxa.Connector)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateConnectorStatus indicates an expected call of UpdateConnectorStatus.
-func (mr *MockClientMockRecorder) UpdateConnectorStatus(ctx, nameOrId, state interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) UpdateConnectorStatus(ctx, nameOrID, state interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConnectorStatus", reflect.TypeOf((*MockClient)(nil).UpdateConnectorStatus), ctx, nameOrId, state)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateConnectorStatus", reflect.TypeOf((*MockClient)(nil).UpdateConnectorStatus), ctx, nameOrID, state)
 }
 
 // UpdatePipeline mocks base method.
@@ -543,31 +543,31 @@ func (mr *MockClientMockRecorder) UpdatePipelineStatus(ctx, pipelineID, action i
 }
 
 // UpdateResource mocks base method.
-func (m *MockClient) UpdateResource(ctx context.Context, nameOrId string, input *meroxa.UpdateResourceInput) (*meroxa.Resource, error) {
+func (m *MockClient) UpdateResource(ctx context.Context, nameOrID string, input *meroxa.UpdateResourceInput) (*meroxa.Resource, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateResource", ctx, nameOrId, input)
+	ret := m.ctrl.Call(m, "UpdateResource", ctx, nameOrID, input)
 	ret0, _ := ret[0].(*meroxa.Resource)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateResource indicates an expected call of UpdateResource.
-func (mr *MockClientMockRecorder) UpdateResource(ctx, nameOrId, input interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) UpdateResource(ctx, nameOrID, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateResource", reflect.TypeOf((*MockClient)(nil).UpdateResource), ctx, nameOrId, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateResource", reflect.TypeOf((*MockClient)(nil).UpdateResource), ctx, nameOrID, input)
 }
 
 // ValidateResource mocks base method.
-func (m *MockClient) ValidateResource(ctx context.Context, id int) (*meroxa.Resource, error) {
+func (m *MockClient) ValidateResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateResource", ctx, id)
+	ret := m.ctrl.Call(m, "ValidateResource", ctx, nameOrID)
 	ret0, _ := ret[0].(*meroxa.Resource)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ValidateResource indicates an expected call of ValidateResource.
-func (mr *MockClientMockRecorder) ValidateResource(ctx, id interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) ValidateResource(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateResource", reflect.TypeOf((*MockClient)(nil).ValidateResource), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateResource", reflect.TypeOf((*MockClient)(nil).ValidateResource), ctx, nameOrID)
 }

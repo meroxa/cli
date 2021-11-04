@@ -18,7 +18,6 @@ package endpoints
 
 import (
 	"context"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -26,6 +25,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	mock "github.com/meroxa/meroxa-go/pkg/mock"
 )
 

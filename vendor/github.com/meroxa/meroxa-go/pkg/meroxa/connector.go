@@ -94,8 +94,8 @@ func (c *client) CreateConnector(ctx context.Context, input *CreateConnectorInpu
 
 // @TODO implement connector actions
 // UpdateConnectorStatus updates the status of a connector
-func (c *client) UpdateConnectorStatus(ctx context.Context, nameOrId string, state Action) (*Connector, error) {
-	path := fmt.Sprintf("%s/%s/status", connectorsBasePath, nameOrId)
+func (c *client) UpdateConnectorStatus(ctx context.Context, nameOrID string, state Action) (*Connector, error) {
+	path := fmt.Sprintf("%s/%s/status", connectorsBasePath, nameOrID)
 
 	cr := struct {
 		State Action `json:"state,omitempty"`
@@ -123,8 +123,8 @@ func (c *client) UpdateConnectorStatus(ctx context.Context, nameOrId string, sta
 }
 
 // UpdateConnector updates the name, or a configuration of a connector
-func (c *client) UpdateConnector(ctx context.Context, nameOrId string, input *UpdateConnectorInput) (*Connector, error) {
-	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrId)
+func (c *client) UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error) {
+	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil)
 	if err != nil {
@@ -238,8 +238,8 @@ func (c *client) GetConnectorByName(ctx context.Context, name string) (*Connecto
 }
 
 // DeleteConnector deletes the Connector with the given id
-func (c *client) DeleteConnector(ctx context.Context, id int) error {
-	path := fmt.Sprintf("%s/%d", connectorsBasePath, id)
+func (c *client) DeleteConnector(ctx context.Context, nameOrID string) error {
+	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {

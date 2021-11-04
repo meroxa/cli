@@ -21,7 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -107,7 +107,7 @@ func TestAPIExecution(t *testing.T) {
 	var httpResponse = &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewReader([]byte(bodyResponse))),
+		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
 	client.

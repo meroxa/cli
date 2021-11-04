@@ -38,7 +38,7 @@ var (
 )
 
 type rotateKeyActionClient interface {
-	RotateTunnelKeyForResource(ctx context.Context, id int) (*meroxa.Resource, error)
+	RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
 }
 
@@ -71,12 +71,7 @@ func (u *RotateTunnelKey) ValueToConfirm(ctx context.Context) string {
 }
 
 func (u *RotateTunnelKey) Execute(ctx context.Context) error {
-	r, err := u.client.GetResourceByName(ctx, u.args.Name)
-	if err != nil {
-		return err
-	}
-
-	r, err = u.client.RotateTunnelKeyForResource(ctx, r.ID)
+	r, err := u.client.RotateTunnelKeyForResource(ctx, u.args.Name)
 	if err != nil {
 		return err
 	}

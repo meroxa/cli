@@ -400,9 +400,6 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
 
-	if environment.Status.Details != "" {
-		environment.Status.Details = string(environment.Status.Details)
-	}
 	bytes, _ := json.Marshal(&environment.Status)
 
 	mainTable.Body.Cells = [][]*simpletable.Cell{

@@ -112,7 +112,7 @@ func (c *client) CreateResource(ctx context.Context, input *CreateResourceInput)
 	return &r, nil
 }
 
-func (c *client) UpdateResource(ctx context.Context, nameOrId string, input *UpdateResourceInput) (*Resource, error) {
+func (c *client) UpdateResource(ctx context.Context, nameOrID string, input *UpdateResourceInput) (*Resource, error) {
 	// url encode url username/password if needed
 	var err error
 
@@ -124,7 +124,7 @@ func (c *client) UpdateResource(ctx context.Context, nameOrId string, input *Upd
 		}
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrId), input, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID), input, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -143,16 +143,16 @@ func (c *client) UpdateResource(ctx context.Context, nameOrId string, input *Upd
 	return &r, nil
 }
 
-func (c *client) RotateTunnelKeyForResource(ctx context.Context, id int) (*Resource, error) {
-	return c.performResourceAction(ctx, id, "rotate_keys")
+func (c *client) RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*Resource, error) {
+	return c.performResourceAction(ctx, nameOrID, "rotate_keys")
 }
 
-func (c *client) ValidateResource(ctx context.Context, id int) (*Resource, error) {
-	return c.performResourceAction(ctx, id, "validate")
+func (c *client) ValidateResource(ctx context.Context, nameOrID string) (*Resource, error) {
+	return c.performResourceAction(ctx, nameOrID, "validate")
 }
 
-func (c *client) performResourceAction(ctx context.Context, id int, action string) (*Resource, error) {
-	path := fmt.Sprintf("%s/%d/actions", ResourcesBasePath, id)
+func (c *client) performResourceAction(ctx context.Context, nameOrID string, action string) (*Resource, error) {
+	path := fmt.Sprintf("%s/%s/actions", ResourcesBasePath, nameOrID)
 	body := struct {
 		Action string `json:"action"`
 	}{
@@ -248,8 +248,8 @@ func (c *client) GetResourceByName(ctx context.Context, name string) (*Resource,
 }
 
 // DeleteResource deletes the Resource with the given id
-func (c *client) DeleteResource(ctx context.Context, id int) error {
-	path := fmt.Sprintf("%s/%d", ResourcesBasePath, id)
+func (c *client) DeleteResource(ctx context.Context, nameOrID string) error {
+	path := fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {

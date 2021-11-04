@@ -29,7 +29,7 @@ import (
 
 type removeResourceClient interface {
 	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
-	DeleteResource(ctx context.Context, id int) error
+	DeleteResource(ctx context.Context, nameOrID string) error
 }
 
 type Remove struct {
@@ -63,7 +63,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = r.client.DeleteResource(ctx, res.ID)
+	err = r.client.DeleteResource(ctx, r.args.Name)
 
 	if err != nil {
 		return err

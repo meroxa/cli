@@ -28,13 +28,13 @@ type client struct {
 // Client represents the interface to the Meroxa API
 type Client interface {
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
-	DeleteConnector(ctx context.Context, id int) error
+	DeleteConnector(ctx context.Context, nameOrID string) error
 	GetConnector(ctx context.Context, id int) (*Connector, error)
 	GetConnectorByName(ctx context.Context, name string) (*Connector, error)
 	GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error)
 	ListConnectors(ctx context.Context) ([]*Connector, error)
-	UpdateConnector(ctx context.Context, nameOrId string, input *UpdateConnectorInput) (*Connector, error)
-	UpdateConnectorStatus(ctx context.Context, nameOrId string, state Action) (*Connector, error)
+	UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error)
+	UpdateConnectorStatus(ctx context.Context, nameOrID string, state Action) (*Connector, error)
 
 	CreateEndpoint(ctx context.Context, input *CreateEndpointInput) error
 	DeleteEndpoint(ctx context.Context, name string) error
@@ -56,13 +56,13 @@ type Client interface {
 	UpdatePipelineStatus(ctx context.Context, pipelineID int, action Action) (*Pipeline, error)
 
 	CreateResource(ctx context.Context, input *CreateResourceInput) (*Resource, error)
-	DeleteResource(ctx context.Context, id int) error
+	DeleteResource(ctx context.Context, nameOrID string) error
 	GetResource(ctx context.Context, id int) (*Resource, error)
 	GetResourceByName(ctx context.Context, name string) (*Resource, error)
 	ListResources(ctx context.Context) ([]*Resource, error)
-	UpdateResource(ctx context.Context, nameOrId string, input *UpdateResourceInput) (*Resource, error)
-	RotateTunnelKeyForResource(ctx context.Context, id int) (*Resource, error)
-	ValidateResource(ctx context.Context, id int) (*Resource, error)
+	UpdateResource(ctx context.Context, nameOrID string, input *UpdateResourceInput) (*Resource, error)
+	RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*Resource, error)
+	ValidateResource(ctx context.Context, nameOrID string) (*Resource, error)
 
 	ListResourceTypes(ctx context.Context) ([]string, error)
 

@@ -73,12 +73,7 @@ func TestRemoveResourceExecution(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetResourceByName(ctx, r.args.Name).
-		Return(&res, nil)
-
-	client.
-		EXPECT().
-		DeleteResource(ctx, res.ID).
+		DeleteResource(ctx, r.args.Name).
 		Return(nil)
 
 	err := r.Execute(ctx)

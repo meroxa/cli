@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -69,7 +69,7 @@ func TestLogsConnectorExecution(t *testing.T) {
 
 	c.args.Name = connectorName
 
-	var responseDetails = ioutil.NopCloser(bytes.NewReader([]byte(
+	var responseDetails = io.NopCloser(bytes.NewReader([]byte(
 		`[2021-04-29T12:16:42Z] Just another log line from my connector`,
 	)))
 

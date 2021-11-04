@@ -184,7 +184,6 @@ func TestConnectExecutionNoFlags(t *testing.T) {
 	err := c.Execute(ctx)
 
 	expected := "requires pipeline name (--pipeline)"
-	//expected := "requires either a source (--from) or a destination (--to)"
 
 	if err != nil && err.Error() != expected {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())

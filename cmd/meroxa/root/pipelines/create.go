@@ -19,10 +19,10 @@ package pipelines
 import (
 	"context"
 	"errors"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (

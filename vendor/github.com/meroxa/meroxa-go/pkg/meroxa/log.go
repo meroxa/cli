@@ -8,8 +8,8 @@ import (
 
 const connectorLogsBasePath = "/v1/connectors"
 
-func (c *client) GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error) {
-	path := fmt.Sprintf("%s/%s/logs", connectorLogsBasePath, connectorName)
+func (c *client) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error) {
+	path := fmt.Sprintf("%s/%s/logs", connectorLogsBasePath, nameOrID)
 
 	req, err := c.newRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {

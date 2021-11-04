@@ -37,7 +37,7 @@ var (
 )
 
 type validateResourceClient interface {
-	ValidateResource(ctx context.Context, id int) (*meroxa.Resource, error)
+	ValidateResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
 }
 
@@ -65,12 +65,7 @@ func (u *Validate) Docs() builder.Docs {
 }
 
 func (u *Validate) Execute(ctx context.Context) error {
-	r, err := u.client.GetResourceByName(ctx, u.args.Name)
-	if err != nil {
-		return err
-	}
-
-	r, err = u.client.ValidateResource(ctx, r.ID)
+	r, err := u.client.ValidateResource(ctx, u.args.Name)
 	if err != nil {
 		return err
 	}

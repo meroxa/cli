@@ -29,7 +29,7 @@ import (
 
 type removeConnectorClient interface {
 	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
-	DeleteConnector(ctx context.Context, id int) error
+	DeleteConnector(ctx context.Context, nameOrID string) error
 }
 
 type Remove struct {
@@ -63,7 +63,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = r.client.DeleteConnector(ctx, con.ID)
+	err = r.client.DeleteConnector(ctx, r.args.Name)
 
 	if err != nil {
 		return err

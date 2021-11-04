@@ -73,12 +73,7 @@ func TestRemoveConnectorExecution(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetConnectorByName(ctx, c.Name).
-		Return(&c, nil)
-
-	client.
-		EXPECT().
-		DeleteConnector(ctx, c.ID).
+		DeleteConnector(ctx, c.Name).
 		Return(nil)
 
 	err := r.Execute(ctx)
