@@ -37,7 +37,7 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 
 	responseJSON, err := json.Marshal(list)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError) //nolint:gocritic
+		http.Error(w, err.Error(), http.StatusInternalServerError) //nolint
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(responseJSON)
@@ -74,7 +74,7 @@ func describeHandler(w http.ResponseWriter, r *http.Request) {
 
 	responseJSON, err := json.Marshal(res)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError) //nolint:gocritic
+		http.Error(w, err.Error(), http.StatusInternalServerError) //nolint
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(responseJSON)
