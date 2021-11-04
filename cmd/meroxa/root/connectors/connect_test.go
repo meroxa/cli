@@ -86,11 +86,9 @@ func TestConnectExecution(t *testing.T) {
 
 	cSource := utils.GenerateConnector(0, "")
 	cSource.Type = meroxa.ConnectorTypeSource
-//	cSource.Metadata = map[string]interface{}{"mx:connectorType": "source"}
 
 	cDestination := utils.GenerateConnector(0, "")
 	cDestination.Type = meroxa.ConnectorTypeDestination
-	//cDestination.Metadata = map[string]interface{}{"mx:connectorType": "destination"}
 
 	// Create source
 	client.
@@ -106,17 +104,17 @@ func TestConnectExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			&meroxa.CreateConnectorInput{
-				//Name:       "",
+				Name:       "",
 				ResourceID: rSource.ID,
 				Configuration: map[string]interface{}{
 					"key":   "value",
 				},
+				Metadata: map[string]interface{}{},
 				PipelineName: c.flags.Pipeline,
 				Input: "my-resource.Table",
 				Type: meroxa.ConnectorTypeSource,
 			},
 		).
-		Times(1).
 		Return(&cSource, nil)
 
 	// Create destination
@@ -134,17 +132,17 @@ func TestConnectExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			&meroxa.CreateConnectorInput{
-			//	Name:       "",
+				Name:       "",
 				ResourceID: rDestination.ID,
 				Configuration: map[string]interface{}{
 					"key":   "value",
 				},
+				Metadata: map[string]interface{}{},
 				PipelineName: c.flags.Pipeline,
 				Input: "my-resource.Table",
-				Type: meroxa.ConnectorTypeSource,
+				Type: meroxa.ConnectorTypeDestination,
 			},
 		).
-		AnyTimes().
 		Return(&cDestination, nil)
 
 	err := c.Execute(ctx)

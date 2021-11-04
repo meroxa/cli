@@ -131,16 +131,17 @@ func TestCreateConnectorExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			&meroxa.CreateConnectorInput{
-			//	Name:         "",
+				Name:         "",
 				ResourceID:   123,
 				PipelineName: c.flags.Pipeline,
 				Configuration: map[string]interface{}{
 					"key":   "value",
 				},
+				Metadata: map[string]interface{}{},
 				Input: "foo",
 				Type: meroxa.ConnectorTypeSource,
 			},
-		).AnyTimes().
+		).
 		Return(&cr, nil)
 
 	err := c.Execute(ctx)
