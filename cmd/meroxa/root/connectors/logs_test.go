@@ -48,8 +48,8 @@ func TestLogsConnectorArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrID)
 		}
 	}
 }
@@ -67,7 +67,7 @@ func TestLogsConnectorExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	c.args.Name = connectorName
+	c.args.NameOrID = connectorName
 
 	var responseDetails = io.NopCloser(bytes.NewReader([]byte(
 		`[2021-04-29T12:16:42Z] Just another log line from my connector`,

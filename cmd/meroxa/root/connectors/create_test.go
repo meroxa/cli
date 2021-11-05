@@ -120,7 +120,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetResourceByName(
+		GetResourceByNameOrID(
 			ctx,
 			sourceName,
 		).

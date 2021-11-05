@@ -49,8 +49,8 @@ func TestDescribeResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
+		if tt.name != ar.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.NameOrID)
 		}
 	}
 }
@@ -64,7 +64,7 @@ func TestDescribeResourceExecution(t *testing.T) {
 	r := utils.GenerateResource()
 	client.
 		EXPECT().
-		GetResourceByName(
+		GetResourceByNameOrID(
 			ctx,
 			r.Name,
 		).
@@ -74,7 +74,7 @@ func TestDescribeResourceExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
-	de.args.Name = r.Name
+	de.args.NameOrID = r.Name
 
 	err := de.Execute(ctx)
 	if err != nil {

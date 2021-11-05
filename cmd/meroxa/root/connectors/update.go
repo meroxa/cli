@@ -39,7 +39,7 @@ type Update struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrID string
 	}
 
 	flags struct {
@@ -70,12 +70,12 @@ func (u *Update) Execute(ctx context.Context) error {
 		return errors.New("requires either --config, --name or --state")
 	}
 
-	u.logger.Infof(ctx, "Updating connector %q...", u.args.Name)
+	u.logger.Infof(ctx, "Updating connector %q...", u.args.NameOrID)
 	var con *meroxa.Connector
 	var err error
 
 	if u.flags.State != "" {
-		con, err = u.client.UpdateConnectorStatus(ctx, u.args.Name, meroxa.Action(u.flags.State))
+		con, err = u.client.UpdateConnectorStatus(ctx, u.args.NameOrID, meroxa.Action(u.flags.State))
 		if err != nil {
 			return err
 		}
@@ -101,13 +101,13 @@ func (u *Update) Execute(ctx context.Context) error {
 			cu.Configuration = config
 		}
 
-		con, err = u.client.UpdateConnector(ctx, u.args.Name, cu)
+		con, err = u.client.UpdateConnector(ctx, u.args.NameOrID, cu)
 		if err != nil {
 			return err
 		}
 	}
 
-	u.logger.Infof(ctx, "Connector %q successfully updated!", u.args.Name)
+	u.logger.Infof(ctx, "Connector %q successfully updated!", u.args.NameOrID)
 	u.logger.JSON(ctx, con)
 	return nil
 }
@@ -129,7 +129,7 @@ func (u *Update) ParseArgs(args []string) error {
 		return errors.New("requires connector name")
 	}
 
-	u.args.Name = args[0]
+	u.args.NameOrID = args[0]
 	return nil
 }
 

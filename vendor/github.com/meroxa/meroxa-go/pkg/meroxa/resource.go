@@ -199,36 +199,11 @@ func (c *client) ListResources(ctx context.Context) ([]*Resource, error) {
 	return rr, nil
 }
 
-// GetResource returns a Resource with the given id
-func (c *client) GetResource(ctx context.Context, id int) (*Resource, error) {
-	path := fmt.Sprintf("%s/%d", ResourcesBasePath, id)
+// GetResourceByNameOrID returns a Resource with the given identifier
+func (c *client) GetResourceByNameOrID(ctx context.Context, nameOrID string) (*Resource, error) {
+	path := fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var r Resource
-	err = json.NewDecoder(resp.Body).Decode(&r)
-	if err != nil {
-		return nil, err
-	}
-
-	return &r, nil
-}
-
-// GetResourceByName returns a Resource with the given name
-func (c *client) GetResourceByName(ctx context.Context, name string) (*Resource, error) {
-	params := map[string][]string{
-		"name": []string{name},
-	}
-
-	resp, err := c.MakeRequest(ctx, http.MethodGet, ResourcesBasePath, nil, params)
 	if err != nil {
 		return nil, err
 	}

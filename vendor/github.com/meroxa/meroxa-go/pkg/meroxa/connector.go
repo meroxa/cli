@@ -189,36 +189,11 @@ func (c *client) ListConnectors(ctx context.Context) ([]*Connector, error) {
 	return rr, nil
 }
 
-// GetConnector returns a Connector for the given connector ID
-func (c *client) GetConnector(ctx context.Context, id int) (*Connector, error) {
-	path := fmt.Sprintf("%s/%d", connectorsBasePath, id)
+// GetConnectorByNameOrID returns a Connector with the given identifier
+func (c *client) GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*Connector, error) {
+	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var con Connector
-	err = json.NewDecoder(resp.Body).Decode(&con)
-	if err != nil {
-		return nil, err
-	}
-
-	return &con, nil
-}
-
-// GetConnectorByName returns a Connector with the given name
-func (c *client) GetConnectorByName(ctx context.Context, name string) (*Connector, error) {
-	params := map[string][]string{
-		"name": {name},
-	}
-
-	resp, err := c.MakeRequest(ctx, http.MethodGet, connectorsBasePath, nil, params)
 	if err != nil {
 		return nil, err
 	}

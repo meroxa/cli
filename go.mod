@@ -55,4 +55,4 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/meroxa/meroxa-go => github.com/meroxa/meroxa-go v0.0.0-20211104182102-f0c047c4d5f9
+replace github.com/meroxa/meroxa-go => github.com/meroxa/meroxa-go v0.0.0-20211105001952-47499c06db00

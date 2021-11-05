@@ -35,7 +35,7 @@ var (
 )
 
 type describeResourceClient interface {
-	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 }
 
 type Describe struct {
@@ -43,7 +43,7 @@ type Describe struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrID string
 	}
 }
 
@@ -58,7 +58,7 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	resource, err := d.client.GetResourceByName(ctx, d.args.Name)
+	resource, err := d.client.GetResourceByNameOrID(ctx, d.args.NameOrID)
 	if err != nil {
 		return err
 	}
@@ -94,6 +94,6 @@ func (d *Describe) ParseArgs(args []string) error {
 		return errors.New("requires resource name")
 	}
 
-	d.args.Name = args[0]
+	d.args.NameOrID = args[0]
 	return nil
 }

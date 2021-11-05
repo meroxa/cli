@@ -37,7 +37,7 @@ var (
 )
 
 type createConnectorClient interface {
-	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	CreateConnector(ctx context.Context, input *meroxa.CreateConnectorInput) (*meroxa.Connector, error)
 }
 
@@ -111,7 +111,7 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		return nil, errors.New("requires either a source (--from) or a destination (--to)")
 	}
 
-	res, err := c.client.GetResourceByName(ctx, resourceName)
+	res, err := c.client.GetResourceByNameOrID(ctx, resourceName)
 	if err != nil {
 		return nil, fmt.Errorf("can't fetch resource with name %q: %w", resourceName, err)
 	}

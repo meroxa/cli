@@ -36,7 +36,7 @@ var (
 )
 
 type describeConnectorClient interface {
-	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
+	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
 }
 
 type Describe struct {
@@ -44,7 +44,7 @@ type Describe struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrID string
 	}
 }
 
@@ -59,7 +59,7 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	connector, err := d.client.GetConnectorByName(ctx, d.args.Name)
+	connector, err := d.client.GetConnectorByNameOrID(ctx, d.args.NameOrID)
 	if err != nil {
 		return err
 	}
@@ -83,6 +83,6 @@ func (d *Describe) ParseArgs(args []string) error {
 		return errors.New("requires connector name")
 	}
 
-	d.args.Name = args[0]
+	d.args.NameOrID = args[0]
 	return nil
 }

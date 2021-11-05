@@ -93,10 +93,10 @@ func TestConnectExecution(t *testing.T) {
 	// Create source
 	client.
 		EXPECT().
-		GetResourceByName(
+		GetResourceByNameOrID(
 			ctx,
 			rSource.Name,
-		).AnyTimes().
+		).
 		Return(&rSource, nil)
 
 	client.
@@ -120,7 +120,7 @@ func TestConnectExecution(t *testing.T) {
 	// Create destination
 	client.
 		EXPECT().
-		GetResourceByName(
+		GetResourceByNameOrID(
 			ctx,
 			rDestination.Name,
 		).

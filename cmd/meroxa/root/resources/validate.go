@@ -38,7 +38,6 @@ var (
 
 type validateResourceClient interface {
 	ValidateResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
-	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
 }
 
 type Validate struct {

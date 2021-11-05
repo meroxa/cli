@@ -28,7 +28,7 @@ import (
 )
 
 type removeConnectorClient interface {
-	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
+	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error
 }
 
@@ -58,7 +58,7 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing connector %q...", r.args.Name)
 
-	con, err := r.client.GetConnectorByName(ctx, r.args.Name)
+	con, err := r.client.GetConnectorByNameOrID(ctx, r.args.Name)
 	if err != nil {
 		return err
 	}

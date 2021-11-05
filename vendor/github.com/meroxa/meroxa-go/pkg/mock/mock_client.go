@@ -182,49 +182,34 @@ func (mr *MockClientMockRecorder) DeleteResource(ctx, nameOrID interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteResource", reflect.TypeOf((*MockClient)(nil).DeleteResource), ctx, nameOrID)
 }
 
-// GetConnector mocks base method.
-func (m *MockClient) GetConnector(ctx context.Context, id int) (*meroxa.Connector, error) {
+// GetConnectorByNameOrID mocks base method.
+func (m *MockClient) GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConnector", ctx, id)
+	ret := m.ctrl.Call(m, "GetConnectorByNameOrID", ctx, nameOrID)
 	ret0, _ := ret[0].(*meroxa.Connector)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetConnector indicates an expected call of GetConnector.
-func (mr *MockClientMockRecorder) GetConnector(ctx, id interface{}) *gomock.Call {
+// GetConnectorByNameOrID indicates an expected call of GetConnectorByNameOrID.
+func (mr *MockClientMockRecorder) GetConnectorByNameOrID(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnector", reflect.TypeOf((*MockClient)(nil).GetConnector), ctx, id)
-}
-
-// GetConnectorByName mocks base method.
-func (m *MockClient) GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConnectorByName", ctx, name)
-	ret0, _ := ret[0].(*meroxa.Connector)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetConnectorByName indicates an expected call of GetConnectorByName.
-func (mr *MockClientMockRecorder) GetConnectorByName(ctx, name interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorByName", reflect.TypeOf((*MockClient)(nil).GetConnectorByName), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorByNameOrID", reflect.TypeOf((*MockClient)(nil).GetConnectorByNameOrID), ctx, nameOrID)
 }
 
 // GetConnectorLogs mocks base method.
-func (m *MockClient) GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error) {
+func (m *MockClient) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConnectorLogs", ctx, connectorName)
+	ret := m.ctrl.Call(m, "GetConnectorLogs", ctx, nameOrID)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetConnectorLogs indicates an expected call of GetConnectorLogs.
-func (mr *MockClientMockRecorder) GetConnectorLogs(ctx, connectorName interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetConnectorLogs(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorLogs", reflect.TypeOf((*MockClient)(nil).GetConnectorLogs), ctx, connectorName)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorLogs", reflect.TypeOf((*MockClient)(nil).GetConnectorLogs), ctx, nameOrID)
 }
 
 // GetEndpoint mocks base method.
@@ -287,34 +272,19 @@ func (mr *MockClientMockRecorder) GetPipelineByName(ctx, name interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPipelineByName", reflect.TypeOf((*MockClient)(nil).GetPipelineByName), ctx, name)
 }
 
-// GetResource mocks base method.
-func (m *MockClient) GetResource(ctx context.Context, id int) (*meroxa.Resource, error) {
+// GetResourceByNameOrID mocks base method.
+func (m *MockClient) GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResource", ctx, id)
+	ret := m.ctrl.Call(m, "GetResourceByNameOrID", ctx, nameOrID)
 	ret0, _ := ret[0].(*meroxa.Resource)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetResource indicates an expected call of GetResource.
-func (mr *MockClientMockRecorder) GetResource(ctx, id interface{}) *gomock.Call {
+// GetResourceByNameOrID indicates an expected call of GetResourceByNameOrID.
+func (mr *MockClientMockRecorder) GetResourceByNameOrID(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResource", reflect.TypeOf((*MockClient)(nil).GetResource), ctx, id)
-}
-
-// GetResourceByName mocks base method.
-func (m *MockClient) GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResourceByName", ctx, name)
-	ret0, _ := ret[0].(*meroxa.Resource)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetResourceByName indicates an expected call of GetResourceByName.
-func (mr *MockClientMockRecorder) GetResourceByName(ctx, name interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResourceByName", reflect.TypeOf((*MockClient)(nil).GetResourceByName), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResourceByNameOrID", reflect.TypeOf((*MockClient)(nil).GetResourceByNameOrID), ctx, nameOrID)
 }
 
 // GetUser mocks base method.

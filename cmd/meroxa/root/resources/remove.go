@@ -28,7 +28,7 @@ import (
 )
 
 type removeResourceClient interface {
-	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	DeleteResource(ctx context.Context, nameOrID string) error
 }
 
@@ -37,7 +37,7 @@ type Remove struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrID string
 	}
 }
 
@@ -52,24 +52,24 @@ func (r *Remove) Docs() builder.Docs {
 }
 
 func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
-	return r.args.Name
+	return r.args.NameOrID
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
-	r.logger.Infof(ctx, "Removing resource %q...", r.args.Name)
+	r.logger.Infof(ctx, "Removing resource %q...", r.args.NameOrID)
 
-	res, err := r.client.GetResourceByName(ctx, r.args.Name)
+	res, err := r.client.GetResourceByNameOrID(ctx, r.args.NameOrID)
 	if err != nil {
 		return err
 	}
 
-	err = r.client.DeleteResource(ctx, r.args.Name)
+	err = r.client.DeleteResource(ctx, r.args.NameOrID)
 
 	if err != nil {
 		return err
 	}
 
-	r.logger.Infof(ctx, "Resource %q successfully removed", r.args.Name)
+	r.logger.Infof(ctx, "Resource %q successfully removed", r.args.NameOrID)
 	r.logger.JSON(ctx, res)
 
 	return nil
@@ -88,7 +88,7 @@ func (r *Remove) ParseArgs(args []string) error {
 		return errors.New("requires resource name")
 	}
 
-	r.args.Name = args[0]
+	r.args.NameOrID = args[0]
 	return nil
 }
 

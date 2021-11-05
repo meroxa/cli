@@ -39,7 +39,6 @@ var (
 
 type rotateKeyActionClient interface {
 	RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
-	GetResourceByName(ctx context.Context, name string) (*meroxa.Resource, error)
 }
 
 type RotateTunnelKey struct {

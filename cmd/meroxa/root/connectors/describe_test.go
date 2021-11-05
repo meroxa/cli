@@ -50,8 +50,8 @@ func TestDescribeConnectorArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
+		if tt.name != ar.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.NameOrID)
 		}
 	}
 }
@@ -69,7 +69,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 	c.Trace = "exception goes here"
 	client.
 		EXPECT().
-		GetConnectorByName(
+		GetConnectorByNameOrID(
 			ctx,
 			c.Name,
 		).
@@ -79,7 +79,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
-	dc.args.Name = c.Name
+	dc.args.NameOrID = c.Name
 
 	err := dc.Execute(ctx)
 	if err != nil {

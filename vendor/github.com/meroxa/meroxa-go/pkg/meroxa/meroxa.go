@@ -29,9 +29,8 @@ type client struct {
 type Client interface {
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error
-	GetConnector(ctx context.Context, id int) (*Connector, error)
-	GetConnectorByName(ctx context.Context, name string) (*Connector, error)
-	GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error)
+	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*Connector, error)
+	GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error)
 	ListConnectors(ctx context.Context) ([]*Connector, error)
 	UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error)
 	UpdateConnectorStatus(ctx context.Context, nameOrID string, state Action) (*Connector, error)
@@ -57,8 +56,7 @@ type Client interface {
 
 	CreateResource(ctx context.Context, input *CreateResourceInput) (*Resource, error)
 	DeleteResource(ctx context.Context, nameOrID string) error
-	GetResource(ctx context.Context, id int) (*Resource, error)
-	GetResourceByName(ctx context.Context, name string) (*Resource, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*Resource, error)
 	ListResources(ctx context.Context) ([]*Resource, error)
 	UpdateResource(ctx context.Context, nameOrID string, input *UpdateResourceInput) (*Resource, error)
 	RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*Resource, error)

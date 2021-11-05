@@ -51,8 +51,8 @@ func TestRemoveResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrID)
 		}
 	}
 }
@@ -69,16 +69,16 @@ func TestRemoveResourceExecution(t *testing.T) {
 	}
 
 	res := utils.GenerateResource()
-	r.args.Name = res.Name
+	r.args.NameOrID = res.Name
 
 	client.
 		EXPECT().
-		GetResourceByName(ctx, r.args.Name).
+		GetResourceByNameOrID(ctx, r.args.NameOrID).
 		Return(&res, nil)
 
 	client.
 		EXPECT().
-		DeleteResource(ctx, r.args.Name).
+		DeleteResource(ctx, r.args.NameOrID).
 		Return(nil)
 
 	err := r.Execute(ctx)
