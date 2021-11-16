@@ -6,8 +6,9 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/spf13/pflag"
+
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func GeneratePipeline() meroxa.Pipeline {
@@ -39,7 +40,7 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 
 	return meroxa.Connector{
 		ID:         1,
-		Type:       meroxa.ConnectorTypeSource, // @todo recheck
+		Type:       meroxa.ConnectorTypeSource,
 		Name:       connectorName,
 		State:      meroxa.ConnectorStateRunning,
 		PipelineID: pipelineID,

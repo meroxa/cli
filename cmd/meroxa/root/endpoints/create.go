@@ -25,7 +25,6 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-//go:generate mockgen -source=$GOFILE -destination=mock_$GOFILE -package=$GOPACKAGE
 type createEndpointClient interface {
 	CreateEndpoint(ctx context.Context, input *meroxa.CreateEndpointInput) error
 }

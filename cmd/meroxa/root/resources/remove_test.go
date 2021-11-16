@@ -24,12 +24,11 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
-
-	"github.com/meroxa/cli/utils"
-
 	"github.com/golang/mock/gomock"
+
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 

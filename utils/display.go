@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/alexeyco/simpletable"
+
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 

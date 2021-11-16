@@ -93,10 +93,6 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		return nil, fmt.Errorf("could not parse metadata: %w", err)
 	}
 
-	if c.flags.Pipeline == "" {
-		return nil, errors.New("requires pipeline name (--pipeline)")
-	}
-
 	var connectorType meroxa.ConnectorType
 	// merge in connector type
 	var resourceName string
@@ -111,6 +107,9 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 		return nil, errors.New("requires either a source (--from) or a destination (--to)")
 	}
 
+	if c.flags.Pipeline == "" {
+		return nil, errors.New("requires pipeline name (--pipeline)")
+	}
 	res, err := c.client.GetResourceByNameOrID(ctx, resourceName)
 	if err != nil {
 		return nil, fmt.Errorf("can't fetch resource with name %q: %w", resourceName, err)

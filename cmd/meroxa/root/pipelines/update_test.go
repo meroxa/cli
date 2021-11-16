@@ -66,7 +66,6 @@ func TestUpdatePipelineFlags(t *testing.T) {
 	}{
 		{name: "state", required: false, shorthand: "", hidden: false},
 		{name: "name", required: false, shorthand: "", hidden: false},
-		//	{name: "metadata", required: false, shorthand: "m", hidden: false},
 	}
 
 	c := builder.BuildCobraCommand(&Update{})
