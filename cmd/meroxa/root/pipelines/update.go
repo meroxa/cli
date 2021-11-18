@@ -18,7 +18,9 @@ package pipelines
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -40,8 +42,9 @@ type Update struct {
 	}
 
 	flags struct {
-		State string `long:"state" usage:"new pipeline state (pause | resume | restart)"`
-		Name  string `long:"name" usage:"new pipeline name"`
+		State    string `long:"state" usage:"new pipeline state (pause | resume | restart)"`
+		Name     string `long:"name" usage:"new pipeline name"`
+		Metadata string `long:"metadata" short:"m" usage:"new pipeline metadata"`
 	}
 }
 
@@ -62,7 +65,7 @@ func (u *Update) Docs() builder.Docs {
 
 func (u *Update) Execute(ctx context.Context) error {
 	// TODO: Implement something like dependent flags in Builder
-	if u.flags.Name == "" && u.flags.State == "" {
+	if u.flags.Name == "" && u.flags.Metadata == "" && u.flags.State == "" {
 		return errors.New("requires either --name, --state or --metadata")
 	}
 
@@ -83,9 +86,18 @@ func (u *Update) Execute(ctx context.Context) error {
 	}
 
 	// call meroxa-go to update either name or metadata
-	if u.flags.Name != "" {
+	if u.flags.Name != "" || u.flags.Metadata != "" {
 		pi := &meroxa.UpdatePipelineInput{
 			Name: u.flags.Name,
+		}
+		if u.flags.Metadata != "" {
+			metadata := map[string]interface{}{}
+
+			err = json.Unmarshal([]byte(u.flags.Metadata), &metadata)
+			if err != nil {
+				return fmt.Errorf("could not parse metadata: %w", err)
+			}
+			pi.Metadata = metadata
 		}
 
 		p, err = u.client.UpdatePipeline(ctx, p.ID, pi)

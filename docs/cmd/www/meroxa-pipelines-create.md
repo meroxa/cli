@@ -16,7 +16,8 @@ meroxa pipelines create NAME [flags]
 ### Options
 
 ```
-  -h, --help   help for create
+  -h, --help              help for create
+  -m, --metadata string   pipeline metadata
 ```
 
 ### Options inherited from parent commands

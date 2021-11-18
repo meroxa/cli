@@ -19,9 +19,10 @@ meroxa pipeline update pipeline-name --state restart
 ### Options
 
 ```
-  -h, --help           help for update
-      --name string    new pipeline name
-      --state string   new pipeline state (pause | resume | restart)
+  -h, --help              help for update
+  -m, --metadata string   new pipeline metadata
+      --name string       new pipeline name
+      --state string      new pipeline state (pause | resume | restart)
 ```
 
 ### Options inherited from parent commands

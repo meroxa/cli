@@ -18,17 +18,21 @@ const (
 
 // Pipeline represents the Meroxa Pipeline type within the Meroxa API
 type Pipeline struct {
-	ID    int           `json:"id"`
-	Name  string        `json:"name"`
-	State PipelineState `json:"state"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	// @TODO metadata is unused in Platform-API, so deprecate over time
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	State    PipelineState          `json:"state"`
 }
 
 type CreatePipelineInput struct {
-	Name string `json:"name"`
+	Name     string                 `json:"name"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 type UpdatePipelineInput struct {
-	Name string `json:"name"`
+	Name     string                 `json:"name"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // ComponentKind enum for Component "kinds" within Pipeline stages

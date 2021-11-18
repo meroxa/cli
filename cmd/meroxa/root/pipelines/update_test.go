@@ -66,6 +66,7 @@ func TestUpdatePipelineFlags(t *testing.T) {
 	}{
 		{name: "state", required: false, shorthand: "", hidden: false},
 		{name: "name", required: false, shorthand: "", hidden: false},
+		{name: "metadata", required: false, shorthand: "m", hidden: false},
 	}
 
 	c := builder.BuildCobraCommand(&Update{})
@@ -191,6 +192,63 @@ func TestUpdatePipelineExecutionWithNewName(t *testing.T) {
 
 	u.args.Name = p.Name
 	u.flags.Name = newName
+
+	err := u.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Updating pipeline %q...
+Pipeline %q successfully updated!
+`, u.args.Name, u.args.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotPipeline meroxa.Pipeline
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotPipeline)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotPipeline, p) {
+		t.Fatalf("expected \"%v\", got \"%v\"", p, gotPipeline)
+	}
+}
+
+func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	p := utils.GeneratePipeline()
+
+	pi := &meroxa.UpdatePipelineInput{
+		Metadata: map[string]interface{}{"key": "value"},
+	}
+
+	client.
+		EXPECT().
+		GetPipelineByName(ctx, p.Name).
+		Return(&p, nil)
+
+	client.
+		EXPECT().
+		UpdatePipeline(ctx, p.ID, pi).
+		Return(&p, nil)
+
+	u := &Update{
+		client: client,
+		logger: logger,
+	}
+
+	u.args.Name = p.Name
+	u.flags.Metadata = "{\"key\": \"value\"}"
 
 	err := u.Execute(ctx)
 

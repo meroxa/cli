@@ -54,3 +54,5 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace github.com/meroxa/meroxa-go => github.com/meroxa/meroxa-go v0.0.0-20211118165649-c16f4df4cc75
