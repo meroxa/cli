@@ -21,10 +21,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/utils"
 	"reflect"
 	"testing"
+
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/utils"
 
 	"github.com/golang/mock/gomock"
 

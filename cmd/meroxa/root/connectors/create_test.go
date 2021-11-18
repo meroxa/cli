@@ -23,11 +23,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/cli/log"
-
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
@@ -139,10 +138,10 @@ func TestCreateConnectorExecution(t *testing.T) {
 					"key": "value",
 				},
 				Metadata: map[string]interface{}{
-					"metakey":          "metavalue",
+					"metakey": "metavalue",
 				},
-				Input:    "foo",
-				Type:     meroxa.ConnectorTypeSource,
+				Input: "foo",
+				Type:  meroxa.ConnectorTypeSource,
 			},
 		).
 		Return(&cr, nil)
