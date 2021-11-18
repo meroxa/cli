@@ -84,7 +84,7 @@ func TestUpdateResourceFlags(t *testing.T) {
 			t.Fatalf("expected flag \"%s\" to be present", f.name)
 		}
 
-		if f.shorthand != cf.Shorthand {
+		if f.shorthand != cf.Shorthand { //nolint:staticcheck
 			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
 		}
 
