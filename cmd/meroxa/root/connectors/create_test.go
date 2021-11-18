@@ -113,6 +113,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 
 	c.flags.Input = "foo"
 	c.flags.Config = `{"key":"value"}`
+	c.flags.Metadata = `{"metakey":"metavalue"}`
 	c.flags.Source = sourceName
 	c.flags.Pipeline = "my-pipeline"
 
@@ -137,7 +138,9 @@ func TestCreateConnectorExecution(t *testing.T) {
 				Configuration: map[string]interface{}{
 					"key": "value",
 				},
-				Metadata: map[string]interface{}{},
+				Metadata: map[string]interface{}{
+					"metakey":          "metavalue",
+				},
 				Input:    "foo",
 				Type:     meroxa.ConnectorTypeSource,
 			},
