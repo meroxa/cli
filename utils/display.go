@@ -100,6 +100,21 @@ func ResourceTable(res *meroxa.Resource) string {
 			{Text: strings.Title(d)},
 		})
 	}
+
+	if e := res.Environment.UUID; e != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment UUID:"},
+			{Text: e},
+		})
+	}
+
+	if e := res.Environment.Name; e != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment Name:"},
+			{Text: e},
+		})
+	}
+
 	mainTable.SetStyle(simpletable.StyleCompact)
 
 	return mainTable.String()

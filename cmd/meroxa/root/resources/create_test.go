@@ -112,7 +112,7 @@ func TestCreateResourceExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating %q resource...
+	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in "common" environment...
 Resource %q is successfully created!
 `, cr.Type, cr.Name)
 

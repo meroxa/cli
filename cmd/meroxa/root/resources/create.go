@@ -23,6 +23,7 @@ import (
 
 	"github.com/meroxa/cli/log"
 
+	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -43,6 +44,9 @@ type Create struct {
 		Type     string `long:"type"        short:""  usage:"resource type"        required:"true"`
 		URL      string `long:"url"         short:"u" usage:"resource url"         required:"true"`
 		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
+
+		// TODO: Add support to builder to create flags with an alias (--env | --environment)
+		Environment string `long:"env" usage:"environment (name or UUID) where resource will be created" hidden:"true"`
 
 		// credentials
 		Username      string `long:"username"    short:"" usage:"username"`
@@ -74,6 +78,8 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Add a resource to your Meroxa resource catalog",
 		Long:  `Use the create command to add resources to your Meroxa resource catalog.`,
+
+		// TODO: Provide example with `--env` once it's not behind a feature flag
 		Example: `
 meroxa resources create store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
 meroxa resources create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
@@ -114,6 +120,18 @@ func (c *Create) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
+	if c.flags.Environment != "" {
+		input.Environment = &meroxa.ResourceEnvironmentInput{}
+
+		_, err := uuid.Parse(c.flags.Environment)
+
+		if err == nil {
+			input.Environment.UUID = c.flags.Environment
+		} else {
+			input.Environment.Name = c.flags.Environment
+		}
+	}
+
 	if c.hasCredentials() {
 		input.Credentials = &meroxa.Credentials{
 			Username:      c.flags.Username,
@@ -139,7 +157,15 @@ func (c *Create) Execute(ctx context.Context) error {
 		}
 	}
 
-	c.logger.Infof(ctx, "Creating %q resource...", input.Type)
+	var env string
+
+	if c.flags.Environment != "" {
+		env = c.flags.Environment
+	} else {
+		env = "common"
+	}
+
+	c.logger.Infof(ctx, "Creating %q resource in %q environment...", input.Type, env)
 
 	res, err := c.client.CreateResource(ctx, &input)
 	if err != nil {
