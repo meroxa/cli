@@ -22,10 +22,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/meroxa/meroxa-go"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
@@ -38,7 +37,7 @@ var (
 )
 
 type createPipelineClient interface {
-	CreatePipeline(ctx context.Context, pipeline *meroxa.Pipeline) (*meroxa.Pipeline, error)
+	CreatePipeline(ctx context.Context, input *meroxa.CreatePipelineInput) (*meroxa.Pipeline, error)
 }
 
 type Create struct {
@@ -57,7 +56,7 @@ type Create struct {
 func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Creating pipeline %q...", c.args.Name)
 
-	p := &meroxa.Pipeline{
+	p := &meroxa.CreatePipelineInput{
 		Name: c.args.Name,
 	}
 
@@ -87,7 +86,7 @@ func (c *Create) Logger(logger log.Logger) {
 	c.logger = logger
 }
 
-func (c *Create) Client(client *meroxa.Client) {
+func (c *Create) Client(client meroxa.Client) {
 	c.client = client
 }
 

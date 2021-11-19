@@ -26,12 +26,12 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type updateConnectorClient interface {
-	UpdateConnectorStatus(ctx context.Context, connectorKey, state string) (*meroxa.Connector, error)
-	UpdateConnector(ctx context.Context, connectorKey string, connector meroxa.UpdateConnectorInput) (*meroxa.Connector, error)
+	UpdateConnectorStatus(ctx context.Context, nameOrID string, state meroxa.Action) (*meroxa.Connector, error)
+	UpdateConnector(ctx context.Context, nameOrID string, input *meroxa.UpdateConnectorInput) (*meroxa.Connector, error)
 }
 
 type Update struct {
@@ -39,7 +39,7 @@ type Update struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrID string
 	}
 
 	flags struct {
@@ -65,24 +65,24 @@ func (u *Update) Docs() builder.Docs {
 }
 
 func (u *Update) Execute(ctx context.Context) error {
-	// TODO: Implement something like dependant flags in Builder
+	// TODO: Implement something like dependent flags in Builder
 	if u.flags.Config == "" && u.flags.Name == "" && u.flags.State == "" {
 		return errors.New("requires either --config, --name or --state")
 	}
 
-	u.logger.Infof(ctx, "Updating connector %q...", u.args.Name)
+	u.logger.Infof(ctx, "Updating connector %q...", u.args.NameOrID)
 	var con *meroxa.Connector
 	var err error
 
 	if u.flags.State != "" {
-		con, err = u.client.UpdateConnectorStatus(ctx, u.args.Name, u.flags.State)
+		con, err = u.client.UpdateConnectorStatus(ctx, u.args.NameOrID, meroxa.Action(u.flags.State))
 		if err != nil {
 			return err
 		}
 	}
 
 	if u.flags.Name != "" || u.flags.Config != "" {
-		var cu meroxa.UpdateConnectorInput
+		cu := &meroxa.UpdateConnectorInput{}
 
 		// wants to update name
 		if u.flags.Name != "" {
@@ -101,13 +101,13 @@ func (u *Update) Execute(ctx context.Context) error {
 			cu.Configuration = config
 		}
 
-		con, err = u.client.UpdateConnector(ctx, u.args.Name, cu)
+		con, err = u.client.UpdateConnector(ctx, u.args.NameOrID, cu)
 		if err != nil {
 			return err
 		}
 	}
 
-	u.logger.Infof(ctx, "Connector %q successfully updated!", u.args.Name)
+	u.logger.Infof(ctx, "Connector %q successfully updated!", u.args.NameOrID)
 	u.logger.JSON(ctx, con)
 	return nil
 }
@@ -120,7 +120,7 @@ func (u *Update) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *Update) Client(client *meroxa.Client) {
+func (u *Update) Client(client meroxa.Client) {
 	u.client = client
 }
 
@@ -129,7 +129,7 @@ func (u *Update) ParseArgs(args []string) error {
 		return errors.New("requires connector name")
 	}
 
-	u.args.Name = args[0]
+	u.args.NameOrID = args[0]
 	return nil
 }
 

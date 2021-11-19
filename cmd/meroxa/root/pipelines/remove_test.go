@@ -24,12 +24,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestRemovePipelineArgs(t *testing.T) {
@@ -59,7 +59,7 @@ func TestRemovePipelineArgs(t *testing.T) {
 func TestRemovePipelineExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockRemovePipelineClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := &Remove{

@@ -17,7 +17,7 @@ limitations under the License.
 package global
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/meroxa/cli/log"
@@ -27,7 +27,7 @@ func NewLogger() log.Logger {
 	var (
 		logLevel         = log.Info
 		leveledLoggerOut = os.Stdout
-		jsonLoggerOut    = ioutil.Discard
+		jsonLoggerOut    = io.Discard
 	)
 
 	if flagJSON {

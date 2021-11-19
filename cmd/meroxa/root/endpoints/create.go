@@ -19,14 +19,14 @@ package endpoints
 import (
 	"context"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 )
 
 type createEndpointClient interface {
-	CreateEndpoint(ctx context.Context, name, protocol, stream string) error
+	CreateEndpoint(ctx context.Context, input *meroxa.CreateEndpointInput) error
 }
 
 type Create struct {
@@ -57,8 +57,13 @@ func (c *Create) Docs() builder.Docs {
 
 func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Info(ctx, "Creating endpoint...")
+	input := &meroxa.CreateEndpointInput{
+		Name:     c.args.Name,
+		Protocol: meroxa.EndpointProtocol(c.flags.Protocol),
+		Stream:   c.flags.Stream,
+	}
 
-	err := c.client.CreateEndpoint(ctx, c.args.Name, c.flags.Protocol, c.flags.Stream)
+	err := c.client.CreateEndpoint(ctx, input)
 
 	if err != nil {
 		return err
@@ -69,7 +74,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (c *Create) Client(client *meroxa.Client) {
+func (c *Create) Client(client meroxa.Client) {
 	c.client = client
 }
 

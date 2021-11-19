@@ -18,7 +18,7 @@ func (err *errResponse) Error() string {
 	msg := err.Message
 
 	if errCount := len(err.Details); errCount > 0 {
-		msg = fmt.Sprintf("%s. %d %s occured:%s",
+		msg = fmt.Sprintf("%s. %d %s occurred:%s",
 			msg,
 			errCount,
 			func() string {

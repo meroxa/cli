@@ -27,9 +27,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func getResources() []*meroxa.Resource {
@@ -53,14 +53,14 @@ func TestListResourcesFlags(t *testing.T) {
 		cf := c.Flags().Lookup(f.name)
 		if cf == nil {
 			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
+		} else {
+			if f.shorthand != cf.Shorthand {
+				t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+			}
 
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
-
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
+			if f.required && !utils.IsFlagRequired(cf) {
+				t.Fatalf("expected flag \"%s\" to be required", f.name)
+			}
 		}
 	}
 }
@@ -68,7 +68,7 @@ func TestListResourcesFlags(t *testing.T) {
 func TestListResourcesExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListResourcesClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	resources := getResources()
@@ -118,7 +118,7 @@ func TestListResourcesExecution(t *testing.T) {
 func TestListResourceTypesExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListResourcesClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	var types = []string{

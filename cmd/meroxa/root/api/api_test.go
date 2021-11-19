@@ -21,14 +21,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestDescribeAPIArgs(t *testing.T) {
@@ -92,7 +92,7 @@ func TestDescribeAPIArgs(t *testing.T) {
 func TestAPIExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockAPIClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	a := &API{
@@ -107,7 +107,7 @@ func TestAPIExecution(t *testing.T) {
 	var httpResponse = &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewReader([]byte(bodyResponse))),
+		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
 	client.

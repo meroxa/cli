@@ -24,14 +24,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
-
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestUpdateConnectorArgs(t *testing.T) {
@@ -52,8 +51,8 @@ func TestUpdateConnectorArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrID)
 		}
 	}
 }
@@ -112,7 +111,7 @@ func TestUpdateConnectorExecutionNoFlags(t *testing.T) {
 func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	u := &Update{
@@ -121,12 +120,12 @@ func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 	}
 
 	c := utils.GenerateConnector(0, "")
-	u.args.Name = c.Name
+	u.args.NameOrID = c.Name
 	u.flags.State = "pause"
 
 	client.
 		EXPECT().
-		UpdateConnectorStatus(ctx, u.args.Name, u.flags.State).
+		UpdateConnectorStatus(ctx, u.args.NameOrID, meroxa.Action(u.flags.State)).
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
@@ -138,7 +137,7 @@ func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating connector %q...
 Connector %q successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -159,7 +158,7 @@ Connector %q successfully updated!
 func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	u := &Update{
@@ -168,7 +167,7 @@ func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 	}
 
 	c := utils.GenerateConnector(0, "")
-	u.args.Name = c.Name
+	u.args.NameOrID = c.Name
 
 	newName := "new-name"
 	u.flags.Name = newName
@@ -178,7 +177,7 @@ func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 
 	client.
 		EXPECT().
-		UpdateConnector(ctx, u.args.Name, cu).
+		UpdateConnector(ctx, u.args.NameOrID, &cu).
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
@@ -190,7 +189,7 @@ func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating connector %q...
 Connector %q successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -211,7 +210,7 @@ Connector %q successfully updated!
 func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	u := &Update{
@@ -220,7 +219,7 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 	}
 
 	c := utils.GenerateConnector(0, "")
-	u.args.Name = c.Name
+	u.args.NameOrID = c.Name
 
 	newConfig := "{\"table.name.format\":\"public.copy\"}"
 	cfg := map[string]interface{}{}
@@ -238,7 +237,7 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 
 	client.
 		EXPECT().
-		UpdateConnector(ctx, u.args.Name, cu).
+		UpdateConnector(ctx, u.args.NameOrID, &cu).
 		Return(&c, nil)
 
 	err = u.Execute(ctx)
@@ -250,7 +249,7 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating connector %q...
 Connector %q successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

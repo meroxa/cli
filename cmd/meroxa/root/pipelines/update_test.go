@@ -24,14 +24,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
-
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestUpdatePipelineArgs(t *testing.T) {
@@ -113,11 +112,11 @@ func TestUpdatePipelineExecutionNoFlags(t *testing.T) {
 func TestUpdatePipelineExecutionWithNewState(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdatePipelineClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	p := utils.GeneratePipeline()
-	newState := "pause"
+	newState := meroxa.Action("pause")
 
 	client.
 		EXPECT().
@@ -135,7 +134,7 @@ func TestUpdatePipelineExecutionWithNewState(t *testing.T) {
 	}
 
 	u.args.Name = p.Name
-	u.flags.State = newState
+	u.flags.State = string(newState)
 
 	err := u.Execute(ctx)
 
@@ -167,12 +166,12 @@ Pipeline %q successfully updated!
 func TestUpdatePipelineExecutionWithNewName(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdatePipelineClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	p := utils.GeneratePipeline()
 	newName := "new-pipeline-name"
-	pi := meroxa.UpdatePipelineInput{
+	pi := &meroxa.UpdatePipelineInput{
 		Name: newName,
 	}
 
@@ -224,12 +223,12 @@ Pipeline %q successfully updated!
 func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdatePipelineClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	p := utils.GeneratePipeline()
 
-	pi := meroxa.UpdatePipelineInput{
+	pi := &meroxa.UpdatePipelineInput{
 		Metadata: map[string]interface{}{"key": "value"},
 	}
 

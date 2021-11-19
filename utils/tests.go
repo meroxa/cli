@@ -6,23 +6,23 @@ import (
 	"math/rand"
 	"os"
 
-	"github.com/meroxa/meroxa-go"
 	"github.com/spf13/pflag"
+
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func GeneratePipeline() meroxa.Pipeline {
 	return meroxa.Pipeline{
-		ID:       1,
-		Name:     "pipeline-name",
-		Metadata: nil,
-		State:    "healthy",
+		ID:    1,
+		Name:  "pipeline-name",
+		State: "healthy",
 	}
 }
 
 func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
 		ID:       1,
-		Type:     "postgres",
+		Type:     meroxa.ResourceTypePostgres,
 		Name:     "resource-1234",
 		URL:      "https://user:password",
 		Metadata: nil,
@@ -40,9 +40,9 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 
 	return meroxa.Connector{
 		ID:         1,
-		Type:       "postgres",
+		Type:       meroxa.ConnectorTypeSource,
 		Name:       connectorName,
-		State:      "running",
+		State:      meroxa.ConnectorStateRunning,
 		PipelineID: pipelineID,
 		Streams: map[string]interface{}{
 			"output": []interface{}{"my-resource.Table"},
@@ -53,7 +53,7 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 func GenerateEndpoint() meroxa.Endpoint {
 	return meroxa.Endpoint{
 		Name:              "endpoint",
-		Protocol:          "http",
+		Protocol:          meroxa.EndpointProtocolHttp,
 		Host:              "https://endpoint.test",
 		Stream:            "stream",
 		Ready:             true,
@@ -80,12 +80,12 @@ func GenerateEnvironment(environmentName string) meroxa.Environment {
 
 	return meroxa.Environment{
 		UUID:     "fd572375-77ce-4448-a071-ee4707a599d6",
-		Type:     "dedicated",
+		Type:     meroxa.EnvironmentTypeDedicated,
 		Name:     environmentName,
-		Region:   "us-east",
-		Provider: "aws",
-		Status: meroxa.EnvironmentStatus{
-			State: "provisioned",
+		Region:   meroxa.EnvironmentRegionUsEast2,
+		Provider: meroxa.EnvironmentProviderAws,
+		Status: meroxa.EnvironmentViewStatus{
+			State: meroxa.EnvironmentStateProvisioned,
 		},
 	}
 }

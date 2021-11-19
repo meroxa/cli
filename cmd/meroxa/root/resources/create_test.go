@@ -8,11 +8,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreateResourceArgs(t *testing.T) {
@@ -62,14 +63,14 @@ func TestCreateResourceFlags(t *testing.T) {
 		cf := c.Flags().Lookup(f.name)
 		if cf == nil {
 			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
+		} else {
+			if f.shorthand != cf.Shorthand {
+				t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+			}
 
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
-
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
+			if f.required && !utils.IsFlagRequired(cf) {
+				t.Fatalf("expected flag \"%s\" to be required", f.name)
+			}
 		}
 	}
 }
@@ -77,7 +78,7 @@ func TestCreateResourceFlags(t *testing.T) {
 func TestCreateResourceExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := meroxa.CreateResourceInput{
@@ -102,7 +103,7 @@ func TestCreateResourceExecution(t *testing.T) {
 		logger: logger,
 	}
 	c.args.Name = r.Name
-	c.flags.Type = r.Type
+	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
 
 	err := c.Execute(ctx)

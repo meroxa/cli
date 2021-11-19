@@ -26,7 +26,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type getUserClient interface {
@@ -58,7 +58,7 @@ func (w *WhoAmI) Docs() builder.Docs {
 	}
 }
 
-func (w *WhoAmI) Client(client *meroxa.Client) {
+func (w *WhoAmI) Client(client meroxa.Client) {
 	w.client = client
 }
 

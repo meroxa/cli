@@ -28,9 +28,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreateEnvironmentArgs(t *testing.T) {
@@ -76,21 +76,21 @@ func TestCreateEnvironmentFlags(t *testing.T) {
 		cf := c.Flags().Lookup(f.name)
 		if cf == nil {
 			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
+		} else {
+			if f.shorthand != cf.Shorthand {
+				t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+			}
 
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
+			if f.required && !utils.IsFlagRequired(cf) {
+				t.Fatalf("expected flag \"%s\" to be required", f.name)
+			}
 
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
-		}
-
-		if cf.Hidden != f.hidden {
-			if cf.Hidden {
-				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
-			} else {
-				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+			if cf.Hidden != f.hidden {
+				if cf.Hidden {
+					t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+				} else {
+					t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+				}
 			}
 		}
 	}
@@ -99,7 +99,7 @@ func TestCreateEnvironmentFlags(t *testing.T) {
 func TestCreateEnvironmentExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreateEnvironmentClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	c := &Create{
@@ -121,11 +121,11 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 	}
 
 	e := &meroxa.CreateEnvironmentInput{
-		Type:          c.flags.Type,
-		Provider:      c.flags.Provider,
+		Type:          meroxa.EnvironmentType(c.flags.Type),
+		Provider:      meroxa.EnvironmentProvider(c.flags.Provider),
 		Name:          c.args.Name,
 		Configuration: cfg,
-		Region:        c.flags.Region,
+		Region:        meroxa.EnvironmentRegion(c.flags.Region),
 	}
 
 	rE := &meroxa.Environment{
@@ -135,8 +135,8 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 		Region:        e.Region,
 		Type:          e.Type,
 		Configuration: e.Configuration,
-		Status: meroxa.EnvironmentStatus{
-			State: "provisioning",
+		Status: meroxa.EnvironmentViewStatus{
+			State: meroxa.EnvironmentStateProvisioning,
 		},
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},

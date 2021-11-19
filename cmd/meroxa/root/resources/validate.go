@@ -24,7 +24,7 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
@@ -37,7 +37,7 @@ var (
 )
 
 type validateResourceClient interface {
-	ValidateResource(ctx context.Context, name string) (*meroxa.Resource, error)
+	ValidateResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 }
 
 type Validate struct {
@@ -88,7 +88,7 @@ func (u *Validate) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *Validate) Client(client *meroxa.Client) {
+func (u *Validate) Client(client meroxa.Client) {
 	u.client = client
 }
 

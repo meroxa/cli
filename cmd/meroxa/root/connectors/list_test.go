@@ -28,9 +28,9 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/golang/mock/gomock"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func getConnectors(pipelineID int) []*meroxa.Connector {
@@ -70,7 +70,7 @@ func TestListConnectorsFlags(t *testing.T) {
 func TestListConnectorsExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockListConnectorsClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	connectors := getConnectors(1)

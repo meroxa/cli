@@ -25,9 +25,9 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-
-	"github.com/meroxa/meroxa-go"
 	"golang.org/x/oauth2"
+
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func noUserInfo(actor, actorUUID string) bool {
@@ -118,7 +118,7 @@ func GetUserToken() (accessToken, refreshToken string, err error) {
 	return accessToken, refreshToken, nil
 }
 
-func NewClient() (*meroxa.Client, error) {
+func NewClient() (meroxa.Client, error) {
 	accessToken, refreshToken, err := GetUserToken()
 
 	if err != nil {

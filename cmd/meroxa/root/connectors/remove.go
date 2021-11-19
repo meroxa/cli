@@ -24,12 +24,12 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type removeConnectorClient interface {
-	GetConnectorByName(ctx context.Context, name string) (*meroxa.Connector, error)
-	DeleteConnector(ctx context.Context, id int) error
+	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
+	DeleteConnector(ctx context.Context, nameOrID string) error
 }
 
 type Remove struct {
@@ -58,12 +58,12 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing connector %q...", r.args.Name)
 
-	con, err := r.client.GetConnectorByName(ctx, r.args.Name)
+	con, err := r.client.GetConnectorByNameOrID(ctx, r.args.Name)
 	if err != nil {
 		return err
 	}
 
-	err = r.client.DeleteConnector(ctx, con.ID)
+	err = r.client.DeleteConnector(ctx, r.args.Name)
 
 	if err != nil {
 		return err
@@ -79,7 +79,7 @@ func (r *Remove) Logger(logger log.Logger) {
 	r.logger = logger
 }
 
-func (r *Remove) Client(client *meroxa.Client) {
+func (r *Remove) Client(client meroxa.Client) {
 	r.client = client
 }
 

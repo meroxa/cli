@@ -22,7 +22,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -37,7 +37,7 @@ var (
 )
 
 type logsConnectorClient interface {
-	GetConnectorLogs(ctx context.Context, connectorName string) (*http.Response, error)
+	GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error)
 }
 
 type Logs struct {
@@ -45,7 +45,7 @@ type Logs struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrID string
 	}
 }
 
@@ -60,7 +60,7 @@ func (l *Logs) Docs() builder.Docs {
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	resp, err := l.client.GetConnectorLogs(ctx, l.args.Name)
+	resp, err := l.client.GetConnectorLogs(ctx, l.args.NameOrID)
 
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func (l *Logs) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
-func (l *Logs) Client(client *meroxa.Client) {
+func (l *Logs) Client(client meroxa.Client) {
 	l.client = client
 }
 
@@ -92,6 +92,6 @@ func (l *Logs) ParseArgs(args []string) error {
 		return errors.New("requires connector name")
 	}
 
-	l.args.Name = args[0]
+	l.args.NameOrID = args[0]
 	return nil
 }

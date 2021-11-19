@@ -24,14 +24,14 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/meroxa-go"
-
-	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/utils"
+
+	"github.com/golang/mock/gomock"
+
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreatePipelineArgs(t *testing.T) {
@@ -97,19 +97,18 @@ func TestCreatePipelineFlags(t *testing.T) {
 func TestCreateEndpointExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreatePipelineClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 	pName := "my-pipeline"
 
-	p := &meroxa.Pipeline{
+	p := &meroxa.CreatePipelineInput{
 		Name: pName,
 	}
 
 	rP := &meroxa.Pipeline{
-		ID:       1,
-		Name:     pName,
-		Metadata: nil,
-		State:    "healthy",
+		ID:    1,
+		Name:  pName,
+		State: "healthy",
 	}
 
 	rP.Name = pName

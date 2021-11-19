@@ -1,13 +1,15 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/alexeyco/simpletable"
-	"github.com/meroxa/meroxa-go"
+
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
@@ -32,20 +34,20 @@ func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
 	for _, end := range ends {
 		var u string
 		switch end.Protocol {
-		case "HTTP":
+		case meroxa.EndpointProtocolHttp:
 			host, err := url.ParseRequestURI(end.Host)
 			if err != nil {
 				continue
 			}
 			host.User = url.UserPassword(end.BasicAuthUsername, end.BasicAuthPassword)
 			u = host.String()
-		case "GRPC":
+		case meroxa.EndpointProtocolGrpc:
 			u = fmt.Sprintf("host=%s username=%s password=%s", end.Host, end.BasicAuthUsername, end.BasicAuthPassword)
 		}
 
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: end.Name},
-			{Text: end.Protocol},
+			{Text: string(end.Protocol)},
 			{Text: end.Stream},
 			{Text: u},
 			{Text: strings.Title(strconv.FormatBool(end.Ready))},
@@ -76,7 +78,7 @@ func ResourceTable(res *meroxa.Resource) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Type:"},
-			{Text: res.Type},
+			{Text: string(res.Type)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "URL:"},
@@ -88,7 +90,7 @@ func ResourceTable(res *meroxa.Resource) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: strings.Title(res.Status.State)},
+			{Text: strings.Title(string(res.Status.State))},
 		},
 	}
 
@@ -129,10 +131,10 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
 				{Text: res.Name},
-				{Text: res.Type},
+				{Text: string(res.Type)},
 				{Text: res.URL},
 				{Align: simpletable.AlignCenter, Text: tunnel},
-				{Align: simpletable.AlignCenter, Text: strings.Title(res.Status.State)},
+				{Align: simpletable.AlignCenter, Text: strings.Title(string(res.Status.State))},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
@@ -203,7 +205,7 @@ func ConnectorTable(connector *meroxa.Connector) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Type:"},
-			{Text: connector.Type},
+			{Text: string(connector.Type)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Streams:"},
@@ -211,7 +213,7 @@ func ConnectorTable(connector *meroxa.Connector) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: connector.State},
+			{Text: string(connector.State)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Pipeline:"},
@@ -252,9 +254,9 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
 				{Text: conn.Name},
-				{Text: conn.Type},
+				{Text: string(conn.Type)},
 				{Text: streamStr},
-				{Text: conn.State},
+				{Text: string(conn.State)},
 				{Text: conn.PipelineName},
 			}
 
@@ -346,7 +348,7 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
 				{Align: simpletable.AlignCenter, Text: p.Name},
-				{Align: simpletable.AlignCenter, Text: p.State},
+				{Align: simpletable.AlignCenter, Text: string(p.State)},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
@@ -382,10 +384,10 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: p.UUID},
 				{Align: simpletable.AlignCenter, Text: p.Name},
-				{Align: simpletable.AlignCenter, Text: p.Type},
-				{Align: simpletable.AlignCenter, Text: p.Provider},
-				{Align: simpletable.AlignCenter, Text: p.Region},
-				{Align: simpletable.AlignCenter, Text: p.Status.State},
+				{Align: simpletable.AlignCenter, Text: string(p.Type)},
+				{Align: simpletable.AlignCenter, Text: string(p.Provider)},
+				{Align: simpletable.AlignCenter, Text: string(p.Region)},
+				{Align: simpletable.AlignCenter, Text: string(p.Status.State)},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
@@ -399,11 +401,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
 
-	envStatus := environment.Status.State
-
-	if environment.Status.Details != "" {
-		envStatus += fmt.Sprintf("\n\nDetails: %s", environment.Status.Details)
-	}
+	bytes, _ := json.Marshal(&environment.Status)
 
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
@@ -416,19 +414,19 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Provider:"},
-			{Text: environment.Provider},
+			{Text: string(environment.Provider)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Region:"},
-			{Text: environment.Region},
+			{Text: string(environment.Region)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Type:"},
-			{Text: environment.Type},
+			{Text: string(environment.Type)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Status:"},
-			{Text: envStatus},
+			{Text: string(bytes)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Created At:"},

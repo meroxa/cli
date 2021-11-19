@@ -26,9 +26,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestDescribeResourceArgs(t *testing.T) {
@@ -49,8 +49,8 @@ func TestDescribeResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
+		if tt.name != ar.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.NameOrID)
 		}
 	}
 }
@@ -58,13 +58,13 @@ func TestDescribeResourceArgs(t *testing.T) {
 func TestDescribeResourceExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockDescribeResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
 	client.
 		EXPECT().
-		GetResourceByName(
+		GetResourceByNameOrID(
 			ctx,
 			r.Name,
 		).
@@ -74,7 +74,7 @@ func TestDescribeResourceExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
-	de.args.Name = r.Name
+	de.args.NameOrID = r.Name
 
 	err := de.Execute(ctx)
 	if err != nil {

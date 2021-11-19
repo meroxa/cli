@@ -20,14 +20,14 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestLogsConnectorArgs(t *testing.T) {
@@ -48,8 +48,8 @@ func TestLogsConnectorArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrID)
 		}
 	}
 }
@@ -57,7 +57,7 @@ func TestLogsConnectorArgs(t *testing.T) {
 func TestLogsConnectorExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockLogsConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	connectorName := "connector-name"
@@ -67,9 +67,9 @@ func TestLogsConnectorExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	c.args.Name = connectorName
+	c.args.NameOrID = connectorName
 
-	var responseDetails = ioutil.NopCloser(bytes.NewReader([]byte(
+	var responseDetails = io.NopCloser(bytes.NewReader([]byte(
 		`[2021-04-29T12:16:42Z] Just another log line from my connector`,
 	)))
 

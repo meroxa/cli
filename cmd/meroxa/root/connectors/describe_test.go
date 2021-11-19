@@ -24,12 +24,12 @@ import (
 	"strings"
 	"testing"
 
-	mock "github.com/meroxa/cli/mock-cmd"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func TestDescribeConnectorArgs(t *testing.T) {
@@ -50,8 +50,8 @@ func TestDescribeConnectorArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
+		if tt.name != ar.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.NameOrID)
 		}
 	}
 }
@@ -59,7 +59,7 @@ func TestDescribeConnectorArgs(t *testing.T) {
 func TestDescribeConnectorExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockDescribeConnectorClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	connectorName := "my-connector"
@@ -69,7 +69,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 	c.Trace = "exception goes here"
 	client.
 		EXPECT().
-		GetConnectorByName(
+		GetConnectorByNameOrID(
 			ctx,
 			c.Name,
 		).
@@ -79,7 +79,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
-	dc.args.Name = c.Name
+	dc.args.NameOrID = c.Name
 
 	err := dc.Execute(ctx)
 	if err != nil {

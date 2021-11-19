@@ -21,11 +21,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	mock "github.com/meroxa/cli/mock-cmd"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	mock "github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestCreateEndpointArgs(t *testing.T) {
@@ -69,21 +70,21 @@ func TestCreateEndpointFlags(t *testing.T) {
 		cf := c.Flags().Lookup(f.name)
 		if cf == nil {
 			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
+		} else {
+			if f.shorthand != cf.Shorthand {
+				t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+			}
 
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
+			if f.required && !utils.IsFlagRequired(cf) {
+				t.Fatalf("expected flag \"%s\" to be required", f.name)
+			}
 
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
-		}
-
-		if cf.Hidden != f.hidden {
-			if cf.Hidden {
-				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
-			} else {
-				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+			if cf.Hidden != f.hidden {
+				if cf.Hidden {
+					t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+				} else {
+					t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+				}
 			}
 		}
 	}
@@ -92,16 +93,14 @@ func TestCreateEndpointFlags(t *testing.T) {
 func TestCreateEndpointExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockCreateEndpointClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	client.
 		EXPECT().
 		CreateEndpoint(
 			ctx,
-			"",
-			"",
-			"",
+			&meroxa.CreateEndpointInput{},
 		).
 		Return(nil)
 

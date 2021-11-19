@@ -24,7 +24,7 @@ import (
 
 	"github.com/meroxa/cli/log"
 
-	"github.com/meroxa/meroxa-go"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
@@ -38,7 +38,7 @@ var (
 )
 
 type rotateKeyActionClient interface {
-	RotateTunnelKeyForResource(ctx context.Context, name string) (*meroxa.Resource, error)
+	RotateTunnelKeyForResource(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 }
 
 type RotateTunnelKey struct {
@@ -94,7 +94,7 @@ func (u *RotateTunnelKey) Logger(logger log.Logger) {
 	u.logger = logger
 }
 
-func (u *RotateTunnelKey) Client(client *meroxa.Client) {
+func (u *RotateTunnelKey) Client(client meroxa.Client) {
 	u.client = client
 }
 

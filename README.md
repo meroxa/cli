@@ -55,6 +55,9 @@ make gomod
 make build
 ```
 
+### Development Configuration
+The [meroxa-dev CLI](https://github.com/meroxa/meroxa-dev#install) makes it convenient to set the necessary env vars for different dev environments.
+
 ## Release
 
 A [goreleaser](https://github.com/goreleaser/goreleaser) GitHub Action is
@@ -123,4 +126,4 @@ Verify the correct setup, by running ` cat ~/.gitconfig`. You should see the fol
 	insteadOf = https://github.com
 ```
 
-Run the `make gomod` command again, and you should see all depedencies being downloaded successfully.
+Run the `make gomod` command again, and you should see all dependencies being downloaded successfully.

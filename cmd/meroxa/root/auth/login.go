@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -232,7 +231,7 @@ func (l *Login) getAccessTokenAuth(
 	// process the response
 	defer res.Body.Close()
 	var responseData map[string]interface{}
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 
 	// unmarshal the json into a string map
 	err = json.Unmarshal(body, &responseData)

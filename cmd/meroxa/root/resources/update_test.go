@@ -24,14 +24,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/cli/log"
-
 	"github.com/golang/mock/gomock"
-	mock "github.com/meroxa/cli/mock-cmd"
-	"github.com/meroxa/meroxa-go"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestUpdateResourceArgs(t *testing.T) {
@@ -52,8 +51,8 @@ func TestUpdateResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrID)
 		}
 	}
 }
@@ -83,21 +82,21 @@ func TestUpdateResourceFlags(t *testing.T) {
 		cf := c.Flags().Lookup(f.name)
 		if cf == nil {
 			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
+		} else {
+			if f.shorthand != cf.Shorthand {
+				t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
+			}
 
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
+			if f.required && !utils.IsFlagRequired(cf) {
+				t.Fatalf("expected flag \"%s\" to be required", f.name)
+			}
 
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
-		}
-
-		if cf.Hidden != f.hidden {
-			if cf.Hidden {
-				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
-			} else {
-				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+			if cf.Hidden != f.hidden {
+				if cf.Hidden {
+					t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+				} else {
+					t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+				}
 			}
 		}
 	}
@@ -119,13 +118,13 @@ func TestUpdateResourceExecutionNoFlags(t *testing.T) {
 func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
 
 	newName := "my-new-resource-name"
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		Name: newName,
 	}
 
@@ -139,7 +138,7 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.Name = r.Name
+	u.args.NameOrID = r.Name
 	u.flags.Name = newName
 
 	err := u.Execute(ctx)
@@ -151,7 +150,7 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -172,7 +171,7 @@ Resource %q is successfully updated!
 func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
@@ -181,7 +180,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	var metadata map[string]interface{}
 
 	_ = json.Unmarshal([]byte(newMetadata), &metadata)
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		Metadata: metadata,
 	}
 
@@ -195,7 +194,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.Name = r.Name
+	u.args.NameOrID = r.Name
 	u.flags.Metadata = newMetadata
 
 	err := u.Execute(ctx)
@@ -207,7 +206,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -228,13 +227,13 @@ Resource %q is successfully updated!
 func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	r := utils.GenerateResource()
 	newURL := "https://newUrl.io"
 
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		URL: newURL,
 	}
 
@@ -248,7 +247,7 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.Name = r.Name
+	u.args.NameOrID = r.Name
 	u.flags.URL = newURL
 
 	err := u.Execute(ctx)
@@ -260,7 +259,7 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -281,7 +280,7 @@ Resource %q is successfully updated!
 func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockUpdateResourceClient(ctrl)
+	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
 	newUsername := "newUsername"
@@ -291,7 +290,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	// Updating one of their values only
 	newCred := meroxa.Credentials{Username: newUsername}
 
-	nr := meroxa.UpdateResourceInput{
+	nr := &meroxa.UpdateResourceInput{
 		Credentials: &newCred,
 	}
 
@@ -305,7 +304,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.Name = r.Name
+	u.args.NameOrID = r.Name
 	u.flags.Username = newUsername
 
 	err := u.Execute(ctx)
@@ -317,7 +316,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.Name, u.args.Name)
+`, u.args.NameOrID, u.args.NameOrID)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
