@@ -162,7 +162,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	if c.flags.Environment != "" {
 		env = c.flags.Environment
 	} else {
-		env = "common"
+		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
 	c.logger.Infof(ctx, "Creating %q resource in %q environment...", input.Type, env)
