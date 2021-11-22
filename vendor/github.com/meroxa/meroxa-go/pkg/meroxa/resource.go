@@ -75,7 +75,7 @@ type Resource struct {
 	Credentials *Credentials           `json:"credentials,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	SSHTunnel   *ResourceSSHTunnel     `json:"ssh_tunnel,omitempty"`
-	Environment Environment            `json:"environment"`
+	Environment *Environment           `json:"environment"`
 	Status      ResourceStatus         `json:"status"`
 	CreatedAt   time.Time              `json:"created_at"`
 	UpdatedAt   time.Time              `json:"updated_at"`

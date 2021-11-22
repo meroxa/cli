@@ -29,6 +29,23 @@ func GenerateResource() meroxa.Resource {
 	}
 }
 
+func GenerateResourceWithEnvironment() meroxa.Resource {
+	r := GenerateResource()
+
+	r.Environment = &meroxa.Environment{
+		UUID:          "424ec647-9f0f-45a5-8e4b-3e0441f12444",
+		Name:          "my-environment",
+		Provider:      meroxa.EnvironmentProviderAws,
+		Region:        meroxa.EnvironmentRegionUsEast1,
+		Type:          meroxa.EnvironmentTypeHosted,
+		Configuration: nil,
+		Status: meroxa.EnvironmentViewStatus{
+			State: meroxa.EnvironmentStateProvisioned,
+		},
+	}
+	return r
+}
+
 func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 	if pipelineID == 0 {
 		pipelineID = rand.Intn(10000)
