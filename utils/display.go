@@ -122,6 +122,52 @@ func ResourceTable(res *meroxa.Resource) string {
 	return mainTable.String()
 }
 
+func PipelineTable(p *meroxa.Pipeline) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: p.UUID},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "ID:"},
+			{Text: fmt.Sprintf("%d", p.ID)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: p.Name},
+		},
+	}
+
+	if p.Environment != nil {
+		if pU := p.Environment.UUID; pU != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
+				{Text: pU},
+			})
+		}
+		if pN := p.Environment.Name; pN != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment Name:"},
+				{Text: pN},
+			})
+		}
+	}
+
+	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+		{Align: simpletable.AlignRight, Text: "State:"},
+		{Text: strings.Title(string(p.State))},
+	})
+
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	return mainTable.String()
+}
+
+func PrintPipelineTable(pipeline *meroxa.Pipeline) {
+	fmt.Println(PipelineTable(pipeline))
+}
+
 func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 	if len(resources) != 0 {
 		table := simpletable.New()

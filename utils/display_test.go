@@ -444,6 +444,69 @@ func TestPipelinesTable(t *testing.T) {
 	}
 }
 
+func TestPipelineTable(t *testing.T) {
+	pipelineWithEnv := &meroxa.Pipeline{}
+
+	pipelineBase := &meroxa.Pipeline{
+		UUID: "6f380820-dfed-4a69-b708-10d134866a35",
+		ID:   0,
+		Name: "pipeline-base",
+	}
+
+	deepCopy(pipelineBase, pipelineWithEnv)
+	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
+	pipelineWithEnv.Environment = &meroxa.PipelineEnvironment{
+		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
+		Name: "my-environment",
+	}
+
+	tests := map[string]*meroxa.Pipeline{
+		"Base":             pipelineBase,
+		"With_Environment": pipelineWithEnv,
+	}
+
+	tableHeaders := []string{"UUID", "ID", "Name", "State"}
+	var envHeader = "Environment"
+
+	for name, p := range tests {
+		t.Run(name, func(t *testing.T) {
+			out := CaptureOutput(func() {
+				PrintPipelineTable(p)
+			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%q header is missing", header)
+				}
+			}
+
+			switch name {
+			case "Base":
+				if !strings.Contains(out, pipelineBase.Name) {
+					t.Errorf("%s, not found", pipelineBase.Name)
+				}
+				if !strings.Contains(out, strconv.Itoa(pipelineBase.ID)) {
+					t.Errorf("%d, not found", pipelineBase.ID)
+				}
+				if !strings.Contains(out, pipelineBase.UUID) {
+					t.Errorf("%s, not found", pipelineBase.UUID)
+				}
+				if strings.Contains(out, envHeader) {
+					t.Errorf("%q header is not necessary", envHeader)
+				}
+			case "With_Environment":
+				if !strings.Contains(out, envHeader) {
+					t.Errorf("%q header is missing", envHeader)
+				}
+				if !strings.Contains(out, pipelineWithEnv.Environment.Name) {
+					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name)
+				}
+			}
+			fmt.Println(out)
+		})
+	}
+}
+
 func TestPipelinesTableWithoutHeaders(t *testing.T) {
 	pipeline := &meroxa.Pipeline{
 		ID:   0,

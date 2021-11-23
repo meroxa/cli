@@ -19,6 +19,17 @@ func GeneratePipeline() meroxa.Pipeline {
 	}
 }
 
+func GeneratePipelineWithEnvironment() meroxa.Pipeline {
+	p := GeneratePipeline()
+
+	p.Environment = &meroxa.PipelineEnvironment{
+		UUID: "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
+		Name: "my-env",
+	}
+
+	return p
+}
+
 func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
 		ID:       1,

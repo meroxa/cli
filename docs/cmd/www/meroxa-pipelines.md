@@ -28,6 +28,7 @@ Manage pipelines on Meroxa
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 * [meroxa pipelines create](/cli/cmd/meroxa-pipelines-create/)	 - Create a pipeline
+* [meroxa pipelines describe](/cli/cmd/meroxa-pipelines-describe/)	 - Describe pipeline
 * [meroxa pipelines list](/cli/cmd/meroxa-pipelines-list/)	 - List pipelines
 * [meroxa pipelines remove](/cli/cmd/meroxa-pipelines-remove/)	 - Remove pipeline
 * [meroxa pipelines update](/cli/cmd/meroxa-pipelines-update/)	 - Update pipeline name, state or metadata
