@@ -66,6 +66,7 @@ func TestCreatePipelineFlags(t *testing.T) {
 		hidden    bool
 	}{
 		{name: "metadata", required: false, shorthand: "m", hidden: false},
+		{name: "env", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -94,39 +95,39 @@ func TestCreatePipelineFlags(t *testing.T) {
 	}
 }
 
-func TestCreateEndpointExecution(t *testing.T) {
+func TestCreatePipelineWithoutEnvironmentExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 	pName := "my-pipeline"
 
-	p := &meroxa.CreatePipelineInput{
+	pi := &meroxa.CreatePipelineInput{
 		Name: pName,
 	}
 
-	rP := &meroxa.Pipeline{
+	p := &meroxa.Pipeline{
 		ID:    1,
 		Name:  pName,
 		State: "healthy",
 	}
 
-	rP.Name = pName
+	p.Name = pName
 
 	client.
 		EXPECT().
 		CreatePipeline(
 			ctx,
-			p,
+			pi,
 		).
-		Return(rP, nil)
+		Return(p, nil)
 
 	c := &Create{
 		client: client,
 		logger: logger,
 	}
 
-	c.args.Name = p.Name
+	c.args.Name = pi.Name
 
 	err := c.Execute(ctx)
 
@@ -135,9 +136,9 @@ func TestCreateEndpointExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating pipeline %q...
+	wantLeveledOutput := fmt.Sprintf(`Creating pipeline %q in %q environment...
 Pipeline %q successfully created!
-`, pName, pName)
+`, pName, string(meroxa.EnvironmentTypeCommon), pName)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -150,7 +151,75 @@ Pipeline %q successfully created!
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !reflect.DeepEqual(gotPipeline, *rP) {
-		t.Fatalf("expected \"%v\", got \"%v\"", *rP, gotPipeline)
+	if !reflect.DeepEqual(gotPipeline, *p) {
+		t.Fatalf("expected \"%v\", got \"%v\"", *p, gotPipeline)
+	}
+}
+
+func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+	pName := "my-pipeline"
+	env := "my-env"
+
+	pi := &meroxa.CreatePipelineInput{
+		Name:        pName,
+		Environment: &meroxa.PipelineEnvironment{Name: env},
+	}
+
+	p := &meroxa.Pipeline{
+		ID:   1,
+		Name: pName,
+		Environment: &meroxa.PipelineEnvironment{
+			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
+			Name: env,
+		},
+		State: "healthy",
+	}
+
+	p.Name = pName
+
+	client.
+		EXPECT().
+		CreatePipeline(
+			ctx,
+			pi,
+		).
+		Return(p, nil)
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	c.args.Name = pi.Name
+	c.flags.Environment = pi.Environment.Name
+
+	err := c.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Creating pipeline %q in %q environment...
+Pipeline %q successfully created!
+`, pName, env, pName)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotPipeline meroxa.Pipeline
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotPipeline)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotPipeline, *p) {
+		t.Fatalf("expected \"%v\", got \"%v\"", *p, gotPipeline)
 	}
 }

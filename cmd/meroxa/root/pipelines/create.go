@@ -22,6 +22,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -49,12 +51,20 @@ type Create struct {
 	}
 
 	flags struct {
-		Metadata string `long:"metadata"    short:"m" usage:"pipeline metadata"`
+		Metadata string `long:"metadata" short:"m" usage:"pipeline metadata"`
+		// TODO: Add support to builder to create flags with an alias (--env | --environment)
+		Environment string `long:"env" usage:"environment (name or UUID) where pipeline will be created" hidden:"true"`
 	}
 }
 
 func (c *Create) Execute(ctx context.Context) error {
-	c.logger.Infof(ctx, "Creating pipeline %q...", c.args.Name)
+	env := string(meroxa.EnvironmentTypeCommon)
+
+	if c.flags.Environment != "" {
+		env = c.flags.Environment
+	}
+
+	c.logger.Infof(ctx, "Creating pipeline %q in %q environment...", c.args.Name, env)
 
 	p := &meroxa.CreatePipelineInput{
 		Name: c.args.Name,
@@ -68,6 +78,18 @@ func (c *Create) Execute(ctx context.Context) error {
 		}
 
 		p.Metadata = metadata
+	}
+
+	if c.flags.Environment != "" {
+		p.Environment = &meroxa.PipelineEnvironment{}
+
+		_, err := uuid.Parse(c.flags.Environment)
+
+		if err == nil {
+			p.Environment.UUID = c.flags.Environment
+		} else {
+			p.Environment.Name = c.flags.Environment
+		}
 	}
 
 	pipeline, err := c.client.CreatePipeline(ctx, p)
