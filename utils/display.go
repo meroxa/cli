@@ -364,17 +364,29 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 					{Align: simpletable.AlignCenter, Text: "STATE"},
 				},
 			}
 		}
 
 		for _, p := range pipelines {
+			var env string
+
+			if p.Environment != nil && p.Environment.Name != "" {
+				env = p.Environment.Name
+			} else {
+				env = string(meroxa.EnvironmentTypeCommon)
+			}
+
 			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: p.UUID},
 				{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
 				{Align: simpletable.AlignCenter, Text: p.Name},
+				{Align: simpletable.AlignCenter, Text: env},
 				{Align: simpletable.AlignCenter, Text: string(p.State)},
 			}
 

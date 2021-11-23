@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const pipelinesBasePath = "/v1/pipelines"
@@ -18,21 +19,33 @@ const (
 
 // Pipeline represents the Meroxa Pipeline type within the Meroxa API
 type Pipeline struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	// @TODO metadata is unused in Platform-API, so deprecate over time
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
-	State    PipelineState          `json:"state"`
+	CreatedAt   time.Time              `json:"created_at"`
+	Environment *PipelineEnvironment   `json:"environment,omitempty"`
+	ID          int                    `json:"id"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"` // @TODO metadata is unused in Platform-API, so deprecate over time
+	Name        string                 `json:"name"`
+	State       PipelineState          `json:"state"`
+	UpdatedAt   time.Time              `json:"updated_at"`
+	UUID        string                 `json:"uuid"`
 }
 
+// CreatePipelineInput represents the input when creating a Meroxa Pipeline
 type CreatePipelineInput struct {
-	Name     string                 `json:"name"`
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Name        string                 `json:"name"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+	Environment *PipelineEnvironment   `json:"environment,omitempty"`
 }
 
+// UpdatePipelineInput represents the input when updating a Meroxa Pipeline
 type UpdatePipelineInput struct {
 	Name     string                 `json:"name"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
+}
+
+// PipelineEnvironment represents the input for a Meroxa Environment created within a Meroxa Pipeline
+type PipelineEnvironment struct {
+	UUID string `json:"uuid,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // ComponentKind enum for Component "kinds" within Pipeline stages
@@ -173,8 +186,6 @@ func (c *client) GetPipelineByName(ctx context.Context, name string) (*Pipeline,
 
 	return &p, nil
 }
-
-// GetPipelineByName returns a Pipeline with the given name (scoped to the calling user)
 
 // GetPipeline returns a Pipeline with the given id
 func (c *client) GetPipeline(ctx context.Context, pipelineID int) (*Pipeline, error) {

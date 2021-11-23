@@ -376,20 +376,32 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 
 func TestPipelinesTable(t *testing.T) {
 	pipelineIDAlign := &meroxa.Pipeline{}
+	pipelineWithEnv := &meroxa.Pipeline{}
+
 	pipelineBase := &meroxa.Pipeline{
+		UUID: "6f380820-dfed-4a69-b708-10d134866a35",
 		ID:   0,
 		Name: "pipeline-base",
 	}
 	deepCopy(pipelineBase, pipelineIDAlign)
-	pipelineIDAlign.ID = 1000
+	pipelineIDAlign.UUID = "0e1d29b9-2e62-4cc2-a49d-126f2e1b15ef"
 	pipelineIDAlign.Name = "pipeline-align"
+	pipelineIDAlign.ID = 1000
 
-	tests := map[string][]*meroxa.Pipeline{
-		"Base":         {pipelineBase},
-		"ID_Alignment": {pipelineBase, pipelineIDAlign},
+	deepCopy(pipelineBase, pipelineWithEnv)
+	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
+	pipelineWithEnv.Environment = &meroxa.PipelineEnvironment{
+		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
+		Name: "my-environment",
 	}
 
-	tableHeaders := []string{"ID", "NAME", "STATE"}
+	tests := map[string][]*meroxa.Pipeline{
+		"Base":             {pipelineBase},
+		"ID_Alignment":     {pipelineBase, pipelineIDAlign},
+		"With_Environment": {pipelineBase, pipelineIDAlign, pipelineWithEnv},
+	}
+
+	tableHeaders := []string{"UUID", "ID", "NAME", "ENVIRONMENT", "STATE"}
 
 	for name, pipelines := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -411,14 +423,22 @@ func TestPipelinesTable(t *testing.T) {
 				if !strings.Contains(out, strconv.Itoa(pipelineBase.ID)) {
 					t.Errorf("%d, not found", pipelineBase.ID)
 				}
-			case "ID_Alignment":
-				if !strings.Contains(out, pipelineBase.Name) {
-					t.Errorf("%s, not found", pipelineBase.Name)
+				if !strings.Contains(out, string(meroxa.EnvironmentTypeCommon)) {
+					t.Errorf("environment should be %s", string(meroxa.EnvironmentTypeCommon))
 				}
-				if !strings.Contains(out, strconv.Itoa(pipelineBase.ID)) {
-					t.Errorf("%d, not found", pipelineBase.ID)
+			case "ID_Alignment":
+				if !strings.Contains(out, pipelineIDAlign.Name) {
+					t.Errorf("%s, not found", pipelineIDAlign.Name)
+				}
+				if !strings.Contains(out, strconv.Itoa(pipelineIDAlign.ID)) {
+					t.Errorf("%d, not found", pipelineIDAlign.ID)
+				}
+			case "With_Environment":
+				if !strings.Contains(out, pipelineWithEnv.Environment.Name) {
+					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name)
 				}
 			}
+
 			fmt.Println(out)
 		})
 	}
