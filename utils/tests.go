@@ -72,7 +72,7 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 	}
 }
 
-func GenerateConnectorWithEnvironment(pipelineID int, connectorName string, envNameOrUuid string) meroxa.Connector {
+func GenerateConnectorWithEnvironment(pipelineID int, connectorName, envNameOrUUID string) meroxa.Connector {
 	if pipelineID == 0 {
 		pipelineID = rand.Intn(10000)
 	}
@@ -82,11 +82,11 @@ func GenerateConnectorWithEnvironment(pipelineID int, connectorName string, envN
 	}
 
 	var env meroxa.ConnectorEnvironment
-	_, err := uuid.Parse(envNameOrUuid)
+	_, err := uuid.Parse(envNameOrUUID)
 	if err == nil {
-		env.UUID = envNameOrUuid
+		env.UUID = envNameOrUUID
 	} else {
-		env.Name = envNameOrUuid
+		env.Name = envNameOrUUID
 	}
 
 	return meroxa.Connector{
