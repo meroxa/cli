@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const connectorsBasePath = "/v1/connectors"
@@ -36,16 +37,19 @@ const (
 )
 
 type Connector struct {
-	ID            int                    `json:"id"`
-	Type          ConnectorType          `json:"type"`
-	Name          string                 `json:"name"`
 	Configuration map[string]interface{} `json:"config"`
+	CreatedAt     time.Time              `json:"created_at"`
+	Environment   *ConnectorEnvironment   `json:"environment,omitempty"`
+	ID            int                    `json:"id"`
 	Metadata      map[string]interface{} `json:"metadata"`
+	Name          string                 `json:"name"`
+	PipelineID    int                    `json:"pipeline_id"`
+	PipelineName  string                 `json:"pipeline_name"`
 	Streams       map[string]interface{} `json:"streams"`
 	State         ConnectorState         `json:"state"`
 	Trace         string                 `json:"trace,omitempty"`
-	PipelineID    int                    `json:"pipeline_id"`
-	PipelineName  string                 `json:"pipeline_name"`
+	Type          ConnectorType          `json:"type"`
+	UpdatedAt     time.Time              `json:"updated_at"`
 }
 
 type CreateConnectorInput struct {
@@ -62,6 +66,11 @@ type CreateConnectorInput struct {
 type UpdateConnectorInput struct {
 	Name          string                 `json:"name,omitempty"`
 	Configuration map[string]interface{} `json:"config,omitempty"`
+}
+
+type ConnectorEnvironment struct {
+	UUID string `json:"uuid,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // CreateConnector provisions a connector between the Resource and the Meroxa

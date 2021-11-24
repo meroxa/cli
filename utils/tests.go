@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/spf13/pflag"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -68,6 +69,36 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 		Streams: map[string]interface{}{
 			"output": []interface{}{"my-resource.Table"},
 		},
+	}
+}
+
+func GenerateConnectorWithEnvironment(pipelineID int, connectorName string, envNameOrUuid string) meroxa.Connector {
+	if pipelineID == 0 {
+		pipelineID = rand.Intn(10000)
+	}
+
+	if connectorName == "" {
+		connectorName = "connector-1234"
+	}
+
+	var env meroxa.ConnectorEnvironment
+	_, err := uuid.Parse(envNameOrUuid)
+	if err == nil {
+		env.UUID = envNameOrUuid
+	} else {
+		env.Name = envNameOrUuid
+	}
+
+	return meroxa.Connector{
+		ID:         1,
+		Type:       meroxa.ConnectorTypeSource,
+		Name:       connectorName,
+		State:      meroxa.ConnectorStateRunning,
+		PipelineID: pipelineID,
+		Streams: map[string]interface{}{
+			"output": []interface{}{"my-resource.Table"},
+		},
+		Environment: &env,
 	}
 }
 

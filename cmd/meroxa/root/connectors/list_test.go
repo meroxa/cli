@@ -40,6 +40,13 @@ func getConnectors(pipelineID int) []*meroxa.Connector {
 	return connectors
 }
 
+func getConnectorsWithEnvironment(pipelineID int) []*meroxa.Connector {
+	var connectors []*meroxa.Connector
+	c := utils.GenerateConnectorWithEnvironment(pipelineID, "", "my-env")
+	connectors = append(connectors, &c)
+	return connectors
+}
+
 func TestListConnectorsFlags(t *testing.T) {
 	expectedFlags := []struct {
 		name      string
@@ -74,6 +81,7 @@ func TestListConnectorsExecution(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	connectors := getConnectors(1)
+	connectors = append(connectors, getConnectorsWithEnvironment(1)...)
 
 	client.
 		EXPECT().

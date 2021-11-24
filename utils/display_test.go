@@ -202,9 +202,10 @@ func TestConnectorRunningTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:      "running",
-		Trace:      "",
-		PipelineID: 1,
+		State:       "running",
+		Trace:       "",
+		PipelineID:  1,
+		Environment: &meroxa.ConnectorEnvironment{Name: "my-env"},
 	}
 	failedConnector := &meroxa.Connector{}
 	deepCopy(connector, failedConnector)
@@ -216,7 +217,7 @@ func TestConnectorRunningTable(t *testing.T) {
 		"failed":  failedConnector,
 	}
 
-	tableHeaders := []string{"ID", "Name", "Type", "Streams", "State", "Pipeline"}
+	tableHeaders := []string{"ID", "Name", "Type", "Streams", "State", "Pipeline", "Environment"}
 
 	for name, connector := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -267,9 +268,10 @@ func TestConnectorsTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:      "running",
-		Trace:      "",
-		PipelineID: 1,
+		State:       "running",
+		Trace:       "",
+		PipelineID:  1,
+		Environment: &meroxa.ConnectorEnvironment{UUID: "2c5326ac-041f-4679-b446-d6d95b91f497"},
 	}
 
 	deepCopy(connection, connectionIDAlign)
@@ -290,7 +292,7 @@ func TestConnectorsTable(t *testing.T) {
 		"Input_Output": {connection, connectionInputOutput},
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
 
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -351,7 +353,7 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 		PipelineID: 1,
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
 
 	var connections []*meroxa.Connector
 	connections = append(connections, connection)

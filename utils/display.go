@@ -300,6 +300,21 @@ func ConnectorTable(connector *meroxa.Connector) string {
 			{Text: connector.Trace},
 		})
 	}
+	var env string
+	if connector.Environment != nil {
+		if connector.Environment.Name != "" {
+			env = connector.Environment.Name
+		} else {
+			env = connector.Environment.UUID
+		}
+	} else {
+		env = string(meroxa.EnvironmentTypeCommon)
+	}
+	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+		{Align: simpletable.AlignRight, Text: "Environment:"},
+		{Text: env},
+	})
+
 	mainTable.SetStyle(simpletable.StyleCompact)
 
 	return mainTable.String()
@@ -318,11 +333,24 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 					{Align: simpletable.AlignCenter, Text: "STREAMS"},
 					{Align: simpletable.AlignCenter, Text: "STATE"},
 					{Align: simpletable.AlignCenter, Text: "PIPELINE"},
+					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 				},
 			}
 		}
 
 		for _, conn := range connectors {
+			var env string
+
+			if conn.Environment != nil {
+				if conn.Environment.Name != "" {
+					env = conn.Environment.Name
+				} else {
+					env = conn.Environment.UUID
+				}
+			} else {
+				env = string(meroxa.EnvironmentTypeCommon)
+			}
+
 			streamStr := formatStreams(conn.Streams)
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
@@ -331,6 +359,7 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 				{Text: streamStr},
 				{Text: string(conn.State)},
 				{Text: conn.PipelineName},
+				{Text: env},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
