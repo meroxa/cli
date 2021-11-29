@@ -301,12 +301,8 @@ func ConnectorTable(connector *meroxa.Connector) string {
 		})
 	}
 	var env string
-	if connector.Environment != nil {
-		if connector.Environment.Name != "" {
-			env = connector.Environment.Name
-		} else {
-			env = connector.Environment.UUID
-		}
+	if connector.Environment != nil && connector.Environment.Name != "" {
+		env = connector.Environment.Name
 	} else {
 		env = string(meroxa.EnvironmentTypeCommon)
 	}
@@ -341,12 +337,8 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 		for _, conn := range connectors {
 			var env string
 
-			if conn.Environment != nil {
-				if conn.Environment.Name != "" {
-					env = conn.Environment.Name
-				} else {
-					env = conn.Environment.UUID
-				}
+			if conn.Environment != nil && conn.Environment.Name != "" {
+				env = conn.Environment.Name
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}
