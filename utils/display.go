@@ -122,6 +122,52 @@ func ResourceTable(res *meroxa.Resource) string {
 	return mainTable.String()
 }
 
+func PipelineTable(p *meroxa.Pipeline) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: p.UUID},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "ID:"},
+			{Text: fmt.Sprintf("%d", p.ID)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: p.Name},
+		},
+	}
+
+	if p.Environment != nil {
+		if pU := p.Environment.UUID; pU != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
+				{Text: pU},
+			})
+		}
+		if pN := p.Environment.Name; pN != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment Name:"},
+				{Text: pN},
+			})
+		}
+	}
+
+	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+		{Align: simpletable.AlignRight, Text: "State:"},
+		{Text: strings.Title(string(p.State))},
+	})
+
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	return mainTable.String()
+}
+
+func PrintPipelineTable(pipeline *meroxa.Pipeline) {
+	fmt.Println(PipelineTable(pipeline))
+}
+
 func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 	if len(resources) != 0 {
 		table := simpletable.New()
@@ -364,17 +410,29 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
+					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 					{Align: simpletable.AlignCenter, Text: "STATE"},
 				},
 			}
 		}
 
 		for _, p := range pipelines {
+			var env string
+
+			if p.Environment != nil && p.Environment.Name != "" {
+				env = p.Environment.Name
+			} else {
+				env = string(meroxa.EnvironmentTypeCommon)
+			}
+
 			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: p.UUID},
 				{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
 				{Align: simpletable.AlignCenter, Text: p.Name},
+				{Align: simpletable.AlignCenter, Text: env},
 				{Align: simpletable.AlignCenter, Text: string(p.State)},
 			}
 

@@ -1369,6 +1369,34 @@ _meroxa_pipelines_create()
     noun_aliases=()
 }
 
+_meroxa_pipelines_describe()
+{
+    last_command="meroxa_pipelines_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_pipelines_help()
 {
     last_command="meroxa_pipelines_help"
@@ -1498,6 +1526,7 @@ _meroxa_pipelines()
 
     commands=()
     commands+=("create")
+    commands+=("describe")
     commands+=("help")
     commands+=("list")
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
