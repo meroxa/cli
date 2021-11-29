@@ -16,6 +16,12 @@ const (
 	textContentType = "text/plain"
 )
 
+// EnvironmentIdentifier represents either value as a unique key for a Meroxa Environment
+type EnvironmentIdentifier struct {
+	UUID string `json:"uuid,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
 // client represents the Meroxa API Client
 type client struct {
 	baseURL   *url.URL

@@ -39,7 +39,7 @@ const (
 type Connector struct {
 	Configuration map[string]interface{} `json:"config"`
 	CreatedAt     time.Time              `json:"created_at"`
-	Environment   *ConnectorEnvironment   `json:"environment,omitempty"`
+	Environment   *EnvironmentIdentifier  `json:"environment,omitempty"`
 	ID            int                    `json:"id"`
 	Metadata      map[string]interface{} `json:"metadata"`
 	Name          string                 `json:"name"`
@@ -66,11 +66,6 @@ type CreateConnectorInput struct {
 type UpdateConnectorInput struct {
 	Name          string                 `json:"name,omitempty"`
 	Configuration map[string]interface{} `json:"config,omitempty"`
-}
-
-type ConnectorEnvironment struct {
-	UUID string `json:"uuid,omitempty"`
-	Name string `json:"name,omitempty"`
 }
 
 // CreateConnector provisions a connector between the Resource and the Meroxa
