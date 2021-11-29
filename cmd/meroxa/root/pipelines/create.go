@@ -58,13 +58,7 @@ type Create struct {
 }
 
 func (c *Create) Execute(ctx context.Context) error {
-	env := string(meroxa.EnvironmentTypeCommon)
-
-	if c.flags.Environment != "" {
-		env = c.flags.Environment
-	}
-
-	c.logger.Infof(ctx, "Creating pipeline %q in %q environment...", c.args.Name, env)
+	var env string
 
 	p := &meroxa.CreatePipelineInput{
 		Name: c.args.Name,
@@ -81,6 +75,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	}
 
 	if c.flags.Environment != "" {
+		env = c.flags.Environment
 		p.Environment = &meroxa.PipelineEnvironment{}
 
 		_, err := uuid.Parse(c.flags.Environment)
@@ -90,8 +85,11 @@ func (c *Create) Execute(ctx context.Context) error {
 		} else {
 			p.Environment.Name = c.flags.Environment
 		}
+	} else {
+		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
+	c.logger.Infof(ctx, "Creating pipeline %q in %q environment...", c.args.Name, env)
 	pipeline, err := c.client.CreatePipeline(ctx, p)
 
 	if err != nil {
