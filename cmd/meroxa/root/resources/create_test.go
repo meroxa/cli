@@ -45,6 +45,7 @@ func TestCreateResourceFlags(t *testing.T) {
 		name      string
 		required  bool
 		shorthand string
+		hidden    bool
 	}{
 		{name: "type", required: true, shorthand: ""},
 		{name: "url", required: true, shorthand: "u"},
@@ -55,6 +56,7 @@ func TestCreateResourceFlags(t *testing.T) {
 		{name: "client-key", required: false, shorthand: ""},
 		{name: "ssl", required: false, shorthand: ""},
 		{name: "metadata", required: false, shorthand: "m"},
+		{name: "env", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -70,6 +72,14 @@ func TestCreateResourceFlags(t *testing.T) {
 
 			if f.required && !utils.IsFlagRequired(cf) {
 				t.Fatalf("expected flag \"%s\" to be required", f.name)
+			}
+
+			if cf.Hidden != f.hidden {
+				if cf.Hidden {
+					t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
+				} else {
+					t.Fatalf("expected flag \"%s\" to be hidden", f.name)
+				}
 			}
 		}
 	}
@@ -112,9 +122,133 @@ func TestCreateResourceExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating %q resource...
+	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
 Resource %q is successfully created!
-`, cr.Type, cr.Name)
+`, cr.Type, meroxa.EnvironmentTypeCommon, cr.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotResource meroxa.Resource
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotResource)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotResource, cr) {
+		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotResource)
+	}
+}
+
+func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	cr := utils.GenerateResourceWithEnvironment()
+
+	r := meroxa.CreateResourceInput{
+		Type:        "postgres",
+		Name:        "",
+		URL:         "https://foo.url",
+		Credentials: nil,
+		Metadata:    nil,
+		Environment: &meroxa.ResourceEnvironment{
+			Name: cr.Environment.Name,
+		},
+	}
+
+	client.
+		EXPECT().
+		CreateResource(
+			ctx,
+			&r,
+		).
+		Return(&cr, nil)
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+	c.args.Name = r.Name
+	c.flags.Type = string(r.Type)
+	c.flags.URL = r.URL
+	c.flags.Environment = r.Environment.Name
+
+	err := c.Execute(ctx)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
+Resource %q is successfully created!
+`, cr.Type, cr.Environment.Name, cr.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotResource meroxa.Resource
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotResource)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotResource, cr) {
+		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotResource)
+	}
+}
+
+func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	cr := utils.GenerateResourceWithEnvironment()
+
+	r := meroxa.CreateResourceInput{
+		Type:        "postgres",
+		Name:        "",
+		URL:         "https://foo.url",
+		Credentials: nil,
+		Metadata:    nil,
+		Environment: &meroxa.ResourceEnvironment{
+			UUID: cr.Environment.UUID,
+		},
+	}
+
+	client.
+		EXPECT().
+		CreateResource(
+			ctx,
+			&r,
+		).
+		Return(&cr, nil)
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+	c.args.Name = r.Name
+	c.flags.Type = string(r.Type)
+	c.flags.URL = r.URL
+	c.flags.Environment = r.Environment.UUID
+
+	err := c.Execute(ctx)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
+Resource %q is successfully created!
+`, cr.Type, cr.Environment.UUID, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

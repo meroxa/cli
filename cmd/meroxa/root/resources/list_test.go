@@ -38,6 +38,12 @@ func getResources() []*meroxa.Resource {
 	return append(resources, &r)
 }
 
+func getResourcesWithEnvironment() []*meroxa.Resource {
+	var resources []*meroxa.Resource
+	r := utils.GenerateResourceWithEnvironment()
+	return append(resources, &r)
+}
+
 func TestListResourcesFlags(t *testing.T) {
 	expectedFlags := []struct {
 		name      string
@@ -71,7 +77,7 @@ func TestListResourcesExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	resources := getResources()
+	resources := append(getResources(), getResourcesWithEnvironment()...)
 
 	client.
 		EXPECT().

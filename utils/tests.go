@@ -29,6 +29,16 @@ func GenerateResource() meroxa.Resource {
 	}
 }
 
+func GenerateResourceWithEnvironment() meroxa.Resource {
+	r := GenerateResource()
+
+	r.Environment = &meroxa.ResourceEnvironment{
+		UUID: "424ec647-9f0f-45a5-8e4b-3e0441f12444",
+		Name: "my-environment",
+	}
+	return r
+}
+
 func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 	if pipelineID == 0 {
 		pipelineID = rand.Intn(10000)

@@ -39,7 +39,7 @@ func TestResourcesTable(t *testing.T) {
 		"ID_Alignment": {resource, resIDAlign},
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "URL", "TUNNEL", "STATE"}
+	tableHeaders := []string{"ID", "NAME", "TYPE", "ENVIRONMENT", "URL", "TUNNEL", "STATE"}
 
 	for name, resources := range tests {
 		t.Run(name, func(t *testing.T) {

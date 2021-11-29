@@ -100,6 +100,23 @@ func ResourceTable(res *meroxa.Resource) string {
 			{Text: strings.Title(d)},
 		})
 	}
+
+	if res.Environment != nil {
+		if e := res.Environment.UUID; e != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
+				{Text: e},
+			})
+		}
+
+		if e := res.Environment.Name; e != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment Name:"},
+				{Text: e},
+			})
+		}
+	}
+
 	mainTable.SetStyle(simpletable.StyleCompact)
 
 	return mainTable.String()
@@ -115,6 +132,7 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "TYPE"},
+					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 					{Align: simpletable.AlignCenter, Text: "URL"},
 					{Align: simpletable.AlignCenter, Text: "TUNNEL"},
 					{Align: simpletable.AlignCenter, Text: "STATE"},
@@ -128,10 +146,19 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 				tunnel = "SSH"
 			}
 
+			var env string
+
+			if res.Environment != nil && res.Environment.Name != "" {
+				env = res.Environment.Name
+			} else {
+				env = string(meroxa.EnvironmentTypeCommon)
+			}
+
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
 				{Text: res.Name},
 				{Text: string(res.Type)},
+				{Text: env},
 				{Text: res.URL},
 				{Align: simpletable.AlignCenter, Text: tunnel},
 				{Align: simpletable.AlignCenter, Text: strings.Title(string(res.Status.State))},

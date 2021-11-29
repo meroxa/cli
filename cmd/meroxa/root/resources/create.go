@@ -21,9 +21,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/meroxa/cli/log"
-
+	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -43,6 +43,9 @@ type Create struct {
 		Type     string `long:"type"        short:""  usage:"resource type"        required:"true"`
 		URL      string `long:"url"         short:"u" usage:"resource url"         required:"true"`
 		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
+
+		// TODO: Add support to builder to create flags with an alias (--env | --environment)
+		Environment string `long:"env" usage:"environment (name or UUID) where resource will be created" hidden:"true"`
 
 		// credentials
 		Username      string `long:"username"    short:"" usage:"username"`
@@ -74,6 +77,8 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Add a resource to your Meroxa resource catalog",
 		Long:  `Use the create command to add resources to your Meroxa resource catalog.`,
+
+		// TODO: Provide example with `--env` once it's not behind a feature flag
 		Example: `
 meroxa resources create store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":true}'
 meroxa resources create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
@@ -107,11 +112,28 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (c *Create) Execute(ctx context.Context) error {
+	var env string
+
 	input := meroxa.CreateResourceInput{
 		Type:     meroxa.ResourceType(c.flags.Type),
 		Name:     c.args.Name,
 		URL:      c.flags.URL,
 		Metadata: nil,
+	}
+
+	if c.flags.Environment != "" {
+		input.Environment = &meroxa.ResourceEnvironment{}
+		env = c.flags.Environment
+
+		_, err := uuid.Parse(c.flags.Environment)
+
+		if err == nil {
+			input.Environment.UUID = c.flags.Environment
+		} else {
+			input.Environment.Name = c.flags.Environment
+		}
+	} else {
+		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
 	if c.hasCredentials() {
@@ -139,7 +161,7 @@ func (c *Create) Execute(ctx context.Context) error {
 		}
 	}
 
-	c.logger.Infof(ctx, "Creating %q resource...", input.Type)
+	c.logger.Infof(ctx, "Creating %q resource in %q environment...", input.Type, env)
 
 	res, err := c.client.CreateResource(ctx, &input)
 	if err != nil {
