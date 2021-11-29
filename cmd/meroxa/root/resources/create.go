@@ -21,10 +21,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/meroxa/cli/log"
-
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -113,6 +112,8 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (c *Create) Execute(ctx context.Context) error {
+	var env string
+
 	input := meroxa.CreateResourceInput{
 		Type:     meroxa.ResourceType(c.flags.Type),
 		Name:     c.args.Name,
@@ -122,6 +123,7 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	if c.flags.Environment != "" {
 		input.Environment = &meroxa.ResourceEnvironment{}
+		env = c.flags.Environment
 
 		_, err := uuid.Parse(c.flags.Environment)
 
@@ -130,6 +132,8 @@ func (c *Create) Execute(ctx context.Context) error {
 		} else {
 			input.Environment.Name = c.flags.Environment
 		}
+	} else {
+		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
 	if c.hasCredentials() {
@@ -155,14 +159,6 @@ func (c *Create) Execute(ctx context.Context) error {
 			Address:    sshURL,
 			PrivateKey: c.flags.SSHPrivateKey,
 		}
-	}
-
-	var env string
-
-	if c.flags.Environment != "" {
-		env = c.flags.Environment
-	} else {
-		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
 	c.logger.Infof(ctx, "Creating %q resource in %q environment...", input.Type, env)

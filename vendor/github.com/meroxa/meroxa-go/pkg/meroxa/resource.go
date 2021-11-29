@@ -60,6 +60,7 @@ type ResourceEnvironment struct {
 	UUID string `json:"uuid,omitempty"`
 	Name string `json:"name,omitempty"`
 }
+
 type ResourceStatus struct {
 	State         ResourceState `json:"state"`
 	Details       string        `json:"details"`
