@@ -25,7 +25,7 @@ jobs:
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
         with:
-          gpg-private-key: ${{ secrets.MEROXA_MACHINE_GPG_KEY }}
+          gpg_private_key: ${{ secrets.MEROXA_MACHINE_GPG_KEY }}
           passphrase: ${{ secrets.MEROXA_MACHINE_GPG_PASSPHRASE }}
       -
         name: Run GoReleaser
