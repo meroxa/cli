@@ -76,7 +76,7 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	if c.flags.Environment != "" {
 		env = c.flags.Environment
-		p.Environment = &meroxa.PipelineEnvironment{}
+		p.Environment = &meroxa.EnvironmentIdentifier{}
 
 		_, err := uuid.Parse(c.flags.Environment)
 

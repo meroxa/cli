@@ -205,7 +205,7 @@ func TestConnectorRunningTable(t *testing.T) {
 		State:       "running",
 		Trace:       "",
 		PipelineID:  1,
-		Environment: &meroxa.ConnectorEnvironment{Name: "my-env"},
+		Environment: &meroxa.EnvironmentIdentifier{Name: "my-env"},
 	}
 	failedConnector := &meroxa.Connector{}
 	deepCopy(connector, failedConnector)
@@ -271,7 +271,7 @@ func TestConnectorsTable(t *testing.T) {
 		State:       "running",
 		Trace:       "",
 		PipelineID:  1,
-		Environment: &meroxa.ConnectorEnvironment{UUID: "2c5326ac-041f-4679-b446-d6d95b91f497"},
+		Environment: &meroxa.EnvironmentIdentifier{UUID: "2c5326ac-041f-4679-b446-d6d95b91f497"},
 	}
 
 	deepCopy(connection, connectionIDAlign)
@@ -392,7 +392,7 @@ func TestPipelinesTable(t *testing.T) {
 
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
-	pipelineWithEnv.Environment = &meroxa.PipelineEnvironment{
+	pipelineWithEnv.Environment = &meroxa.EnvironmentIdentifier{
 		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
 		Name: "my-environment",
 	}
@@ -457,7 +457,7 @@ func TestPipelineTable(t *testing.T) {
 
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
-	pipelineWithEnv.Environment = &meroxa.PipelineEnvironment{
+	pipelineWithEnv.Environment = &meroxa.EnvironmentIdentifier{
 		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
 		Name: "my-environment",
 	}

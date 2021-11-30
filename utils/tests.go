@@ -23,7 +23,7 @@ func GeneratePipeline() meroxa.Pipeline {
 func GeneratePipelineWithEnvironment() meroxa.Pipeline {
 	p := GeneratePipeline()
 
-	p.Environment = &meroxa.PipelineEnvironment{
+	p.Environment = &meroxa.EnvironmentIdentifier{
 		UUID: "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
 		Name: "my-env",
 	}
@@ -44,7 +44,7 @@ func GenerateResource() meroxa.Resource {
 func GenerateResourceWithEnvironment() meroxa.Resource {
 	r := GenerateResource()
 
-	r.Environment = &meroxa.ResourceEnvironment{
+	r.Environment = &meroxa.EnvironmentIdentifier{
 		UUID: "424ec647-9f0f-45a5-8e4b-3e0441f12444",
 		Name: "my-environment",
 	}
@@ -81,7 +81,7 @@ func GenerateConnectorWithEnvironment(pipelineID int, connectorName, envNameOrUU
 		connectorName = "connector-1234"
 	}
 
-	var env meroxa.ConnectorEnvironment
+	var env meroxa.EnvironmentIdentifier
 	_, err := uuid.Parse(envNameOrUUID)
 	if err == nil {
 		env.UUID = envNameOrUUID

@@ -156,7 +156,7 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 		URL:         "https://foo.url",
 		Credentials: nil,
 		Metadata:    nil,
-		Environment: &meroxa.ResourceEnvironment{
+		Environment: &meroxa.EnvironmentIdentifier{
 			Name: cr.Environment.Name,
 		},
 	}
@@ -218,7 +218,7 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 		URL:         "https://foo.url",
 		Credentials: nil,
 		Metadata:    nil,
-		Environment: &meroxa.ResourceEnvironment{
+		Environment: &meroxa.EnvironmentIdentifier{
 			UUID: cr.Environment.UUID,
 		},
 	}

@@ -122,7 +122,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	}
 
 	if c.flags.Environment != "" {
-		input.Environment = &meroxa.ResourceEnvironment{}
+		input.Environment = &meroxa.EnvironmentIdentifier{}
 		env = c.flags.Environment
 
 		_, err := uuid.Parse(c.flags.Environment)
