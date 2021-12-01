@@ -269,6 +269,10 @@ func ConnectorTable(connector *meroxa.Connector) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: connector.UUID},
+		},
+		{
 			{Align: simpletable.AlignRight, Text: "ID:"},
 			{Text: fmt.Sprintf("%d", connector.ID)},
 		},
@@ -323,6 +327,7 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "TYPE"},
@@ -345,6 +350,7 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 
 			streamStr := formatStreams(conn.Streams)
 			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: conn.UUID},
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
 				{Text: conn.Name},
 				{Text: string(conn.Type)},

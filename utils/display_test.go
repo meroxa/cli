@@ -217,7 +217,7 @@ func TestConnectorRunningTable(t *testing.T) {
 		"failed":  failedConnector,
 	}
 
-	tableHeaders := []string{"ID", "Name", "Type", "Streams", "State", "Pipeline", "Environment"}
+	tableHeaders := []string{"UUID", "ID", "Name", "Type", "Streams", "State", "Pipeline", "Environment"}
 
 	for name, connector := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -233,6 +233,9 @@ func TestConnectorRunningTable(t *testing.T) {
 
 			switch name {
 			case "running":
+				if !strings.Contains(out, connector.UUID) {
+					t.Errorf("%s, not found", connector.UUID)
+				}
 				if !strings.Contains(out, connector.Name) {
 					t.Errorf("%s, not found", connector.Name)
 				}
@@ -240,6 +243,9 @@ func TestConnectorRunningTable(t *testing.T) {
 					t.Errorf("%d, not found", connector.ID)
 				}
 			case "failed":
+				if !strings.Contains(out, connector.UUID) {
+					t.Errorf("%s, not found", connector.UUID)
+				}
 				if !strings.Contains(out, connector.Name) {
 					t.Errorf("%s, not found", connector.Name)
 				}
@@ -292,7 +298,7 @@ func TestConnectorsTable(t *testing.T) {
 		"Input_Output": {connection, connectionInputOutput},
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
+	tableHeaders := []string{"UUID", "ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
 
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -308,6 +314,9 @@ func TestConnectorsTable(t *testing.T) {
 
 			switch name {
 			case "Base":
+				if !strings.Contains(out, connection.UUID) {
+					t.Errorf("%s, not found", connection.UUID)
+				}
 				if !strings.Contains(out, connection.Name) {
 					t.Errorf("%s, not found", connection.Name)
 				}
@@ -353,7 +362,7 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 		PipelineID: 1,
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
+	tableHeaders := []string{"UUID", "ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
 
 	var connections []*meroxa.Connector
 	connections = append(connections, connection)
@@ -367,7 +376,9 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 			t.Errorf("%s header should not be displayed", header)
 		}
 	}
-
+	if !strings.Contains(out, connection.UUID) {
+		t.Errorf("%s, not found", connection.UUID)
+	}
 	if !strings.Contains(out, connection.Name) {
 		t.Errorf("%s, not found", connection.Name)
 	}
