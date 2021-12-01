@@ -84,7 +84,7 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.10
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20211129120745-db529ae4ef81 => ../meroxa-go
+# github.com/meroxa/meroxa-go v0.0.0-20211201105336-fe1f1bcf8764
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
@@ -200,4 +200,3 @@ gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
-# github.com/meroxa/meroxa-go => ../meroxa-go

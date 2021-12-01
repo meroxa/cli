@@ -39,7 +39,7 @@ const (
 type Connector struct {
 	Configuration map[string]interface{} `json:"config"`
 	CreatedAt     time.Time              `json:"created_at"`
-	Environment   *EnvironmentIdentifier  `json:"environment,omitempty"`
+	Environment   *EnvironmentIdentifier `json:"environment,omitempty"`
 	ID            int                    `json:"id"`
 	Metadata      map[string]interface{} `json:"metadata"`
 	Name          string                 `json:"name"`
@@ -50,6 +50,7 @@ type Connector struct {
 	Trace         string                 `json:"trace,omitempty"`
 	Type          ConnectorType          `json:"type"`
 	UpdatedAt     time.Time              `json:"updated_at"`
+	UUID          string                 `json:"uuid"`
 }
 
 type CreateConnectorInput struct {
