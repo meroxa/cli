@@ -223,8 +223,8 @@ github.com/mattn/go-isatty v0.0.12 h1:wuysRhFDzyxgEmMf5xjvJ2M9dZoWAXNNr5LSBS7uHX
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/mattn/go-runewidth v0.0.10 h1:CoZ3S2P7pvtP45xOtBw+/mDL2z0RKI576gSkzRRpdGg=
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
-github.com/meroxa/meroxa-go v0.0.0-20211129120745-db529ae4ef81 h1:/XY4BLcUE5GXMmjiLAtbJAIg3v9L2U6/NIwaY7i44rc=
-github.com/meroxa/meroxa-go v0.0.0-20211129120745-db529ae4ef81/go.mod h1:HDFszURCM1cOpKE699o5Hs0T2tEIXqY+vFcsur3RiwY=
+github.com/meroxa/meroxa-go v0.0.0-20211201105336-fe1f1bcf8764 h1:DRjjwhtxG8VAEYIole15SP9DluTDMxcBsTnmru59r2o=
+github.com/meroxa/meroxa-go v0.0.0-20211201105336-fe1f1bcf8764/go.mod h1:HDFszURCM1cOpKE699o5Hs0T2tEIXqY+vFcsur3RiwY=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/mitchellh/cli v1.0.0/go.mod h1:hNIlj7HEI86fIcpObd7a0FcrxTWetlwJDGcceTlRvqc=
 github.com/mitchellh/go-homedir v1.0.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

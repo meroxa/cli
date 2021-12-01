@@ -202,9 +202,10 @@ func TestConnectorRunningTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:      "running",
-		Trace:      "",
-		PipelineID: 1,
+		State:       "running",
+		Trace:       "",
+		PipelineID:  1,
+		Environment: &meroxa.EnvironmentIdentifier{Name: "my-env"},
 	}
 	failedConnector := &meroxa.Connector{}
 	deepCopy(connector, failedConnector)
@@ -216,7 +217,7 @@ func TestConnectorRunningTable(t *testing.T) {
 		"failed":  failedConnector,
 	}
 
-	tableHeaders := []string{"ID", "Name", "Type", "Streams", "State", "Pipeline"}
+	tableHeaders := []string{"UUID", "ID", "Name", "Type", "Streams", "State", "Pipeline", "Environment"}
 
 	for name, connector := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -232,6 +233,9 @@ func TestConnectorRunningTable(t *testing.T) {
 
 			switch name {
 			case "running":
+				if !strings.Contains(out, connector.UUID) {
+					t.Errorf("%s, not found", connector.UUID)
+				}
 				if !strings.Contains(out, connector.Name) {
 					t.Errorf("%s, not found", connector.Name)
 				}
@@ -239,6 +243,9 @@ func TestConnectorRunningTable(t *testing.T) {
 					t.Errorf("%d, not found", connector.ID)
 				}
 			case "failed":
+				if !strings.Contains(out, connector.UUID) {
+					t.Errorf("%s, not found", connector.UUID)
+				}
 				if !strings.Contains(out, connector.Name) {
 					t.Errorf("%s, not found", connector.Name)
 				}
@@ -267,9 +274,10 @@ func TestConnectorsTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:      "running",
-		Trace:      "",
-		PipelineID: 1,
+		State:       "running",
+		Trace:       "",
+		PipelineID:  1,
+		Environment: &meroxa.EnvironmentIdentifier{UUID: "2c5326ac-041f-4679-b446-d6d95b91f497"},
 	}
 
 	deepCopy(connection, connectionIDAlign)
@@ -290,7 +298,7 @@ func TestConnectorsTable(t *testing.T) {
 		"Input_Output": {connection, connectionInputOutput},
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+	tableHeaders := []string{"UUID", "ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
 
 	for name, connections := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -306,6 +314,9 @@ func TestConnectorsTable(t *testing.T) {
 
 			switch name {
 			case "Base":
+				if !strings.Contains(out, connection.UUID) {
+					t.Errorf("%s, not found", connection.UUID)
+				}
 				if !strings.Contains(out, connection.Name) {
 					t.Errorf("%s, not found", connection.Name)
 				}
@@ -351,7 +362,7 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 		PipelineID: 1,
 	}
 
-	tableHeaders := []string{"ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE"}
+	tableHeaders := []string{"UUID", "ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
 
 	var connections []*meroxa.Connector
 	connections = append(connections, connection)
@@ -365,7 +376,9 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 			t.Errorf("%s header should not be displayed", header)
 		}
 	}
-
+	if !strings.Contains(out, connection.UUID) {
+		t.Errorf("%s, not found", connection.UUID)
+	}
 	if !strings.Contains(out, connection.Name) {
 		t.Errorf("%s, not found", connection.Name)
 	}
@@ -390,7 +403,7 @@ func TestPipelinesTable(t *testing.T) {
 
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
-	pipelineWithEnv.Environment = &meroxa.PipelineEnvironment{
+	pipelineWithEnv.Environment = &meroxa.EnvironmentIdentifier{
 		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
 		Name: "my-environment",
 	}
@@ -455,7 +468,7 @@ func TestPipelineTable(t *testing.T) {
 
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
-	pipelineWithEnv.Environment = &meroxa.PipelineEnvironment{
+	pipelineWithEnv.Environment = &meroxa.EnvironmentIdentifier{
 		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
 		Name: "my-environment",
 	}

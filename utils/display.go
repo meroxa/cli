@@ -269,6 +269,10 @@ func ConnectorTable(connector *meroxa.Connector) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: connector.UUID},
+		},
+		{
 			{Align: simpletable.AlignRight, Text: "ID:"},
 			{Text: fmt.Sprintf("%d", connector.ID)},
 		},
@@ -300,6 +304,17 @@ func ConnectorTable(connector *meroxa.Connector) string {
 			{Text: connector.Trace},
 		})
 	}
+	var env string
+	if connector.Environment != nil && connector.Environment.Name != "" {
+		env = connector.Environment.Name
+	} else {
+		env = string(meroxa.EnvironmentTypeCommon)
+	}
+	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+		{Align: simpletable.AlignRight, Text: "Environment:"},
+		{Text: env},
+	})
+
 	mainTable.SetStyle(simpletable.StyleCompact)
 
 	return mainTable.String()
@@ -312,25 +327,37 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "TYPE"},
 					{Align: simpletable.AlignCenter, Text: "STREAMS"},
 					{Align: simpletable.AlignCenter, Text: "STATE"},
 					{Align: simpletable.AlignCenter, Text: "PIPELINE"},
+					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 				},
 			}
 		}
 
 		for _, conn := range connectors {
+			var env string
+
+			if conn.Environment != nil && conn.Environment.Name != "" {
+				env = conn.Environment.Name
+			} else {
+				env = string(meroxa.EnvironmentTypeCommon)
+			}
+
 			streamStr := formatStreams(conn.Streams)
 			r := []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: conn.UUID},
 				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
 				{Text: conn.Name},
 				{Text: string(conn.Type)},
 				{Text: streamStr},
 				{Text: string(conn.State)},
 				{Text: conn.PipelineName},
+				{Text: env},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)

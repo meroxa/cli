@@ -166,13 +166,13 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
-		Environment: &meroxa.PipelineEnvironment{Name: env},
+		Environment: &meroxa.EnvironmentIdentifier{Name: env},
 	}
 
 	p := &meroxa.Pipeline{
 		ID:   1,
 		Name: pName,
-		Environment: &meroxa.PipelineEnvironment{
+		Environment: &meroxa.EnvironmentIdentifier{
 			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
 			Name: env,
 		},
