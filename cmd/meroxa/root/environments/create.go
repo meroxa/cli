@@ -264,6 +264,7 @@ func (c *Create) Usage() string {
 	return "create NAME"
 }
 
+//nolint:lll
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
