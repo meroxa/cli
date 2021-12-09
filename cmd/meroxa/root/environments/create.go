@@ -264,15 +264,12 @@ func (c *Create) Usage() string {
 	return "create NAME"
 }
 
+//nolint:lll
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
 		Example: `
-meroxa env create my-env \
-	--type hosted \ 
-	--provider aws \ 
-	--region us-east-1 \ 
-	--config '{\"aws_access_key_id\":\"my_access_key\", \"aws_secret_access_key\":\"my_secret_access_key\"}'
+meroxa env create my-env --type hosted --provider aws --region us-east-1 --config "{\"aws_access_key_id\":\"my_access_key\", \"aws_secret_access_key\":\"my_secret_access_key\"}"
 `,
 	}
 }
