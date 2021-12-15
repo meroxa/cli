@@ -42,7 +42,7 @@ func (c *testCmd) Aliases() []string {
 }
 func (c *testCmd) Flags() []builder.Flag {
 	return []builder.Flag{
-		{Long: "long-foo", Short: "l", Usage: "test flag", Required: false, Persistent: false, Ptr: &c.flagLongFoo},
+		{Long: "long-foo", Short: "l", Usage: "test flag", Required: false, Persistent: false, Ptr: &c.flagLongFoo, Default: "hi"},
 	}
 }
 func (c *testCmd) SubCommands() []*cobra.Command {
@@ -231,23 +231,23 @@ func (t *testCmdWithFlags) Usage() string {
 
 func (t *testCmdWithFlags) Flags() []builder.Flag {
 	return []builder.Flag{
-		{Long: "flag1", Short: "a", Usage: "flag1 usage", Required: true, Persistent: false, Ptr: &t.flag1},
-		{Long: "flag2", Short: "b", Usage: "flag2 usage", Required: false, Persistent: true, Ptr: &t.flag2},
-		{Long: "flag3", Short: "c", Usage: "flag3 usage", Required: true, Persistent: false, Ptr: &t.flag3},
-		{Long: "flag4", Short: "d", Usage: "flag4 usage", Required: false, Persistent: true, Ptr: &t.flag4},
-		{Long: "flag5", Short: "e", Usage: "flag5 usage", Required: true, Persistent: false, Ptr: &t.flag5},
-		{Long: "flag6", Short: "f", Usage: "flag6 usage", Required: false, Persistent: true, Ptr: &t.flag6},
-		{Long: "flag7", Short: "g", Usage: "flag7 usage", Required: true, Persistent: false, Ptr: &t.flag7},
-		{Long: "flag8", Short: "h", Usage: "flag8 usage", Required: false, Persistent: true, Ptr: &t.flag8},
-		{Long: "flag9", Short: "i", Usage: "flag9 usage", Required: true, Persistent: false, Ptr: &t.flag9},
-		{Long: "flag10", Short: "j", Usage: "flag10 usage", Required: false, Persistent: true, Ptr: &t.flag10},
-		{Long: "flag11", Short: "k", Usage: "flag11 usage", Required: true, Persistent: false, Ptr: &t.flag11},
-		{Long: "flag12", Short: "l", Usage: "flag12 usage", Required: false, Persistent: true, Ptr: &t.flag12},
-		{Long: "flag13", Short: "m", Usage: "flag13 usage", Required: true, Persistent: false, Ptr: &t.flag13},
-		{Long: "flag14", Short: "n", Usage: "flag14 usage", Required: false, Persistent: true, Ptr: &t.flag14},
-		{Long: "flag15", Short: "o", Usage: "flag15 usage", Required: true, Persistent: false, Ptr: &t.flag15},
-		{Long: "flag16", Short: "p", Usage: "flag16 usage", Required: false, Persistent: true, Ptr: &t.flag16},
-		{Long: "flag17", Short: "q", Usage: "flag17 usage", Required: true, Persistent: false, Ptr: &t.flag17},
+		{Long: "flag1", Short: "a", Usage: "flag1 usage", Required: true, Persistent: false, Ptr: &t.flag1, Default: "a"},
+		{Long: "flag2", Short: "b", Usage: "flag2 usage", Required: false, Persistent: true, Ptr: &t.flag2, Default: "1"},
+		{Long: "flag3", Short: "c", Usage: "flag3 usage", Required: true, Persistent: false, Ptr: &t.flag3, Default: "2"},
+		{Long: "flag4", Short: "d", Usage: "flag4 usage", Required: false, Persistent: true, Ptr: &t.flag4, Default: "3"},
+		{Long: "flag5", Short: "e", Usage: "flag5 usage", Required: true, Persistent: false, Ptr: &t.flag5, Default: "4"},
+		{Long: "flag6", Short: "f", Usage: "flag6 usage", Required: false, Persistent: true, Ptr: &t.flag6, Default: "5"},
+		{Long: "flag7", Short: "g", Usage: "flag7 usage", Required: true, Persistent: false, Ptr: &t.flag7, Default: "6"},
+		{Long: "flag8", Short: "h", Usage: "flag8 usage", Required: false, Persistent: true, Ptr: &t.flag8, Default: "7"},
+		{Long: "flag9", Short: "i", Usage: "flag9 usage", Required: true, Persistent: false, Ptr: &t.flag9, Default: "false"},
+		{Long: "flag10", Short: "j", Usage: "flag10 usage", Required: false, Persistent: true, Ptr: &t.flag10, Default: ""},
+		{Long: "flag11", Short: "k", Usage: "flag11 usage", Required: true, Persistent: false, Ptr: &t.flag11, Default: ""},
+		{Long: "flag12", Short: "l", Usage: "flag12 usage", Required: false, Persistent: true, Ptr: &t.flag12, Default: ""},
+		{Long: "flag13", Short: "m", Usage: "flag13 usage", Required: true, Persistent: false, Ptr: &t.flag13, Default: ""},
+		{Long: "flag14", Short: "n", Usage: "flag14 usage", Required: false, Persistent: true, Ptr: &t.flag14, Default: ""},
+		{Long: "flag15", Short: "o", Usage: "flag15 usage", Required: true, Persistent: false, Ptr: &t.flag15, Default: ""},
+		{Long: "flag16", Short: "p", Usage: "flag16 usage", Required: false, Persistent: true, Ptr: &t.flag16, Default: ""},
+		{Long: "flag17", Short: "q", Usage: "flag17 usage", Required: true, Persistent: false, Ptr: &t.flag17, Default: ""},
 	}
 }
 

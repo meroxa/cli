@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -511,85 +512,107 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.StringVarP(val, f.Long, f.Short, f.Default.(string), f.Usage)
 		case *int:
-			if f.Default == nil {
-				f.Default = 0
+			def := 0
+			if f.Default != nil {
+				i, err := strconv.Atoi(f.Default.(string))
+				if err == nil {
+					def = i
+				}
 			}
-			flags.IntVarP(val, f.Long, f.Short, f.Default.(int), f.Usage)
+			flags.IntVarP(val, f.Long, f.Short, def, f.Usage)
 		case *int8:
-			if f.Default == nil {
-				f.Default = int8(0)
+			var def int8 = 0
+			if f.Default != nil {
+				i, err := strconv.Atoi(f.Default.(string))
+				if err == nil {
+					def = int8(i)
+				}
 			}
-			flags.Int8VarP(val, f.Long, f.Short, f.Default.(int8), f.Usage)
+			flags.Int8VarP(val, f.Long, f.Short, def, f.Usage)
 		case *int16:
-			if f.Default == nil {
-				f.Default = int16(0)
+			var def int16 = 0
+			if f.Default != nil {
+				i, err := strconv.Atoi(f.Default.(string))
+				if err == nil {
+					def = int16(i)
+				}
 			}
-			flags.Int16VarP(val, f.Long, f.Short, f.Default.(int16), f.Usage)
+			flags.Int16VarP(val, f.Long, f.Short, def, f.Usage)
 		case *int32:
-			if f.Default == nil {
-				f.Default = int32(0)
+			var def int32 = 0
+			if f.Default != nil {
+				i, err := strconv.Atoi(f.Default.(string))
+				if err == nil {
+					def = int32(i)
+				}
 			}
-			flags.Int32VarP(val, f.Long, f.Short, f.Default.(int32), f.Usage)
+			flags.Int32VarP(val, f.Long, f.Short, def, f.Usage)
 		case *int64:
-			if f.Default == nil {
-				f.Default = int64(0)
+			var def int64 = 0
+			if f.Default != nil {
+				i, err := strconv.Atoi(f.Default.(string))
+				if err != nil {
+					def = int64(i)
+				}
 			}
-			flags.Int64VarP(val, f.Long, f.Short, f.Default.(int64), f.Usage)
+			flags.Int64VarP(val, f.Long, f.Short, def, f.Usage)
 		case *float32:
-			if f.Default == nil {
-				f.Default = float32(0)
+			var def float32 = 0
+			if f.Default != nil {
+				f32, err := strconv.ParseFloat(f.Default.(string), 32)
+				if err == nil {
+					def = float32(f32)
+				}
 			}
-			flags.Float32VarP(val, f.Long, f.Short, f.Default.(float32), f.Usage)
+			flags.Float32VarP(val, f.Long, f.Short, def, f.Usage)
 		case *float64:
-			if f.Default == nil {
-				f.Default = float64(0)
+			var def float64 = 0
+			if f.Default != nil {
+				f64, err := strconv.ParseFloat(f.Default.(string), 64)
+				if err == nil {
+					def = f64
+				}
 			}
-			flags.Float64VarP(val, f.Long, f.Short, f.Default.(float64), f.Usage)
+			flags.Float64VarP(val, f.Long, f.Short, def, f.Usage)
 		case *bool:
-			if f.Default == nil {
-				f.Default = false
+			def := false
+			if f.Default != nil {
+				b, err := strconv.ParseBool(f.Default.(string))
+				if err == nil {
+					def = b
+				}
 			}
-			flags.BoolVarP(val, f.Long, f.Short, f.Default.(bool), f.Usage)
+			flags.BoolVarP(val, f.Long, f.Short, def, f.Usage)
 		case *time.Duration:
-			if f.Default == nil {
-				f.Default = time.Duration(0)
+			def := time.Duration(0)
+			if f.Default != nil {
+				t, err := time.ParseDuration(f.Default.(string))
+				if err == nil {
+					def = t
+				}
 			}
-			flags.DurationVarP(val, f.Long, f.Short, f.Default.(time.Duration), f.Usage)
+			flags.DurationVarP(val, f.Long, f.Short, def, f.Usage)
 		case *[]bool:
-			if f.Default == nil {
-				f.Default = []bool(nil)
-			}
-			flags.BoolSliceVarP(val, f.Long, f.Short, f.Default.([]bool), f.Usage)
+			// ignore default
+			flags.BoolSliceVarP(val, f.Long, f.Short, []bool{}, f.Usage)
 		case *[]float32:
-			if f.Default == nil {
-				f.Default = []float32(nil)
-			}
-			flags.Float32SliceVarP(val, f.Long, f.Short, f.Default.([]float32), f.Usage)
+			// ignore default
+			flags.Float32SliceVarP(val, f.Long, f.Short, []float32{}, f.Usage)
 		case *[]float64:
-			if f.Default == nil {
-				f.Default = []float64(nil)
-			}
-			flags.Float64SliceVarP(val, f.Long, f.Short, f.Default.([]float64), f.Usage)
+			// ignore default
+			flags.Float64SliceVarP(val, f.Long, f.Short, []float64{}, f.Usage)
 		case *[]int32:
-			if f.Default == nil {
-				f.Default = []int32(nil)
-			}
-			flags.Int32SliceVarP(val, f.Long, f.Short, f.Default.([]int32), f.Usage)
+			// ignore default
+			flags.Int32SliceVarP(val, f.Long, f.Short, []int32{}, f.Usage)
 		case *[]int64:
-			if f.Default == nil {
-				f.Default = []int64(nil)
-			}
-			flags.Int64SliceVarP(val, f.Long, f.Short, f.Default.([]int64), f.Usage)
+			// ignore default
+			flags.Int64SliceVarP(val, f.Long, f.Short, []int64{}, f.Usage)
 		case *[]int:
-			if f.Default == nil {
-				f.Default = []int(nil)
-			}
-			flags.IntSliceVarP(val, f.Long, f.Short, f.Default.([]int), f.Usage)
+			// ignore default
+			flags.IntSliceVarP(val, f.Long, f.Short, []int{}, f.Usage)
 		case *[]string:
-			if f.Default == nil {
-				f.Default = []string(nil)
-			}
-			flags.StringSliceVarP(val, f.Long, f.Short, f.Default.([]string), f.Usage)
+			// ignore default
+			flags.StringSliceVarP(val, f.Long, f.Short, []string{}, f.Usage)
 		default:
 			panic(fmt.Errorf("unexpected flag value type: %T", val))
 		}

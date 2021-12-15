@@ -36,6 +36,7 @@ func buildFlag(val reflect.Value, sf reflect.StructField) (Flag, error) {
 		tagNamePersistent = "persistent"
 		tagNameUsage      = "usage"
 		tagNameHidden     = "hidden"
+		tagNameDefault    = "default"
 	)
 
 	var (
@@ -45,6 +46,7 @@ func buildFlag(val reflect.Value, sf reflect.StructField) (Flag, error) {
 		persistent bool
 		usage      string
 		hidden     bool
+		def        interface{}
 	)
 
 	if v, ok := sf.Tag.Lookup(tagNameLong); ok {
@@ -77,6 +79,15 @@ func buildFlag(val reflect.Value, sf reflect.StructField) (Flag, error) {
 			return Flag{}, fmt.Errorf("error parsing tag \"hidden\": %w", err)
 		}
 	}
+	if v, ok := sf.Tag.Lookup(tagNameDefault); ok {
+		var err error
+		if v != "" {
+			def = v
+		}
+		if err != nil {
+			return Flag{}, fmt.Errorf("error parsing tag \"default\": %w", err)
+		}
+	}
 
 	return Flag{
 		Long:       long,
@@ -84,7 +95,7 @@ func buildFlag(val reflect.Value, sf reflect.StructField) (Flag, error) {
 		Usage:      usage,
 		Required:   required,
 		Persistent: persistent,
-		Default:    nil,
+		Default:    def,
 		Ptr:        val.Addr().Interface(),
 		Hidden:     hidden,
 	}, nil
