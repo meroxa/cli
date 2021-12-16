@@ -488,6 +488,11 @@ func buildCommandWithExecute(cmd *cobra.Command, c Command) {
 
 // nolint:funlen,gocyclo // this function has a big switch statement, can't get around that
 func buildCommandWithFlags(cmd *cobra.Command, c Command) {
+	const base = 10
+	const bits16 = 16
+	const bits32 = 32
+	const bits64 = 64
+
 	v, ok := c.(CommandWithFlags)
 	if !ok {
 		return
@@ -512,7 +517,7 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.StringVarP(val, f.Long, f.Short, f.Default.(string), f.Usage)
 		case *int:
-			def := 0
+			var def int
 			if f.Default != nil {
 				i, err := strconv.Atoi(f.Default.(string))
 				if err == nil {
@@ -521,7 +526,7 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.IntVarP(val, f.Long, f.Short, def, f.Usage)
 		case *int8:
-			var def int8 = 0
+			var def int8
 			if f.Default != nil {
 				i, err := strconv.Atoi(f.Default.(string))
 				if err == nil {
@@ -530,25 +535,25 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.Int8VarP(val, f.Long, f.Short, def, f.Usage)
 		case *int16:
-			var def int16 = 0
+			var def int16
 			if f.Default != nil {
-				i, err := strconv.Atoi(f.Default.(string))
+				i, err := strconv.ParseInt(f.Default.(string), base, bits16)
 				if err == nil {
 					def = int16(i)
 				}
 			}
 			flags.Int16VarP(val, f.Long, f.Short, def, f.Usage)
 		case *int32:
-			var def int32 = 0
+			var def int32
 			if f.Default != nil {
-				i, err := strconv.Atoi(f.Default.(string))
+				i, err := strconv.ParseInt(f.Default.(string), base, bits32)
 				if err == nil {
 					def = int32(i)
 				}
 			}
 			flags.Int32VarP(val, f.Long, f.Short, def, f.Usage)
 		case *int64:
-			var def int64 = 0
+			var def int64
 			if f.Default != nil {
 				i, err := strconv.Atoi(f.Default.(string))
 				if err != nil {
@@ -557,18 +562,18 @@ func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 			}
 			flags.Int64VarP(val, f.Long, f.Short, def, f.Usage)
 		case *float32:
-			var def float32 = 0
+			var def float32
 			if f.Default != nil {
-				f32, err := strconv.ParseFloat(f.Default.(string), 32)
+				f32, err := strconv.ParseFloat(f.Default.(string), bits32)
 				if err == nil {
 					def = float32(f32)
 				}
 			}
 			flags.Float32VarP(val, f.Long, f.Short, def, f.Usage)
 		case *float64:
-			var def float64 = 0
+			var def float64
 			if f.Default != nil {
-				f64, err := strconv.ParseFloat(f.Default.(string), 64)
+				f64, err := strconv.ParseFloat(f.Default.(string), bits64)
 				if err == nil {
 					def = f64
 				}
