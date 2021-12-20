@@ -115,6 +115,11 @@ func ResourceTable(res *meroxa.Resource) string {
 				{Text: e},
 			})
 		}
+	} else {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment Name:"},
+			{Text: string(meroxa.EnvironmentTypeCommon)},
+		})
 	}
 
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -152,6 +157,11 @@ func PipelineTable(p *meroxa.Pipeline) string {
 				{Text: pN},
 			})
 		}
+	} else {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment Name:"},
+			{Text: string(meroxa.EnvironmentTypeCommon)},
+		})
 	}
 
 	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
