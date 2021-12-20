@@ -479,7 +479,7 @@ func TestPipelineTable(t *testing.T) {
 	}
 
 	tableHeaders := []string{"UUID", "ID", "Name", "State"}
-	var envHeader = "Environment"
+	var envHeader = "Environment Name"
 
 	for name, p := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -504,15 +504,12 @@ func TestPipelineTable(t *testing.T) {
 				if !strings.Contains(out, pipelineBase.UUID) {
 					t.Errorf("%s, not found", pipelineBase.UUID)
 				}
-				if strings.Contains(out, envHeader) {
-					t.Errorf("%q header is not necessary", envHeader)
+				if !strings.Contains(out, envHeader) {
+					t.Errorf("%q not found", envHeader)
 				}
 			case "With_Environment":
-				if !strings.Contains(out, envHeader) {
-					t.Errorf("%q header is missing", envHeader)
-				}
-				if !strings.Contains(out, pipelineWithEnv.Environment.Name) {
-					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name)
+				if !strings.Contains(out, pipelineWithEnv.Environment.UUID) {
+					t.Errorf("expected environment UUID to be %q", pipelineWithEnv.Environment.UUID)
 				}
 			}
 			fmt.Println(out)
