@@ -314,16 +314,25 @@ func ConnectorTable(connector *meroxa.Connector) string {
 			{Text: connector.Trace},
 		})
 	}
-	var env string
-	if connector.Environment != nil && connector.Environment.Name != "" {
-		env = connector.Environment.Name
+	if connector.Environment != nil {
+		if envUUID := connector.Environment.UUID; envUUID != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
+				{Text: envUUID},
+			})
+		}
+		if envName := connector.Environment.Name; envName != "" {
+			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+				{Align: simpletable.AlignRight, Text: "Environment Name:"},
+				{Text: envName},
+			})
+		}
 	} else {
-		env = string(meroxa.EnvironmentTypeCommon)
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment Name:"},
+			{Text: string(meroxa.EnvironmentTypeCommon)},
+		})
 	}
-	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
-		{Align: simpletable.AlignRight, Text: "Environment:"},
-		{Text: env},
-	})
 
 	mainTable.SetStyle(simpletable.StyleCompact)
 
