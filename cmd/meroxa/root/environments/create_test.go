@@ -111,14 +111,9 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 	c.flags.Type = "dedicated"
 	c.flags.Provider = "aws"
 	c.flags.Region = "aws"
-	c.flags.Config = `{"aws_access_key_id":"my_access_key", "aws_access_secret":"my_access_secret"}`
+	c.flags.Config = []string{"aws_access_key_id=my_access_key", "aws_access_secret=my_access_secret"}
 
-	cfg := map[string]interface{}{}
-	err := json.Unmarshal([]byte(c.flags.Config), &cfg)
-
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
+	cfg := stringSliceToMap(c.flags.Config)
 
 	e := &meroxa.CreateEnvironmentInput{
 		Type:          meroxa.EnvironmentType(c.flags.Type),
@@ -150,7 +145,7 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 		).
 		Return(rE, nil)
 
-	err = c.Execute(ctx)
+	err := c.Execute(ctx)
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())

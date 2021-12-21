@@ -18,9 +18,9 @@ package environments
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -51,10 +51,10 @@ type Create struct {
 	}
 
 	flags struct {
-		Type     string `long:"type" usage:"environment type, when not specified"`
-		Provider string `long:"provider" usage:"environment cloud provider to use"`
-		Region   string `long:"region" usage:"environment region"`
-		Config   string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config '{\"aws_access_key_id\":\"my_access_key\", \"aws_secret_access_key\":\"my_secret_access_key\"}')"` // nolint:lll
+		Type     string   `long:"type" usage:"environment type, when not specified"`
+		Provider string   `long:"provider" usage:"environment cloud provider to use"`
+		Region   string   `long:"region" usage:"environment region"`
+		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)"` // nolint:lll
 	}
 
 	envCfg map[string]interface{}
@@ -80,7 +80,7 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (c *Create) SkipPrompt() bool {
-	return c.args.Name != "" && c.flags.Type != "" && c.flags.Provider != "" && c.flags.Region != "" && c.flags.Config != ""
+	return c.args.Name != "" && c.flags.Type != "" && c.flags.Provider != "" && c.flags.Region != "" && len(c.flags.Config) != 0
 }
 
 func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
@@ -105,19 +105,25 @@ func (c *Create) setUserValues(e *meroxa.CreateEnvironmentInput) {
 	}
 }
 
+func stringSliceToMap(input []string) map[string]interface{} {
+	const pair = 2
+	m := make(map[string]interface{})
+	for _, config := range input {
+		parts := strings.Split(config, "=")
+		if len(parts) >= pair {
+			m[parts[0]] = parts[1]
+		}
+	}
+	return m
+}
+
 func (c *Create) Execute(ctx context.Context) error {
 	e := &meroxa.CreateEnvironmentInput{}
 	c.setUserValues(e)
 
 	// In case user skipped prompt and configuration was specified via flags
-	if c.flags.Config != "" {
-		var config map[string]interface{}
-		err := json.Unmarshal([]byte(c.flags.Config), &config)
-		if err != nil {
-			return fmt.Errorf("could not parse configuration: %w", err)
-		}
-
-		e.Configuration = config
+	if len(c.flags.Config) != 0 {
+		e.Configuration = stringSliceToMap(c.flags.Config)
 	}
 
 	c.logger.Infof(ctx, "Provisioning environment...")
@@ -208,7 +214,7 @@ func (c *Create) Prompt() error {
 		c.flags.Region, _ = p.Run()
 	}
 
-	if c.flags.Config == "" {
+	if len(c.flags.Config) != 0 {
 		c.envCfg = make(map[string]interface{})
 
 		p := promptui.Prompt{
