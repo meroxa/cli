@@ -38,7 +38,7 @@ type Credentials struct {
 // CreateResourceInput represents the input for a Meroxa Resource type we're creating within the Meroxa API
 type CreateResourceInput struct {
 	Credentials *Credentials            `json:"credentials,omitempty"`
-	Environment *EnvironmentIdentifier    `json:"environment,omitempty"`
+	Environment *EnvironmentIdentifier  `json:"environment,omitempty"`
 	Metadata    map[string]interface{}  `json:"metadata,omitempty"`
 	Name        string                  `json:"name,omitempty"`
 	SSHTunnel   *ResourceSSHTunnelInput `json:"ssh_tunnel,omitempty"`
@@ -71,7 +71,7 @@ type Resource struct {
 	Credentials *Credentials           `json:"credentials,omitempty"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 	SSHTunnel   *ResourceSSHTunnel     `json:"ssh_tunnel,omitempty"`
-	Environment *EnvironmentIdentifier   `json:"environment,omitempty"`
+	Environment *EnvironmentIdentifier `json:"environment,omitempty"`
 	Status      ResourceStatus         `json:"status"`
 	CreatedAt   time.Time              `json:"created_at"`
 	UpdatedAt   time.Time              `json:"updated_at"`

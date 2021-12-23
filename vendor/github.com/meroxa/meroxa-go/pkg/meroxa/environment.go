@@ -88,6 +88,11 @@ type CreateEnvironmentInput struct {
 	Region        EnvironmentRegion      `json:"region,omitempty"`
 }
 
+type UpdateEnvironmentInput struct {
+	Name          string                 `json:"name,omitempty"`
+	Configuration map[string]interface{} `json:"config,omitempty"`
+}
+
 // ListEnvironments returns an array of Environments (scoped to the calling user)
 func (c *client) ListEnvironments(ctx context.Context) ([]*Environment, error) {
 	resp, err := c.MakeRequest(ctx, http.MethodGet, environmentsBasePath, nil, nil)
@@ -154,6 +159,24 @@ func (c *client) GetEnvironment(ctx context.Context, nameOrUUID string) (*Enviro
 func (c *client) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
 	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var e *Environment
+	err = json.NewDecoder(resp.Body).Decode(&e)
+
+	return e, nil
+}
+
+func (c *client) UpdateEnvironment(ctx context.Context, nameOrUUID string, input *UpdateEnvironmentInput) (*Environment, error) {
+	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -20,7 +20,7 @@ const (
 // Pipeline represents the Meroxa Pipeline type within the Meroxa API
 type Pipeline struct {
 	CreatedAt   time.Time              `json:"created_at"`
-	Environment *EnvironmentIdentifier   `json:"environment,omitempty"`
+	Environment *EnvironmentIdentifier `json:"environment,omitempty"`
 	ID          int                    `json:"id"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"` // @TODO metadata is unused in Platform-API, so deprecate over time
 	Name        string                 `json:"name"`
@@ -33,7 +33,7 @@ type Pipeline struct {
 type CreatePipelineInput struct {
 	Name        string                 `json:"name"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
-	Environment *EnvironmentIdentifier   `json:"environment,omitempty"`
+	Environment *EnvironmentIdentifier `json:"environment,omitempty"`
 }
 
 // UpdatePipelineInput represents the input when updating a Meroxa Pipeline
