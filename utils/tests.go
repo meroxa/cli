@@ -132,7 +132,7 @@ func GenerateEnvironment(environmentName string) meroxa.Environment {
 
 	return meroxa.Environment{
 		UUID:     "fd572375-77ce-4448-a071-ee4707a599d6",
-		Type:     meroxa.EnvironmentTypeDedicated,
+		Type:     meroxa.EnvironmentTypePrivate,
 		Name:     environmentName,
 		Region:   meroxa.EnvironmentRegionUsEast2,
 		Provider: meroxa.EnvironmentProviderAws,

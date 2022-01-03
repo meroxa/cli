@@ -55,9 +55,9 @@ const (
 type EnvironmentType string
 
 const (
-	EnvironmentTypeHosted    EnvironmentType = "hosted"
-	EnvironmentTypeDedicated EnvironmentType = "dedicated"
-	EnvironmentTypeCommon    EnvironmentType = "common"
+	EnvironmentTypeSelfHosted EnvironmentType = "self_hosted"
+	EnvironmentTypePrivate    EnvironmentType = "private"
+	EnvironmentTypeCommon     EnvironmentType = "common"
 )
 
 type EnvironmentProvider string
