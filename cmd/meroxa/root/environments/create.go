@@ -275,7 +275,7 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
 		Example: `
-meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config "{\"aws_access_key_id\":\"my_access_key\", \"aws_secret_access_key\":\"my_secret_access_key\"}"
+meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret
 `,
 	}
 }
