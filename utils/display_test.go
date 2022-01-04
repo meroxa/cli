@@ -551,7 +551,7 @@ func TestPipelinesTableWithoutHeaders(t *testing.T) {
 
 func TestEnvironmentsTable(t *testing.T) {
 	e := &meroxa.Environment{
-		Type:     meroxa.EnvironmentTypeDedicated,
+		Type:     meroxa.EnvironmentTypePrivate,
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast2,
@@ -603,7 +603,7 @@ func TestEnvironmentsTable(t *testing.T) {
 
 func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 	e := &meroxa.Environment{
-		Type:     meroxa.EnvironmentTypeDedicated,
+		Type:     meroxa.EnvironmentTypePrivate,
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast2,

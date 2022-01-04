@@ -37,7 +37,7 @@ func TestListEnvironmentsExecution(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	ee := &meroxa.Environment{
-		Type:     meroxa.EnvironmentTypeDedicated,
+		Type:     meroxa.EnvironmentTypePrivate,
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast2,

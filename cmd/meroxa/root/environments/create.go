@@ -180,7 +180,7 @@ func (c *Create) Prompt() error {
 	if c.flags.Type == "" {
 		vType := func(input string) error {
 			switch input {
-			case "hosted", "dedicated":
+			case "self_hosted", "private":
 				return nil
 			default:
 				return errors.New("unsupported environment type")
@@ -188,8 +188,8 @@ func (c *Create) Prompt() error {
 		}
 
 		p := promptui.Prompt{
-			Label:    "Type (hosted or dedicated)",
-			Default:  "hosted",
+			Label:    "Type (self_hosted or private)",
+			Default:  "self_hosted",
 			Validate: vType,
 		}
 
@@ -275,7 +275,7 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
 		Example: `
-meroxa env create my-env --type hosted --provider aws --region us-east-1 --config "{\"aws_access_key_id\":\"my_access_key\", \"aws_secret_access_key\":\"my_secret_access_key\"}"
+meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config "{\"aws_access_key_id\":\"my_access_key\", \"aws_secret_access_key\":\"my_secret_access_key\"}"
 `,
 	}
 }
