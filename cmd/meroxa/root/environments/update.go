@@ -218,7 +218,6 @@ func (c *Update) Usage() string {
 	return "update NAME"
 }
 
-//nolint:lll
 func (c *Update) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Update an environment",
