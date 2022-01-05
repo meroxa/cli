@@ -124,10 +124,7 @@ func (c *Update) showEventConfirmation() {
 	var eventToConfirm string
 
 	eventToConfirm = "Environment details:\n"
-
-	if c.args.Name != "" {
-		eventToConfirm += fmt.Sprintf("\tCurrent Name: %s\n", c.args.Name)
-	}
+	eventToConfirm += fmt.Sprintf("\tCurrent Name: %s\n", c.args.Name)
 	if c.flags.Name != "" {
 		eventToConfirm += fmt.Sprintf("\tNew Name: %s\n", c.flags.Name)
 	}
