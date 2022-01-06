@@ -44,12 +44,12 @@ type Describe struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrUUID string
 	}
 }
 
 func (d *Describe) Usage() string {
-	return "describe [NAME]"
+	return "describe [NAMEorUUID]"
 }
 
 func (d *Describe) Docs() builder.Docs {
@@ -59,7 +59,7 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	environment, err := d.client.GetEnvironment(ctx, d.args.Name)
+	environment, err := d.client.GetEnvironment(ctx, d.args.NameOrUUID)
 	if err != nil {
 		return err
 	}
@@ -83,6 +83,6 @@ func (d *Describe) ParseArgs(args []string) error {
 		return errors.New("requires environment name")
 	}
 
-	d.args.Name = args[0]
+	d.args.NameOrUUID = args[0]
 	return nil
 }

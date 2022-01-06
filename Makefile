@@ -22,3 +22,7 @@ docs:
 	rm -rf docs/cmd && mkdir -p docs/cmd/{md,www}
 	rm -rf etc && mkdir -p etc/man/man1 && mkdir -p etc/completion
 	go run gen-docs/main.go
+
+.PHONY: lint
+lint:
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v

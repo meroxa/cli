@@ -33,7 +33,7 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
-func TestRemoveEnvironmentArgs(t *testing.T) {
+func TestUpdateEnvironmentArgs(t *testing.T) {
 	tests := []struct {
 		args []string
 		err  error
@@ -44,7 +44,7 @@ func TestRemoveEnvironmentArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		cc := &Remove{}
+		cc := &Update{}
 		err := cc.ParseArgs(tt.args)
 
 		if err != nil && tt.err.Error() != err.Error() {
@@ -57,23 +57,28 @@ func TestRemoveEnvironmentArgs(t *testing.T) {
 	}
 }
 
-func TestRemoveEnvironmentExecution(t *testing.T) {
+func TestUpdateEnvironmentExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	r := &Remove{
+	r := &Update{
 		client: client,
 		logger: logger,
 	}
 
+	newName := "new-name"
+	newConfig := []string{"a=b", "c=d"}
 	e := utils.GenerateEnvironment("")
 	r.args.NameOrUUID = e.Name
+	r.flags.Name = newName
+	r.flags.Config = newConfig
+	input := &meroxa.UpdateEnvironmentInput{Name: newName, Configuration: stringSliceToMap(newConfig)}
 
 	client.
 		EXPECT().
-		DeleteEnvironment(ctx, e.Name).
+		UpdateEnvironment(ctx, e.Name, input).
 		Return(&e, nil)
 
 	err := r.Execute(ctx)
@@ -83,8 +88,10 @@ func TestRemoveEnvironmentExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf("Environment %q is being removed...\n", e.Name)
-	wantLeveledOutput += fmt.Sprintf("Run `meroxa env describe %s` for status.", e.Name)
+	wantLeveledOutput := fmt.Sprintf(
+		"Updating environment...\nEnvironment %q has been updated. Run `meroxa env describe %s` for status",
+		e.Name,
+		e.Name)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
