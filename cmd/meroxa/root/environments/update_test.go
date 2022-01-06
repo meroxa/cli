@@ -51,8 +51,8 @@ func TestUpdateEnvironmentArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrUUID)
 		}
 	}
 }
@@ -71,7 +71,7 @@ func TestUpdateEnvironmentExecution(t *testing.T) {
 	newName := "new-name"
 	newConfig := []string{"a=b", "c=d"}
 	e := utils.GenerateEnvironment("")
-	r.args.Name = e.Name
+	r.args.NameOrUUID = e.Name
 	r.flags.Name = newName
 	r.flags.Config = newConfig
 	input := &meroxa.UpdateEnvironmentInput{Name: newName, Configuration: stringSliceToMap(newConfig)}
