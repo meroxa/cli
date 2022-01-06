@@ -195,7 +195,7 @@ func (c *Update) Prompt() error {
 				IsConfirm: true,
 			}
 
-			_, err := p.Run()
+			_, err = p.Run()
 			if err != nil {
 				cfgIsNeeded = false
 			}
