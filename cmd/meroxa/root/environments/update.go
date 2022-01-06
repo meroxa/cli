@@ -159,43 +159,45 @@ func (c *Update) Prompt() error {
 		c.flags.Name, _ = p.Run()
 	}
 
-	if len(c.flags.Config) == 0 {
-		c.envCfg = make(map[string]interface{})
+	c.envCfg = stringSliceToMap(c.flags.Config)
+	configPrompt := "a"
+	if len(c.flags.Config) != 0 {
+		configPrompt = "additional"
+	}
 
-		p := promptui.Prompt{
-			Label:     "Does your environment require a new configuration",
-			IsConfirm: true,
-		}
+	p := promptui.Prompt{
+		Label:     fmt.Sprintf("Does your environment require %s new configuration", configPrompt),
+		IsConfirm: true,
+	}
 
-		_, err := p.Run()
+	_, err := p.Run()
 
-		// user responded "yes" to confirmation prompt
-		if err == nil {
-			cfgIsNeeded := true
+	// user responded "yes" to confirmation prompt
+	if err == nil {
+		cfgIsNeeded := true
 
-			for cfgIsNeeded {
-				p = promptui.Prompt{
-					Label: "Configuration key",
-				}
+		for cfgIsNeeded {
+			p = promptui.Prompt{
+				Label: "Configuration key",
+			}
 
-				k, _ := p.Run()
+			k, _ := p.Run()
 
-				p = promptui.Prompt{
-					Label: k,
-				}
+			p = promptui.Prompt{
+				Label: k,
+			}
 
-				v, _ := p.Run()
-				c.envCfg[k] = v
+			v, _ := p.Run()
+			c.envCfg[k] = v
 
-				p := promptui.Prompt{
-					Label:     "Add another configuration",
-					IsConfirm: true,
-				}
+			p := promptui.Prompt{
+				Label:     "Add another configuration",
+				IsConfirm: true,
+			}
 
-				_, err := p.Run()
-				if err != nil {
-					cfgIsNeeded = false
-				}
+			_, err := p.Run()
+			if err != nil {
+				cfgIsNeeded = false
 			}
 		}
 	}
@@ -207,7 +209,7 @@ func (c *Update) Prompt() error {
 		IsConfirm: true,
 	}
 
-	_, err := prompt.Run()
+	_, err = prompt.Run()
 	return err
 }
 
