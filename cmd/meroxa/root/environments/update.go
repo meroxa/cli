@@ -45,7 +45,7 @@ type Update struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		NameOrUUID string
 	}
 
 	flags struct {
@@ -70,13 +70,13 @@ func (c *Update) Flags() []builder.Flag {
 
 func (c *Update) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		c.args.Name = args[0]
+		c.args.NameOrUUID = args[0]
 	}
 	return nil
 }
 
 func (c *Update) SkipPrompt() bool {
-	return c.args.Name != "" && c.flags.Name != "" && len(c.flags.Config) != 0
+	return c.args.NameOrUUID != "" && c.flags.Name != "" && len(c.flags.Config) != 0
 }
 
 func (c *Update) setUserValues(e *meroxa.UpdateEnvironmentInput) {
@@ -103,7 +103,7 @@ func (c *Update) Execute(ctx context.Context) error {
 
 	c.logger.Infof(ctx, "Updating environment...")
 
-	environment, err := c.client.UpdateEnvironment(ctx, c.args.Name, e)
+	environment, err := c.client.UpdateEnvironment(ctx, c.args.NameOrUUID, e)
 
 	if err != nil {
 		return err
@@ -124,7 +124,7 @@ func (c *Update) showEventConfirmation() {
 	var eventToConfirm string
 
 	eventToConfirm = "Environment details:\n"
-	eventToConfirm += fmt.Sprintf("\tCurrent Name: %s\n", c.args.Name)
+	eventToConfirm += fmt.Sprintf("\tCurrent Name or UUID: %s\n", c.args.NameOrUUID)
 	if c.flags.Name != "" {
 		eventToConfirm += fmt.Sprintf("\tNew Name: %s\n", c.flags.Name)
 	}
@@ -141,13 +141,13 @@ func (c *Update) showEventConfirmation() {
 }
 
 func (c *Update) Prompt() error {
-	if c.args.Name == "" {
+	if c.args.NameOrUUID == "" {
 		p := promptui.Prompt{
-			Label:   "Current Environment name",
+			Label:   "Current Environment name or UUID",
 			Default: "",
 		}
 
-		c.args.Name, _ = p.Run()
+		c.args.NameOrUUID, _ = p.Run()
 	}
 
 	if c.flags.Name == "" {
@@ -214,7 +214,7 @@ func (c *Update) Prompt() error {
 }
 
 func (c *Update) Usage() string {
-	return "update NAME"
+	return "update NAMEorUUID"
 }
 
 func (c *Update) Docs() builder.Docs {
