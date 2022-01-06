@@ -50,8 +50,8 @@ func TestDescribeEnvironmentArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.Name)
+		if tt.name != ar.args.NameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.NameOrUUID)
 		}
 	}
 }
@@ -78,7 +78,7 @@ func TestDescribeEnvironmentExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
-	dc.args.Name = e.Name
+	dc.args.NameOrUUID = e.Name
 
 	err := dc.Execute(ctx)
 	if err != nil {

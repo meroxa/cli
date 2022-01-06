@@ -51,8 +51,8 @@ func TestRemoveEnvironmentArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.Name {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
+		if tt.name != cc.args.NameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrUUID)
 		}
 	}
 }
@@ -69,7 +69,7 @@ func TestRemoveEnvironmentExecution(t *testing.T) {
 	}
 
 	e := utils.GenerateEnvironment("")
-	r.args.Name = e.Name
+	r.args.NameOrUUID = e.Name
 
 	client.
 		EXPECT().
