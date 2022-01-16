@@ -75,6 +75,7 @@ func (c *Create) Execute(ctx context.Context) error {
 		p.Metadata = metadata
 	}
 
+	// If the environment specified is not the common environment.
 	if c.flags.Environment != "" && c.flags.Environment != string(meroxa.EnvironmentTypeCommon) {
 		err := builder.CheckFeatureFlag(c, &environments.Environments{})
 		if err != nil {

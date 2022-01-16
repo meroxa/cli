@@ -1,17 +1,15 @@
-## meroxa pipelines create
+## meroxa environments describe
 
-Create a pipeline
+Describe environment
 
 ```
-meroxa pipelines create NAME [flags]
+meroxa environments describe [NAMEorUUID] [flags]
 ```
 
 ### Options
 
 ```
-      --env string        environment (name or UUID) where pipeline will be created
-  -h, --help              help for create
-  -m, --metadata string   pipeline metadata
+  -h, --help   help for describe
 ```
 
 ### Options inherited from parent commands
@@ -25,5 +23,5 @@ meroxa pipelines create NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa pipelines](meroxa_pipelines.md)	 - Manage pipelines on Meroxa
+* [meroxa environments](meroxa_environments.md)	 - Manage environments on Meroxa
 

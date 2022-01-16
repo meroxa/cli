@@ -65,8 +65,8 @@ func TestCreatePipelineFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "metadata", required: false, shorthand: "m", hidden: false},
-		{name: "env", required: false, hidden: false},
+		{name: "metadata", shorthand: "m"},
+		{name: "env"},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
