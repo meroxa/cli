@@ -176,7 +176,7 @@ type CommandWithSubCommands interface {
 
 type CommandWithFeatureFlag interface {
 	Command
-	FeatureFlag() string
+	FeatureFlag() (string, error)
 }
 
 // BuildCobraCommand takes a Command and builds a *cobra.Command from it. It figures out if the command implements any
@@ -666,10 +666,6 @@ func buildCommandWithFeatureFlag(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	// Considering a command with feature flags not ready to be documented and
-	// publicly available.
-	cmd.Hidden = true
-
 	old := cmd.PreRunE
 	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
 		if old != nil {
@@ -679,14 +675,30 @@ func buildCommandWithFeatureFlag(cmd *cobra.Command, c Command) {
 			}
 		}
 
-		flagRequired := v.FeatureFlag()
+		flagRequired, err := v.FeatureFlag()
 		userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
 
 		if !hasFeatureFlag(userFeatureFlags, flagRequired) {
-			return fmt.Errorf("your account does not have access to the %q feature. "+
-				"Reach out to support@meroxa.com for more information", flagRequired)
+			return err
 		}
 
 		return nil
 	}
+}
+
+func CheckFeatureFlag(exec Command, cmd CommandWithFeatureFlag) error {
+	if global.Config == nil {
+		c := BuildCobraCommand(exec)
+		_ = global.PersistentPreRunE(c)
+	}
+	flagRequired, err := cmd.FeatureFlag()
+	if global.Config.Get(global.UserFeatureFlagsEnv) == "" {
+		return err
+	}
+	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
+
+	if !hasFeatureFlag(userFeatureFlags, flagRequired) {
+		return err
+	}
+	return nil
 }
