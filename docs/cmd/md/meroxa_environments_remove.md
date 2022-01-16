@@ -1,17 +1,16 @@
-## meroxa pipelines create
+## meroxa environments remove
 
-Create a pipeline
+Remove environment
 
 ```
-meroxa pipelines create NAME [flags]
+meroxa environments remove NAMEorUUID [flags]
 ```
 
 ### Options
 
 ```
-      --env string        environment (name or UUID) where pipeline will be created
-  -h, --help              help for create
-  -m, --metadata string   pipeline metadata
+  -f, --force   skip confirmation
+  -h, --help    help for remove
 ```
 
 ### Options inherited from parent commands
@@ -25,5 +24,5 @@ meroxa pipelines create NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa pipelines](meroxa_pipelines.md)	 - Manage pipelines on Meroxa
+* [meroxa environments](meroxa_environments.md)	 - Manage environments on Meroxa
 

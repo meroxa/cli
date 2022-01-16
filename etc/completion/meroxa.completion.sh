@@ -1170,6 +1170,238 @@ _meroxa_endpoints()
     noun_aliases=()
 }
 
+_meroxa_environments_create()
+{
+    last_command="meroxa_environments_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    two_word_flags+=("-c")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--provider=")
+    two_word_flags+=("--provider")
+    flags+=("--region=")
+    two_word_flags+=("--region")
+    flags+=("--type=")
+    two_word_flags+=("--type")
+    flags+=("--yes")
+    flags+=("-y")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_environments_describe()
+{
+    last_command="meroxa_environments_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_environments_help()
+{
+    last_command="meroxa_environments_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_environments_list()
+{
+    last_command="meroxa_environments_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--no-headers")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_environments_remove()
+{
+    last_command="meroxa_environments_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_environments_update()
+{
+    last_command="meroxa_environments_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--config=")
+    two_word_flags+=("--config")
+    two_word_flags+=("-c")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--name=")
+    two_word_flags+=("--name")
+    flags+=("--yes")
+    flags+=("-y")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_environments()
+{
+    last_command="meroxa_environments"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("describe")
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("update")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_help()
 {
     last_command="meroxa_help"
@@ -1352,6 +1584,8 @@ _meroxa_pipelines_create()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--env=")
+    two_word_flags+=("--env")
     flags+=("--help")
     flags+=("-h")
     flags+=("--metadata=")
@@ -1582,6 +1816,8 @@ _meroxa_resources_create()
     two_word_flags+=("--client-cert")
     flags+=("--client-key=")
     two_word_flags+=("--client-key")
+    flags+=("--env=")
+    two_word_flags+=("--env")
     flags+=("--help")
     flags+=("-h")
     flags+=("--metadata=")
@@ -2060,6 +2296,13 @@ _meroxa_root_command()
     if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
         command_aliases+=("endpoint")
         aliashash["endpoint"]="endpoints"
+    fi
+    commands+=("environments")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("env")
+        aliashash["env"]="environments"
+        command_aliases+=("environment")
+        aliashash["environment"]="environments"
     fi
     commands+=("help")
     commands+=("login")
