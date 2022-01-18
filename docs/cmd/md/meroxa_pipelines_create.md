@@ -9,6 +9,7 @@ meroxa pipelines create NAME [flags]
 ### Options
 
 ```
+      --env string        environment (name or UUID) where pipeline will be created
   -h, --help              help for create
   -m, --metadata string   pipeline metadata
 ```

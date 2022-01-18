@@ -24,12 +24,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/utils"
-
 	"github.com/golang/mock/gomock"
 
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
@@ -65,8 +65,8 @@ func TestCreatePipelineFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "metadata", required: false, shorthand: "m", hidden: false},
-		{name: "env", required: false, hidden: true},
+		{name: "metadata", shorthand: "m"},
+		{name: "env"},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -164,6 +164,16 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 	pName := "my-pipeline"
 	env := "my-env"
 
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+	// Set up feature flags
+	if global.Config == nil {
+		build := builder.BuildCobraCommand(c)
+		_ = global.PersistentPreRunE(build)
+	}
+
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
 		Environment: &meroxa.EnvironmentIdentifier{Name: env},
@@ -189,13 +199,21 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 		).
 		Return(p, nil)
 
-	c := &Create{
-		client: client,
-		logger: logger,
-	}
-
 	c.args.Name = pi.Name
 	c.flags.Environment = pi.Environment.Name
+
+	// override feature flags
+	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
+	startingFlags := ""
+	if featureFlags != nil {
+		startingFlags = featureFlags.(string)
+	}
+	newFlags := ""
+	if startingFlags != "" {
+		newFlags = startingFlags + " "
+	}
+	newFlags += "environments"
+	global.Config.Set(global.UserFeatureFlagsEnv, newFlags)
 
 	err := c.Execute(ctx)
 
@@ -221,5 +239,56 @@ Pipeline %q successfully created!
 
 	if !reflect.DeepEqual(gotPipeline, *p) {
 		t.Fatalf("expected \"%v\", got \"%v\"", *p, gotPipeline)
+	}
+
+	// Clear environments feature flags
+	global.Config.Set(global.UserFeatureFlagsEnv, startingFlags)
+}
+
+func TestCreatePipelineWithEnvironmentExecutionWithoutFeatureFlag(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+	pName := "my-pipeline"
+	env := "my-env"
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	pi := &meroxa.CreatePipelineInput{
+		Name:        pName,
+		Environment: &meroxa.EnvironmentIdentifier{Name: env},
+	}
+
+	p := &meroxa.Pipeline{
+		ID:   1,
+		Name: pName,
+		Environment: &meroxa.EnvironmentIdentifier{
+			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
+			Name: env,
+		},
+		State: "healthy",
+	}
+
+	p.Name = pName
+
+	c.args.Name = pi.Name
+	c.flags.Environment = pi.Environment.Name
+
+	err := c.Execute(ctx)
+
+	if err == nil {
+		t.Fatalf("unexpected success")
+	}
+
+	gotError := err.Error()
+	wantError := `no access to the Meroxa self-hosted environments feature.
+Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`
+
+	if gotError != wantError {
+		t.Fatalf("expected error:\n%s\ngot:\n%s", wantError, gotError)
 	}
 }

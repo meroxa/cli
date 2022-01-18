@@ -17,6 +17,8 @@ limitations under the License.
 package environments
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -48,8 +50,9 @@ func (*Environments) Aliases() []string {
 	return []string{"env", "environment"}
 }
 
-func (*Environments) FeatureFlag() string {
-	return "environments"
+func (*Environments) FeatureFlag() (string, error) {
+	return "environments", fmt.Errorf(`no access to the Meroxa self-hosted environments feature.
+Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`)
 }
 
 func (e *Environments) Logger(logger log.Logger) {

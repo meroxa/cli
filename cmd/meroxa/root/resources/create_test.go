@@ -10,6 +10,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -56,7 +57,7 @@ func TestCreateResourceFlags(t *testing.T) {
 		{name: "client-key", required: false, shorthand: ""},
 		{name: "ssl", required: false, shorthand: ""},
 		{name: "metadata", required: false, shorthand: "m"},
-		{name: "env", required: false, hidden: true},
+		{name: "env", required: false},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -148,6 +149,16 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+	// Set up feature flags
+	if global.Config == nil {
+		build := builder.BuildCobraCommand(c)
+		_ = global.PersistentPreRunE(build)
+	}
+
 	cr := utils.GenerateResourceWithEnvironment()
 
 	r := meroxa.CreateResourceInput{
@@ -169,14 +180,23 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 		).
 		Return(&cr, nil)
 
-	c := &Create{
-		client: client,
-		logger: logger,
-	}
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
 	c.flags.Environment = r.Environment.Name
+
+	// override feature flags
+	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
+	startingFlags := ""
+	if featureFlags != nil {
+		startingFlags = featureFlags.(string)
+	}
+	newFlags := ""
+	if startingFlags != "" {
+		newFlags = startingFlags + " "
+	}
+	newFlags += "environments"
+	global.Config.Set(global.UserFeatureFlagsEnv, newFlags)
 
 	err := c.Execute(ctx)
 	if err != nil {
@@ -202,6 +222,9 @@ Resource %q is successfully created!
 	if !reflect.DeepEqual(gotResource, cr) {
 		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotResource)
 	}
+
+	// Clear environments feature flags
+	global.Config.Set(global.UserFeatureFlagsEnv, startingFlags)
 }
 
 func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
@@ -209,6 +232,15 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+	// Set up feature flags
+	if global.Config == nil {
+		build := builder.BuildCobraCommand(c)
+		_ = global.PersistentPreRunE(build)
+	}
 
 	cr := utils.GenerateResourceWithEnvironment()
 
@@ -231,14 +263,23 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 		).
 		Return(&cr, nil)
 
-	c := &Create{
-		client: client,
-		logger: logger,
-	}
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
 	c.flags.Environment = r.Environment.UUID
+
+	// override feature flags
+	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
+	startingFlags := ""
+	if featureFlags != nil {
+		startingFlags = featureFlags.(string)
+	}
+	newFlags := ""
+	if startingFlags != "" {
+		newFlags = startingFlags + " "
+	}
+	newFlags += "environments"
+	global.Config.Set(global.UserFeatureFlagsEnv, newFlags)
 
 	err := c.Execute(ctx)
 	if err != nil {
@@ -263,5 +304,50 @@ Resource %q is successfully created!
 
 	if !reflect.DeepEqual(gotResource, cr) {
 		t.Fatalf("expected \"%v\", got \"%v\"", cr, gotResource)
+	}
+
+	// Clear environments feature flags
+	global.Config.Set(global.UserFeatureFlagsEnv, startingFlags)
+}
+
+func TestCreateResourceExecutionWithEnvironmentUUIDWithoutFeatureFlag(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	cr := utils.GenerateResourceWithEnvironment()
+
+	r := meroxa.CreateResourceInput{
+		Type:        "postgres",
+		Name:        "",
+		URL:         "https://foo.url",
+		Credentials: nil,
+		Metadata:    nil,
+		Environment: &meroxa.EnvironmentIdentifier{
+			UUID: cr.Environment.UUID,
+		},
+	}
+
+	c.args.Name = r.Name
+	c.flags.Type = string(r.Type)
+	c.flags.URL = r.URL
+	c.flags.Environment = r.Environment.UUID
+
+	err := c.Execute(ctx)
+	if err == nil {
+		t.Fatalf("unexpected success")
+	}
+
+	gotError := err.Error()
+	wantError := `no access to the Meroxa self-hosted environments feature.
+Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`
+
+	if gotError != wantError {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantError, gotError)
 	}
 }

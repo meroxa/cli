@@ -22,7 +22,9 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/root/environments"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -45,7 +47,7 @@ type Create struct {
 		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
 
 		// TODO: Add support to builder to create flags with an alias (--env | --environment)
-		Environment string `long:"env" usage:"environment (name or UUID) where resource will be created" hidden:"true"`
+		Environment string `long:"env" usage:"environment (name or UUID) where resource will be created"`
 
 		// credentials
 		Username      string `long:"username"    short:"" usage:"username"`
@@ -121,11 +123,17 @@ func (c *Create) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
-	if c.flags.Environment != "" {
+	// If the environment specified is not the common environment.
+	if c.flags.Environment != "" && c.flags.Environment != string(meroxa.EnvironmentTypeCommon) {
+		err := builder.CheckFeatureFlag(c, &environments.Environments{})
+		if err != nil {
+			return err
+		}
+
 		input.Environment = &meroxa.EnvironmentIdentifier{}
 		env = c.flags.Environment
 
-		_, err := uuid.Parse(c.flags.Environment)
+		_, err = uuid.Parse(c.flags.Environment)
 
 		if err == nil {
 			input.Environment.UUID = c.flags.Environment
