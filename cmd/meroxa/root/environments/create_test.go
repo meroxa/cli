@@ -111,7 +111,7 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 	c.flags.Type = "private"
 	c.flags.Provider = "aws"
 	c.flags.Region = "aws"
-	c.flags.Config = []string{"aws_access_key_id=my_access_key", "aws_access_secret=my_access_secret"}
+	c.flags.Config = []string{"aws_access_key_id=my_access_key", "aws_secret_access_key=my_access_secret"}
 
 	cfg := stringSliceToMap(c.flags.Config)
 
