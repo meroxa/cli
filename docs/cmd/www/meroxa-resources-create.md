@@ -34,6 +34,7 @@ meroxa resources create slack --type url -u $WEBHOOK_URL
       --ca-cert string           trusted certificates for verifying resource
       --client-cert string       client certificate for authenticating to the resource
       --client-key string        client private key for authenticating to the resource
+      --env string               environment (name or UUID) where resource will be created
   -h, --help                     help for create
   -m, --metadata string          resource metadata
       --password string          password
