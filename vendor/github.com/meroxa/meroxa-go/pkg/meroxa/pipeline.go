@@ -17,6 +17,11 @@ const (
 	PipelineStateDegraded PipelineState = "degraded"
 )
 
+type PipelineIdentifier struct {
+	UUID string `json:"uuid"`
+	Name string `json:"name"`
+}
+
 // Pipeline represents the Meroxa Pipeline type within the Meroxa API
 type Pipeline struct {
 	CreatedAt   time.Time              `json:"created_at"`

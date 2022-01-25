@@ -483,18 +483,18 @@ func (mr *MockClientMockRecorder) UpdateConnectorStatus(ctx, nameOrID, state int
 }
 
 // UpdateEnvironment mocks base method.
-func (m *MockClient) UpdateEnvironment(ctx context.Context, ameOrUUID string, input *meroxa.UpdateEnvironmentInput) (*meroxa.Environment, error) {
+func (m *MockClient) UpdateEnvironment(ctx context.Context, nameOrUUID string, input *meroxa.UpdateEnvironmentInput) (*meroxa.Environment, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateEnvironment", ctx, ameOrUUID, input)
+	ret := m.ctrl.Call(m, "UpdateEnvironment", ctx, nameOrUUID, input)
 	ret0, _ := ret[0].(*meroxa.Environment)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateEnvironment indicates an expected call of UpdateEnvironment.
-func (mr *MockClientMockRecorder) UpdateEnvironment(ctx, ameOrUUID, input interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) UpdateEnvironment(ctx, nameOrUUID, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEnvironment", reflect.TypeOf((*MockClient)(nil).UpdateEnvironment), ctx, ameOrUUID, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateEnvironment", reflect.TypeOf((*MockClient)(nil).UpdateEnvironment), ctx, nameOrUUID, input)
 }
 
 // UpdatePipeline mocks base method.
