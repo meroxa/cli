@@ -531,6 +531,11 @@ func FunctionsTable(funs []meroxa.Function, hideHeaders bool) string {
 }
 
 func FunctionTable(fun *meroxa.Function) string {
+	envVars := []string{}
+	for k, v := range fun.EnvVars {
+		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
+	}
+
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
@@ -560,6 +565,10 @@ func FunctionTable(fun *meroxa.Function) string {
 		{
 			{Align: simpletable.AlignRight, Text: "Arguments:"},
 			{Text: strings.Join(fun.Args, " ")},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Environment Variables:"},
+			{Text: strings.Join(envVars, "\n")},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Pipeline:"},
