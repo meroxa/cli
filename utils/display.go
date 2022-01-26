@@ -494,7 +494,7 @@ func PrintPipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) {
 	fmt.Println(PipelinesTable(pipelines, hideHeaders))
 }
 
-func FunctionsTable(funs []meroxa.Function, hideHeaders bool) string {
+func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 	if len(funs) == 0 {
 		return ""
 	}

@@ -78,7 +78,7 @@ func (c *client) GetFunction(ctx context.Context, nameOrUUID string) (*Function,
 	return &fun, nil
 }
 
-func (c *client) ListFunctions(ctx context.Context) ([]Function, error) {
+func (c *client) ListFunctions(ctx context.Context) ([]*Function, error) {
 	resp, err := c.MakeRequest(ctx, http.MethodGet, functionsBasePath, nil, nil)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (c *client) ListFunctions(ctx context.Context) ([]Function, error) {
 		return nil, err
 	}
 
-	var funs []Function
+	var funs []*Function
 	err = json.NewDecoder(resp.Body).Decode(&funs)
 	if err != nil {
 		return nil, err

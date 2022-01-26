@@ -19,7 +19,7 @@ var (
 )
 
 type listFunctionClient interface {
-	ListFunctions(ctx context.Context) ([]meroxa.Function, error)
+	ListFunctions(ctx context.Context) ([]*meroxa.Function, error)
 }
 
 type List struct {
@@ -54,12 +54,12 @@ func (l *List) Aliases() []string {
 	return []string{"ls"}
 }
 
-func (c *List) Client(client meroxa.Client) {
-	c.client = client
+func (l *List) Client(client meroxa.Client) {
+	l.client = client
 }
 
-func (c *List) Logger(logger log.Logger) {
-	c.logger = logger
+func (l *List) Logger(logger log.Logger) {
+	l.logger = logger
 }
 
 func (l *List) HideHeaders(hide bool) {

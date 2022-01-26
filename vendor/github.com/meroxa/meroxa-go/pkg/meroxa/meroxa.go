@@ -43,7 +43,7 @@ type Client interface {
 
 	CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*Function, error)
-	ListFunctions(ctx context.Context) ([]Function, error)
+	ListFunctions(ctx context.Context) ([]*Function, error)
 	DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error)
 
 	CreateEndpoint(ctx context.Context, input *CreateEndpointInput) error
