@@ -18,6 +18,7 @@ package root
 
 import (
 	"context"
+	"github.com/meroxa/cli/cmd/meroxa/root/apps"
 	"os"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -80,6 +81,7 @@ meroxa resources list --types
 
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&apps.Apps{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&billing.Billing{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&config.Config{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
