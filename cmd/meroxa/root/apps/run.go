@@ -23,14 +23,12 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strings"
 )
 
 type Run struct {
 	args struct {
 		Path string
 	}
-
 	logger log.Logger
 }
 
@@ -52,18 +50,15 @@ func (r *Run) Execute(ctx context.Context) error {
 	var projPath string
 	if p := r.args.Path; p != "" {
 		projPath = p
+		os.Chdir(projPath)
 	} else {
 		projPath = "."
 	}
-	buildPath := strings.Join([]string{projPath, "..."}, "/")
-	r.logger.Info(ctx, "building apps...\n")
-	cmd := exec.Command("go", "build", buildPath)
-	stdout, err := cmd.CombinedOutput()
+
+	err := buildGoApp(ctx, r.logger, ".", false)
 	if err != nil {
 		return err
 	}
-	// TODO: parse output for build errors
-	r.logger.Info(ctx, "build complete!")
 
 	// apps name
 	pwd, err := os.Getwd()
@@ -72,8 +67,8 @@ func (r *Run) Execute(ctx context.Context) error {
 	}
 	projName := path.Base(pwd)
 
-	cmd = exec.Command("./" + projName)
-	stdout, err = cmd.CombinedOutput()
+	cmd := exec.Command("./" + projName)
+	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		return err
 	}

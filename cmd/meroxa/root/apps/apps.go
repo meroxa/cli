@@ -32,7 +32,7 @@ var (
 )
 
 func (*Apps) Aliases() []string {
-	return []string{"apps"}
+	return []string{"app"}
 }
 
 func (*Apps) Usage() string {
@@ -53,7 +53,7 @@ func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		//builder.BuildCobraCommand(&Init{}),
 		//builder.BuildCobraCommand(&List{}),
-		//builder.BuildCobraCommand(&Deploy{}),
+		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Run{}),
 	}
 }
