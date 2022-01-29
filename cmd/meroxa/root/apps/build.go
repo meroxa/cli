@@ -18,7 +18,7 @@ import (
 func buildGoApp(ctx context.Context, l log.Logger, path string, platform bool) error {
 	var cmd *exec.Cmd
 	if platform {
-		cmd = exec.Command("go", "build", "--tags", "platform", path+"/...")
+		cmd = exec.Command("go", "build", "--tags", "platform", "-o", "./"+path, "./"+path+"/...")
 	} else {
 		cmd = exec.Command("go", "build", path+"/...")
 	}
