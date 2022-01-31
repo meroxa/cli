@@ -48,7 +48,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	var projPath string
 	if p := d.args.Path; p != "" {
 		projPath = p
-		//os.Chdir(projPath)
 	} else {
 		projPath = "."
 	}
@@ -69,7 +68,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	// build go app
-	//os.Chdir(projPath)
 	err = buildGoApp(ctx, d.logger, projPath, true)
 	if err != nil {
 		return err
