@@ -93,7 +93,7 @@ func TestAddError(t *testing.T) {
 	}
 
 	err := "unexpected error"
-	addError(event, fmt.Errorf(err))
+	addError(event, fmt.Errorf("%s", err))
 
 	if v, ok := event["error"]; !ok || v != err {
 		if !ok {
