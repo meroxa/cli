@@ -85,7 +85,8 @@ func TestRepairEnvironmentExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(
-		"Repairing environment...\nThe repairment of your environment  %q is now in progress. Run `meroxa env describe %s` for status",
+		`The repairment of your environment %q is now in progress and your environment will be up and running soon.
+Run "meroxa env describe %s" for status.`,
 		e.Name,
 		e.Name)
 

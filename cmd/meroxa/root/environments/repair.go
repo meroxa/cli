@@ -54,7 +54,7 @@ func (r *Repair) Usage() string {
 func (r *Repair) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Repair environment",
-		Long:  "Repair any environment that is in one of the following states: provisioning_error, deprovisioning_error, repairing_error.",
+		Long:  `Repair any environment that is in one of the following states: provisioning_error, deprovisioning_error, repairing_error.`,
 	}
 }
 
@@ -74,13 +74,13 @@ func (r *Repair) ParseArgs(args []string) error {
 }
 
 func (r *Repair) Execute(ctx context.Context) error {
-	rr, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: "repair"}) /* OPENQ: How do I pass a struct here? */
+	rr, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: "repair"})
 	if err != nil {
 		return err
 	}
 
-	r.logger.Infof(ctx, "The repairment of your environment %q is now in progress. Run `meroxa env describe %s` for status", r.args.NameOrUUID)
-	r.logger.Info(ctx, "Meroxa will try to resolve the error and your environment should be up and running soon.")
+	r.logger.Infof(ctx, `The repairment of your environment %q is now in progress and your environment will be up and running soon.`, r.args.NameOrUUID) // nolint:lll
+	r.logger.Infof(ctx, `Run "meroxa env describe %s" for status.`, r.args.NameOrUUID)
 	r.logger.JSON(ctx, rr)
 
 	return nil
