@@ -56,6 +56,7 @@ type Client interface {
 	GetEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error)
 	UpdateEnvironment(ctx context.Context, nameOrUUID string, input *UpdateEnvironmentInput) (*Environment, error)
 	ListEnvironments(ctx context.Context) ([]*Environment, error)
+	PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *RepairEnvironmentInput) (*Environment, error)
 
 	CreatePipeline(ctx context.Context, input *CreatePipelineInput) (*Pipeline, error)
 	DeletePipeline(ctx context.Context, id int) error
