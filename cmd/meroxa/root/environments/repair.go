@@ -68,7 +68,7 @@ func (r *Repair) Client(client meroxa.Client) {
 }
 
 func (r *Repair) ParseArgs(args []string) error {
-         if len(args) < 1 {
+	if len(args) < 1 {
 		return errors.New("requires environment name or uuid")
 	}
 	r.args.NameOrUUID = args[0]
@@ -76,7 +76,7 @@ func (r *Repair) ParseArgs(args []string) error {
 }
 
 func (r *Repair) Execute(ctx context.Context) error {
-	rr, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: "repair"})
+	rr, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) // nolint:lll
 	if err != nil {
 		return err
 	}
