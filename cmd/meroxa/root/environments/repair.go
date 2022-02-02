@@ -15,6 +15,7 @@ package environments
 
 import (
 	"context"
+	"errors"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -67,9 +68,10 @@ func (r *Repair) Client(client meroxa.Client) {
 }
 
 func (r *Repair) ParseArgs(args []string) error {
-	if len(args) > 0 {
-		r.args.NameOrUUID = args[0]
+         if len(args) < 1 {
+		return errors.New("requires environment name or uuid")
 	}
+	r.args.NameOrUUID = args[0]
 	return nil
 }
 
