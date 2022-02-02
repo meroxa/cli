@@ -81,6 +81,21 @@ func (mr *MockClientMockRecorder) CreateEnvironment(ctx, input interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEnvironment", reflect.TypeOf((*MockClient)(nil).CreateEnvironment), ctx, input)
 }
 
+// CreateFunction mocks base method.
+func (m *MockClient) CreateFunction(ctx context.Context, input *meroxa.CreateFunctionInput) (*meroxa.Function, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateFunction", ctx, input)
+	ret0, _ := ret[0].(*meroxa.Function)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateFunction indicates an expected call of CreateFunction.
+func (mr *MockClientMockRecorder) CreateFunction(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFunction", reflect.TypeOf((*MockClient)(nil).CreateFunction), ctx, input)
+}
+
 // CreatePipeline mocks base method.
 func (m *MockClient) CreatePipeline(ctx context.Context, input *meroxa.CreatePipelineInput) (*meroxa.Pipeline, error) {
 	m.ctrl.T.Helper()
@@ -152,6 +167,21 @@ func (m *MockClient) DeleteEnvironment(ctx context.Context, nameOrUUID string) (
 func (mr *MockClientMockRecorder) DeleteEnvironment(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEnvironment", reflect.TypeOf((*MockClient)(nil).DeleteEnvironment), ctx, nameOrUUID)
+}
+
+// DeleteFunction mocks base method.
+func (m *MockClient) DeleteFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteFunction", ctx, nameOrUUID)
+	ret0, _ := ret[0].(*meroxa.Function)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteFunction indicates an expected call of DeleteFunction.
+func (mr *MockClientMockRecorder) DeleteFunction(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFunction", reflect.TypeOf((*MockClient)(nil).DeleteFunction), ctx, nameOrUUID)
 }
 
 // DeletePipeline mocks base method.
@@ -240,6 +270,21 @@ func (m *MockClient) GetEnvironment(ctx context.Context, nameOrUUID string) (*me
 func (mr *MockClientMockRecorder) GetEnvironment(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEnvironment", reflect.TypeOf((*MockClient)(nil).GetEnvironment), ctx, nameOrUUID)
+}
+
+// GetFunction mocks base method.
+func (m *MockClient) GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFunction", ctx, nameOrUUID)
+	ret0, _ := ret[0].(*meroxa.Function)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFunction indicates an expected call of GetFunction.
+func (mr *MockClientMockRecorder) GetFunction(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunction", reflect.TypeOf((*MockClient)(nil).GetFunction), ctx, nameOrUUID)
 }
 
 // GetPipeline mocks base method.
@@ -347,6 +392,21 @@ func (mr *MockClientMockRecorder) ListEnvironments(ctx interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEnvironments", reflect.TypeOf((*MockClient)(nil).ListEnvironments), ctx)
 }
 
+// ListFunctions mocks base method.
+func (m *MockClient) ListFunctions(ctx context.Context) ([]*meroxa.Function, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListFunctions", ctx)
+	ret0, _ := ret[0].([]*meroxa.Function)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListFunctions indicates an expected call of ListFunctions.
+func (mr *MockClientMockRecorder) ListFunctions(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFunctions", reflect.TypeOf((*MockClient)(nil).ListFunctions), ctx)
+}
+
 // ListPipelineConnectors mocks base method.
 func (m *MockClient) ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
@@ -435,6 +495,21 @@ func (m *MockClient) MakeRequest(ctx context.Context, method, path string, body 
 func (mr *MockClientMockRecorder) MakeRequest(ctx, method, path, body, params interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeRequest", reflect.TypeOf((*MockClient)(nil).MakeRequest), ctx, method, path, body, params)
+}
+
+// PerformActionOnEnvironment mocks base method.
+func (m *MockClient) PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *meroxa.RepairEnvironmentInput) (*meroxa.Environment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PerformActionOnEnvironment", ctx, nameOrUUID, input)
+	ret0, _ := ret[0].(*meroxa.Environment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PerformActionOnEnvironment indicates an expected call of PerformActionOnEnvironment.
+func (mr *MockClientMockRecorder) PerformActionOnEnvironment(ctx, nameOrUUID, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PerformActionOnEnvironment", reflect.TypeOf((*MockClient)(nil).PerformActionOnEnvironment), ctx, nameOrUUID, input)
 }
 
 // RotateTunnelKeyForResource mocks base method.
