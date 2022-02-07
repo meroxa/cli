@@ -136,15 +136,15 @@ func GenerateEnvironmentFailed(environmentName string) meroxa.Environment {
 		Name:     environmentName,
 		Region:   meroxa.EnvironmentRegionUsEast1,
 		Provider: meroxa.EnvironmentProviderAws,
-		Status: meroxa.EnvironmentViewStatus{
+		Status: *meroxa.EnvironmentViewStatus{
 			State:   meroxa.EnvironmentStatePreflightError,
 			Details: "",
-			PreflightDetails: meroxa.PreflightDetails{
+			PreflightDetails: *meroxa.PreflightDetails{
 				PreflightPermissions: meroxa.PreflightPermissions{
 					S3:  []string{"missing read permission for S3", "missing write permissions for S3"},
 					EC2: []string{"missing read permission for S3", "missing write permissions for S3"},
 				},
-				PreflightLimits: meroxa.PreflightLimits{
+				PreflightLimits: *meroxa.PreflightLimits{
 					EIP: "",
 				},
 			},

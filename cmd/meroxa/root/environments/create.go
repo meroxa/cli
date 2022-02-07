@@ -1,12 +1,9 @@
 /*
 Copyright © 2021 Meroxa Inc
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +15,7 @@ package environments
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -129,23 +127,31 @@ func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Provisioning environment...")
 
 	environment, err := c.client.CreateEnvironment(ctx, e)
+	fmt.Printf("err: %+v\n", err)
+	fmt.Printf("env: %+v\n", environment)
 
 	if err != nil {
-		c.logger.JSON(ctx, environment.Status.State)
-		if environment.Status.State == meroxa.EnvironmentStatePreflightError {
-			c.logger.JSON(ctx, environment.Status.PreflightDetails)
-		}
 		return err
 	}
 
-	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-
-	if environment.Status.State == meroxa.EnvironmentStatePreflightSuccess {
+	if environment.Status.State == meroxa.EnvironmentStatePreflightError {
+		details, _ := prettyString(environment.Status.PreflightDetails)
+		c.logger.Errorf(ctx, "Environment %q could not be provisioned because it failed the preflight checks\n%s\n", environment.Name, details)
+	} else if environment.Status.State == meroxa.EnvironmentStatePreflightSuccess {
 		environment.Status.PreflightDetails = nil
+		c.logger.Infof(ctx, "Preflight checks have passed. Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
 	}
 
 	c.logger.JSON(ctx, environment)
 	return nil
+}
+
+func prettyString(a interface{}) (string, error) {
+	j, err := json.MarshalIndent(a, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	return string(j), nil
 }
 
 func (c *Create) NotConfirmed() string {
