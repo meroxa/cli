@@ -13,18 +13,44 @@ const environmentsBasePath = "/v1/environments"
 type EnvironmentState string
 
 const (
-	EnvironmentStateProvisioning   EnvironmentState = "provisioning"
-	EnvironmentStateProvisioned    EnvironmentState = "provisioned"
-	EnvironmentStateUpdating       EnvironmentState = "updating"
-	EnvironmentStateError          EnvironmentState = "error"
-	EnvironmentStateRepairing      EnvironmentState = "repairing"
-	EnvironmentStateDeprovisioning EnvironmentState = "deprovisioning"
-	EnvironmentStateDeprovisioned  EnvironmentState = "deprovisioned"
+	EnvironmentStateProvisioning     EnvironmentState = "provisioning"
+	EnvironmentStateProvisioned      EnvironmentState = "provisioned"
+	EnvironmentStateUpdating         EnvironmentState = "updating"
+	EnvironmentStateError            EnvironmentState = "error"
+	EnvironmentStateRepairing        EnvironmentState = "repairing"
+	EnvironmentStateDeprovisioning   EnvironmentState = "deprovisioning"
+	EnvironmentStateDeprovisioned    EnvironmentState = "deprovisioned"
+	EnvironmentStatePreflightSuccess EnvironmentState = "preflight_success"
+	EnvironmentStatePreflightError   EnvironmentState = "preflight_error"
 )
 
+type PreflightPermissions struct {
+	EC2            []string `json:"ec2"`
+	S3             []string `json:"s3"`
+	ServiceQuotas  []string `json:"servicequotas"`
+	MSK            []string `json:"msk"`
+	EKS            []string `json:"eks"`
+	KMS            []string `json:"kms"`
+	IAM            []string `json:"iam"`
+	Cloudformation []string `json:"cloudformation"`
+	Cloudwatch     []string `json:"cloudwatch"`
+}
+
+type PreflightLimits struct {
+	VPC string `json:"vpc"`
+	EIP string `json:"eip"`
+	NAT string `json:"nat_gateway"`
+}
+
+type PreflightDetails struct {
+	PreflightPermissions PreflightPermissions `json:"permissions"`
+	PreflightLimits      PreflightLimits      `json:"limits"`
+}
+
 type EnvironmentViewStatus struct {
-	State   EnvironmentState `json:"state"`
-	Details string           `json:"details,omitempty"`
+	State            EnvironmentState  `json:"state"`
+	Details          string            `json:"details,omitempty"`
+	PreflightDetails *PreflightDetails `json:"preflight_details,omitempty"`
 }
 
 /*

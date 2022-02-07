@@ -54,7 +54,7 @@ type Create struct {
 		Type     string   `long:"type" usage:"environment type, when not specified"`
 		Provider string   `long:"provider" usage:"environment cloud provider to use"`
 		Region   string   `long:"region" usage:"environment region"`
-		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)"` // nolint:lll
+		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)"` // nolint:lll
 	}
 
 	envCfg map[string]interface{}
@@ -131,12 +131,20 @@ func (c *Create) Execute(ctx context.Context) error {
 	environment, err := c.client.CreateEnvironment(ctx, e)
 
 	if err != nil {
+		c.logger.JSON(ctx, environment.Status.State)
+		if environment.Status.State == meroxa.EnvironmentStatePreflightError {
+			c.logger.JSON(ctx, environment.Status.PreflightDetails)
+		}
 		return err
 	}
 
 	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-	c.logger.JSON(ctx, environment)
 
+	if environment.Status.State == meroxa.EnvironmentStatePreflightSuccess {
+		environment.Status.PreflightDetails = nil
+	}
+
+	c.logger.JSON(ctx, environment)
 	return nil
 }
 
@@ -275,7 +283,7 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
 		Example: `
-meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret
+meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret
 `,
 	}
 }
