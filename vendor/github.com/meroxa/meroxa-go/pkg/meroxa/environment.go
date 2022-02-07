@@ -13,42 +13,74 @@ const environmentsBasePath = "/v1/environments"
 type EnvironmentState string
 
 const (
-	EnvironmentStateProvisioning   EnvironmentState = "provisioning"
-	EnvironmentStateProvisioned    EnvironmentState = "provisioned"
-	EnvironmentStateUpdating       EnvironmentState = "updating"
-	EnvironmentStateError          EnvironmentState = "error"
-	EnvironmentStateRepairing      EnvironmentState = "repairing"
-	EnvironmentStateDeprovisioning EnvironmentState = "deprovisioning"
-	EnvironmentStateDeprovisioned  EnvironmentState = "deprovisioned"
+	EnvironmentStateProvisioning     EnvironmentState = "provisioning"
+	EnvironmentStateProvisioned      EnvironmentState = "provisioned"
+	EnvironmentStateUpdating         EnvironmentState = "updating"
+	EnvironmentStateError            EnvironmentState = "error"
+	EnvironmentStateRepairing        EnvironmentState = "repairing"
+	EnvironmentStateDeprovisioning   EnvironmentState = "deprovisioning"
+	EnvironmentStateDeprovisioned    EnvironmentState = "deprovisioned"
+	EnvironmentStatePreflightSuccess EnvironmentState = "preflight_success"
+	EnvironmentStatePreflightError   EnvironmentState = "preflight_error"
 )
 
-type EnvironmentViewStatus struct {
-	State   EnvironmentState `json:"state"`
-	Details string           `json:"details,omitempty"`
+type PreflightPermissions struct {
+	EC2            []string `json:"ec2"`
+	S3             []string `json:"s3"`
+	ServiceQuotas  []string `json:"servicequotas"`
+	MSK            []string `json:"msk"`
+	EKS            []string `json:"eks"`
+	KMS            []string `json:"kms"`
+	IAM            []string `json:"iam"`
+	Cloudformation []string `json:"cloudformation"`
+	Cloudwatch     []string `json:"cloudwatch"`
 }
+
+type PreflightLimits struct {
+	VPC string `json:"vpc"`
+	EIP string `json:"eip"`
+	NAT string `json:"nat_gateway"`
+}
+
+type PreflightDetails struct {
+	PreflightPermissions PreflightPermissions `json:"permissions"`
+	PreflightLimits      PreflightLimits      `json:"limits"`
+}
+
+type EnvironmentViewStatus struct {
+	State            EnvironmentState  `json:"state"`
+	Details          string            `json:"details,omitempty"`
+	PreflightDetails *PreflightDetails `json:"preflight_details,omitempty"`
+}
+
+/*
+Currently not supported AWS regions
+
+EnvironmentRegionAfSouth      EnvironmentRegion = "af-south-1"
+EnvironmentRegionApEast       EnvironmentRegion = "ap-east-1"
+EnvironmentRegionApNortheast2 EnvironmentRegion = "ap-northeast-2"
+EnvironmentRegionApNortheast3 EnvironmentRegion = "ap-northeast-3"
+EnvironmentRegionApSouth      EnvironmentRegion = "ap-south-1"
+EnvironmentRegionApSoutheast1 EnvironmentRegion = "ap-southeast-1"
+EnvironmentRegionApSoutheast2 EnvironmentRegion = "ap-southeast-2"
+EnvironmentRegionCaCentral    EnvironmentRegion = "ca-central-1"
+EnvironmentRegionEuNorth      EnvironmentRegion = "eu-north-1"
+EnvironmentRegionEuSouth      EnvironmentRegion = "eu-south-1"
+EnvironmentRegionEuWest1      EnvironmentRegion = "eu-west-1"
+EnvironmentRegionEuWest2      EnvironmentRegion = "eu-west-2"
+EnvironmentRegionEuWest3      EnvironmentRegion = "eu-west-3"
+EnvironmentRegionMeSouth      EnvironmentRegion = "me-south-1"
+EnvironmentRegionSaEast1      EnvironmentRegion = "sa-east-1"
+EnvironmentRegionSaEast1      EnvironmentRegion = "sa-east-1"
+
+*/
 
 type EnvironmentRegion string
 
 const (
-	EnvironmentRegionAfSouth      EnvironmentRegion = "af-south-1"
-	EnvironmentRegionApEast       EnvironmentRegion = "ap-east-1"
 	EnvironmentRegionApNortheast1 EnvironmentRegion = "ap-northeast-1"
-	EnvironmentRegionApNortheast2 EnvironmentRegion = "ap-northeast-2"
-	EnvironmentRegionApNortheast3 EnvironmentRegion = "ap-northeast-3"
-	EnvironmentRegionApSouth      EnvironmentRegion = "ap-south-1"
-	EnvironmentRegionApSoutheast1 EnvironmentRegion = "ap-southeast-1"
-	EnvironmentRegionApSoutheast2 EnvironmentRegion = "ap-southeast-2"
-	EnvironmentRegionCaCentral    EnvironmentRegion = "ca-central-1"
 	EnvironmentRegionEuCentral    EnvironmentRegion = "eu-central-1"
-	EnvironmentRegionEuNorth      EnvironmentRegion = "eu-north-1"
-	EnvironmentRegionEuSouth      EnvironmentRegion = "eu-south-1"
-	EnvironmentRegionEuWest1      EnvironmentRegion = "eu-west-1"
-	EnvironmentRegionEuWest2      EnvironmentRegion = "eu-west-2"
-	EnvironmentRegionEuWest3      EnvironmentRegion = "eu-west-3"
-	EnvironmentRegionMeSouth      EnvironmentRegion = "me-south-1"
-	EnvironmentRegionSaEast1      EnvironmentRegion = "sa-east-1"
 	EnvironmentRegionUsEast1      EnvironmentRegion = "us-east-1"
-	EnvironmentRegionUsEast2      EnvironmentRegion = "us-east-2"
 	EnvironmentRegionUsWest2      EnvironmentRegion = "us-west-2"
 )
 
