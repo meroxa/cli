@@ -66,5 +66,6 @@ func (*Environments) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&Update{}),
+		builder.BuildCobraCommand(&Repair{}),
 	}
 }

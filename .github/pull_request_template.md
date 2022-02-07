@@ -1,41 +1,41 @@
-# Description of change
+## Description of change
 
-*A brief description of the change, what it is and why it was made.*
+<!-- Provide a brief description of the change, what it is and why it was made below.* -->
 
 Fixes <GitHub Issue>
 
-# Type of change
+## Type of change
+
+<!-- Please tick off the correct checkbox after saving the PR description. -->
 
 - [ ]  New feature
 - [ ]  Bug fix
 - [ ]  Refactor
 - [ ]  Documentation
 
-# How was this tested?
+## How was this tested?
 
 - [ ]  Unit Tests
 - [ ]  Tested in staging
 
-# Demo
+## Demo
 
-**Before this pull-request**
+<!-- Provide examples of how the feature looked before and after this change in the table below -->
+| before | after |
+|--------|-------|
+|<!-- Replace this with a screenshot/gif -->|<!-- Replace this with a screenshot/gif -->|
 
-_Include how it looked before_
 
-**After this pull-request**
+## Additional references
 
-_Include how it looks now_
+<!-- Post any additional links (if appropriate) below -->
 
-# Additional references
+## Documentation updated
 
-*Any additional links (if appropriate)*
-
-# Documentation updated
-
-*Make sure that our [documentation](https://docs.meroxa.com/) is accordingly updated when necessary.*
+<!-- Make sure that our [documentation](https://docs.meroxa.com/) is accordingly updated when necessary.
 
 You can do that by opening a pull-request to our (🔒 private, for now) repository: https://github.com/meroxa/meroxa-docs.
 
-✨ In the future, there will be a GitHub action taking care of these updates automatically. ✨
+✨ In the future, there will be a GitHub action taking care of these updates automatically. ✨ -->
 
-*Provide PR link:* 
+<!-- Provide a PR link below -->

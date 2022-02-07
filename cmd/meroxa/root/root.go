@@ -30,6 +30,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
 	"github.com/meroxa/cli/cmd/meroxa/root/endpoints"
 	"github.com/meroxa/cli/cmd/meroxa/root/environments"
+	"github.com/meroxa/cli/cmd/meroxa/root/functions"
 	"github.com/meroxa/cli/cmd/meroxa/root/login"
 	"github.com/meroxa/cli/cmd/meroxa/root/logout"
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
@@ -83,6 +84,7 @@ meroxa resources list --types
 	cmd.AddCommand(builder.BuildCobraCommand(&config.Config{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connect{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&functions.Functions{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&endpoints.Endpoints{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&environments.Environments{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&login.Login{}))

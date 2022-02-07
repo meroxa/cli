@@ -17,6 +17,7 @@ limitations under the License.
 package global
 
 import (
+	"errors"
 	"fmt"
 	"runtime"
 	"testing"
@@ -93,7 +94,7 @@ func TestAddError(t *testing.T) {
 	}
 
 	err := "unexpected error"
-	addError(event, fmt.Errorf(err))
+	addError(event, errors.New(err))
 
 	if v, ok := event["error"]; !ok || v != err {
 		if !ok {
