@@ -25,11 +25,11 @@ const (
 )
 
 type PreflightPermissions struct {
-	EC2            []string `json:"ec2"`
 	S3             []string `json:"s3"`
 	ServiceQuotas  []string `json:"servicequotas"`
 	MSK            []string `json:"msk"`
 	EKS            []string `json:"eks"`
+	EC2            []string `json:"ec2"`
 	KMS            []string `json:"kms"`
 	IAM            []string `json:"iam"`
 	Cloudformation []string `json:"cloudformation"`
@@ -43,14 +43,14 @@ type PreflightLimits struct {
 }
 
 type PreflightDetails struct {
-	PreflightPermissions PreflightPermissions `json:"permissions"`
-	PreflightLimits      PreflightLimits      `json:"limits"`
+	PreflightPermissions *PreflightPermissions `json:"permissions"`
+	PreflightLimits      *PreflightLimits      `json:"limits"`
 }
 
 type EnvironmentViewStatus struct {
 	State            EnvironmentState  `json:"state"`
 	Details          string            `json:"details,omitempty"`
-	PreflightDetails *PreflightDetails `json:"preflight_details,omitempty"`
+	PreflightDetails *PreflightDetails `json:"preflight_details"`
 }
 
 /*
@@ -123,6 +123,16 @@ type CreateEnvironmentInput struct {
 type UpdateEnvironmentInput struct {
 	Name          string                 `json:"name,omitempty"`
 	Configuration map[string]interface{} `json:"config,omitempty"`
+}
+
+type EnvironmentAction string
+
+const (
+	EnvironmentActionRepair EnvironmentAction = "repair"
+)
+
+type RepairEnvironmentInput struct {
+	Action EnvironmentAction `json:"action"`
 }
 
 // ListEnvironments returns an array of Environments (scoped to the calling user)
@@ -209,6 +219,24 @@ func (c *client) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Env
 func (c *client) UpdateEnvironment(ctx context.Context, nameOrUUID string, input *UpdateEnvironmentInput) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
 	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var e *Environment
+	err = json.NewDecoder(resp.Body).Decode(&e)
+
+	return e, nil
+}
+
+func (c *client) PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *RepairEnvironmentInput) (*Environment, error) {
+	path := fmt.Sprintf("%s/%s/%s", environmentsBasePath, nameOrUUID, "actions")
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, input, nil)
 	if err != nil {
 		return nil, err
 	}

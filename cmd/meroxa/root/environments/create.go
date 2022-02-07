@@ -130,8 +130,6 @@ func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Provisioning environment...")
 
 	environment, err := c.client.CreateEnvironment(ctx, e)
-	fmt.Printf("err: %+v\n", err)
-	fmt.Printf("env: %+v\n", environment)
 
 	if err != nil {
 		return err
@@ -150,7 +148,7 @@ func (c *Create) Execute(ctx context.Context) error {
 }
 
 func prettyString(a interface{}) (string, error) {
-	j, err := json.MarshalIndent(a, "", "  ")
+	j, err := json.MarshalIndent(a, "", "    ")
 	if err != nil {
 		return "", err
 	}
