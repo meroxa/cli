@@ -675,8 +675,8 @@ func buildCommandWithFeatureFlag(cmd *cobra.Command, c Command) {
 			}
 		}
 
-		flagRequired, err := v.FeatureFlag()
 		userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
+		flagRequired, err := v.FeatureFlag()
 
 		if !hasFeatureFlag(userFeatureFlags, flagRequired) {
 			return err

@@ -19,8 +19,11 @@ package environments
 import (
 	"context"
 	"encoding/json"
-	"reflect"
+	"errors"
 	"strings"
+
+	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -30,61 +33,75 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
-func TestListEnvironmentsExecution(t *testing.T) {
+func TestRepairEnvironmentArgs(t *testing.T) {
+	tests := []struct {
+		args []string
+		err  error
+		name string
+		uuid string
+	}{
+		{args: nil, err: errors.New("requires environment name or uuid"), name: "", uuid: ""},
+		{args: []string{"environment-name"}, err: nil, name: "environment-name", uuid: ""},
+	}
+
+	for _, tt := range tests {
+		cc := &Repair{}
+		err := cc.ParseArgs(tt.args)
+
+		if err != nil && tt.err.Error() != err.Error() {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		}
+
+		if tt.name != cc.args.NameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrUUID)
+		}
+	}
+}
+
+func TestRepairEnvironmentExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	ee := &meroxa.Environment{
-		Type:     meroxa.EnvironmentTypePrivate,
-		Name:     "environment-1234",
-		Provider: meroxa.EnvironmentProviderAws,
-		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
-		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
-	}
-
-	environments := []*meroxa.Environment{ee}
-
-	client.
-		EXPECT().
-		ListEnvironments(ctx).
-		Return(environments, nil)
-
-	l := &List{
+	r := &Repair{
 		client: client,
 		logger: logger,
 	}
 
-	err := l.Execute(ctx)
+	e := utils.GenerateEnvironment("")
+	r.args.NameOrUUID = e.Name
+
+	client.
+		EXPECT().
+		PerformActionOnEnvironment(ctx, e.Name, &meroxa.RepairEnvironmentInput{Action: "repair"}).
+		Return(&e, nil)
+
+	err := r.Execute(ctx)
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.EnvironmentsTable(environments, false)
+	wantLeveledOutput := fmt.Sprintf(
+		`The repairment of your environment %q is now in progress and your environment will be up and running soon.
+Run "meroxa env describe %s" for status.`,
+		e.Name,
+		e.Name)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotEnvironments []meroxa.Environment
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotEnvironments)
-
-	var lp []meroxa.Environment
-
-	for _, p := range environments {
-		lp = append(lp, *p)
-	}
-
+	var gotEnvironment meroxa.Environment
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotEnvironment)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !reflect.DeepEqual(gotEnvironments, lp) {
-		t.Fatalf("expected \"%v\", got \"%v\"", environments, gotEnvironments)
+	if !reflect.DeepEqual(gotEnvironment, e) {
+		t.Fatalf("expected \"%v\", got \"%v\"", e, gotEnvironment)
 	}
 }
