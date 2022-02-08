@@ -664,13 +664,24 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 		},
 	}
 
-	mainTable.SetStyle(simpletable.StyleCompact)
+	if environment.Status.Details != "" {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment Status Details:"},
+			{Text: string(environment.Status.State)},
+		}
+		mainTable.Body.Cells = append(mainTable.Body.Cells, r)
+	}
 
-	preflightTable := simpletable.New()
+	mainTable.SetStyle(simpletable.StyleCompact)
 	str := mainTable.String()
 
 	if environment.Status.PreflightDetails != nil {
+		preflightTable := simpletable.New()
 		preflightTable.Body.Cells = [][]*simpletable.Cell{
+			{
+				{Align: simpletable.AlignRight, Text: "				Preflight Checks:"},
+				{Text: ""},
+			},
 			{
 				{Align: simpletable.AlignRight, Text: "				AWS EC2 Permissions Status:"},
 				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
