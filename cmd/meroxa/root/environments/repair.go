@@ -91,7 +91,7 @@ func (r *Repair) Execute(ctx context.Context) error {
 			text += fmt.Sprintf("\n%s\n", details)
 		}
 		r.logger.Errorf(ctx, text)
-	} else if state == meroxa.EnvironmentStateRepairing || state == meroxa.EnvironmentStateReady {
+	} else if state == meroxa.EnvironmentStateRepairing || state == meroxa.EnvironmentStatePreflightSuccess {
 		r.logger.Infof(ctx, `The repairment of your environment %q is now in progress and your environment will be up and running soon.`, r.args.NameOrUUID) // nolint:lll
 	} else if state == meroxa.EnvironmentStateRepairingError || state == meroxa.EnvironmentStateUpdatingError ||
 		state == meroxa.EnvironmentStateProvisioningError || state == meroxa.EnvironmentStateDeprovisioningError {
