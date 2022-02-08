@@ -552,7 +552,7 @@ func TestEnvironmentsTable(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateReady},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
@@ -607,12 +607,12 @@ func TestEnvironmentsTablePreflightFailed(t *testing.T) {
 		Status: meroxa.EnvironmentViewStatus{
 			State:   meroxa.EnvironmentStatePreflightError,
 			Details: "",
-			PreflightDetails: meroxa.PreflightDetails{
-				PreflightPermissions: meroxa.PreflightPermissions{
+			PreflightDetails: &meroxa.PreflightDetails{
+				PreflightPermissions: &meroxa.PreflightPermissions{
 					S3:  []string{"missing read permission for S3", "missing write permissions for S3"},
 					EC2: []string{"missing read permission for S3", "missing write permissions for S3"},
 				},
-				PreflightLimits: meroxa.PreflightLimits{
+				PreflightLimits: &meroxa.PreflightLimits{
 					EIP: "",
 				},
 			},
@@ -668,7 +668,7 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateReady},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 

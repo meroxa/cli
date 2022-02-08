@@ -15,14 +15,15 @@ package environments
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/manifoldco/promptui"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -127,31 +128,21 @@ func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Provisioning environment...")
 
 	environment, err := c.client.CreateEnvironment(ctx, e)
-	fmt.Printf("err: %+v\n", err)
-	fmt.Printf("env: %+v\n", environment)
 
 	if err != nil {
 		return err
 	}
 
 	if environment.Status.State == meroxa.EnvironmentStatePreflightError {
-		details, _ := prettyString(environment.Status.PreflightDetails)
+		details := utils.PrettyString(environment.Status.PreflightDetails)
 		c.logger.Errorf(ctx, "Environment %q could not be provisioned because it failed the preflight checks\n%s\n", environment.Name, details)
-	} else if environment.Status.State == meroxa.EnvironmentStatePreflightSuccess {
+	} else {
 		environment.Status.PreflightDetails = nil
 		c.logger.Infof(ctx, "Preflight checks have passed. Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
 	}
 
 	c.logger.JSON(ctx, environment)
 	return nil
-}
-
-func prettyString(a interface{}) (string, error) {
-	j, err := json.MarshalIndent(a, "", "    ")
-	if err != nil {
-		return "", err
-	}
-	return string(j), nil
 }
 
 func (c *Create) NotConfirmed() string {

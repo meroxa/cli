@@ -153,7 +153,7 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf("Provisioning environment...\n"+
-		"Environment %q is being provisioned. Run `meroxa env describe %s` for status", e.Name, e.Name)
+		"Preflight checks have passed. Environment %q is being provisioned. Run `meroxa env describe %s` for status", e.Name, e.Name)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

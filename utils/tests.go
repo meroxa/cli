@@ -136,7 +136,7 @@ func GenerateEnvironmentFailed(environmentName string) meroxa.Environment {
 		Name:     environmentName,
 		Region:   meroxa.EnvironmentRegionUsEast1,
 		Provider: meroxa.EnvironmentProviderAws,
-		Status: &meroxa.EnvironmentViewStatus{
+		Status: meroxa.EnvironmentViewStatus{
 			State:   meroxa.EnvironmentStatePreflightError,
 			Details: "",
 			PreflightDetails: &meroxa.PreflightDetails{

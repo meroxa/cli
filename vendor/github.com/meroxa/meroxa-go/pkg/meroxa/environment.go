@@ -13,15 +13,18 @@ const environmentsBasePath = "/v1/environments"
 type EnvironmentState string
 
 const (
-	EnvironmentStateProvisioning     EnvironmentState = "provisioning"
-	EnvironmentStateProvisioned      EnvironmentState = "provisioned"
-	EnvironmentStateUpdating         EnvironmentState = "updating"
-	EnvironmentStateError            EnvironmentState = "error"
-	EnvironmentStateRepairing        EnvironmentState = "repairing"
-	EnvironmentStateDeprovisioning   EnvironmentState = "deprovisioning"
-	EnvironmentStateDeprovisioned    EnvironmentState = "deprovisioned"
-	EnvironmentStatePreflightSuccess EnvironmentState = "preflight_success"
-	EnvironmentStatePreflightError   EnvironmentState = "preflight_error"
+	EnvironmentStateProvisioning        EnvironmentState = "provisioning"
+	EnvironmentStateProvisioningError   EnvironmentState = "provisioning_error"
+	EnvironmentStateReady               EnvironmentState = "ready"
+	EnvironmentStateUpdating            EnvironmentState = "updating"
+	EnvironmentStateUpdatingError       EnvironmentState = "updating_error"
+	EnvironmentStateRepairing           EnvironmentState = "repairing"
+	EnvironmentStateRepairingError      EnvironmentState = "repairing_error"
+	EnvironmentStateDeprovisioning      EnvironmentState = "deprovisioning"
+	EnvironmentStateDeprovisioningError EnvironmentState = "deprovisioning_error"
+	EnvironmentStateDeprovisioned       EnvironmentState = "deprovisioned"
+	EnvironmentStatePreflightSuccess    EnvironmentState = "preflight_success"
+	EnvironmentStatePreflightError      EnvironmentState = "preflight_error"
 )
 
 type PreflightPermissions struct {
@@ -50,7 +53,7 @@ type PreflightDetails struct {
 type EnvironmentViewStatus struct {
 	State            EnvironmentState  `json:"state"`
 	Details          string            `json:"details,omitempty"`
-	PreflightDetails *PreflightDetails `json:"preflight_details"`
+	PreflightDetails *PreflightDetails `json:"preflight_details,omitempty"`
 }
 
 /*

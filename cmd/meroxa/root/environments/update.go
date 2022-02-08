@@ -21,8 +21,10 @@ import (
 	"fmt"
 
 	"github.com/manifoldco/promptui"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -109,7 +111,13 @@ func (c *Update) Execute(ctx context.Context) error {
 		return err
 	}
 
-	c.logger.Infof(ctx, "Environment %q has been updated. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
+	state := environment.Status.State
+	if environment != nil && state == meroxa.EnvironmentStateUpdatingError {
+		details := utils.PrettyString(environment.Status.Details)
+		c.logger.Infof(ctx, "Environment %q could not be updated:\n%s\n", c.args.NameOrUUID, details)
+	} else {
+		c.logger.Infof(ctx, "Environment %q has been updated. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
+	}
 	c.logger.JSON(ctx, environment)
 
 	return nil
