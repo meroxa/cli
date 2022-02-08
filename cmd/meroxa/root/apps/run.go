@@ -19,6 +19,7 @@ package apps
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -30,7 +31,8 @@ import (
 
 type Run struct {
 	flags struct {
-		Lang string `long:"lang" short:"l" usage:"language to use (js | golang)" required:"true"`
+		// `--lang` is not required unless language is not specified via app.json
+		Lang string `long:"lang" short:"l" usage:"language to use (go | js)"`
 		Path string `long:"path" usage:"path of application to run" required:"true"`
 	}
 
@@ -55,8 +57,8 @@ func (*Run) Usage() string {
 func (*Run) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Execute a Meroxa Data Application locally",
-		Example: "meroxa apps run ../go-demo --lang golang\n" +
-			"meroxa apps run ../js-demo --lang js",
+		Example: "meroxa apps run --path ../go-demo --lang go\n" +
+			"meroxa apps run --path ../js-demo --lang js",
 	}
 }
 
@@ -65,27 +67,21 @@ func (r *Run) Flags() []builder.Flag {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
-	var appPath string
-
-	if p := r.flags.Path; p != "" {
-		appPath = p
-		if err := os.Chdir(appPath); err != nil {
-			return err
-		}
-	} else {
-		appPath = "."
-	}
+	appPath := r.flags.Path
 
 	appConfigPath := path.Join(appPath, "app.json")
 	appConfigBytes, err := ioutil.ReadFile(appConfigPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("%v\n"+
+			"Applications to run require an app.json that contains your configuration\n"+
+			"Check out this example: https://github.com/meroxa/valve/blob/ah/demo2/examples/simple/app.json", err)
 	}
 	var appConfig AppConfig
 	if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
 		return err
 	}
 
+	// TODO: Extract this elsewhere
 	if appConfig.Language == "go" {
 		err := buildGoApp(ctx, r.logger, ".", false)
 		if err != nil {
@@ -108,7 +104,7 @@ func (r *Run) Execute(ctx context.Context) error {
 		r.logger.Info(ctx, string(stdout))
 
 		return nil
-	} else if appConfig.Language == "javascript" {
+	} else if appConfig.Language == "javascript" { // TODO: Extract this elsewhere
 		cmd := exec.Command("npx", "turbine", "test")
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
