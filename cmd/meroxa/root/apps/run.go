@@ -46,7 +46,6 @@ var (
 	_ builder.CommandWithLogger  = (*Run)(nil)
 )
 
-// TODO: Move this elsewhere.
 type AppConfig struct {
 	Language string
 }
@@ -58,7 +57,7 @@ func (*Run) Usage() string {
 func (*Run) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Execute a Meroxa Data Application locally",
-		Example: "meroxa apps run --path ../go-demo --lang go\n" +
+		Example: "meroxa apps run --path ../go-demo\n" +
 			"meroxa apps run --path ../js-demo --lang js",
 	}
 }
@@ -67,18 +66,64 @@ func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
 }
 
-func (r *Run) Execute(ctx context.Context) error {
+func (r *Run) buildGoApp(ctx context.Context) error {
+	err := buildGoApp(ctx, r.logger, ".", false)
+	if err != nil {
+		return err
+	}
+
+	// apps name
+	pwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	projName := path.Base(pwd)
+
+	cmd := exec.Command("./" + projName) //nolint:gosec
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	r.logger.Infof(ctx, "Running %s:", projName)
+	r.logger.Info(ctx, string(stdout))
+
+	return nil
+}
+
+func (r *Run) buildJSApp(ctx context.Context) error {
+	// TODO: Handle this requirement https://github.com/meroxa/turbine-js.git being installed
+	// (requirement being node)
+	cmd := exec.Command("npx", "turbine", "test")
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	r.logger.Info(ctx, string(stdout))
+	return nil
+}
+
+func (r *Run) readConfigFile() (AppConfig, error) {
+	var appConfig AppConfig
+
 	appPath := r.flags.Path
 
 	appConfigPath := path.Join(appPath, "app.json")
 	appConfigBytes, err := ioutil.ReadFile(appConfigPath)
 	if err != nil {
-		return fmt.Errorf("%v\n"+
-			"Applications to run require an app.json that contains your configuration\n"+
+		return appConfig, fmt.Errorf("%v\n"+
+			"Applications to run require an app.json file\n"+
 			"Check out this example: https://github.com/meroxa/valve/blob/ah/demo2/examples/simple/app.json", err)
 	}
-	var appConfig AppConfig
 	if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
+		return appConfig, err
+	}
+
+	return appConfig, nil
+}
+
+func (r *Run) Execute(ctx context.Context) error {
+	appConfig, err := r.readConfigFile()
+	if err != nil {
 		return err
 	}
 
@@ -88,46 +133,16 @@ func (r *Run) Execute(ctx context.Context) error {
 		if r.flags.Lang == "" {
 			return fmt.Errorf("flag --lang is required unless specified in your app.json")
 		}
-
 		lang = r.flags.Lang
 	}
 
-	// TODO: Extract this elsewhere
-	if lang == "go" {
-		err := buildGoApp(ctx, r.logger, ".", false)
-		if err != nil {
-			return err
-		}
-
-		// apps name
-		pwd, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		projName := path.Base(pwd)
-
-		cmd := exec.Command("./" + projName) //nolint:gosec
-		stdout, err := cmd.CombinedOutput()
-		if err != nil {
-			return err
-		}
-		r.logger.Infof(ctx, "Running %s:", projName)
-		r.logger.Info(ctx, string(stdout))
-
-		return nil
-	} else if lang == "javascript" { // TODO: Extract this elsewhere
-		// TODO: This requires to have https://github.com/meroxa/turbine-js.git installed
-		// If not installed, it'll be installed (it requires node)
-		cmd := exec.Command("npx", "turbine", "test")
-		stdout, err := cmd.CombinedOutput()
-		if err != nil {
-			return err
-		}
-		r.logger.Info(ctx, string(stdout))
-
-		return nil
-	} else {
-		return nil
+	switch lang {
+	case "go", "golang":
+		return r.buildGoApp(ctx)
+	case "js", "javascript", "nodejs":
+		return r.buildJSApp(ctx)
+	default:
+		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
 	}
 }
 
