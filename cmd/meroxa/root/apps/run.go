@@ -116,6 +116,8 @@ func (r *Run) Execute(ctx context.Context) error {
 
 		return nil
 	} else if lang == "javascript" { // TODO: Extract this elsewhere
+		// TODO: This requires to have https://github.com/meroxa/turbine-js.git installed
+		// If not installed, it'll be installed (it requires node)
 		cmd := exec.Command("npx", "turbine", "test")
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
