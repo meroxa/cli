@@ -46,6 +46,7 @@ var (
 	_ builder.CommandWithLogger  = (*Run)(nil)
 )
 
+// TODO: Move this elsewhere.
 type AppConfig struct {
 	Language string
 }
@@ -81,8 +82,18 @@ func (r *Run) Execute(ctx context.Context) error {
 		return err
 	}
 
+	lang := appConfig.Language
+
+	if lang == "" {
+		if r.flags.Lang == "" {
+			return fmt.Errorf("flag --lang is required unless specified in your app.json")
+		}
+
+		lang = r.flags.Lang
+	}
+
 	// TODO: Extract this elsewhere
-	if appConfig.Language == "go" {
+	if lang == "go" {
 		err := buildGoApp(ctx, r.logger, ".", false)
 		if err != nil {
 			return err
@@ -104,7 +115,7 @@ func (r *Run) Execute(ctx context.Context) error {
 		r.logger.Info(ctx, string(stdout))
 
 		return nil
-	} else if appConfig.Language == "javascript" { // TODO: Extract this elsewhere
+	} else if lang == "javascript" { // TODO: Extract this elsewhere
 		cmd := exec.Command("npx", "turbine", "test")
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
