@@ -27,6 +27,7 @@ var (
 	_ builder.CommandWithDocs        = (*Apps)(nil)
 	_ builder.CommandWithAliases     = (*Apps)(nil)
 	_ builder.CommandWithSubCommands = (*Apps)(nil)
+	_ builder.CommandWithHidden      = (*Apps)(nil)
 )
 
 func (*Apps) Aliases() []string {
