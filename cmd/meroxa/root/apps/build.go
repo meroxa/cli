@@ -10,9 +10,9 @@ import (
 func buildGoApp(ctx context.Context, l log.Logger, path string, platform bool) error {
 	var cmd *exec.Cmd
 	if platform {
-		cmd = exec.Command("go", "build", "--tags", "platform", "-o", "./"+path, "./"+path+"/...")
+		cmd = exec.Command("go", "build", "--tags", "platform", "-o", "./"+path, "./"+path+"/...") //nolint:gosec
 	} else {
-		cmd = exec.Command("go", "build", path+"/...")
+		cmd = exec.Command("go", "build", path+"/...") //nolint:gosec
 	}
 
 	l.Info(ctx, "building app...\n")

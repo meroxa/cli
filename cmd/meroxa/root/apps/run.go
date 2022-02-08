@@ -29,32 +29,34 @@ import (
 )
 
 type Run struct {
-	args struct {
-		Path string
-	}
-
 	flags struct {
-		Lang string `long:"lang" short:"l" description:"language to use"`
+		Lang string `long:"lang" short:"l" usage:"language to use (js | golang)" required:"true"`
+		Path string `long:"path" usage:"path of application to run" required:"true"`
 	}
 
 	logger log.Logger
 }
 
 var (
-	_ builder.CommandWithDocs = (*Run)(nil)
+	_ builder.CommandWithDocs    = (*Run)(nil)
+	_ builder.CommandWithFlags   = (*Run)(nil)
+	_ builder.CommandWithExecute = (*Run)(nil)
+	_ builder.CommandWithLogger  = (*Run)(nil)
 )
 
 type AppConfig struct {
 	Language string
 }
 
-func (r *Run) Usage() string {
-	return "run [PATH]"
+func (*Run) Usage() string {
+	return "run"
 }
 
 func (*Run) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "execute a Meroxa Data Application locally",
+		Short: "Execute a Meroxa Data Application locally",
+		Example: "meroxa apps run ../go-demo --lang golang\n" +
+			"meroxa apps run ../js-demo --lang js",
 	}
 }
 
@@ -63,15 +65,18 @@ func (r *Run) Flags() []builder.Flag {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
-	var projPath string
-	if p := r.args.Path; p != "" {
-		projPath = p
-		os.Chdir(projPath)
+	var appPath string
+
+	if p := r.flags.Path; p != "" {
+		appPath = p
+		if err := os.Chdir(appPath); err != nil {
+			return err
+		}
 	} else {
-		projPath = "."
+		appPath = "."
 	}
 
-	appConfigPath := path.Join(projPath, "app.json")
+	appConfigPath := path.Join(appPath, "app.json")
 	appConfigBytes, err := ioutil.ReadFile(appConfigPath)
 	if err != nil {
 		return err
@@ -94,7 +99,7 @@ func (r *Run) Execute(ctx context.Context) error {
 		}
 		projName := path.Base(pwd)
 
-		cmd := exec.Command("./" + projName)
+		cmd := exec.Command("./" + projName) //nolint:gosec
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			return err
@@ -119,12 +124,4 @@ func (r *Run) Execute(ctx context.Context) error {
 
 func (r *Run) Logger(logger log.Logger) {
 	r.logger = logger
-}
-
-func (r *Run) ParseArgs(args []string) error {
-	if len(args) > 0 {
-		r.args.Path = args[0]
-	}
-
-	return nil
 }
