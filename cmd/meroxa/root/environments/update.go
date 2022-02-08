@@ -112,9 +112,12 @@ func (c *Update) Execute(ctx context.Context) error {
 	}
 
 	state := environment.Status.State
-	if environment != nil && state == meroxa.EnvironmentStateUpdatingError {
-		details := utils.PrettyString(environment.Status.Details)
-		c.logger.Infof(ctx, "Environment %q could not be updated:\n%s\n", c.args.NameOrUUID, details)
+	if state == meroxa.EnvironmentStateUpdatingError {
+		text := fmt.Sprintf("Environment %q could not be updated.", c.args.NameOrUUID)
+		if details, err := utils.PrettyString(environment.Status.Details); err == nil {
+			text += fmt.Sprintf("\n%s\n", details)
+		}
+		c.logger.Infof(ctx, text)
 	} else {
 		c.logger.Infof(ctx, "Environment %q has been updated. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
 	}

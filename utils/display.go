@@ -625,6 +625,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 	return ""
 }
 
+// nolint:funlen
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
 
@@ -720,15 +721,15 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS EIP Limits Status:"},
-				{Text: string(environment.Status.PreflightDetails.PreflightLimits.EIP)},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.EIP},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS NAT Limits Status:"},
-				{Text: string(environment.Status.PreflightDetails.PreflightLimits.NAT)},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.NAT},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS VPC Limits Status:"},
-				{Text: string(environment.Status.PreflightDetails.PreflightLimits.VPC)},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.VPC},
 			},
 		}
 		preflightTable.SetStyle(simpletable.StyleCompact)
@@ -752,10 +753,13 @@ func truncateString(oldString string, l int) string {
 	return str
 }
 
-func PrettyString(a interface{}) string {
+func PrettyString(a interface{}) (string, error) {
 	j, err := json.MarshalIndent(a, "", "    ")
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return string(j)
+	if string(j) == "null" {
+		return "", fmt.Errorf("unsuccessful marshal indent")
+	}
+	return string(j), nil
 }

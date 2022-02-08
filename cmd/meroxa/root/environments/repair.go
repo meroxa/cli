@@ -86,28 +86,21 @@ func (r *Repair) Execute(ctx context.Context) error {
 
 	state := rr.Status.State
 	name := rr.Name
-	if rr != nil && state == meroxa.EnvironmentStatePreflightError {
-		log := fmt.Sprintf("Environment %q could not be repaired because it failed the preflight checks.", name)
-		details := utils.PrettyString(rr.Status.PreflightDetails)
-		if details != "" && details != "null" {
-			log += fmt.Sprintf("\n%s\n", details)
+	if state == meroxa.EnvironmentStatePreflightError {
+		text := fmt.Sprintf("Environment %q could not be repaired because it failed the preflight checks.", name)
+		if details, err := utils.PrettyString(rr.Status.PreflightDetails); err == nil {
+			text += fmt.Sprintf("\n%s\n", details)
 		}
-		r.logger.Errorf(ctx, log)
-	} else if rr != nil && (state != meroxa.EnvironmentStateRepairing && state != meroxa.EnvironmentStateReady) {
-		log := fmt.Sprintf("Environment %q could not be repaired.", r.args.NameOrUUID)
-		details := utils.PrettyString(rr.Status.Details)
-		if details != "" && details != "null" {
-			log += fmt.Sprintf("\n%s\n", details)
-		}
-		switch state {
-		case meroxa.EnvironmentStateRepairingError:
-		case meroxa.EnvironmentStateUpdatingError:
-		case meroxa.EnvironmentStateProvisioningError:
-		case meroxa.EnvironmentStateDeprovisioningError:
-			r.logger.Infof(ctx, log)
-		}
-	} else {
+		r.logger.Errorf(ctx, text)
+	} else if state == meroxa.EnvironmentStateRepairing || state == meroxa.EnvironmentStateReady {
 		r.logger.Infof(ctx, `The repairment of your environment %q is now in progress and your environment will be up and running soon.`, r.args.NameOrUUID) // nolint:lll
+	} else if state == meroxa.EnvironmentStateRepairingError || state == meroxa.EnvironmentStateUpdatingError ||
+		state == meroxa.EnvironmentStateProvisioningError || state == meroxa.EnvironmentStateDeprovisioningError {
+		text := fmt.Sprintf("Environment %q could not be repaired.", r.args.NameOrUUID)
+		if details, err := utils.PrettyString(rr.Status.Details); err == nil {
+			text += fmt.Sprintf("\n%s\n", details)
+		}
+		r.logger.Infof(ctx, text)
 	}
 	r.logger.Infof(ctx, `Run "meroxa env describe %s" for status.`, r.args.NameOrUUID)
 	r.logger.JSON(ctx, rr)
