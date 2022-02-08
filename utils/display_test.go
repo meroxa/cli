@@ -599,29 +599,10 @@ func TestEnvironmentsTable(t *testing.T) {
 }
 
 func TestEnvironmentsTablePreflightFailed(t *testing.T) {
-	e := &meroxa.Environment{
-		Type:     meroxa.EnvironmentTypePrivate,
-		Name:     "environment-preflight-failed",
-		Provider: meroxa.EnvironmentProviderAws,
-		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status: meroxa.EnvironmentViewStatus{
-			State:   meroxa.EnvironmentStatePreflightError,
-			Details: "",
-			PreflightDetails: &meroxa.PreflightDetails{
-				PreflightPermissions: &meroxa.PreflightPermissions{
-					S3:  []string{"missing read permission for S3", "missing write permissions for S3"},
-					EC2: []string{"missing read permission for S3", "missing write permissions for S3"},
-				},
-				PreflightLimits: &meroxa.PreflightLimits{
-					EIP: "",
-				},
-			},
-		},
-		UUID: "531428f7-4e86-4094-8514-d397d49026f7",
-	}
+	e := GenerateEnvironmentFailed("environment-preflight-failed")
 
 	tests := map[string][]*meroxa.Environment{
-		"Base": {e},
+		"Base": {&e},
 	}
 
 	tableHeaders := []string{"ID", "NAME", "TYPE", "PROVIDER", "REGION", "STATE"}

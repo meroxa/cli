@@ -684,7 +684,7 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 				{Text: ""},
 			},
 			{
-				{Align: simpletable.AlignRight, Text: "				AWS EC2 Permissions Status:"},
+				{Align: simpletable.AlignRight, Text: "AWS EC2 Permissions Status:"},
 				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
 			},
 			{
