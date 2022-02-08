@@ -13,7 +13,7 @@ We believe that anyone should be empowered to leverage real-time data. Using the
 [Contribution Guide](CONTRIBUTING.md) |
 [Twitter](https://twitter.com/meroxadata)  
 
-[![Support Server](https://img.shields.io/discord/591914197219016707.svg?label=Meroxa%20Community&logo=Discord&colorB=7289da&style=for-the-badge)](https://discord.meroxa.com)
+[![Support Server](https://img.shields.io/discord/828680256877363200.svg?label=Meroxa%20Community&logo=Discord&colorB=7289da&style=for-the-badge)](https://discord.meroxa.com)
 
 
 ## Documentation
