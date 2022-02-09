@@ -127,7 +127,7 @@ func GenerateTransform() meroxa.Transform {
 
 func GenerateEnvironmentFailed(environmentName string) meroxa.Environment {
 	if environmentName == "" {
-		environmentName = "environment-1234"
+		environmentName = "environment-1234-bad"
 	}
 
 	return meroxa.Environment{
@@ -164,7 +164,7 @@ func GenerateEnvironment(environmentName string) meroxa.Environment {
 		Region:   meroxa.EnvironmentRegionUsEast1,
 		Provider: meroxa.EnvironmentProviderAws,
 		Status: meroxa.EnvironmentViewStatus{
-			State: meroxa.EnvironmentStatePreflightError,
+			State: meroxa.EnvironmentStatePreflightSuccess,
 		},
 	}
 }

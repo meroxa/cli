@@ -131,7 +131,7 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 		Type:          e.Type,
 		Configuration: e.Configuration,
 		Status: meroxa.EnvironmentViewStatus{
-			State: meroxa.EnvironmentStateProvisioning,
+			State: meroxa.EnvironmentStatePreflightSuccess,
 		},
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},

@@ -85,8 +85,7 @@ func TestRepairEnvironmentExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(
-		`Environment "%s" could not be repaired because it failed the preflight checks.
-Run "meroxa env describe %s" for status.`,
+		"Preflight checks have passed. Environment %q is being repaired. Run `meroxa env describe %s` for status",
 		e.Name,
 		e.Name)
 

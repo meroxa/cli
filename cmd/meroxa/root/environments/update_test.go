@@ -89,7 +89,7 @@ func TestUpdateEnvironmentExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(
-		"Updating environment...\nEnvironment %q has been updated. Run `meroxa env describe %s` for status",
+		"Updating environment...\nPreflight checks have passed. Environment %q is being updated. Run `meroxa env describe %s` for status",
 		e.Name,
 		e.Name)
 

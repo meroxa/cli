@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
@@ -111,7 +110,7 @@ func TestDescribeEnvironmentExecutionBadEnv(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	environmentName := "my-env"
+	environmentName := "my-env-bad"
 
 	e := utils.GenerateEnvironmentFailed(environmentName)
 
@@ -151,6 +150,4 @@ func TestDescribeEnvironmentExecutionBadEnv(t *testing.T) {
 	if !reflect.DeepEqual(gotEnvironment, e) {
 		t.Fatalf("expected \"%v\", got \"%v\"", e, gotEnvironment)
 	}
-
-	fmt.Println(wantLeveledOutput)
 }
