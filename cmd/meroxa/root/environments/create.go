@@ -134,7 +134,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	}
 
 	if environment.Status.State == meroxa.EnvironmentStatePreflightError {
-		details, _ := utils.PrettyString(environment.Status.PreflightDetails)
+		details := utils.EnvironmentPreflightTable(environment)
 		c.logger.Errorf(ctx,
 			"Environment %q could not be provisioned because it failed the preflight checks\n%s\n",
 			environment.Name,

@@ -87,9 +87,9 @@ func (r *Repair) Execute(ctx context.Context) error {
 	name := rr.Name
 	if state == meroxa.EnvironmentStatePreflightError {
 		text := fmt.Sprintf("Environment %q could not be repaired because it failed the preflight checks.", name)
-		if details, err := utils.PrettyString(rr.Status.PreflightDetails); err == nil {
-			text += fmt.Sprintf("\n%s\n", details)
-		}
+		details := utils.EnvironmentPreflightTable(rr)
+		text += fmt.Sprintf("\n%s\n", details)
+
 		r.logger.Errorf(ctx, text)
 	} else if state == meroxa.EnvironmentStateRepairing || state == meroxa.EnvironmentStatePreflightSuccess {
 		r.logger.Infof(ctx, `The repairment of your environment %q is now in progress and your environment will be up and running soon.`, r.args.NameOrUUID) // nolint:lll

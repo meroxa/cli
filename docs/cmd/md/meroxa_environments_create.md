@@ -10,14 +10,14 @@ meroxa environments create NAME [flags]
 
 ```
 
-meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret
+meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret
 
 ```
 
 ### Options
 
 ```
-  -c, --config strings    environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)
+  -c, --config strings    environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)
   -h, --help              help for create
       --provider string   environment cloud provider to use
       --region string     environment region
