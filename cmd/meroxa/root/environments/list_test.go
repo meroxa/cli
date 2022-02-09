@@ -41,7 +41,7 @@ func TestListEnvironmentsExecution(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateReady},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 

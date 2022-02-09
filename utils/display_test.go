@@ -552,12 +552,57 @@ func TestEnvironmentsTable(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateReady},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 
 	tests := map[string][]*meroxa.Environment{
 		"Base": {e},
+	}
+
+	tableHeaders := []string{"ID", "NAME", "TYPE", "PROVIDER", "REGION", "STATE"}
+
+	for name, environments := range tests {
+		t.Run(name, func(t *testing.T) {
+			out := CaptureOutput(func() {
+				PrintEnvironmentsTable(environments, false)
+			})
+
+			for _, header := range tableHeaders {
+				if !strings.Contains(out, header) {
+					t.Errorf("%s header is missing", header)
+				}
+			}
+
+			if !strings.Contains(out, e.UUID) {
+				t.Errorf("%s, not found", e.UUID)
+			}
+			if !strings.Contains(out, e.Name) {
+				t.Errorf("%s, not found", e.Name)
+			}
+			if !strings.Contains(out, string(e.Type)) {
+				t.Errorf("%s, not found", e.Type)
+			}
+			if !strings.Contains(out, string(e.Region)) {
+				t.Errorf("%s, not found", e.Region)
+			}
+			if !strings.Contains(out, string(e.Status.State)) {
+				t.Errorf("%s, not found", e.Status.State)
+			}
+			if !strings.Contains(out, e.UUID) {
+				t.Errorf("%s, not found", e.UUID)
+			}
+
+			fmt.Println(out)
+		})
+	}
+}
+
+func TestEnvironmentsTablePreflightFailed(t *testing.T) {
+	e := GenerateEnvironmentFailed("environment-preflight-failed")
+
+	tests := map[string][]*meroxa.Environment{
+		"Base": {&e},
 	}
 
 	tableHeaders := []string{"ID", "NAME", "TYPE", "PROVIDER", "REGION", "STATE"}
@@ -604,7 +649,7 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 		Name:     "environment-1234",
 		Provider: meroxa.EnvironmentProviderAws,
 		Region:   meroxa.EnvironmentRegionUsEast1,
-		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateProvisioned},
+		Status:   meroxa.EnvironmentViewStatus{State: meroxa.EnvironmentStateReady},
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 	}
 

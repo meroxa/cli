@@ -625,10 +625,9 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 	return ""
 }
 
+// nolint:funlen
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
-
-	bytes, _ := json.Marshal(&environment.Status)
 
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
@@ -651,10 +650,7 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 			{Align: simpletable.AlignRight, Text: "Type:"},
 			{Text: string(environment.Type)},
 		},
-		{
-			{Align: simpletable.AlignRight, Text: "Status:"},
-			{Text: string(bytes)},
-		},
+
 		{
 			{Align: simpletable.AlignRight, Text: "Created At:"},
 			{Text: environment.CreatedAt.String()},
@@ -663,11 +659,147 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 			{Align: simpletable.AlignRight, Text: "Updated At:"},
 			{Text: environment.UpdatedAt.String()},
 		},
+		{
+			{Align: simpletable.AlignRight, Text: "Environment Status:"},
+			{Text: string(environment.Status.State)},
+		},
+	}
+
+	if environment.Status.Details != "" {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Environment Status Details:"},
+			{Text: string(environment.Status.State)},
+		}
+		mainTable.Body.Cells = append(mainTable.Body.Cells, r)
 	}
 
 	mainTable.SetStyle(simpletable.StyleCompact)
+	str := mainTable.String()
 
-	return mainTable.String()
+	if environment.Status.PreflightDetails != nil {
+		preflightTable := simpletable.New()
+		preflightTable.Body.Cells = [][]*simpletable.Cell{
+			{
+				{Align: simpletable.AlignRight, Text: "				Preflight Checks:"},
+				{Text: ""},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS EC2 Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS EKS Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EKS, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS IAM Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.IAM, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS KMS Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.KMS, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS MKS Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.MSK, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS S3 Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.S3, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS ServiceQuotas Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ServiceQuotas, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS CloudFormation Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudformation, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS Cloudwatch Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudwatch, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS EIP Limits Status:"},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.EIP},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS NAT Limits Status:"},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.NAT},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS VPC Limits Status:"},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.VPC},
+			},
+		}
+		preflightTable.SetStyle(simpletable.StyleCompact)
+		str += "\n" + preflightTable.String()
+	}
+
+	return str
+}
+
+func EnvironmentPreflightTable(environment *meroxa.Environment) string {
+	if environment.Status.PreflightDetails != nil {
+		preflightTable := simpletable.New()
+		preflightTable.Body.Cells = [][]*simpletable.Cell{
+			{
+				{Align: simpletable.AlignRight, Text: "				Preflight Checks:"},
+				{Text: ""},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS EC2 Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS EKS Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EKS, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS IAM Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.IAM, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS KMS Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.KMS, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS MKS Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.MSK, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS S3 Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.S3, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS ServiceQuotas Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ServiceQuotas, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS CloudFormation Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudformation, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS Cloudwatch Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudwatch, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS EIP Limits Status:"},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.EIP},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS NAT Limits Status:"},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.NAT},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS VPC Limits Status:"},
+				{Text: environment.Status.PreflightDetails.PreflightLimits.VPC},
+			},
+		}
+		preflightTable.SetStyle(simpletable.StyleCompact)
+		return preflightTable.String()
+	}
+	return ""
 }
 
 func PrintEnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) {
@@ -682,4 +814,15 @@ func truncateString(oldString string, l int) string {
 	}
 
 	return str
+}
+
+func PrettyString(a interface{}) (string, error) {
+	j, err := json.MarshalIndent(a, "", "    ")
+	if err != nil {
+		return "", err
+	}
+	if string(j) == "null" {
+		return "", fmt.Errorf("unsuccessful marshal indent")
+	}
+	return string(j), nil
 }

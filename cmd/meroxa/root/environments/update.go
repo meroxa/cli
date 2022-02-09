@@ -21,8 +21,10 @@ import (
 	"fmt"
 
 	"github.com/manifoldco/promptui"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -109,9 +111,20 @@ func (c *Update) Execute(ctx context.Context) error {
 		return err
 	}
 
-	c.logger.Infof(ctx, "Environment %q has been updated. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-	c.logger.JSON(ctx, environment)
+	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
+		details := utils.EnvironmentPreflightTable(environment)
+		c.logger.Errorf(ctx,
+			"Environment %q could not be updated because it failed the preflight checks\n%s\n",
+			environment.Name,
+			details)
+	} else {
+		c.logger.Infof(ctx,
+			"Preflight checks have passed. Environment %q is being updated. Run `meroxa env describe %s` for status",
+			environment.Name,
+			environment.Name)
+	}
 
+	c.logger.JSON(ctx, environment)
 	return nil
 }
 

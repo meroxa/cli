@@ -13,18 +13,47 @@ const environmentsBasePath = "/v1/environments"
 type EnvironmentState string
 
 const (
-	EnvironmentStateProvisioning   EnvironmentState = "provisioning"
-	EnvironmentStateProvisioned    EnvironmentState = "provisioned"
-	EnvironmentStateUpdating       EnvironmentState = "updating"
-	EnvironmentStateError          EnvironmentState = "error"
-	EnvironmentStateRepairing      EnvironmentState = "repairing"
-	EnvironmentStateDeprovisioning EnvironmentState = "deprovisioning"
-	EnvironmentStateDeprovisioned  EnvironmentState = "deprovisioned"
+	EnvironmentStateProvisioning        EnvironmentState = "provisioning"
+	EnvironmentStateProvisioningError   EnvironmentState = "provisioning_error"
+	EnvironmentStateReady               EnvironmentState = "ready"
+	EnvironmentStateUpdating            EnvironmentState = "updating"
+	EnvironmentStateUpdatingError       EnvironmentState = "updating_error"
+	EnvironmentStateRepairing           EnvironmentState = "repairing"
+	EnvironmentStateRepairingError      EnvironmentState = "repairing_error"
+	EnvironmentStateDeprovisioning      EnvironmentState = "deprovisioning"
+	EnvironmentStateDeprovisioningError EnvironmentState = "deprovisioning_error"
+	EnvironmentStateDeprovisioned       EnvironmentState = "deprovisioned"
+	EnvironmentStatePreflightSuccess    EnvironmentState = "preflight_success"
+	EnvironmentStatePreflightError      EnvironmentState = "preflight_error"
 )
 
+type PreflightPermissions struct {
+	S3             []string `json:"s3"`
+	ServiceQuotas  []string `json:"servicequotas"`
+	MSK            []string `json:"msk"`
+	EKS            []string `json:"eks"`
+	EC2            []string `json:"ec2"`
+	KMS            []string `json:"kms"`
+	IAM            []string `json:"iam"`
+	Cloudformation []string `json:"cloudformation"`
+	Cloudwatch     []string `json:"cloudwatch"`
+}
+
+type PreflightLimits struct {
+	VPC string `json:"vpc"`
+	EIP string `json:"eip"`
+	NAT string `json:"nat_gateway"`
+}
+
+type PreflightDetails struct {
+	PreflightPermissions *PreflightPermissions `json:"permissions"`
+	PreflightLimits      *PreflightLimits      `json:"limits"`
+}
+
 type EnvironmentViewStatus struct {
-	State   EnvironmentState `json:"state"`
-	Details string           `json:"details,omitempty"`
+	State            EnvironmentState  `json:"state"`
+	Details          string            `json:"details,omitempty"`
+	PreflightDetails *PreflightDetails `json:"preflight_details,omitempty"`
 }
 
 /*
@@ -106,7 +135,7 @@ const (
 )
 
 type RepairEnvironmentInput struct {
-	Action        EnvironmentAction       `json:"action"`
+	Action EnvironmentAction `json:"action"`
 }
 
 // ListEnvironments returns an array of Environments (scoped to the calling user)

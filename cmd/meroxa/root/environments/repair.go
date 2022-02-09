@@ -19,6 +19,7 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -76,14 +77,24 @@ func (r *Repair) ParseArgs(args []string) error {
 }
 
 func (r *Repair) Execute(ctx context.Context) error {
-	rr, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) // nolint:lll
+	environment, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) // nolint:lll
 	if err != nil {
 		return err
 	}
 
-	r.logger.Infof(ctx, `The repairment of your environment %q is now in progress and your environment will be up and running soon.`, r.args.NameOrUUID) // nolint:lll
-	r.logger.Infof(ctx, `Run "meroxa env describe %s" for status.`, r.args.NameOrUUID)
-	r.logger.JSON(ctx, rr)
+	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
+		details := utils.EnvironmentPreflightTable(environment)
+		r.logger.Errorf(ctx,
+			"Environment %q could not be repaired because it failed the preflight checks\n%s\n",
+			environment.Name,
+			details)
+	} else {
+		r.logger.Infof(ctx,
+			"Preflight checks have passed. Environment %q is being repaired. Run `meroxa env describe %s` for status",
+			environment.Name,
+			environment.Name)
+	}
 
+	r.logger.JSON(ctx, environment)
 	return nil
 }

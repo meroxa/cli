@@ -103,3 +103,51 @@ func TestDescribeEnvironmentExecution(t *testing.T) {
 		t.Fatalf("expected \"%v\", got \"%v\"", e, gotEnvironment)
 	}
 }
+
+func TestDescribeEnvironmentExecutionBadEnv(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	environmentName := "my-env-bad"
+
+	e := utils.GenerateEnvironmentFailed(environmentName)
+
+	client.
+		EXPECT().
+		GetEnvironment(
+			ctx,
+			e.Name,
+		).
+		Return(&e, nil)
+
+	dc := &Describe{
+		client: client,
+		logger: logger,
+	}
+	dc.args.NameOrUUID = e.Name
+
+	err := dc.Execute(ctx)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := utils.EnvironmentTable(&e)
+
+	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotEnvironment meroxa.Environment
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotEnvironment)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotEnvironment, e) {
+		t.Fatalf("expected \"%v\", got \"%v\"", e, gotEnvironment)
+	}
+}

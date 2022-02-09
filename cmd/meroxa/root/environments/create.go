@@ -1,12 +1,9 @@
 /*
 Copyright © 2021 Meroxa Inc
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +20,10 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -54,7 +53,7 @@ type Create struct {
 		Type     string   `long:"type" usage:"environment type, when not specified"`
 		Provider string   `long:"provider" usage:"environment cloud provider to use"`
 		Region   string   `long:"region" usage:"environment region"`
-		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)"` // nolint:lll
+		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)"` // nolint:lll
 	}
 
 	envCfg map[string]interface{}
@@ -134,9 +133,20 @@ func (c *Create) Execute(ctx context.Context) error {
 		return err
 	}
 
-	c.logger.Infof(ctx, "Environment %q is being provisioned. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
-	c.logger.JSON(ctx, environment)
+	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
+		details := utils.EnvironmentPreflightTable(environment)
+		c.logger.Errorf(ctx,
+			"Environment %q could not be provisioned because it failed the preflight checks\n%s\n",
+			environment.Name,
+			details)
+	} else {
+		c.logger.Infof(ctx,
+			"Preflight checks have passed. Environment %q is being provisioned. Run `meroxa env describe %s` for status",
+			environment.Name,
+			environment.Name)
+	}
 
+	c.logger.JSON(ctx, environment)
 	return nil
 }
 
@@ -275,7 +285,7 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create an environment",
 		Example: `
-meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret
+meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret
 `,
 	}
 }
