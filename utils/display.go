@@ -740,7 +740,6 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 }
 
 func EnvironmentPreflightTable(environment *meroxa.Environment) string {
-
 	if environment.Status.PreflightDetails != nil {
 		preflightTable := simpletable.New()
 		preflightTable.Body.Cells = [][]*simpletable.Cell{

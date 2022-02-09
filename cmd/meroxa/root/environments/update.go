@@ -111,23 +111,20 @@ func (c *Update) Execute(ctx context.Context) error {
 		return err
 	}
 
-	state := environment.Status.State
-	if state == meroxa.EnvironmentStateUpdatingError {
-		text := fmt.Sprintf("Environment %q could not be updated.", c.args.NameOrUUID)
+	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
 		details := utils.EnvironmentPreflightTable(environment)
-		text += fmt.Sprintf("\n%s\n", details)
-		c.logger.Infof(ctx, text)
-	} else if state == meroxa.EnvironmentStatePreflightError {
-		text := fmt.Sprintf("Environment %q could not be updated because it failed the preflight checks.", c.args.NameOrUUID)
-		details := utils.EnvironmentPreflightTable(environment)
-		text += fmt.Sprintf("\n%s\n", details)
-		c.logger.Infof(ctx, text)
-
+		c.logger.Errorf(ctx,
+			"Environment %q could not be updated because it failed the preflight checks\n%s\n",
+			environment.Name,
+			details)
 	} else {
-		c.logger.Infof(ctx, "Environment %q has been updated. Run `meroxa env describe %s` for status", environment.Name, environment.Name)
+		c.logger.Infof(ctx,
+			"Preflight checks have passed. Environment %q is being updated. Run `meroxa env describe %s` for status",
+			environment.Name,
+			environment.Name)
 	}
-	c.logger.JSON(ctx, environment)
 
+	c.logger.JSON(ctx, environment)
 	return nil
 }
 

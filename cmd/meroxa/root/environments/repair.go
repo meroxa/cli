@@ -16,7 +16,6 @@ package environments
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -78,31 +77,24 @@ func (r *Repair) ParseArgs(args []string) error {
 }
 
 func (r *Repair) Execute(ctx context.Context) error {
-	rr, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) // nolint:lll
+	environment, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) // nolint:lll
 	if err != nil {
 		return err
 	}
 
-	state := rr.Status.State
-	name := rr.Name
-	if state == meroxa.EnvironmentStatePreflightError {
-		text := fmt.Sprintf("Environment %q could not be repaired because it failed the preflight checks.", name)
-		details := utils.EnvironmentPreflightTable(rr)
-		text += fmt.Sprintf("\n%s\n", details)
-
-		r.logger.Errorf(ctx, text)
-	} else if state == meroxa.EnvironmentStateRepairing || state == meroxa.EnvironmentStatePreflightSuccess {
-		r.logger.Infof(ctx, `The repairment of your environment %q is now in progress and your environment will be up and running soon.`, r.args.NameOrUUID) // nolint:lll
-	} else if state == meroxa.EnvironmentStateRepairingError || state == meroxa.EnvironmentStateUpdatingError ||
-		state == meroxa.EnvironmentStateProvisioningError || state == meroxa.EnvironmentStateDeprovisioningError {
-		text := fmt.Sprintf("Environment %q could not be repaired.", r.args.NameOrUUID)
-		if details, err := utils.PrettyString(rr.Status.Details); err == nil {
-			text += fmt.Sprintf("\n%s\n", details)
-		}
-		r.logger.Infof(ctx, text)
+	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
+		details := utils.EnvironmentPreflightTable(environment)
+		r.logger.Errorf(ctx,
+			"Environment %q could not be repaired because it failed the preflight checks\n%s\n",
+			environment.Name,
+			details)
+	} else {
+		r.logger.Infof(ctx,
+			"Preflight checks have passed. Environment %q is being repaired. Run `meroxa env describe %s` for status",
+			environment.Name,
+			environment.Name)
 	}
-	r.logger.Infof(ctx, `Run "meroxa env describe %s" for status.`, r.args.NameOrUUID)
-	r.logger.JSON(ctx, rr)
 
+	r.logger.JSON(ctx, environment)
 	return nil
 }

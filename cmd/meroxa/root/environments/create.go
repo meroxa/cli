@@ -133,14 +133,13 @@ func (c *Create) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if environment.Status.State == meroxa.EnvironmentStatePreflightError {
+	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
 		details := utils.EnvironmentPreflightTable(environment)
 		c.logger.Errorf(ctx,
 			"Environment %q could not be provisioned because it failed the preflight checks\n%s\n",
 			environment.Name,
 			details)
 	} else {
-		environment.Status.PreflightDetails = nil
 		c.logger.Infof(ctx,
 			"Preflight checks have passed. Environment %q is being provisioned. Run `meroxa env describe %s` for status",
 			environment.Name,
