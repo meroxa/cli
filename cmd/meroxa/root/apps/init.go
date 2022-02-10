@@ -2,6 +2,7 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os/exec"
 
@@ -13,11 +14,12 @@ type Init struct {
 	logger log.Logger
 
 	args struct {
-		Name string
+		appName string
 	}
 
 	flags struct {
-		Lang string `long:"lang" short:"l" usage:"language to use (go | javascript)" required:"true"`
+		Lang string `long:"lang" short:"l" usage:"language to use (js|go)" required:"true"`
+		Path string `long:"path" usage:"path where application will be initialized (current directory as default)"`
 	}
 }
 
@@ -30,13 +32,14 @@ var (
 )
 
 func (*Init) Usage() string {
-	return "init"
+	return "init [APP_NAME] [--path pwd] --lang js|go"
 }
 
 func (*Init) Docs() builder.Docs {
 	return builder.Docs{
-		Short:   "Initialize a Meroxa Data Application",
-		Example: "meroxa apps init",
+		Short: "Initialize a Meroxa Data Application",
+		Example: "meroxa apps init my-app --path ~/code --lang js" +
+			"meroxa apps init my-app --lang go # will be initialized in current directory",
 	}
 }
 
@@ -45,14 +48,17 @@ func (i *Init) Flags() []builder.Flag {
 }
 
 func (i *Init) ParseArgs(args []string) error {
-	if len(args) > 0 {
-		i.args.Name = args[0]
+	// TODO: generate app's name in behalf of the user
+	if len(args) < 1 {
+		return errors.New("requires an application name")
 	}
+
+	i.args.appName = args[0]
 	return nil
 }
 
 func (i *Init) Execute(ctx context.Context) error {
-	name := i.args.Name
+	name := i.args.appName
 	lang := i.flags.Lang
 
 	if lang == "javascript" {
