@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Jan 2022" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Feb 2022" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -19,7 +19,7 @@ Create an environment
 .SH OPTIONS
 .PP
 \fB\-c\fP, \fB\-\-config\fP=[]
-	environment configuration based on type and provider (e.g.: \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_access\_secret=my\_access\_secret)
+	environment configuration based on type and provider (e.g.: \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_secret\_access\_key=my\_access\_secret)
 
 .PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
@@ -66,7 +66,7 @@ Create an environment
 
 .nf
 
-meroxa env create my\-env \-\-type self\_hosted \-\-provider aws \-\-region us\-east\-1 \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_access\_secret=my\_access\_secret
+meroxa env create my\-env \-\-type self\_hosted \-\-provider aws \-\-region us\-east\-1 \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_secret\_access\_key=my\_access\_secret
 
 
 .fi
