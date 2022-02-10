@@ -46,7 +46,8 @@ var (
 )
 
 type AppConfig struct {
-	Language string
+	Name     string `json:"name"`
+	Language string `json:"language"`
 }
 
 func (*Run) Usage() string {
