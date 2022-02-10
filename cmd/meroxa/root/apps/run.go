@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"os/exec"
 	"path"
 
@@ -33,7 +32,7 @@ type Run struct {
 	flags struct {
 		// `--lang` is not required unless language is not specified via app.json
 		Lang string `long:"lang" short:"l" usage:"language to use (go | js)"`
-		Path string `long:"path" usage:"path of application to run" required:"true"`
+		Path string `long:"path" usage:"path of application to run"`
 	}
 
 	logger log.Logger
@@ -57,8 +56,11 @@ func (*Run) Usage() string {
 func (*Run) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Execute a Meroxa Data Application locally",
-		Example: "meroxa apps run --path ../go-demo\n" +
-			"meroxa apps run --path ../js-demo --lang js",
+		Long: "meroxa apps run will build your app locally to then run it\n" +
+			"locally based on --path.",
+		Example: "meroxa apps run # assumes you run it from the app directory\n" +
+			"meroxa apps run --path ../js-demo --lang js # in case you didn't specify lang on your app.json" +
+			"meroxa apps run --path ../go-demo # it'll use lang defined in your app.json",
 	}
 }
 
@@ -66,33 +68,33 @@ func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
 }
 
-func (r *Run) buildGoApp(ctx context.Context) error {
-	err := buildGoApp(ctx, r.logger, ".", false)
+func (r *Run) buildGoApp(ctx context.Context, appPath string) error {
+	// grab current location to use it as project name
+	appName := path.Base(appPath)
+
+	// building is a requirement prior to running for go apps
+	err := buildGoApp(ctx, r.logger, appPath, appName, false)
 	if err != nil {
 		return err
 	}
 
-	// apps name
-	pwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	projName := path.Base(pwd)
-
-	cmd := exec.Command("./" + projName) //nolint:gosec
+	cmd := exec.Command("./" + appName) //nolint:gosec
+	cmd.Dir = appPath
+	fmt.Println("COMMAND: ", cmd.Dir, cmd)
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
+		r.logger.Error(ctx, err.Error())
 		return err
 	}
-	r.logger.Infof(ctx, "Running %s:", projName)
+	r.logger.Infof(ctx, "Running app %q:", appName)
 	r.logger.Info(ctx, string(stdout))
 
 	return nil
 }
 
 func (r *Run) buildJSApp(ctx context.Context) error {
-	// TODO: Handle this requirement https://github.com/meroxa/turbine-js.git being installed
-	// (requirement being node)
+	// TODO: Handle the requirement of https://github.com/meroxa/turbine-js.git being installed
+	// cd into the path first
 	cmd := exec.Command("npx", "turbine", "test")
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
@@ -106,7 +108,6 @@ func (r *Run) readConfigFile() (AppConfig, error) {
 	var appConfig AppConfig
 
 	appPath := r.flags.Path
-
 	appConfigPath := path.Join(appPath, "app.json")
 	appConfigBytes, err := ioutil.ReadFile(appConfigPath)
 	if err != nil {
@@ -122,6 +123,15 @@ func (r *Run) readConfigFile() (AppConfig, error) {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
+	var appPath string
+
+	switch {
+	case r.flags.Path != "":
+		appPath = r.flags.Path
+	default:
+		appPath = "."
+	}
+
 	appConfig, err := r.readConfigFile()
 	if err != nil {
 		return err
@@ -131,14 +141,14 @@ func (r *Run) Execute(ctx context.Context) error {
 
 	if lang == "" {
 		if r.flags.Lang == "" {
-			return fmt.Errorf("flag --lang is required unless specified in your app.json")
+			return fmt.Errorf("flag --lang is required unless lang is specified in your app.json")
 		}
 		lang = r.flags.Lang
 	}
 
 	switch lang {
 	case "go", "golang":
-		return r.buildGoApp(ctx)
+		return r.buildGoApp(ctx, appPath)
 	case "js", "javascript", "nodejs":
 		return r.buildJSApp(ctx)
 	default:
