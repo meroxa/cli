@@ -61,17 +61,18 @@ func (i *Init) Execute(ctx context.Context) error {
 	name := i.args.appName
 	lang := i.flags.Lang
 
-	if lang == "javascript" {
+	switch lang {
+	case "go", "golang":
+		// TODO: Implement apps init for go.
+	case "js", "javascript", "nodejs":
 		cmd := exec.Command("npx", "turbine", "generate", name)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			return err
 		}
 		i.logger.Info(ctx, string(stdout))
-	} else if lang == "go" {
-		// TODO: Implement apps init for go.
-	} else {
-		return fmt.Errorf("unsupported language: %s", lang)
+	default:
+		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
 	}
 
 	return nil
