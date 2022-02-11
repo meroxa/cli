@@ -1323,6 +1323,34 @@ _meroxa_environments_remove()
     noun_aliases=()
 }
 
+_meroxa_environments_repair()
+{
+    last_command="meroxa_environments_repair"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_environments_update()
 {
     last_command="meroxa_environments_update"
@@ -1380,6 +1408,7 @@ _meroxa_environments()
         command_aliases+=("rm")
         aliashash["rm"]="remove"
     fi
+    commands+=("repair")
     commands+=("update")
 
     flags=()

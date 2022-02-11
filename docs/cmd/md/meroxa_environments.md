@@ -24,5 +24,6 @@ Manage environments on Meroxa
 * [meroxa environments describe](meroxa_environments_describe.md)	 - Describe environment
 * [meroxa environments list](meroxa_environments_list.md)	 - List environments
 * [meroxa environments remove](meroxa_environments_remove.md)	 - Remove environment
+* [meroxa environments repair](meroxa_environments_repair.md)	 - Repair environment
 * [meroxa environments update](meroxa_environments_update.md)	 - Update an environment
 
