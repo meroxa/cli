@@ -31,5 +31,6 @@ Manage environments on Meroxa
 * [meroxa environments describe](/cli/cmd/meroxa-environments-describe/)	 - Describe environment
 * [meroxa environments list](/cli/cmd/meroxa-environments-list/)	 - List environments
 * [meroxa environments remove](/cli/cmd/meroxa-environments-remove/)	 - Remove environment
+* [meroxa environments repair](/cli/cmd/meroxa-environments-repair/)	 - Repair environment
 * [meroxa environments update](/cli/cmd/meroxa-environments-update/)	 - Update an environment
 
