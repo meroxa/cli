@@ -29,7 +29,6 @@ var (
 	_ builder.CommandWithClient  = (*Repair)(nil)
 	_ builder.CommandWithLogger  = (*Repair)(nil)
 	_ builder.CommandWithExecute = (*Repair)(nil)
-	_ builder.CommandWithHidden  = (*Repair)(nil)
 )
 
 type repairEnvironmentClient interface {
@@ -43,10 +42,6 @@ type Repair struct {
 	args struct {
 		NameOrUUID string
 	}
-}
-
-func (r *Repair) Hidden() bool {
-	return true
 }
 
 func (r *Repair) Usage() string {
