@@ -72,7 +72,7 @@ func (l *Logs) Client(client meroxa.Client) {
 
 func (l *Logs) ParseArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires function name")
+		return errors.New("requires function name or uuid")
 	}
 
 	l.args.NameOrID = args[0]
