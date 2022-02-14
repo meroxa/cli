@@ -43,6 +43,7 @@ type Client interface {
 
 	CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*Function, error)
+	GetFunctionLogs(ctx context.Context, nameOrID string) (*http.Response, error)
 	ListFunctions(ctx context.Context) ([]*Function, error)
 	DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error)
 
