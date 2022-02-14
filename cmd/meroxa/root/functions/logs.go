@@ -28,7 +28,7 @@ type Logs struct {
 	logger log.Logger
 
 	args struct {
-		NameOrID string
+		NameOrUUID string
 	}
 }
 
