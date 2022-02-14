@@ -50,6 +50,7 @@ func (*Apps) Docs() builder.Docs {
 
 func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
+		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Run{}),
 		builder.BuildCobraCommand(&Init{}),
 	}

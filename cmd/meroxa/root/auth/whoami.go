@@ -21,9 +21,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"

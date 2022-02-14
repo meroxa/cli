@@ -18,7 +18,6 @@ package apps
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -107,23 +106,6 @@ func (r *Run) buildJSApp(ctx context.Context) error {
 	return nil
 }
 
-func (r *Run) readConfigFile() (AppConfig, error) {
-	var appConfig AppConfig
-
-	appPath := r.flags.Path
-	appConfigPath := path.Join(appPath, "app.json")
-	appConfigBytes, err := os.ReadFile(appConfigPath)
-	if err != nil {
-		return appConfig, fmt.Errorf("%v\n"+
-			"Applications to run require an app.json file", err)
-	}
-	if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
-		return appConfig, err
-	}
-
-	return appConfig, nil
-}
-
 func (r *Run) Execute(ctx context.Context) error {
 	var appPath string
 
@@ -134,7 +116,7 @@ func (r *Run) Execute(ctx context.Context) error {
 		appPath = "."
 	}
 
-	appConfig, err := r.readConfigFile()
+	appConfig, err := readConfigFile(appPath)
 	if err != nil {
 		return err
 	}
@@ -149,9 +131,9 @@ func (r *Run) Execute(ctx context.Context) error {
 	}
 
 	switch lang {
-	case "go", "golang":
+	case "go", goLang:
 		return r.buildGoApp(ctx, appPath)
-	case "js", "javascript", "nodejs":
+	case "js", javaScript, nodeJS:
 		return r.buildJSApp(ctx)
 	default:
 		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
