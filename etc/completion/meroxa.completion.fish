@@ -132,11 +132,11 @@ function __meroxa_prepare_completions
             # We don't need descriptions anyway since there is only a single
             # real completion which the shell will expand immediately.
             set -l split (string split --max 1 \t $__meroxa_comp_results[1])
-        
+
             # Fish won't add a space if the completion ends with any
             # of the following characters: @=/:.,
             set -l lastChar (string sub -s -1 -- $split)
-            if not string match -r -q "[@=/:.,]" -- "$lastChar"                
+            if not string match -r -q "[@=/:.,]" -- "$lastChar"
                 # In other cases, to support the "nospace" directive we trick the shell
                 # by outputting an extra, longer completion.
                 __meroxa_debug "Adding second completion to perform nospace directive"
