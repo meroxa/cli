@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	templateDir  = "template"
+	templateDir = "template"
 )
 
 //go:embed template/*
@@ -17,7 +17,7 @@ var templateFS embed.FS
 
 // TurbineAppInitTrait will be used to replace data evaluations provided by the user
 type TurbineAppInitTrait struct {
-	AppName     string
+	AppName string
 }
 
 // createAppDirectory is where new files will be created. It'll be named as the application name
@@ -41,7 +41,7 @@ func createFixtures(path, appName string) error {
 	}
 
 	appJSON := TurbineAppInitTrait{
-		AppName:     appName,
+		AppName: appName,
 	}
 
 	f, err := os.Create(filepath.Join(path, appName, directory, fileName))
@@ -71,7 +71,7 @@ func duplicateFile(fileName, path, appName string) error {
 	}
 
 	appTrait := TurbineAppInitTrait{
-		AppName:     appName,
+		AppName: appName,
 	}
 
 	f, err := os.Create(filepath.Join(path, appName, fileName))

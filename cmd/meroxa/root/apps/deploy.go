@@ -21,13 +21,16 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
-	"path"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
+)
+
+const (
+	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
+	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" // nolint:gosec
 )
 
 type Deploy struct {
@@ -35,8 +38,10 @@ type Deploy struct {
 		Path string `long:"path" description:"path to the app directory"`
 	}
 
-	config config.Config
-	logger log.Logger
+	config   config.Config
+	logger   log.Logger
+	path     string
+	goDeploy turbineCLI.GoDeploy
 }
 
 var (
@@ -54,7 +59,7 @@ func (*Deploy) Usage() string {
 func (*Deploy) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Deploy a Meroxa Data Application",
-		Example: "meroxa apps deploy # assumes you run it from the app directory" +
+		Example: "meroxa apps deploy # assumes you run it from the app directory\n" +
 			"meroxa apps deploy --path ./my-app",
 	}
 }
@@ -67,70 +72,34 @@ func (d *Deploy) Flags() []builder.Flag {
 	return builder.BuildFlags(&d.flags)
 }
 
+func (d *Deploy) getDockerHubUserNameEnv() string {
+	if v := os.Getenv(dockerHubUserNameEnv); v != "" {
+		return v
+	}
+	return d.config.GetString(dockerHubUserNameEnv)
+}
+
+func (d *Deploy) getDockerHubAccessTokenEnv() string {
+	if v := os.Getenv(dockerHubAccessTokenEnv); v != "" {
+		return v
+	}
+	return d.config.GetString(dockerHubAccessTokenEnv)
+}
+
 func (d *Deploy) checkRequiredEnvVars() error {
-	// TODO: Make sure we could read from either config file or via env vars
-	v := os.Getenv(dockerHubUserNameEnv)
-	k := os.Getenv(dockerHubAccessTokenEnv)
-
-	if v == "" || k == "" {
-		return errors.New("both `DOCKER_HUB_USERNAME` and `DOCKER_HUB_ACCESS_TOKEN` are required to be set to deploy your application")
-	}
-	return nil
-}
-
-func (d *Deploy) getPath() string {
-	if d.flags.Path != "" {
-		return d.flags.Path
-	}
-	return "."
-}
-
-func (d *Deploy) deployGoApp(ctx context.Context) error {
-	appPath := d.getPath()
-
-	appName := path.Base(appPath)
-	fqImageName := prependAccount(appName)
-	err := buildImage(ctx, d.logger, appPath, fqImageName)
-	if err != nil {
-		d.logger.Errorf(ctx, "unable to build image; %q\n%s", fqImageName, err)
+	if d.getDockerHubUserNameEnv() == "" || d.getDockerHubAccessTokenEnv() == "" {
+		msg := fmt.Sprintf("both %q and %q are required to be set to deploy your application", dockerHubUserNameEnv, dockerHubAccessTokenEnv)
+		return errors.New(msg)
 	}
 
-	err = pushImage(d.logger, fqImageName)
-	if err != nil {
-		d.logger.Errorf(ctx, "unable to push image; %q\n%s", fqImageName, err)
-	}
-
-	err = buildGoApp(ctx, d.logger, appPath, appName, true)
-	if err != nil {
-		return err
-	}
-
-	// deploy data app
-	err = deployApp(ctx, d.logger, appPath, appName, fqImageName)
-	if err != nil {
-		d.logger.Errorf(ctx, "unable to deploy app; %s", err)
-	}
+	d.goDeploy.DockerHubUserNameEnv = d.getDockerHubUserNameEnv()
+	d.goDeploy.DockerHubAccessTokenEnv = d.getDockerHubAccessTokenEnv()
 
 	return nil
 }
 
-func (d *Deploy) deployJSApp(ctx context.Context) error {
-	cmd := exec.Command("npx", "turbine", "deploy", d.getPath()) // nolint:gosec
-
-	accessToken, _, err := global.GetUserToken()
-	if err != nil {
-		return err
-	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
-
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		d.logger.Error(ctx, string(stdout))
-		return err
-	}
-	d.logger.Info(ctx, string(stdout))
-	return nil
+func (d *Deploy) Logger(logger log.Logger) {
+	d.logger = logger
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
@@ -139,28 +108,18 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	appPath := d.getPath()
-	appConfig, err := readConfigFile(appPath)
+	d.path = turbineCLI.GetPath(d.flags.Path)
+	lang, err := turbineCLI.GetLangFromAppJSON(d.path)
 	if err != nil {
 		return err
 	}
 
-	lang := appConfig.Language
-
-	if appConfig.Language == "" {
-		return fmt.Errorf("`language` should be specified in your app.json")
-	}
-
 	switch lang {
-	case "go", "golang":
-		return d.deployGoApp(ctx)
-	case "js", "javascript", nodeJS:
-		return d.deployJSApp(ctx)
+	case "go", GoLang:
+		return d.goDeploy.DeployGoApp(ctx, d.path, d.logger)
+	case "js", JavaScript, NodeJs:
+		return turbineCLI.DeployJSApp(ctx, d.path, d.logger)
 	default:
 		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
 	}
-}
-
-func (d *Deploy) Logger(logger log.Logger) {
-	d.logger = logger
 }

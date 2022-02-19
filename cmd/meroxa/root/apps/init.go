@@ -7,12 +7,14 @@ import (
 	"os/exec"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 	turbine "github.com/meroxa/turbine/init"
 )
 
 type Init struct {
 	logger log.Logger
+	path   string
 
 	args struct {
 		appName string
@@ -44,6 +46,10 @@ func (*Init) Docs() builder.Docs {
 	}
 }
 
+func (i *Init) Logger(logger log.Logger) {
+	i.logger = logger
+}
+
 func (i *Init) Flags() []builder.Flag {
 	return builder.BuildFlags(&i.flags)
 }
@@ -60,23 +66,20 @@ func (i *Init) ParseArgs(args []string) error {
 func (i *Init) Execute(ctx context.Context) error {
 	name := i.args.appName
 	lang := i.flags.Lang
-	path := "."
 
-	if i.flags.Path != "" {
-		path = i.flags.Path
-	}
+	i.path = turbineCLI.GetPath(i.flags.Path)
 
 	switch lang {
-	case "go", goLang:
-		i.logger.Infof(ctx, "Initializing application %q in %q...", name, path)
-		err := turbine.Init(path, name)
+	case "go", GoLang:
+		i.logger.Infof(ctx, "Initializing application %q in %q...", name, i.path)
+		err := turbine.Init(i.path, name)
 		if err != nil {
 			return err
 		}
 		i.logger.Infof(ctx, "Application successfully initialized!\n"+
-			"You can start interacting with Meroxa in your app located at \"%s/%s\"", path, name)
-	case "js", javaScript, "nodejs":
-		cmd := exec.Command("npx", "turbine", "generate", name)
+			"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
+	case "js", JavaScript, NodeJs:
+		cmd := exec.Command("npx", "turbine_cli", "generate", name)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			return err
@@ -87,8 +90,4 @@ func (i *Init) Execute(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func (i *Init) Logger(logger log.Logger) {
-	i.logger = logger
 }

@@ -19,11 +19,9 @@ package apps
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/exec"
-	"path"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 )
 
@@ -34,6 +32,7 @@ type Run struct {
 		Path string `long:"path" usage:"path of application to run"`
 	}
 
+	path   string
 	logger log.Logger
 }
 
@@ -43,11 +42,6 @@ var (
 	_ builder.CommandWithExecute = (*Run)(nil)
 	_ builder.CommandWithLogger  = (*Run)(nil)
 )
-
-type AppConfig struct {
-	Name     string `json:"name"`
-	Language string `json:"language"`
-}
 
 func (*Run) Usage() string {
 	return "run"
@@ -64,82 +58,27 @@ func (*Run) Docs() builder.Docs {
 	}
 }
 
+func (r *Run) Logger(logger log.Logger) {
+	r.logger = logger
+}
+
 func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
 }
 
-func (r *Run) buildGoApp(ctx context.Context, appPath string) error {
-	// grab current location to use it as project name
-	appName := path.Base(appPath)
-
-	// building is a requirement prior to running for go apps
-	err := buildGoApp(ctx, r.logger, appPath, appName, false)
-	if err != nil {
-		return err
-	}
-
-	err = os.Chdir(appPath)
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.Command("./" + appName) //nolint:gosec
-
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		r.logger.Error(ctx, err.Error())
-	}
-
-	r.logger.Info(ctx, string(out))
-	return nil
-}
-
-func (r *Run) buildJSApp(ctx context.Context) error {
-	// TODO: Handle the requirement of https://github.com/meroxa/turbine-js.git being installed
-	// cd into the path first
-	cmd := exec.Command("npx", "turbine", "test")
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		return err
-	}
-	r.logger.Info(ctx, string(stdout))
-	return nil
-}
-
 func (r *Run) Execute(ctx context.Context) error {
-	var appPath string
-
-	switch {
-	case r.flags.Path != "":
-		appPath = r.flags.Path
-	default:
-		appPath = "."
-	}
-
-	appConfig, err := readConfigFile(appPath)
+	r.path = turbineCLI.GetPath(r.flags.Path)
+	lang, err := turbineCLI.GetLang(r.flags.Lang, r.path)
 	if err != nil {
 		return err
-	}
-
-	lang := appConfig.Language
-
-	if lang == "" {
-		if r.flags.Lang == "" {
-			return fmt.Errorf("flag --lang is required unless lang is specified in your app.json")
-		}
-		lang = r.flags.Lang
 	}
 
 	switch lang {
-	case "go", goLang:
-		return r.buildGoApp(ctx, appPath)
-	case "js", javaScript, nodeJS:
-		return r.buildJSApp(ctx)
+	case "go", GoLang:
+		return turbineCLI.RunGoApp(ctx, r.path, r.logger)
+	case "js", JavaScript, NodeJs:
+		return turbineCLI.BuildJSApp(ctx, r.logger)
 	default:
 		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
 	}
-}
-
-func (r *Run) Logger(logger log.Logger) {
-	r.logger = logger
 }
