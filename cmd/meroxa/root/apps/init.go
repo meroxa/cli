@@ -68,13 +68,13 @@ func (i *Init) Execute(ctx context.Context) error {
 
 	switch lang {
 	case "go", goLang:
-		i.logger.Infof(ctx, "Initializing application %q in %q", name, path)
+		i.logger.Infof(ctx, "Initializing application %q in %q...", name, path)
 		err := turbine.Init(path, name)
 		if err != nil {
 			return err
 		}
 		i.logger.Infof(ctx, "Application successfully initialized!\n"+
-			"You can start interacting with Meroxa in your app located at %s", path)
+			"You can start interacting with Meroxa in your app located at \"%s/%s\"", path, name)
 	case "js", javaScript, "nodejs":
 		cmd := exec.Command("npx", "turbine", "generate", name)
 		stdout, err := cmd.CombinedOutput()

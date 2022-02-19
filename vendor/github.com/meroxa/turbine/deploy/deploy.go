@@ -1,19 +1,3 @@
-/*
-Copyright © 2022 Meroxa Inc
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package deploy
 
 import (
@@ -23,11 +7,6 @@ import (
 	"path"
 	"path/filepath"
 	"text/template"
-)
-
-const (
-	templateDir = "template"
-	goVersion   = "1.17"
 )
 
 //go:embed template/*
@@ -43,14 +22,14 @@ type TurbineDockerfileTrait struct {
 func CreateDockerfile(pwd string) error {
 	fileName := "Dockerfile"
 	appName := path.Base(pwd)
-	t, err := template.ParseFS(templateFS, filepath.Join(templateDir, fileName))
+	t, err := template.ParseFS(templateFS, filepath.Join("template", fileName))
 	if err != nil {
 		return err
 	}
 
 	dockerfile := TurbineDockerfileTrait{
 		AppName:   appName,
-		GoVersion: goVersion,
+		GoVersion: "1.17",
 	}
 
 	f, err := os.Create(filepath.Join(pwd, fileName))

@@ -1,19 +1,3 @@
-/*
-Copyright © 2022 Meroxa Inc
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package init
 
 import (
@@ -26,16 +10,14 @@ import (
 
 const (
 	templateDir  = "template"
-	pipelineName = "default"
 )
 
 //go:embed template/*
 var templateFS embed.FS
 
-// TurbineAppTrait will be used to replace data evaluations provided by the user
-type TurbineAppTrait struct {
-	Name     string
-	Pipeline string
+// TurbineAppInitTrait will be used to replace data evaluations provided by the user
+type TurbineAppInitTrait struct {
+	AppName     string
 }
 
 // createAppDirectory is where new files will be created. It'll be named as the application name
@@ -58,9 +40,8 @@ func createFixtures(path, appName string) error {
 		return err
 	}
 
-	appJSON := TurbineAppTrait{
-		Name:     appName,
-		Pipeline: pipelineName,
+	appJSON := TurbineAppInitTrait{
+		AppName:     appName,
 	}
 
 	f, err := os.Create(filepath.Join(path, appName, directory, fileName))
@@ -89,9 +70,8 @@ func duplicateFile(fileName, path, appName string) error {
 		return err
 	}
 
-	appTrait := TurbineAppTrait{
-		Name:     appName,
-		Pipeline: pipelineName, // this could be provided by the user
+	appTrait := TurbineAppInitTrait{
+		AppName:     appName,
 	}
 
 	f, err := os.Create(filepath.Join(path, appName, fileName))

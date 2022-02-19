@@ -1,8 +1,7 @@
 {
-  "name": "{{.Name}}",
+  "name": "{{.AppName}}",
   "language": "go",
   "environment": "common",
-  "pipeline": "{{.Pipeline}}",
   "resources": {
     "name": "fixtures/path"
   }
