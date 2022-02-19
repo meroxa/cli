@@ -27,7 +27,7 @@ require (
 require (
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine v0.0.0-00010101000000-000000000000
+	github.com/meroxa/turbine v0.0.0-20220219222616-1e3d9685ce06
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -81,5 +81,3 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/meroxa/turbine => ../turbine
