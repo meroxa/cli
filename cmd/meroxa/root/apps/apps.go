@@ -23,6 +23,12 @@ import (
 
 type Apps struct{}
 
+const (
+	JavaScript = "javascript"
+	GoLang     = "golang"
+	NodeJs     = "nodejs"
+)
+
 var (
 	_ builder.CommandWithDocs        = (*Apps)(nil)
 	_ builder.CommandWithAliases     = (*Apps)(nil)
@@ -50,7 +56,8 @@ func (*Apps) Docs() builder.Docs {
 
 func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		builder.BuildCobraCommand(&Run{}),
+		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Init{}),
+		builder.BuildCobraCommand(&Run{}),
 	}
 }
