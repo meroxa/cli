@@ -33,6 +33,12 @@ type client struct {
 
 // Client represents the interface to the Meroxa API
 type Client interface {
+	CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error)
+	DeleteApplication(ctx context.Context, name string) error
+	GetApplication(ctx context.Context, name string) (*Application, error)
+	ListApplications(ctx context.Context) ([]*Application, error)
+	UpdateApplication(ctx context.Context, uuid string, input *UpdateApplicationInput) (*Application, error)
+
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*Connector, error)
@@ -43,7 +49,7 @@ type Client interface {
 
 	CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*Function, error)
-	GetFunctionLogs(ctx context.Context, nameOrID string) (*http.Response, error)
+	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	ListFunctions(ctx context.Context) ([]*Function, error)
 	DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error)
 

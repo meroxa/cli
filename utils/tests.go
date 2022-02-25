@@ -169,6 +169,13 @@ func GenerateEnvironment(environmentName string) meroxa.Environment {
 	}
 }
 
+func GenerateApplication() meroxa.Application {
+	return meroxa.Application{
+		Name:     "application-name",
+		Language: "golang",
+	}
+}
+
 func IsFlagRequired(flag *pflag.Flag) bool {
 	requiredAnnotation := "cobra_annotation_bash_completion_one_required_flag"
 
