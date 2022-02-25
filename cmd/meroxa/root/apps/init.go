@@ -63,6 +63,20 @@ func (i *Init) ParseArgs(args []string) error {
 	return nil
 }
 
+func (i *Init) GitInit(ctx context.Context, path string) error {
+	if path == "" {
+		return errors.New("path is required")
+	}
+
+	cmd := exec.Command("git", "init", path)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (i *Init) Execute(ctx context.Context) error {
 	name := i.args.appName
 	lang := i.flags.Lang
@@ -79,7 +93,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		i.logger.Infof(ctx, "Application successfully initialized!\n"+
 			"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 	case "js", JavaScript, NodeJs:
-		cmd := exec.Command("npx", "turbine_cli", "generate", name)
+		cmd := exec.Command("npx", "turbine", "generate", name)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			return err
@@ -87,6 +101,11 @@ func (i *Init) Execute(ctx context.Context) error {
 		i.logger.Info(ctx, string(stdout))
 	default:
 		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
+	}
+
+	err := i.GitInit(ctx, i.path+"/"+name)
+	if err != nil {
+		return err
 	}
 
 	return nil
