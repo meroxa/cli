@@ -44,7 +44,7 @@ type Create struct {
 	}
 
 	flags struct {
-		Language string `long:"lang" usage:"language of app from golang, javascript, nodejs" required:"true"`
+		Language string `long:"language" usage:"language of app from golang, javascript, nodejs" required:"true"`
 	}
 }
 
@@ -70,11 +70,6 @@ func (c *Create) ParseArgs(args []string) error {
 func (c *Create) Execute(ctx context.Context) error {
 	if c.flags.Language == "" {
 		return fmt.Errorf("must supply a language from golang, javascript, nodejs")
-	}
-
-	err := builder.CheckFeatureFlag(c, &Apps{})
-	if err != nil {
-		return err
 	}
 
 	input := meroxa.CreateApplicationInput{

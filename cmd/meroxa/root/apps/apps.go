@@ -59,7 +59,7 @@ func (*Apps) Docs() builder.Docs {
 }
 
 func (*Apps) FeatureFlag() (string, error) {
-	return "applications", fmt.Errorf("no access to the Meroxa applications feature")
+	return "applications", fmt.Errorf("no access to the Meroxa Data Applications feature")
 }
 
 func (*Apps) SubCommands() []*cobra.Command {
@@ -67,6 +67,7 @@ func (*Apps) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&Run{}),
+		builder.BuildCobraCommand(&Create{}),
 		builder.BuildCobraCommand(&Remove{}),
 	}
 }

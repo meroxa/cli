@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
-
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -50,7 +48,7 @@ func TestCreateApplicationFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "lang", required: true},
+		{name: "language", required: true},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -109,27 +107,9 @@ func TestCreateApplicationExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
-	// Set up feature flags
-	if global.Config == nil {
-		build := builder.BuildCobraCommand(c)
-		_ = global.PersistentPreRunE(build)
-	}
 
 	c.args.Name = ai.Name
 	c.flags.Language = ai.Language
-
-	// override feature flags
-	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
-	startingFlags := ""
-	if featureFlags != nil {
-		startingFlags = featureFlags.(string)
-	}
-	newFlags := ""
-	if startingFlags != "" {
-		newFlags = startingFlags + " "
-	}
-	newFlags += "applications"
-	global.Config.Set(global.UserFeatureFlagsEnv, newFlags)
 
 	err := c.Execute(ctx)
 
@@ -155,39 +135,5 @@ Application %q successfully created!
 
 	if !reflect.DeepEqual(gotApplication, *a) {
 		t.Fatalf("expected \"%v\", got \"%v\"", *a, gotApplication)
-	}
-}
-
-func TestCreateApplicationExecutionWithoutFeatureFlag(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
-	name := "my-application"
-	lang := NodeJs
-
-	c := &Create{
-		client: client,
-		logger: logger,
-	}
-
-	ai := &meroxa.CreateApplicationInput{
-		Name:     name,
-		Language: lang,
-	}
-	c.args.Name = ai.Name
-
-	err := c.Execute(ctx)
-
-	if err == nil {
-		t.Fatalf("unexpected success")
-	}
-
-	gotError := err.Error()
-	wantError := `no access to the Meroxa self-hosted environments feature.
-Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`
-
-	if gotError != wantError {
-		t.Fatalf("expected error:\n%s\ngot:\n%s", wantError, gotError)
 	}
 }
