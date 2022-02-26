@@ -15,9 +15,8 @@ package apps
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -44,7 +43,7 @@ type Create struct {
 	}
 
 	flags struct {
-		Language string `long:"language" usage:"language of app from golang, javascript, nodejs" required:"true"`
+		Path string `long:"path" usage:"path where application will be initialized (current directory as default)"`
 	}
 }
 
@@ -68,13 +67,15 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (c *Create) Execute(ctx context.Context) error {
-	if c.flags.Language == "" {
-		return fmt.Errorf("must supply a language from golang, javascript, nodejs")
+	path := turbineCLI.GetPath(c.flags.Path)
+	lang, err := turbineCLI.GetLangFromAppJSON(path)
+	if err != nil {
+		return err
 	}
 
 	input := meroxa.CreateApplicationInput{
 		Name:     c.args.Name,
-		Language: c.flags.Language,
+		Language: lang,
 	}
 
 	c.logger.Infof(ctx, "Creating application %q...", input.Name)

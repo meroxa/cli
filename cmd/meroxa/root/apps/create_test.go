@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	turbine "github.com/meroxa/turbine/init"
+	"os"
 	"reflect"
 	"testing"
 
@@ -48,7 +50,7 @@ func TestCreateApplicationFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "language", required: true},
+		{name: "path"},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -77,13 +79,15 @@ func TestCreateApplicationFlags(t *testing.T) {
 	}
 }
 
+const tempAppDir = "test-app"
+
 func TestCreateApplicationExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 	name := "my-application"
-	lang := NodeJs
+	lang := GoLang
 
 	ai := &meroxa.CreateApplicationInput{
 		Name:     name,
@@ -108,10 +112,18 @@ func TestCreateApplicationExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	c.args.Name = ai.Name
-	c.flags.Language = ai.Language
+	path, err := initApp(name)
+	defer func() {
+		_ = os.RemoveAll(tempAppDir)
+	}()
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
 
-	err := c.Execute(ctx)
+	c.args.Name = ai.Name
+	c.flags.Path = path
+
+	err = c.Execute(ctx)
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
@@ -136,4 +148,22 @@ Application %q successfully created!
 	if !reflect.DeepEqual(gotApplication, *a) {
 		t.Fatalf("expected \"%v\", got \"%v\"", *a, gotApplication)
 	}
+}
+
+func initApp(name string) (string, error) {
+	if err := os.Mkdir(tempAppDir, 0700); err != nil {
+		return "", err
+	}
+
+	if err := turbine.Init(tempAppDir, name); err != nil {
+		return "", err
+	}
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	appsJsonPath := fmt.Sprintf("%s/%s/%s", cwd, tempAppDir, name)
+	return appsJsonPath, nil
 }
