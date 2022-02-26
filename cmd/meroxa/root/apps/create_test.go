@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	turbine "github.com/meroxa/turbine/init"
 	"os"
 	"reflect"
 	"testing"
@@ -17,6 +16,7 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
+	turbine "github.com/meroxa/turbine/init"
 )
 
 func TestCreateApplicationArgs(t *testing.T) {
@@ -164,6 +164,5 @@ func initApp(name string) (string, error) {
 		return "", err
 	}
 
-	appsJsonPath := fmt.Sprintf("%s/%s/%s", cwd, tempAppDir, name)
-	return appsJsonPath, nil
+	return fmt.Sprintf("%s/%s/%s", cwd, tempAppDir, name), nil
 }
