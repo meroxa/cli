@@ -37,7 +37,6 @@ type Client interface {
 	DeleteApplication(ctx context.Context, name string) error
 	GetApplication(ctx context.Context, name string) (*Application, error)
 	ListApplications(ctx context.Context) ([]*Application, error)
-	UpdateApplication(ctx context.Context, uuid string, input *UpdateApplicationInput) (*Application, error)
 
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error

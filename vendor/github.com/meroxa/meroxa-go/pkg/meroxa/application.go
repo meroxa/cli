@@ -22,19 +22,16 @@ type Application struct {
 	Name      string            `json:"name"`
 	Language  string            `json:"language"`
 	Status    ApplicationStatus `json:"status,omitempty"`
+	Functions []Function        `json:"functions,omitempty"`
 	CreatedAt time.Time         `json:"created_at"`
 	UpdatedAt time.Time         `json:"updated_at"`
+	DeletedAt time.Time         `json:"deleted_at,omitempty"`
 }
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
 type CreateApplicationInput struct {
 	Name     string `json:"name"`
 	Language string `json:"language"`
-}
-
-// UpdateApplicationInput represents the input for a Meroxa Application update operation in the API
-type UpdateApplicationInput struct {
-	Name string `json:"name"`
 }
 
 type ApplicationStatus struct {
@@ -109,24 +106,4 @@ func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
 	}
 
 	return aa, nil
-}
-
-func (c *client) UpdateApplication(ctx context.Context, uuid string, input *UpdateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s", applicationsBasePath, uuid), input, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var a *Application
-	err = json.NewDecoder(resp.Body).Decode(&a)
-	if err != nil {
-		return nil, err
-	}
-
-	return a, nil
 }

@@ -601,21 +601,6 @@ func (mr *MockClientMockRecorder) RotateTunnelKeyForResource(ctx, nameOrID inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RotateTunnelKeyForResource", reflect.TypeOf((*MockClient)(nil).RotateTunnelKeyForResource), ctx, nameOrID)
 }
 
-// UpdateApplication mocks base method.
-func (m *MockClient) UpdateApplication(ctx context.Context, uuid string, input *meroxa.UpdateApplicationInput) (*meroxa.Application, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateApplication", ctx, uuid, input)
-	ret0, _ := ret[0].(*meroxa.Application)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// UpdateApplication indicates an expected call of UpdateApplication.
-func (mr *MockClientMockRecorder) UpdateApplication(ctx, uuid, input interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateApplication", reflect.TypeOf((*MockClient)(nil).UpdateApplication), ctx, uuid, input)
-}
-
 // UpdateConnector mocks base method.
 func (m *MockClient) UpdateConnector(ctx context.Context, nameOrID string, input *meroxa.UpdateConnectorInput) (*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
