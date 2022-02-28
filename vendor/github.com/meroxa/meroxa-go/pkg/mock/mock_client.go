@@ -37,6 +37,21 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
+// CreateApplication mocks base method.
+func (m *MockClient) CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateApplication", ctx, input)
+	ret0, _ := ret[0].(*meroxa.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateApplication indicates an expected call of CreateApplication.
+func (mr *MockClientMockRecorder) CreateApplication(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApplication", reflect.TypeOf((*MockClient)(nil).CreateApplication), ctx, input)
+}
+
 // CreateConnector mocks base method.
 func (m *MockClient) CreateConnector(ctx context.Context, input *meroxa.CreateConnectorInput) (*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
@@ -126,6 +141,20 @@ func (mr *MockClientMockRecorder) CreateResource(ctx, input interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateResource", reflect.TypeOf((*MockClient)(nil).CreateResource), ctx, input)
 }
 
+// DeleteApplication mocks base method.
+func (m *MockClient) DeleteApplication(ctx context.Context, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteApplication", ctx, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteApplication indicates an expected call of DeleteApplication.
+func (mr *MockClientMockRecorder) DeleteApplication(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockClient)(nil).DeleteApplication), ctx, name)
+}
+
 // DeleteConnector mocks base method.
 func (m *MockClient) DeleteConnector(ctx context.Context, nameOrID string) error {
 	m.ctrl.T.Helper()
@@ -212,6 +241,21 @@ func (mr *MockClientMockRecorder) DeleteResource(ctx, nameOrID interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteResource", reflect.TypeOf((*MockClient)(nil).DeleteResource), ctx, nameOrID)
 }
 
+// GetApplication mocks base method.
+func (m *MockClient) GetApplication(ctx context.Context, name string) (*meroxa.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetApplication", ctx, name)
+	ret0, _ := ret[0].(*meroxa.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetApplication indicates an expected call of GetApplication.
+func (mr *MockClientMockRecorder) GetApplication(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, name)
+}
+
 // GetConnectorByNameOrID mocks base method.
 func (m *MockClient) GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
@@ -287,6 +331,21 @@ func (mr *MockClientMockRecorder) GetFunction(ctx, nameOrUUID interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunction", reflect.TypeOf((*MockClient)(nil).GetFunction), ctx, nameOrUUID)
 }
 
+// GetFunctionLogs mocks base method.
+func (m *MockClient) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFunctionLogs", ctx, nameOrUUID)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFunctionLogs indicates an expected call of GetFunctionLogs.
+func (mr *MockClientMockRecorder) GetFunctionLogs(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunctionLogs", reflect.TypeOf((*MockClient)(nil).GetFunctionLogs), ctx, nameOrUUID)
+}
+
 // GetPipeline mocks base method.
 func (m *MockClient) GetPipeline(ctx context.Context, pipelineID int) (*meroxa.Pipeline, error) {
 	m.ctrl.T.Helper()
@@ -345,6 +404,21 @@ func (m *MockClient) GetUser(ctx context.Context) (*meroxa.User, error) {
 func (mr *MockClientMockRecorder) GetUser(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockClient)(nil).GetUser), ctx)
+}
+
+// ListApplications mocks base method.
+func (m *MockClient) ListApplications(ctx context.Context) ([]*meroxa.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListApplications", ctx)
+	ret0, _ := ret[0].([]*meroxa.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListApplications indicates an expected call of ListApplications.
+func (mr *MockClientMockRecorder) ListApplications(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListApplications", reflect.TypeOf((*MockClient)(nil).ListApplications), ctx)
 }
 
 // ListConnectors mocks base method.

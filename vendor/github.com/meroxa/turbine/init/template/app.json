@@ -1,6 +1,6 @@
 {
   "name": "{{.AppName}}",
-  "language": "go",
+  "language": "golang",
   "environment": "common",
   "resources": {
     "name": "fixtures/path"
