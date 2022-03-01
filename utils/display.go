@@ -850,6 +850,58 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	return table.String()
 }
 
+func AppTable(app *meroxa.Application) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: app.UUID},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: app.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Language:"},
+			{Text: app.Language},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Created At:"},
+			{Text: app.CreatedAt.String()},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Updated At:"},
+			{Text: app.UpdatedAt.String()},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "State:"},
+			{Text: strings.Title(string(app.Status.State))},
+		},
+	}
+
+	details := app.Status.Details
+	if details != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "State details:"},
+			{Text: strings.Title(details)},
+		})
+	}
+
+	if len(app.Functions) != 0 {
+		names := make([]string, 0)
+		for _, f := range app.Functions {
+			names = append(names, f.Name.String)
+		}
+
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Functions:"},
+			{Text: strings.Join(names, ", ")},
+		})
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+	return mainTable.String()
+}
+
 func PrintAppsTable(apps []*meroxa.Application, hideHeaders bool) {
 	fmt.Println(AppsTable(apps, hideHeaders))
 }
