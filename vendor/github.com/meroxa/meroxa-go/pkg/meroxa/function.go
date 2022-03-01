@@ -7,19 +7,20 @@ import (
 	"net/http"
 )
 
-const functionsBasePath = "/v1/functions"
+const functionsSubPath = "functions"
 
 type Function struct {
-	UUID         string             `json:"uuid"`
-	Name         string             `json:"name"`
-	InputStream  string             `json:"input_stream"`
-	OutputStream string             `json:"output_stream"`
-	Image        string             `json:"image"`
-	Command      []string           `json:"command"`
-	Args         []string           `json:"args"`
-	EnvVars      map[string]string  `json:"env_vars"`
-	Status       FunctionStatus     `json:"status"`
-	Pipeline     PipelineIdentifier `json:"pipeline"`
+	UUID         string                `json:"uuid"`
+	Name         string                `json:"name"`
+	InputStream  string                `json:"input_stream"`
+	OutputStream string                `json:"output_stream"`
+	Image        string                `json:"image"`
+	Command      []string              `json:"command"`
+	Args         []string              `json:"args"`
+	EnvVars      map[string]string     `json:"env_vars"`
+	Status       FunctionStatus        `json:"status"`
+	Pipeline     PipelineIdentifier    `json:"pipeline"`
+	Application  ApplicationIdentifier `json:"application,omitempty"`
 }
 
 type FunctionStatus struct {
@@ -27,19 +28,25 @@ type FunctionStatus struct {
 	Details string `json:"details"`
 }
 
+type FunctionIdentifier struct {
+	Name string `json:"name"`
+}
+
 type CreateFunctionInput struct {
-	Name         string             `json:"name"`
-	InputStream  string             `json:"input_stream"`
-	OutputStream string             `json:"output_stream"`
-	Pipeline     PipelineIdentifier `json:"pipeline"`
-	Image        string             `json:"image"`
-	Command      []string           `json:"command"`
-	Args         []string           `json:"args"`
-	EnvVars      map[string]string  `json:"env_vars"`
+	Name         string                `json:"name"`
+	InputStream  string                `json:"input_stream"`
+	OutputStream string                `json:"output_stream"`
+	Pipeline     PipelineIdentifier    `json:"pipeline"`
+	Application  ApplicationIdentifier `json:"application"`
+	Image        string                `json:"image"`
+	Command      []string              `json:"command"`
+	Args         []string              `json:"args"`
+	EnvVars      map[string]string     `json:"env_vars"`
 }
 
 func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, functionsBasePath, input, nil)
+	path := fmt.Sprintf("%s/%s/%s", applicationsBasePath, input.Application.NameOrUUID, functionsSubPath)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, input, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +63,8 @@ func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput)
 	return &fun, nil
 }
 
-func (c *client) GetFunction(ctx context.Context, nameOrUUID string) (*Function, error) {
-	path := fmt.Sprintf("%s/%s", functionsBasePath, nameOrUUID)
+func (c *client) GetFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*Function, error) {
+	path := fmt.Sprintf("%s/%s/%s/%s", applicationsBasePath, appNameOrUUID, functionsSubPath, nameOrUUID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
@@ -78,8 +85,9 @@ func (c *client) GetFunction(ctx context.Context, nameOrUUID string) (*Function,
 	return &fun, nil
 }
 
-func (c *client) ListFunctions(ctx context.Context) ([]*Function, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, functionsBasePath, nil, nil)
+func (c *client) ListFunctions(ctx context.Context, appNameOrUUID string) ([]*Function, error) {
+	path := fmt.Sprintf("%s/%s/%s", applicationsBasePath, appNameOrUUID, functionsSubPath)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +106,8 @@ func (c *client) ListFunctions(ctx context.Context) ([]*Function, error) {
 	return funs, nil
 }
 
-func (c *client) DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error) {
-	path := fmt.Sprintf("%s/%s", functionsBasePath, nameOrUUID)
+func (c *client) DeleteFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*Function, error) {
+	path := fmt.Sprintf("%s/%s/%s/%s", applicationsBasePath, appNameOrUUID, functionsSubPath, nameOrUUID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {

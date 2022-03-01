@@ -199,18 +199,18 @@ func (mr *MockClientMockRecorder) DeleteEnvironment(ctx, nameOrUUID interface{})
 }
 
 // DeleteFunction mocks base method.
-func (m *MockClient) DeleteFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error) {
+func (m *MockClient) DeleteFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*meroxa.Function, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteFunction", ctx, nameOrUUID)
+	ret := m.ctrl.Call(m, "DeleteFunction", ctx, appNameOrUUID, nameOrUUID)
 	ret0, _ := ret[0].(*meroxa.Function)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteFunction indicates an expected call of DeleteFunction.
-func (mr *MockClientMockRecorder) DeleteFunction(ctx, nameOrUUID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteFunction(ctx, appNameOrUUID, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFunction", reflect.TypeOf((*MockClient)(nil).DeleteFunction), ctx, nameOrUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFunction", reflect.TypeOf((*MockClient)(nil).DeleteFunction), ctx, appNameOrUUID, nameOrUUID)
 }
 
 // DeletePipeline mocks base method.
@@ -317,33 +317,33 @@ func (mr *MockClientMockRecorder) GetEnvironment(ctx, nameOrUUID interface{}) *g
 }
 
 // GetFunction mocks base method.
-func (m *MockClient) GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error) {
+func (m *MockClient) GetFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*meroxa.Function, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFunction", ctx, nameOrUUID)
+	ret := m.ctrl.Call(m, "GetFunction", ctx, appNameOrUUID, nameOrUUID)
 	ret0, _ := ret[0].(*meroxa.Function)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetFunction indicates an expected call of GetFunction.
-func (mr *MockClientMockRecorder) GetFunction(ctx, nameOrUUID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetFunction(ctx, appNameOrUUID, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunction", reflect.TypeOf((*MockClient)(nil).GetFunction), ctx, nameOrUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunction", reflect.TypeOf((*MockClient)(nil).GetFunction), ctx, appNameOrUUID, nameOrUUID)
 }
 
 // GetFunctionLogs mocks base method.
-func (m *MockClient) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error) {
+func (m *MockClient) GetFunctionLogs(ctx context.Context, appNameOrUUID, nameOrUUID string) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFunctionLogs", ctx, nameOrUUID)
+	ret := m.ctrl.Call(m, "GetFunctionLogs", ctx, appNameOrUUID, nameOrUUID)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetFunctionLogs indicates an expected call of GetFunctionLogs.
-func (mr *MockClientMockRecorder) GetFunctionLogs(ctx, nameOrUUID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetFunctionLogs(ctx, appNameOrUUID, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunctionLogs", reflect.TypeOf((*MockClient)(nil).GetFunctionLogs), ctx, nameOrUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunctionLogs", reflect.TypeOf((*MockClient)(nil).GetFunctionLogs), ctx, appNameOrUUID, nameOrUUID)
 }
 
 // GetPipeline mocks base method.
@@ -467,18 +467,18 @@ func (mr *MockClientMockRecorder) ListEnvironments(ctx interface{}) *gomock.Call
 }
 
 // ListFunctions mocks base method.
-func (m *MockClient) ListFunctions(ctx context.Context) ([]*meroxa.Function, error) {
+func (m *MockClient) ListFunctions(ctx context.Context, appNameOrUUID string) ([]*meroxa.Function, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListFunctions", ctx)
+	ret := m.ctrl.Call(m, "ListFunctions", ctx, appNameOrUUID)
 	ret0, _ := ret[0].([]*meroxa.Function)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListFunctions indicates an expected call of ListFunctions.
-func (mr *MockClientMockRecorder) ListFunctions(ctx interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) ListFunctions(ctx, appNameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFunctions", reflect.TypeOf((*MockClient)(nil).ListFunctions), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFunctions", reflect.TypeOf((*MockClient)(nil).ListFunctions), ctx, appNameOrUUID)
 }
 
 // ListPipelineConnectors mocks base method.
