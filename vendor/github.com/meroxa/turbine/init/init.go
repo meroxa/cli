@@ -114,7 +114,7 @@ func listTemplateContent() ([]string, []string, error) {
 
 // Init will be used from the CLI to generate a new application directory based on the existing
 // content on `/template`.
-func Init(path, appName string) error {
+func Init(appName, path string) error {
 	err := createAppDirectory(path, appName)
 	if err != nil {
 		return err

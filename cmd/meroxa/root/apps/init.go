@@ -83,17 +83,17 @@ func (i *Init) Execute(ctx context.Context) error {
 
 	i.path = turbineCLI.GetPath(i.flags.Path)
 
+	i.logger.Infof(ctx, "Initializing application %q in %q...", name, i.path)
 	switch lang {
 	case "go", GoLang:
-		i.logger.Infof(ctx, "Initializing application %q in %q...", name, i.path)
-		err := turbine.Init(i.path, name)
+		err := turbine.Init(name, i.path)
 		if err != nil {
 			return err
 		}
 		i.logger.Infof(ctx, "Application successfully initialized!\n"+
 			"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 	case "js", JavaScript, NodeJs:
-		cmd := exec.Command("npx", "turbine", "generate", name)
+		cmd := exec.Command("npx", "turbine", "generate", name, i.path)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			return err
