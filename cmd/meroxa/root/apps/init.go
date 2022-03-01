@@ -93,7 +93,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		i.logger.Infof(ctx, "Application successfully initialized!\n"+
 			"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 	case "js", JavaScript, NodeJs:
-		cmd := exec.Command("npx", "turbine", "generate", i.path, name)
+		cmd := exec.Command("npx", "turbine", "generate", i.path, name) //nolint:gosec
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
 			return err
