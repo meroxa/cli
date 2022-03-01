@@ -72,14 +72,14 @@ func (c *Create) ParseArgs(args []string) error {
 	return nil
 }
 
-func (c *Create) getLang() (string, error) {
+func (c *Create) getLang(ctx context.Context) (string, error) {
 	if path := c.flags.Path; path != "" {
 		lang, err := turbineCLI.GetLangFromAppJSON(path)
 		if err != nil {
 			return lang, err
 		}
 		if c.flags.Lang != "" && c.flags.Lang != lang {
-			fmt.Sprintf("\nIgnoring language flag.\n")
+			c.logger.Info(ctx, "Ignoring language flag.")
 		}
 		return lang, nil
 	}
@@ -89,10 +89,10 @@ func (c *Create) getLang() (string, error) {
 
 func (c *Create) Execute(ctx context.Context) error {
 	if c.flags.Lang == "" && c.flags.Path == "" {
-		return fmt.Errorf("language is required either using --path ~/turbine/my-app or --lang. Type `meroxa help apps create` for more information")
+		return fmt.Errorf("language is required either using --path ~/turbine/my-app or --lang. Type `meroxa help apps create` for more information") //nolint:lll
 	}
 
-	lang, err := c.getLang()
+	lang, err := c.getLang(ctx)
 	if err != nil {
 		return err
 	}
