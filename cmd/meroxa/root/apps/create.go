@@ -78,6 +78,9 @@ func (c *Create) getLang() (string, error) {
 		if err != nil {
 			return lang, err
 		}
+		if c.flags.Lang != "" && c.flags.Lang != lang {
+			fmt.Sprintf("\nIgnoring language flag.\n")
+		}
 		return lang, nil
 	}
 
@@ -86,7 +89,7 @@ func (c *Create) getLang() (string, error) {
 
 func (c *Create) Execute(ctx context.Context) error {
 	if c.flags.Lang == "" && c.flags.Path == "" {
-		return fmt.Errorf("language is required either using --path ~/app.json or --lang. Type `meroxa help apps create` for more information")
+		return fmt.Errorf("language is required either using --path ~/turbine/my-app or --lang. Type `meroxa help apps create` for more information")
 	}
 
 	lang, err := c.getLang()

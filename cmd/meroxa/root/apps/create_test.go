@@ -95,7 +95,7 @@ func TestCreateApplicationExecutionNoLangNoPath(t *testing.T) {
 	c.args.Name = name
 	err := c.Execute(ctx)
 
-	expectedError := "language is required either using --path ~/app.json or --lang. Type `meroxa help apps create` for more information"
+	expectedError := "language is required either using --path ~/turbine/my-app or --lang. Type `meroxa help apps create` for more information"
 	if err != nil && err.Error() != expectedError {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
