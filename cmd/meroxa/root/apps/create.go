@@ -15,9 +15,12 @@ package apps
 
 import (
 	"context"
+	"errors"
+	"fmt"
+
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -44,7 +47,8 @@ type Create struct {
 	}
 
 	flags struct {
-		Path string `long:"path" usage:"path where application will be initialized (current directory as default)"`
+		Path string `long:"path" usage:"path where application was initialized to read its language from app.json (required unless specifying --lang)"`
+		Lang string `long:"lang" short:"l" usage:"language to use (required unless specifying --path)"`
 	}
 }
 
@@ -61,15 +65,31 @@ func (c *Create) Flags() []builder.Flag {
 }
 
 func (c *Create) ParseArgs(args []string) error {
-	if len(args) > 0 {
-		c.args.Name = args[0]
+	if len(args) < 1 {
+		return errors.New("requires an application name")
 	}
+	c.args.Name = args[0]
 	return nil
 }
 
+func (c *Create) getLang() (string, error) {
+	if path := c.flags.Path; path != "" {
+		lang, err := turbineCLI.GetLangFromAppJSON(path)
+		if err != nil {
+			return lang, err
+		}
+		return lang, nil
+	}
+
+	return c.flags.Lang, nil
+}
+
 func (c *Create) Execute(ctx context.Context) error {
-	path := turbineCLI.GetPath(c.flags.Path)
-	lang, err := turbineCLI.GetLangFromAppJSON(path)
+	if c.flags.Lang == "" && c.flags.Path == "" {
+		return fmt.Errorf("language is required either using --path ~/app.json or --lang. Type `meroxa help apps create` for more information")
+	}
+
+	lang, err := c.getLang()
 	if err != nil {
 		return err
 	}
@@ -79,7 +99,7 @@ func (c *Create) Execute(ctx context.Context) error {
 		Language: lang,
 	}
 
-	c.logger.Infof(ctx, "Creating application %q...", input.Name)
+	c.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, lang)
 
 	res, err := c.client.CreateApplication(ctx, &input)
 	if err != nil {
@@ -98,7 +118,10 @@ func (c *Create) Usage() string {
 
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
-		Short:   "Create a Meroxa Data Application",
-		Example: "meroxa apps create my-app --language golang",
+		Short: "Create a Meroxa Data Application",
+		Long: "You'll be able to use this application for consequent build via `meroxa apps deploy`. You'll need to specify " +
+			"language used either via `--lang` or specifying with `--path` the location of your app.json which should contain the desired language.",
+		Example: "meroxa apps create my-app --language golang\n" +
+			"meroxa apps create my-app --path ~/turbine/my-app",
 	}
 }

@@ -50,7 +50,8 @@ func TestCreateApplicationFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "path"},
+		{name: "path", required: false},
+		{name: "lang", required: false, shorthand: "l"},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -79,9 +80,30 @@ func TestCreateApplicationFlags(t *testing.T) {
 	}
 }
 
+func TestCreateApplicationExecutionNoLangNoPath(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+	name := "my-application"
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	c.args.Name = name
+	err := c.Execute(ctx)
+
+	expectedError := "language is required either using --path ~/app.json or --lang. Type `meroxa help apps create` for more information"
+	if err != nil && err.Error() != expectedError {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+}
+
 const tempAppDir = "test-app"
 
-func TestCreateApplicationExecution(t *testing.T) {
+func TestCreateApplicationExecutionWithAppJSON(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
@@ -130,9 +152,9 @@ func TestCreateApplicationExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating application %q...
+	wantLeveledOutput := fmt.Sprintf(`Creating application %q with language %q...
 Application %q successfully created!
-`, name, name)
+`, name, lang, name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -165,4 +187,65 @@ func initApp(name string) (string, error) {
 	}
 
 	return fmt.Sprintf("%s/%s/%s", cwd, tempAppDir, name), nil
+}
+
+func TestCreateApplicationExecutionWithLang(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+	name := "my-application"
+	lang := GoLang
+
+	ai := &meroxa.CreateApplicationInput{
+		Name:     name,
+		Language: lang,
+	}
+
+	a := &meroxa.Application{
+		Name:     name,
+		Language: lang,
+	}
+
+	client.
+		EXPECT().
+		CreateApplication(
+			ctx,
+			ai,
+		).
+		Return(a, nil)
+
+	c := &Create{
+		client: client,
+		logger: logger,
+	}
+
+	c.args.Name = ai.Name
+	c.flags.Lang = lang
+
+	err := c.Execute(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Creating application %q with language %q...
+Application %q successfully created!
+`, name, lang, name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotApplication meroxa.Application
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotApplication)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotApplication, *a) {
+		t.Fatalf("expected \"%v\", got \"%v\"", *a, gotApplication)
+	}
 }

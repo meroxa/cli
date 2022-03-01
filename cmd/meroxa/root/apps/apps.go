@@ -64,10 +64,10 @@ func (*Apps) FeatureFlag() (string, error) {
 
 func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
+		builder.BuildCobraCommand(&Create{}),
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Init{}),
-		builder.BuildCobraCommand(&Run{}),
-		builder.BuildCobraCommand(&Create{}),
 		builder.BuildCobraCommand(&Remove{}),
+		builder.BuildCobraCommand(&Run{}),
 	}
 }
