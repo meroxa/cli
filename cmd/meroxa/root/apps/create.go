@@ -47,7 +47,7 @@ type Create struct {
 	}
 
 	flags struct {
-		Path string `long:"path" usage:"path where application was initialized to read its language from app.json (required unless specifying --lang)"`
+		Path string `long:"path" usage:"path where app was initialized to read its language from app.json (required unless specifying --lang)"`
 		Lang string `long:"lang" short:"l" usage:"language to use (required unless specifying --path)"`
 	}
 }
