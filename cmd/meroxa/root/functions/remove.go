@@ -20,7 +20,7 @@ var (
 )
 
 type removeFunctionClient interface {
-	DeleteFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
+	DeleteFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*meroxa.Function, error)
 }
 
 type Remove struct {
@@ -29,6 +29,10 @@ type Remove struct {
 
 	args struct {
 		NameOrUUID string
+	}
+
+	flags struct {
+		Application string `long:"app" usage:"application name or UUID to which this function belongs" required:"true"`
 	}
 }
 
@@ -49,7 +53,7 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Function %q is being removed...", r.args.NameOrUUID)
 
-	e, err := r.client.DeleteFunction(ctx, r.args.NameOrUUID)
+	e, err := r.client.DeleteFunction(ctx, r.flags.Application, r.args.NameOrUUID)
 	if err != nil {
 		return err
 	}

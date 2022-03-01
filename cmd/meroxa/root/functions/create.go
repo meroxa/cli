@@ -39,6 +39,7 @@ type Create struct {
 		Args        string   `long:"args" usage:"Arguments to the entrypoint"`
 		EnvVars     []string `long:"env" usage:"List of environment variables to set in the function"`
 		Pipeline    string   `long:"pipeline" usage:"pipeline name to attach function to" required:"true"`
+		Application string   `long:"app" usage:"application name or UUID to which this function belongs" required:"true"`
 	}
 }
 
@@ -49,10 +50,10 @@ func (c *Create) Usage() string {
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create a function",
-		Long:  "Use `functions create` to create a function to process records from an input steram (--input-stream)",
+		Long:  "Use `functions create` to create a function to process records from an input stream (--input-stream)",
 		Example: `
-meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --pipeline my-pipeline
-meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --pipeline my-pipeline --env FOO=BAR --env BAR=BAZ
+meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --app my-app
+meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --app my-app --env FOO=BAR --env BAR=BAZ
 `,
 	}
 }
@@ -87,6 +88,9 @@ func (c *Create) Execute(ctx context.Context) error {
 			InputStream: c.flags.InputStream,
 			Pipeline: meroxa.PipelineIdentifier{
 				Name: c.flags.Pipeline,
+			},
+			Application: meroxa.ApplicationIdentifier{
+				NameOrUUID: c.flags.Application,
 			},
 			Image:   c.flags.Image,
 			Command: command,

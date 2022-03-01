@@ -509,6 +509,7 @@ func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 				{Align: simpletable.AlignCenter, Text: "OUTPUT STREAM"},
 				{Align: simpletable.AlignCenter, Text: "STATE"},
 				{Align: simpletable.AlignCenter, Text: "PIPELINE"},
+				{Align: simpletable.AlignCenter, Text: "APPLICATION"},
 			},
 		}
 	}
@@ -521,6 +522,7 @@ func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 			{Align: simpletable.AlignCenter, Text: p.OutputStream},
 			{Align: simpletable.AlignCenter, Text: p.Status.State},
 			{Align: simpletable.AlignCenter, Text: p.Pipeline.Name},
+			{Align: simpletable.AlignCenter, Text: p.Application.NameOrUUID},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -573,6 +575,10 @@ func FunctionTable(fun *meroxa.Function) string {
 		{
 			{Align: simpletable.AlignRight, Text: "Pipeline:"},
 			{Text: fun.Pipeline.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Application:"},
+			{Text: fun.Application.NameOrUUID},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
