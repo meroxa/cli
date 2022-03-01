@@ -98,7 +98,7 @@ func (c *Create) Usage() string {
 
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
-		Short:   "Create an application",
+		Short:   "Create a Meroxa Data Application",
 		Example: "meroxa apps create my-app --language golang",
 	}
 }
