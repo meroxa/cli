@@ -29,7 +29,8 @@ type Application struct {
 }
 
 type ApplicationIdentifier struct {
-	NameOrUUID string `json:"name_or_uuid"`
+	UUID string `json:"uuid,omitempty"`
+	Name string `json:"name,omitempty"`
 }
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
