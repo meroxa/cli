@@ -30,6 +30,7 @@ type FunctionStatus struct {
 
 type FunctionIdentifier struct {
 	Name string `json:"name"`
+	UUID string `json:"uuid"`
 }
 
 type CreateFunctionInput struct {
