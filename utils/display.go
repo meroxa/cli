@@ -806,6 +806,48 @@ func PrintEnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool
 	fmt.Println(EnvironmentsTable(environments, hideHeaders))
 }
 
+func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
+	if len(apps) == 0 {
+		return ""
+	}
+
+	table := simpletable.New()
+	if !hideHeaders {
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "UUID"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "LANGUAGE"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
+				{Align: simpletable.AlignCenter, Text: "FUNCTIONS"},
+			},
+		}
+	}
+
+	for _, app := range apps {
+		names := make([]string, 0)
+		for _, f := range app.Functions {
+			names = append(names, f.Name)
+		}
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: app.UUID},
+			{Align: simpletable.AlignCenter, Text: app.Name},
+			{Align: simpletable.AlignCenter, Text: app.Language},
+			{Align: simpletable.AlignCenter, Text: string(app.Status.State)},
+			{Align: simpletable.AlignCenter, Text: strings.Join(names, ",\n")},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+
+	table.SetStyle(simpletable.StyleCompact)
+	return table.String()
+}
+
+func PrintAppsTable(apps []*meroxa.Application, hideHeaders bool) {
+	fmt.Println(AppsTable(apps, hideHeaders))
+}
+
 func truncateString(oldString string, l int) string {
 	str := oldString
 

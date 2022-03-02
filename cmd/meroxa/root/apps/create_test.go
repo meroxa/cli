@@ -177,7 +177,7 @@ func initApp(name string) (string, error) {
 		return "", err
 	}
 
-	if err := turbine.Init(tempAppDir, name); err != nil {
+	if err := turbine.Init(name, tempAppDir); err != nil {
 		return "", err
 	}
 

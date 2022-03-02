@@ -18,14 +18,19 @@ const applicationsBasePath = "/v1/applications"
 
 // Application represents the Meroxa Application type within the Meroxa API
 type Application struct {
-	UUID      string            `json:"uuid"`
-	Name      string            `json:"name"`
-	Language  string            `json:"language"`
-	Status    ApplicationStatus `json:"status,omitempty"`
-	Functions []Function        `json:"functions,omitempty"`
-	CreatedAt time.Time         `json:"created_at"`
-	UpdatedAt time.Time         `json:"updated_at"`
-	DeletedAt time.Time         `json:"deleted_at,omitempty"`
+	UUID      string               `json:"uuid"`
+	Name      string               `json:"name"`
+	Language  string               `json:"language"`
+	Status    ApplicationStatus    `json:"status,omitempty"`
+	Functions []FunctionIdentifier `json:"functions,omitempty"`
+	CreatedAt time.Time            `json:"created_at"`
+	UpdatedAt time.Time            `json:"updated_at"`
+	DeletedAt time.Time            `json:"deleted_at,omitempty"`
+}
+
+type ApplicationIdentifier struct {
+	UUID string `json:"uuid"`
+	Name string `json:"name"`
 }
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
