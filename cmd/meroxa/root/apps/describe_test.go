@@ -20,12 +20,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/volatiletech/null/v8"
 	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
