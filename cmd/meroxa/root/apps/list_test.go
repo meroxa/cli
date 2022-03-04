@@ -24,6 +24,8 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/volatiletech/null/v8"
+
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -42,8 +44,8 @@ func TestListAppsExecution(t *testing.T) {
 		Language: GoLang,
 		Status:   meroxa.ApplicationStatus{State: meroxa.ApplicationStateReady},
 		Functions: []meroxa.FunctionIdentifier{
-			{Name: "one"},
-			{Name: "two"},
+			{Name: null.StringFrom("one")},
+			{Name: null.StringFrom("two")},
 		},
 	}
 

@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/mattn/go-shellwords"
+	"github.com/volatiletech/null/v8"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -87,10 +89,10 @@ func (c *Create) Execute(ctx context.Context) error {
 			Name:        c.args.Name,
 			InputStream: c.flags.InputStream,
 			Pipeline: meroxa.PipelineIdentifier{
-				Name: c.flags.Pipeline,
+				Name: null.StringFrom(c.flags.Pipeline),
 			},
 			Application: meroxa.ApplicationIdentifier{
-				NameOrUUID: c.flags.Application,
+				Name: null.StringFrom(c.flags.Application),
 			},
 			Image:   c.flags.Image,
 			Command: command,
