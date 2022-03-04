@@ -26,7 +26,7 @@ func (*Functions) Hidden() bool {
 }
 
 func (*Functions) FeatureFlag() (string, error) {
-	return "functions", fmt.Errorf(`no access to the Meroxa functions feature`)
+	return "turbine", fmt.Errorf(`no access to the Meroxa Data applications feature`)
 }
 
 func (*Functions) Docs() builder.Docs {
