@@ -20,7 +20,7 @@ var (
 
 type listFunctionClient interface {
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
-	ListFunctions(ctx context.Context, appNameOrUuid string) ([]*meroxa.Function, error)
+	ListFunctions(ctx context.Context, appNameOrUUID string) ([]*meroxa.Function, error)
 }
 
 type List struct {
