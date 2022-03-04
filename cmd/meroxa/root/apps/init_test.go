@@ -4,7 +4,11 @@ import (
 	"context"
 	"errors"
 	"os"
+	"os/exec"
+	"strings"
 	"testing"
+
+	"github.com/meroxa/cli/cmd/meroxa/global"
 
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -85,10 +89,17 @@ func TestGitInit(t *testing.T) {
 
 	for _, tt := range tests {
 		cc := &Init{}
-		err := cc.GitInit(context.Background(), tt.path)
+		cc.Logger(global.NewLogger())
 
-		if err != nil && tt.err.Error() != err.Error() {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		circleCiGitWorkaround(t)
+
+		err := cc.GitInit(context.Background(), tt.path)
+		if err != nil {
+			if tt.err == nil {
+				t.Fatalf("unexpected error \"%s\"", err)
+			} else if tt.err.Error() != err.Error() {
+				t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+			}
 		}
 
 		if tt.err == nil {
@@ -99,4 +110,24 @@ func TestGitInit(t *testing.T) {
 	}
 
 	os.RemoveAll(testDir)
+}
+
+func circleCiGitWorkaround(t *testing.T) {
+	cmd := exec.Command("git", "config", "--list")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("unexpected git error \"%s\"", err)
+	}
+	if !strings.Contains(string(output), "user") {
+		cmd := exec.Command("git", "config", "--global", "user.email", "me@example.com")
+		_, err = cmd.CombinedOutput()
+		if err != nil {
+			t.Fatalf("unexpected git error \"%s\"", err)
+		}
+		cmd = exec.Command("git", "config", "--global", "user.name", "test user")
+		_, err = cmd.CombinedOutput()
+		if err != nil {
+			t.Fatalf("unexpected git error \"%s\"", err)
+		}
+	}
 }
