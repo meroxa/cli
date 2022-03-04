@@ -9,8 +9,6 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
-const functionsSubPath = "functions"
-
 type Function struct {
 	UUID         string                `json:"uuid"`
 	Name         string                `json:"name"`
@@ -47,14 +45,25 @@ type CreateFunctionInput struct {
 	EnvVars      map[string]string     `json:"env_vars"`
 }
 
+func functionsPath(appNameOrUUID, nameOrUUID string) string {
+	path := fmt.Sprintf("%s/%s/functions", applicationsBasePath, appNameOrUUID)
+	if nameOrUUID != "" {
+		path += fmt.Sprintf("/%s", nameOrUUID)
+	}
+	return path
+}
+
 func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error) {
 	var appID string
 	if input.Application.Name.Valid && input.Application.Name.String != "" {
 		appID = input.Application.Name.String
-	} else {
+	} else if input.Application.UUID.Valid && input.Application.UUID.String != "" {
 		appID = input.Application.UUID.String
 	}
-	path := fmt.Sprintf("%s/%s/%s", applicationsBasePath, appID, functionsSubPath)
+	if appID == "" {
+		return nil, fmt.Errorf("application identifier not provided")
+	}
+	path := functionsPath(appID, "")
 	resp, err := c.MakeRequest(ctx, http.MethodPost, path, input, nil)
 	if err != nil {
 		return nil, err
@@ -73,7 +82,7 @@ func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput)
 }
 
 func (c *client) GetFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*Function, error) {
-	path := fmt.Sprintf("%s/%s/%s/%s", applicationsBasePath, appNameOrUUID, functionsSubPath, nameOrUUID)
+	path := functionsPath(appNameOrUUID, nameOrUUID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
@@ -95,7 +104,7 @@ func (c *client) GetFunction(ctx context.Context, appNameOrUUID, nameOrUUID stri
 }
 
 func (c *client) ListFunctions(ctx context.Context, appNameOrUUID string) ([]*Function, error) {
-	path := fmt.Sprintf("%s/%s/%s", applicationsBasePath, appNameOrUUID, functionsSubPath)
+	path := functionsPath(appNameOrUUID, "")
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
 		return nil, err
@@ -116,7 +125,7 @@ func (c *client) ListFunctions(ctx context.Context, appNameOrUUID string) ([]*Fu
 }
 
 func (c *client) DeleteFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*Function, error) {
-	path := fmt.Sprintf("%s/%s/%s/%s", applicationsBasePath, appNameOrUUID, functionsSubPath, nameOrUUID)
+	path := functionsPath(appNameOrUUID, nameOrUUID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
 	if err != nil {
