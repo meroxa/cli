@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 type ApplicationState string
@@ -29,8 +31,8 @@ type Application struct {
 }
 
 type ApplicationIdentifier struct {
-	UUID string `json:"uuid"`
-	Name string `json:"name"`
+	UUID null.String `json:"uuid,omitempty"`
+	Name null.String `json:"name,omitempty"`
 }
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API

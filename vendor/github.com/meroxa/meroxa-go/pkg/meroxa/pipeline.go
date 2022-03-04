@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 const pipelinesBasePath = "/v1/pipelines"
@@ -18,8 +20,8 @@ const (
 )
 
 type PipelineIdentifier struct {
-	UUID string `json:"uuid"`
-	Name string `json:"name"`
+	UUID null.String `json:"uuid"`
+	Name null.String `json:"name"`
 }
 
 // Pipeline represents the Meroxa Pipeline type within the Meroxa API

@@ -14,7 +14,7 @@ var (
 	_ builder.CommandWithDocs        = (*Functions)(nil)
 	_ builder.CommandWithFeatureFlag = (*Functions)(nil)
 	_ builder.CommandWithSubCommands = (*Functions)(nil)
-	_ builder.CommandWithHidden      = (*Functions)(nil)
+	_ builder.CommandWithHidden      = (*Functions)(nil) // for internal use only, will always be hidden
 )
 
 func (*Functions) Usage() string {
@@ -26,7 +26,7 @@ func (*Functions) Hidden() bool {
 }
 
 func (*Functions) FeatureFlag() (string, error) {
-	return "functions", fmt.Errorf(`no access to the Meroxa functions feature`)
+	return "turbine", fmt.Errorf(`no access to the Meroxa Data applications feature`)
 }
 
 func (*Functions) Docs() builder.Docs {

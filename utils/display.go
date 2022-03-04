@@ -509,6 +509,7 @@ func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 				{Align: simpletable.AlignCenter, Text: "OUTPUT STREAM"},
 				{Align: simpletable.AlignCenter, Text: "STATE"},
 				{Align: simpletable.AlignCenter, Text: "PIPELINE"},
+				{Align: simpletable.AlignCenter, Text: "APPLICATION"},
 			},
 		}
 	}
@@ -520,7 +521,8 @@ func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 			{Align: simpletable.AlignCenter, Text: p.InputStream},
 			{Align: simpletable.AlignCenter, Text: p.OutputStream},
 			{Align: simpletable.AlignCenter, Text: p.Status.State},
-			{Align: simpletable.AlignCenter, Text: p.Pipeline.Name},
+			{Align: simpletable.AlignCenter, Text: p.Pipeline.Name.String},
+			{Align: simpletable.AlignCenter, Text: p.Application.Name.String},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -572,7 +574,11 @@ func FunctionTable(fun *meroxa.Function) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Pipeline:"},
-			{Text: fun.Pipeline.Name},
+			{Text: fun.Pipeline.Name.String},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Application:"},
+			{Text: fun.Application.Name.String},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
@@ -827,7 +833,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	for _, app := range apps {
 		names := make([]string, 0)
 		for _, f := range app.Functions {
-			names = append(names, f.Name)
+			names = append(names, f.Name.String)
 		}
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: app.UUID},

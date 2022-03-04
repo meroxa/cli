@@ -19,19 +19,40 @@ var (
 )
 
 type listFunctionClient interface {
-	ListFunctions(ctx context.Context) ([]*meroxa.Function, error)
+	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
+	ListFunctions(ctx context.Context, appNameOrUUID string) ([]*meroxa.Function, error)
 }
 
 type List struct {
 	client      listFunctionClient
 	logger      log.Logger
 	hideHeaders bool
+
+	flags struct {
+		Application string `long:"app" usage:"application name or UUID to which this function belongs"`
+	}
 }
 
 func (l *List) Execute(ctx context.Context) error {
-	funs, err := l.client.ListFunctions(ctx)
-	if err != nil {
-		return err
+	var err error
+	funs := make([]*meroxa.Function, 0)
+	if l.flags.Application != "" {
+		funs, err = l.client.ListFunctions(ctx, l.flags.Application)
+		if err != nil {
+			return err
+		}
+	} else {
+		apps, err := l.client.ListApplications(ctx)
+		if err != nil {
+			return err
+		}
+		for _, app := range apps {
+			fs, err := l.client.ListFunctions(ctx, app.UUID)
+			if err != nil {
+				return err
+			}
+			funs = append(funs, fs...)
+		}
 	}
 
 	l.logger.JSON(ctx, funs)
