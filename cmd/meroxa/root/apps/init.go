@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -65,7 +64,6 @@ func (i *Init) ParseArgs(args []string) error {
 }
 
 func (i *Init) GitInit(ctx context.Context, path string) error {
-	// should this be in turbine?
 	if path == "" {
 		return errors.New("path is required")
 	}
@@ -74,41 +72,6 @@ func (i *Init) GitInit(ctx context.Context, path string) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		i.logger.Error(ctx, string(output))
-		return err
-	}
-
-	pwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	err = os.Chdir(path)
-	if err != nil {
-		return err
-	}
-
-	filesToIgnore := []byte("")                           // @todo populate with files to ignore
-	err = os.WriteFile(".gitignore", filesToIgnore, 0664) // nolint
-	if err != nil {
-		return err
-	}
-
-	// thoughts?
-	cmd = exec.Command("git", "add", ".gitignore", "*")
-	output, err = cmd.CombinedOutput()
-	if err != nil {
-		i.logger.Error(ctx, string(output))
-		return err
-	}
-
-	cmd = exec.Command("git", "commit", "-am", "Meroxa Data Application skeleton only")
-	output, err = cmd.CombinedOutput()
-	if err != nil {
-		i.logger.Error(ctx, string(output))
-		return err
-	}
-
-	err = os.Chdir(pwd)
-	if err != nil {
 		return err
 	}
 
