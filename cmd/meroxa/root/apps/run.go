@@ -19,6 +19,7 @@ package apps
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
@@ -68,6 +69,13 @@ func (r *Run) Flags() []builder.Flag {
 
 func (r *Run) Execute(ctx context.Context) error {
 	r.path = turbineCLI.GetPath(r.flags.Path)
+	if r.path == "." || r.path == "" {
+		var err error
+		r.path, err = filepath.Abs(".")
+		if err != nil {
+			return err
+		}
+	}
 	lang, err := turbineCLI.GetLang(r.flags.Lang, r.path)
 	if err != nil {
 		return err
