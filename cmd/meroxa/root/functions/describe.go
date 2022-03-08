@@ -19,7 +19,7 @@ var (
 )
 
 type describeFunctionClient interface {
-	GetFunction(ctx context.Context, appNameOrUUID, nameOrUUID string) (*meroxa.Function, error)
+	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
 }
 
 type Describe struct {
@@ -28,10 +28,6 @@ type Describe struct {
 
 	args struct {
 		NameOrUUID string
-	}
-
-	flags struct {
-		Application string `long:"app" usage:"application name or UUID to which this function belongs" required:"true"`
 	}
 }
 
@@ -46,7 +42,7 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	fun, err := d.client.GetFunction(ctx, d.flags.Application, d.args.NameOrUUID)
+	fun, err := d.client.GetFunction(ctx, d.args.NameOrUUID)
 	if err != nil {
 		return err
 	}

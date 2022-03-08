@@ -8,6 +8,7 @@ import (
 
 const (
 	connectorLogsBasePath = "/v1/connectors"
+	functionLogsBasePath  = "/v1/functions"
 )
 
 func (c *client) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error) {
@@ -25,8 +26,8 @@ func (c *client) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.R
 	return c.httpClient.Do(req)
 }
 
-func (c *client) GetFunctionLogs(ctx context.Context, appNameOrUUID, nameOrUUID string) (*http.Response, error) {
-	path := fmt.Sprintf("%s/%s/functions/%s/logs", applicationsBasePath, appNameOrUUID, nameOrUUID)
+func (c *client) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error) {
+	path := fmt.Sprintf("%s/%s/logs", functionLogsBasePath, nameOrUUID)
 
 	req, err := c.newRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
