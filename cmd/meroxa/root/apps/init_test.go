@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"os"
-	"os/exec"
-	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -108,25 +106,4 @@ func TestGitInit(t *testing.T) {
 	}
 
 	os.RemoveAll(testDir)
-}
-
-// nolint:deadcode,unused
-func circleCiGitWorkaround(t *testing.T) {
-	cmd := exec.Command("git", "config", "--list")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("unexpected git error \"%s\"", err)
-	}
-	if !strings.Contains(string(output), "user") {
-		cmd := exec.Command("git", "config", "--global", "user.email", "me@example.com")
-		_, err = cmd.CombinedOutput()
-		if err != nil {
-			t.Fatalf("unexpected git error \"%s\"", err)
-		}
-		cmd = exec.Command("git", "config", "--global", "user.name", "test user")
-		_, err = cmd.CombinedOutput()
-		if err != nil {
-			t.Fatalf("unexpected git error \"%s\"", err)
-		}
-	}
 }
