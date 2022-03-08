@@ -20,7 +20,7 @@ var (
 )
 
 type functionLogsClient interface {
-	GetFunctionLogs(ctx context.Context, appNameOrUUID, nameOrUUID string) (*http.Response, error)
+	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
 }
 
 type Logs struct {
@@ -29,10 +29,6 @@ type Logs struct {
 
 	args struct {
 		NameOrUUID string
-	}
-
-	flags struct {
-		Application string `long:"app" usage:"application name or UUID to which this function belongs" required:"true"`
 	}
 }
 
@@ -47,7 +43,7 @@ func (l *Logs) Docs() builder.Docs {
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	resp, err := l.client.GetFunctionLogs(ctx, l.flags.Application, l.args.NameOrUUID)
+	resp, err := l.client.GetFunctionLogs(ctx, l.args.NameOrUUID)
 
 	if err != nil {
 		return err

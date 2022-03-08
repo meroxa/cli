@@ -6,8 +6,6 @@ import (
 	"strings"
 
 	"github.com/mattn/go-shellwords"
-	"github.com/volatiletech/null/v8"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -41,7 +39,6 @@ type Create struct {
 		Args        string   `long:"args" usage:"Arguments to the entrypoint"`
 		EnvVars     []string `long:"env" usage:"List of environment variables to set in the function"`
 		Pipeline    string   `long:"pipeline" usage:"pipeline name to attach function to" required:"true"`
-		Application string   `long:"app" usage:"application name or UUID to which this function belongs" required:"true"`
 	}
 }
 
@@ -52,10 +49,10 @@ func (c *Create) Usage() string {
 func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create a function",
-		Long:  "Use `functions create` to create a function to process records from an input stream (--input-stream)",
+		Long:  "Use `functions create` to create a function to process records from an input steram (--input-stream)",
 		Example: `
-meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --app my-app
-meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --app my-app --env FOO=BAR --env BAR=BAZ
+meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --pipeline my-pipeline
+meroxa functions create [NAME] --input-stream connector-output-stream --image myimage --pipeline my-pipeline --env FOO=BAR --env BAR=BAZ
 `,
 	}
 }
@@ -89,10 +86,7 @@ func (c *Create) Execute(ctx context.Context) error {
 			Name:        c.args.Name,
 			InputStream: c.flags.InputStream,
 			Pipeline: meroxa.PipelineIdentifier{
-				Name: null.StringFrom(c.flags.Pipeline),
-			},
-			Application: meroxa.ApplicationIdentifier{
-				Name: null.StringFrom(c.flags.Application),
+				Name: c.flags.Pipeline,
 			},
 			Image:   c.flags.Image,
 			Command: command,
