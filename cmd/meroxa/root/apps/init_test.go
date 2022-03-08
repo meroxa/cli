@@ -7,7 +7,9 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 )
 
@@ -85,10 +87,15 @@ func TestGitInit(t *testing.T) {
 
 	for _, tt := range tests {
 		cc := &Init{}
-		err := cc.GitInit(context.Background(), tt.path)
+		cc.Logger(log.NewTestLogger())
 
-		if err != nil && tt.err.Error() != err.Error() {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		err := cc.GitInit(context.Background(), tt.path)
+		if err != nil {
+			if tt.err == nil {
+				t.Fatalf("unexpected error \"%s\"", err)
+			} else if tt.err.Error() != err.Error() {
+				t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+			}
 		}
 
 		if tt.err == nil {

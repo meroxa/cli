@@ -69,8 +69,9 @@ func (i *Init) GitInit(ctx context.Context, path string) error {
 	}
 
 	cmd := exec.Command("git", "init", path)
-	_, err := cmd.CombinedOutput()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
+		i.logger.Error(ctx, string(output))
 		return err
 	}
 
