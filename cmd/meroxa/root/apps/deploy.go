@@ -153,12 +153,12 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	switch d.lang {
-	case "go", GoLang:
+	case GoLang:
 		err = d.goDeploy.DeployGoApp(ctx, d.path, d.logger)
 	case "js", JavaScript, NodeJs:
 		err = turbineCLI.DeployJSApp(ctx, d.path, d.logger)
 	default:
-		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", d.lang)
+		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
 
 	if err != nil {
