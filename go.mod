@@ -28,7 +28,6 @@ require (
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine v0.0.0-20220308111836-bbbad1a4c8d2
-	github.com/volatiletech/null/v8 v8.1.2
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -72,11 +71,8 @@ require (
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	github.com/tidwall/gjson v1.13.0 // indirect
-	github.com/tidwall/match v1.1.1 // indirect
-	github.com/tidwall/pretty v1.2.0 // indirect
-	github.com/tidwall/sjson v1.2.4 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
+	github.com/volatiletech/null/v8 v8.1.2 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
 	github.com/volatiletech/strmangle v0.0.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
