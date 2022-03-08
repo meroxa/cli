@@ -574,11 +574,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/funtime v0.0.0-20220113012133-85e6e898fc73/go.mod h1:K2y2GvcA4Cg3dJtckcwYWnwnJzF63FDdtAQI0fToU0Q=
-github.com/meroxa/meroxa-go v0.0.0-20220208195203-71ddc3133fab/go.mod h1:HDFszURCM1cOpKE699o5Hs0T2tEIXqY+vFcsur3RiwY=
-github.com/meroxa/meroxa-go v0.0.0-20220308155654-367a81c1e0ac h1:jOX0X0ZDEUyFmjM/8ymj8MdZHywgPDZ6p+RQxL1bG7k=
-github.com/meroxa/meroxa-go v0.0.0-20220308155654-367a81c1e0ac/go.mod h1:ab2rHsqdQ25tYbIohjRGNujKHu6yGhV5ALAi4GE0Ehw=
-github.com/meroxa/turbine v0.0.0-20220308111836-bbbad1a4c8d2 h1:VfPnHP4jWwxjk/mddLVMYyyWCOhTZqra3miNUD7QX8I=
-github.com/meroxa/turbine v0.0.0-20220308111836-bbbad1a4c8d2/go.mod h1:4A2E9icHDi3x4Flp9CunWyRBvNkZy6h8MS8zLvWUlmw=
+github.com/meroxa/turbine v0.0.0-20220308221505-9789faa0043c h1:RkyAOSpyPhSqxMava2XhqzvPzn5ia6db+T6iWS87c+E=
+github.com/meroxa/turbine v0.0.0-20220308221505-9789faa0043c/go.mod h1:4A2E9icHDi3x4Flp9CunWyRBvNkZy6h8MS8zLvWUlmw=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=

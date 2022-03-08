@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 const (
@@ -20,6 +23,21 @@ const (
 type EnvironmentIdentifier struct {
 	UUID string `json:"uuid,omitempty"`
 	Name string `json:"name,omitempty"`
+}
+
+// EntityIdentifier represents one or both values for a Meroxa Entity
+type EntityIdentifier struct {
+	UUID null.String `json:"uuid,omitempty"`
+	Name null.String `json:"name,omitempty"`
+}
+
+func (e EntityIdentifier) GetNameOrUUID() (string, error) {
+	if e.Name.Valid {
+		return e.Name.String, nil
+	} else if e.UUID.Valid {
+		return e.UUID.String, nil
+	}
+	return "", fmt.Errorf("identifier has neither name or UUID")
 }
 
 // client represents the Meroxa API Client

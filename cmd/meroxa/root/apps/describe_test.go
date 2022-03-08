@@ -24,6 +24,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/volatiletech/null/v8"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -114,9 +116,9 @@ func TestDescribeApplicationExecutionWithFunctions(t *testing.T) {
 
 	a := utils.GenerateApplication()
 	a.Name = appName
-	a.Functions = []meroxa.FunctionIdentifier{
-		{Name: "fun1"},
-		{Name: "fun2"},
+	a.Functions = []meroxa.EntityIdentifier{
+		{Name: null.StringFrom("fun1")},
+		{Name: null.StringFrom("fun2")},
 	}
 
 	client.

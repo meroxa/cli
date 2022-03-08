@@ -13,7 +13,7 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20220308155654-367a81c1e0ac
+	github.com/meroxa/meroxa-go v0.0.0-20220309001705-0d80e029000d
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -27,7 +27,8 @@ require (
 require (
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine v0.0.0-20220308111836-bbbad1a4c8d2
+	github.com/meroxa/turbine v0.0.0-20220308221505-9789faa0043c
+	github.com/volatiletech/null/v8 v8.1.2
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -72,7 +73,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
-	github.com/volatiletech/null/v8 v8.1.2 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
 	github.com/volatiletech/strmangle v0.0.2 // indirect
 	go.opencensus.io v0.23.0 // indirect
@@ -88,3 +88,5 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+
+replace github.com/meroxa/meroxa-go => ../meroxa-go

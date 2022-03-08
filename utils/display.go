@@ -819,22 +819,16 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "LANGUAGE"},
 				{Align: simpletable.AlignCenter, Text: "STATE"},
-				{Align: simpletable.AlignCenter, Text: "FUNCTIONS"},
 			},
 		}
 	}
 
 	for _, app := range apps {
-		names := make([]string, 0)
-		for _, f := range app.Functions {
-			names = append(names, f.Name)
-		}
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: app.UUID},
 			{Align: simpletable.AlignCenter, Text: app.Name},
 			{Align: simpletable.AlignCenter, Text: app.Language},
 			{Align: simpletable.AlignCenter, Text: string(app.Status.State)},
-			{Align: simpletable.AlignCenter, Text: strings.Join(names, ",\n")},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -881,14 +875,48 @@ func AppTable(app *meroxa.Application) string {
 		})
 	}
 
+	if len(app.Connectors) != 0 {
+		names := make([]string, 0)
+		for _, f := range app.Connectors {
+			id, err := f.GetNameOrUUID()
+			if err != nil {
+				continue
+			}
+			names = append(names, id)
+		}
+
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Connectors:"},
+			{Text: strings.Join(names, ", ")},
+		})
+	}
 	if len(app.Functions) != 0 {
 		names := make([]string, 0)
 		for _, f := range app.Functions {
-			names = append(names, f.Name)
+			id, err := f.GetNameOrUUID()
+			if err != nil {
+				continue
+			}
+			names = append(names, id)
 		}
 
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "Functions:"},
+			{Text: strings.Join(names, ", ")},
+		})
+	}
+	if len(app.Resources) != 0 {
+		names := make([]string, 0)
+		for _, f := range app.Resources {
+			id, err := f.GetNameOrUUID()
+			if err != nil {
+				continue
+			}
+			names = append(names, id)
+		}
+
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Resources:"},
 			{Text: strings.Join(names, ", ")},
 		})
 	}

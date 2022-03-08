@@ -10,17 +10,16 @@ import (
 const functionsBasePath = "/v1/functions"
 
 type Function struct {
-	UUID         string                `json:"uuid"`
-	Name         string                `json:"name"`
-	InputStream  string                `json:"input_stream"`
-	OutputStream string                `json:"output_stream"`
-	Image        string                `json:"image"`
-	Command      []string              `json:"command"`
-	Args         []string              `json:"args"`
-	EnvVars      map[string]string     `json:"env_vars"`
-	Status       FunctionStatus        `json:"status"`
-	Pipeline     PipelineIdentifier    `json:"pipeline"`
-	Application  ApplicationIdentifier `json:"application,omitempty"`
+	UUID         string             `json:"uuid"`
+	Name         string             `json:"name"`
+	InputStream  string             `json:"input_stream"`
+	OutputStream string             `json:"output_stream"`
+	Image        string             `json:"image"`
+	Command      []string           `json:"command"`
+	Args         []string           `json:"args"`
+	EnvVars      map[string]string  `json:"env_vars"`
+	Status       FunctionStatus     `json:"status"`
+	Pipeline     PipelineIdentifier `json:"pipeline"`
 }
 
 type FunctionStatus struct {
@@ -28,21 +27,15 @@ type FunctionStatus struct {
 	Details string `json:"details"`
 }
 
-type FunctionIdentifier struct {
-	Name string `json:"name"`
-	UUID string `json:"uuid"`
-}
-
 type CreateFunctionInput struct {
-	Name         string                `json:"name"`
-	InputStream  string                `json:"input_stream"`
-	OutputStream string                `json:"output_stream"`
-	Pipeline     PipelineIdentifier    `json:"pipeline"`
-	Application  ApplicationIdentifier `json:"application,omitempty"`
-	Image        string                `json:"image"`
-	Command      []string              `json:"command"`
-	Args         []string              `json:"args"`
-	EnvVars      map[string]string     `json:"env_vars"`
+	Name         string             `json:"name"`
+	InputStream  string             `json:"input_stream"`
+	OutputStream string             `json:"output_stream"`
+	Pipeline     PipelineIdentifier `json:"pipeline"`
+	Image        string             `json:"image"`
+	Command      []string           `json:"command"`
+	Args         []string           `json:"args"`
+	EnvVars      map[string]string  `json:"env_vars"`
 }
 
 func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error) {
