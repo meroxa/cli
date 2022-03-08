@@ -86,7 +86,7 @@ func (i *Init) Execute(ctx context.Context) error {
 
 	i.logger.Infof(ctx, "Initializing application %q in %q...", name, i.path)
 	switch lang {
-	case "go", GoLang:
+	case GoLang:
 		err := turbine.Init(name, i.path)
 		if err != nil {
 			return err
@@ -101,7 +101,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		}
 		i.logger.Info(ctx, string(stdout))
 	default:
-		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
+		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
 
 	err := i.GitInit(ctx, i.path+"/"+name)

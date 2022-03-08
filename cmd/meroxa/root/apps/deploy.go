@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/config"
@@ -33,23 +35,30 @@ const (
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" // nolint:gosec
 )
 
+type createApplicationClient interface {
+	CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
+}
+
 type Deploy struct {
 	flags struct {
 		Path string `long:"path" description:"path to the app directory"`
 	}
 
+	client   createApplicationClient
 	config   config.Config
 	logger   log.Logger
 	path     string
+	lang     string
 	goDeploy turbineCLI.GoDeploy
 }
 
 var (
-	_ builder.CommandWithDocs    = (*Deploy)(nil)
-	_ builder.CommandWithFlags   = (*Deploy)(nil)
-	_ builder.CommandWithExecute = (*Deploy)(nil)
-	_ builder.CommandWithLogger  = (*Deploy)(nil)
+	_ builder.CommandWithClient  = (*Deploy)(nil)
 	_ builder.CommandWithConfig  = (*Deploy)(nil)
+	_ builder.CommandWithDocs    = (*Deploy)(nil)
+	_ builder.CommandWithExecute = (*Deploy)(nil)
+	_ builder.CommandWithFlags   = (*Deploy)(nil)
+	_ builder.CommandWithLogger  = (*Deploy)(nil)
 )
 
 func (*Deploy) Usage() string {
@@ -59,6 +68,9 @@ func (*Deploy) Usage() string {
 func (*Deploy) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Deploy a Meroxa Data Application",
+		Long: "This command will deploy the application specified in `--path`" +
+			"(or current working directory if not specified) to our Meroxa Platform." +
+			"If deployment was successful, you should expect an application you'll be able to fully manage",
 		Example: "meroxa apps deploy # assumes you run it from the app directory\n" +
 			"meroxa apps deploy --path ./my-app",
 	}
@@ -66,6 +78,10 @@ func (*Deploy) Docs() builder.Docs {
 
 func (d *Deploy) Config(cfg config.Config) {
 	d.config = cfg
+}
+
+func (d *Deploy) Client(client meroxa.Client) {
+	d.client = client
 }
 
 func (d *Deploy) Flags() []builder.Flag {
@@ -102,6 +118,28 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
+func (d *Deploy) createApplication(ctx context.Context) error {
+	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
+	if err != nil {
+		return err
+	}
+
+	input := meroxa.CreateApplicationInput{
+		Name:     appName,
+		Language: d.lang,
+	}
+	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
+
+	res, err := d.client.CreateApplication(ctx, &input)
+	if err != nil {
+		return err
+	}
+
+	d.logger.Infof(ctx, "Application %q successfully created!", res.Name)
+	d.logger.JSON(ctx, res)
+	return nil
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
 	err := d.checkRequiredEnvVars()
 	if err != nil {
@@ -109,17 +147,24 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	d.path = turbineCLI.GetPath(d.flags.Path)
-	lang, err := turbineCLI.GetLangFromAppJSON(d.path)
+	d.lang, err = turbineCLI.GetLangFromAppJSON(d.path)
 	if err != nil {
 		return err
 	}
 
-	switch lang {
-	case "go", GoLang:
-		return d.goDeploy.DeployGoApp(ctx, d.path, d.logger)
+	switch d.lang {
+	case GoLang:
+		err = d.goDeploy.DeployGoApp(ctx, d.path, d.logger)
 	case "js", JavaScript, NodeJs:
-		return turbineCLI.DeployJSApp(ctx, d.path, d.logger)
+		err = turbineCLI.DeployJSApp(ctx, d.path, d.logger)
 	default:
-		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
+		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
+
+	if err != nil {
+		return err
+	}
+
+	// Build was successful, we're ready to create the application
+	return d.createApplication(ctx)
 }

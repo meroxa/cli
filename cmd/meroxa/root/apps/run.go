@@ -82,11 +82,11 @@ func (r *Run) Execute(ctx context.Context) error {
 	}
 
 	switch lang {
-	case "go", GoLang:
+	case GoLang:
 		return turbineCLI.RunGoApp(ctx, r.path, r.logger)
 	case "js", JavaScript, NodeJs:
 		return turbineCLI.BuildJSApp(ctx, r.logger)
 	default:
-		return fmt.Errorf("language %q not supported. Currently, we support \"javascript\" and \"go\"", lang)
+		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
 }
