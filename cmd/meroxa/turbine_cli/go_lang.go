@@ -48,7 +48,7 @@ func buildGoApp(ctx context.Context, l log.Logger, appPath, appName string, plat
 
 // deployApp deploys the image previously built.
 func deployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) error {
-	l.Info(ctx, "deploying app...\n")
+	l.Infof(ctx, "Deploying application %q...", appName)
 
 	cmd := exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName) // nolint:gosec
 	accessToken, refreshToken, err := global.GetUserToken()

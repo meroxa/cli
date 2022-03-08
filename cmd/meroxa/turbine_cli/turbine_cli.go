@@ -32,7 +32,7 @@ func GetLang(flag, pwd string) (string, error) {
 	return lang, nil
 }
 
-// GetLangFromAppJSON returns specified language in apps's app.json.
+// GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(pwd string) (string, error) {
 	appConfig, err := readConfigFile(pwd)
 	if err != nil {
@@ -43,6 +43,19 @@ func GetLangFromAppJSON(pwd string) (string, error) {
 		return "", fmt.Errorf("`language` should be specified in your app.json")
 	}
 	return appConfig.Language, nil
+}
+
+// GetAppNameFromAppJSON returns specified app name in users' app.json.
+func GetAppNameFromAppJSON(pwd string) (string, error) {
+	appConfig, err := readConfigFile(pwd)
+	if err != nil {
+		return "", err
+	}
+
+	if appConfig.Name == "" {
+		return "", fmt.Errorf("`name` should be specified in your app.json")
+	}
+	return appConfig.Name, nil
 }
 
 // readConfigFile will read the content of an app.json based on path.
