@@ -165,6 +165,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	// Built was successful, we're ready to create the application
+	// Build was successful, we're ready to create the application
 	return d.createApplication(ctx)
 }
