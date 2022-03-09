@@ -41,10 +41,6 @@ func TestListAppsExecution(t *testing.T) {
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 		Language: GoLang,
 		Status:   meroxa.ApplicationStatus{State: meroxa.ApplicationStateReady},
-		Functions: []meroxa.FunctionIdentifier{
-			{Name: "one"},
-			{Name: "two"},
-		},
 	}
 
 	apps := []*meroxa.Application{aa}
@@ -73,14 +69,12 @@ func TestListAppsExecution(t *testing.T) {
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotApps []meroxa.Application
+	var gotApps []*meroxa.Application
 	err = json.Unmarshal([]byte(gotJSONOutput), &gotApps)
 
-	var lp []meroxa.Application
+	var lp []*meroxa.Application
 
-	for _, a := range apps {
-		lp = append(lp, *a)
-	}
+	lp = append(lp, apps...)
 
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
