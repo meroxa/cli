@@ -818,6 +818,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 				{Align: simpletable.AlignCenter, Text: "UUID"},
 				{Align: simpletable.AlignCenter, Text: "NAME"},
 				{Align: simpletable.AlignCenter, Text: "LANGUAGE"},
+				{Align: simpletable.AlignCenter, Text: "GIT SHA"},
 				{Align: simpletable.AlignCenter, Text: "STATE"},
 			},
 		}
@@ -828,6 +829,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 			{Align: simpletable.AlignRight, Text: app.UUID},
 			{Align: simpletable.AlignCenter, Text: app.Name},
 			{Align: simpletable.AlignCenter, Text: app.Language},
+			{Align: simpletable.AlignCenter, Text: app.GitSha},
 			{Align: simpletable.AlignCenter, Text: string(app.Status.State)},
 		}
 
@@ -836,6 +838,10 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 
 	table.SetStyle(simpletable.StyleCompact)
 	return table.String()
+}
+
+func PrintAppsTable(apps []*meroxa.Application, hideHeaders bool) {
+	fmt.Println(AppsTable(apps, hideHeaders))
 }
 
 func AppTable(app *meroxa.Application) string {
@@ -852,6 +858,10 @@ func AppTable(app *meroxa.Application) string {
 		{
 			{Align: simpletable.AlignRight, Text: "Language:"},
 			{Text: app.Language},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Git SHA:"},
+			{Text: app.GitSha},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Created At:"},
@@ -922,10 +932,6 @@ func AppTable(app *meroxa.Application) string {
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
 	return mainTable.String()
-}
-
-func PrintAppsTable(apps []*meroxa.Application, hideHeaders bool) {
-	fmt.Println(AppsTable(apps, hideHeaders))
 }
 
 func truncateString(oldString string, l int) string {
