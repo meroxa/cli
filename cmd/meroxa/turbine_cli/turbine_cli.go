@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"os"
 	"path"
+
+	"github.com/meroxa/turbine"
 )
 
-type AppConfig struct {
-	Name     string `json:"name"`
-	Language string `json:"language"`
-}
+var config turbine.AppConfig
+var fetched bool
 
 func GetPath(pwd string) string {
 	if pwd != "" {
@@ -58,19 +58,34 @@ func GetAppNameFromAppJSON(pwd string) (string, error) {
 	return appConfig.Name, nil
 }
 
-// readConfigFile will read the content of an app.json based on path.
-func readConfigFile(appPath string) (AppConfig, error) {
-	var appConfig AppConfig
-
-	appConfigPath := path.Join(appPath, "app.json")
-	appConfigBytes, err := os.ReadFile(appConfigPath)
+// GetPipelineNameFromAppJSON returns specified app name in users' app.json.
+func GetPipelineNameFromAppJSON(pwd string) (string, error) {
+	appConfig, err := readConfigFile(pwd)
 	if err != nil {
-		return appConfig, fmt.Errorf("%v\n"+
-			"We couldn't find an app.json file on path %q. Maybe try in another using `--path`", err, appPath)
-	}
-	if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
-		return appConfig, err
+		return "", err
 	}
 
-	return appConfig, nil
+	if appConfig.Pipeline == "" {
+		return "", fmt.Errorf("`pipeline` should be specified in your app.json")
+	}
+	return appConfig.Pipeline, nil
+}
+
+// readConfigFile will read the content of an app.json based on path.
+func readConfigFile(appPath string) (turbine.AppConfig, error) {
+	if !fetched {
+		appConfigPath := path.Join(appPath, "app.json")
+		appConfigBytes, err := os.ReadFile(appConfigPath)
+		if err != nil {
+			return config, fmt.Errorf("%v\n"+
+				"We couldn't find an app.json file on path %q. Maybe try in another using `--path`", err, appPath)
+		}
+		if err := json.Unmarshal(appConfigBytes, &config); err != nil {
+			fmt.Printf("could not unmarshal: %+v\n", err)
+			return config, err
+		}
+		fetched = true
+	}
+
+	return config, nil
 }

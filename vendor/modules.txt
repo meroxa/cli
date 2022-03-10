@@ -187,8 +187,9 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine v0.0.0-20220308221505-9789faa0043c
+# github.com/meroxa/turbine v0.0.0-20220308221505-9789faa0043c => ../turbine
 ## explicit; go 1.17
+github.com/meroxa/turbine
 github.com/meroxa/turbine/deploy
 github.com/meroxa/turbine/init
 # github.com/mitchellh/mapstructure v1.4.1
@@ -260,6 +261,18 @@ github.com/spf13/viper
 # github.com/subosito/gotenv v1.2.0
 ## explicit
 github.com/subosito/gotenv
+# github.com/tidwall/gjson v1.14.0
+## explicit; go 1.12
+github.com/tidwall/gjson
+# github.com/tidwall/match v1.1.1
+## explicit; go 1.15
+github.com/tidwall/match
+# github.com/tidwall/pretty v1.2.0
+## explicit; go 1.16
+github.com/tidwall/pretty
+# github.com/tidwall/sjson v1.2.4
+## explicit; go 1.14
+github.com/tidwall/sjson
 # github.com/volatiletech/inflect v0.0.1
 ## explicit; go 1.14
 github.com/volatiletech/inflect
@@ -361,3 +374,4 @@ gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
+# github.com/meroxa/turbine => ../turbine

@@ -121,8 +121,42 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
+func getGitSHAforLatestCommit(path string) (string, error) {
+	_, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	err = os.Chdir(path)
+	if err != nil {
+		return "", err
+	}
+
+	cmd := exec.Command("git", "branch", "--show-current")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	branchName := strings.TrimSpace(string(output))
+	if branchName != "main" && branchName != "master" {
+		return "", fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
+	}
+	cmd = exec.Command("git", "rev-parse", branchName)
+	output, err = cmd.Output()
+	gitSha := string(output)
+	return gitSha, err
+}
+
 func (d *Deploy) createApplication(ctx context.Context) error {
 	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
+	if err != nil {
+		return err
+	}
+	pipelineName, err := turbineCLI.GetPipelineNameFromAppJSON(d.path)
+	if err != nil {
+		return err
+	}
+
+	sha, err := getGitSHAforLatestCommit(d.path)
 	if err != nil {
 		return err
 	}
@@ -130,8 +164,8 @@ func (d *Deploy) createApplication(ctx context.Context) error {
 	input := meroxa.CreateApplicationInput{
 		Name:     appName,
 		Language: d.lang,
-		GitSha:   "hardcoded",
-		Pipeline: meroxa.EntityIdentifier{Name: null.StringFrom("default")},
+		GitSha:   sha,
+		Pipeline: meroxa.EntityIdentifier{Name: null.StringFrom(pipelineName)},
 	}
 	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
 
