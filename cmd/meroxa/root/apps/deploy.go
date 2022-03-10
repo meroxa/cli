@@ -21,6 +21,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/volatiletech/null/v8"
 
@@ -143,6 +145,64 @@ func (d *Deploy) createApplication(ctx context.Context) error {
 	return nil
 }
 
+// gitWarnings prints warnings about uncommitted tracked and untracked files.
+func gitWarnings(ctx context.Context, logger log.Logger, path string) {
+	trackedFiles := make([]string, 0)
+	untrackedFiles := make([]string, 0)
+
+	pwd, err := os.Getwd()
+	if err != nil {
+		return
+	}
+	err = os.Chdir(path)
+	if err != nil {
+		return
+	}
+
+	cmd := exec.Command("git", "status", "--porcelain=v2")
+	output, err := cmd.Output()
+	if err == nil {
+		all := string(output)
+		lines := strings.Split(all, "\n")
+		if len(lines) > 0 {
+			for _, line := range lines {
+				if line == "" {
+					continue
+				}
+				if strings.Contains(line, "?") {
+					columns := strings.Split(line, " ")
+					untrackedFiles = append(untrackedFiles, columns[len(columns)-1])
+					continue
+				}
+				columns := strings.Split(line, " ")
+				trackedFiles = append(trackedFiles, columns[len(columns)-1])
+			}
+		}
+	}
+
+	if len(trackedFiles) > 0 {
+		logger.Warn(
+			ctx,
+			fmt.Sprintf(
+				"You have %d tracked files with uncommitted changes: %s",
+				len(trackedFiles),
+				strings.Join(trackedFiles, ", ")))
+	}
+	if len(untrackedFiles) > 0 {
+		logger.Warn(
+			ctx,
+			fmt.Sprintf(
+				"You have %d untracked files with uncommitted changes: %s",
+				len(untrackedFiles),
+				strings.Join(untrackedFiles, ", ")))
+	}
+
+	err = os.Chdir(pwd)
+	if err != nil {
+		return
+	}
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
 	err := d.checkRequiredEnvVars()
 	if err != nil {
@@ -154,6 +214,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	gitWarnings(ctx, d.logger, d.path)
 
 	switch d.lang {
 	case GoLang:
