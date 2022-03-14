@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -26,8 +27,8 @@ type GoDeploy struct {
 	DockerHubAccessTokenEnv string
 }
 
-// buildGoApp will create a go binary with a specific name on a specific path.
-func buildGoApp(ctx context.Context, l log.Logger, appPath, appName string, platform bool) error {
+// buildBinary will create a go binary with a specific name on a specific path.
+func buildBinary(ctx context.Context, l log.Logger, appPath, appName string, platform bool) error {
 	var cmd *exec.Cmd
 
 	if platform {
@@ -39,17 +40,18 @@ func buildGoApp(ctx context.Context, l log.Logger, appPath, appName string, plat
 
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
-		l.Error(ctx, string(stdout))
+		l.Errorf(ctx, string(stdout))
 		return err
 	}
 
 	return nil
 }
 
-// deployApp deploys the image previously built.
-func deployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) error {
+// runDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources
+func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) error {
 	l.Infof(ctx, "Deploying application %q...", appName)
 
+	// TODO: Check here if imageName is ""
 	cmd := exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName) // nolint:gosec
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
@@ -167,7 +169,7 @@ func RunGoApp(ctx context.Context, appPath string, l log.Logger) error {
 	appName := path.Base(appPath)
 
 	// building is a requirement prior to running for go apps
-	err := buildGoApp(ctx, l, appPath, appName, false)
+	err := buildBinary(ctx, l, appPath, appName, false)
 	if err != nil {
 		return err
 	}
@@ -182,34 +184,78 @@ func RunGoApp(ctx context.Context, appPath string, l log.Logger) error {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		l.Error(ctx, err.Error())
+		return err
 	}
 
 	l.Info(ctx, string(out))
 	return nil
 }
 
+// needsToBuild reads from the Turbine application to determine whether it needs to be built or not
+// this is currently based on the number of functions
+func needsToBuild(appPath, appName string) (bool, error) {
+	cmd := exec.Command(appPath+"/"+appName, "--listfunctions")
+
+	accessToken, refreshToken, err := global.GetUserToken()
+	if err != nil {
+		return false, err
+	}
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
+
+	re := regexp.MustCompile(`\[(.*?)]`)
+	stdout, err := cmd.CombinedOutput()
+
+	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function
+	hasFunctions := len(re.FindAllString(string(stdout), -1)) > 1
+	return hasFunctions, nil
+}
+
+// DeployGoApp takes care of all the necessary steps to deploy a Turbine application
+//	1. Build binary
+//	2. Build image
+//	3. Push image
+//	4. Run Turbine deploy
 func (gd *GoDeploy) DeployGoApp(ctx context.Context, appPath string, l log.Logger) error {
+	var fqImageName string
 	appName := path.Base(appPath)
-	fqImageName := gd.DockerHubUserNameEnv + "/" + appName
-	err := gd.buildImage(ctx, l, appPath, fqImageName)
-	if err != nil {
-		l.Errorf(ctx, "unable to build image; %q\n%s", fqImageName, err)
-	}
 
-	err = gd.pushImage(l, fqImageName)
-	if err != nil {
-		l.Errorf(ctx, "unable to push image; %q\n%s", fqImageName, err)
-	}
-
-	err = buildGoApp(ctx, l, appPath, appName, true)
+	err := buildBinary(ctx, l, appPath, appName, true)
 	if err != nil {
 		return err
 	}
 
-	err = deployApp(ctx, l, appPath, appName, fqImageName)
-	if err != nil {
-		l.Errorf(ctx, "unable to deploy app; %s", err)
+	// to determine whether we need to call POST /sources and POST /build
+	if ok, err := needsToBuild(appPath, appName); ok {
+		if err != nil {
+			l.Errorf(ctx, err.Error())
+			return err
+		}
+
+		//fqImageName will be eventually taken from the build endpoint
+		fqImageName = gd.DockerHubUserNameEnv + "/" + appName
+
+		err = gd.buildImage(ctx, l, appPath, fqImageName)
+		if err != nil {
+			l.Errorf(ctx, "unable to build image; %q\n%s", fqImageName, err)
+			return err
+		}
+
+		// this will go away when using the new service
+		err = gd.pushImage(l, fqImageName)
+		if err != nil {
+			l.Errorf(ctx, "unable to push image; %q\n%s", fqImageName, err)
+			return err
+		}
+
+		// TODO: Keep polling for building statsu until it's successful
 	}
 
+	// creates all resources
+	err = runDeployApp(ctx, l, appPath, appName, fqImageName)
+	if err != nil {
+		l.Errorf(ctx, "unable to deploy app; %s", err)
+		return err
+	}
 	return nil
 }
