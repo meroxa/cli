@@ -22,12 +22,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 const (
@@ -127,6 +128,8 @@ func (d *Deploy) createApplication(ctx context.Context) error {
 	input := meroxa.CreateApplicationInput{
 		Name:     appName,
 		Language: d.lang,
+		GitSha:   "hardcoded",
+		Pipeline: meroxa.EntityIdentifier{Name: null.StringFrom("default")},
 	}
 	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
 

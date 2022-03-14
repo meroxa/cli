@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/volatiletech/null/v8"
+
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	turbine "github.com/meroxa/turbine/init"
 
@@ -77,11 +79,14 @@ func TestCreateApplication(t *testing.T) {
 	ai := &meroxa.CreateApplicationInput{
 		Name:     name,
 		Language: lang,
+		GitSha:   "hardcoded",
+		Pipeline: meroxa.EntityIdentifier{Name: null.StringFrom("default")},
 	}
 
 	a := &meroxa.Application{
 		Name:     name,
 		Language: lang,
+		GitSha:   "hardcoded",
 	}
 
 	client.
