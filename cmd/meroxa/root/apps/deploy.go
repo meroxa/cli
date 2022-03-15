@@ -21,6 +21,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/volatiletech/null/v8"
 
@@ -143,6 +145,42 @@ func (d *Deploy) createApplication(ctx context.Context) error {
 	return nil
 }
 
+// gitChecks prints warnings about uncommitted tracked and untracked files.
+func (d *Deploy) gitChecks(ctx context.Context) error {
+	// temporarily switching to the app's directory
+	pwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	err = os.Chdir(d.path)
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("git", "status", "--porcelain=v2")
+	output, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	all := string(output)
+	lines := strings.Split(strings.TrimSpace(all), "\n")
+	if len(lines) > 0 && lines[0] != "" {
+		cmd = exec.Command("git", "status")
+		output, err = cmd.Output()
+		if err != nil {
+			return err
+		}
+		d.logger.Error(ctx, string(output))
+		err = os.Chdir(pwd)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
+	}
+
+	return os.Chdir(pwd)
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
 	err := d.checkRequiredEnvVars()
 	if err != nil {
@@ -151,6 +189,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	d.path = turbineCLI.GetPath(d.flags.Path)
 	d.lang, err = turbineCLI.GetLangFromAppJSON(d.path)
+	if err != nil {
+		return err
+	}
+
+	err = d.gitChecks(ctx)
 	if err != nil {
 		return err
 	}
