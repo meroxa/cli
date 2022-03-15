@@ -1,4 +1,4 @@
-package turbinecli
+package turbineJS
 
 import (
 	"context"
@@ -10,20 +10,7 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-// BuildJSApp calls turbine-js to build an application.
-func BuildJSApp(ctx context.Context, l log.Logger) error {
-	// TODO: Handle the requirement of https://github.com/meroxa/turbine-js.git being installed
-	// cd into the path first
-	cmd := exec.Command("npx", "turbine", "test")
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		return err
-	}
-	l.Info(ctx, string(stdout))
-	return nil
-}
-
-func DeployJSApp(ctx context.Context, path string, l log.Logger) error {
+func Deploy(ctx context.Context, path string, l log.Logger) error {
 	cmd := exec.Command("npx", "turbine", "deploy", path)
 
 	accessToken, _, err := global.GetUserToken()

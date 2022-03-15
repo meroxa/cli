@@ -24,6 +24,10 @@ import (
 	"os/exec"
 	"strings"
 
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
+
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
+
 	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -54,7 +58,7 @@ type Deploy struct {
 	logger   log.Logger
 	path     string
 	lang     string
-	goDeploy turbineCLI.GoDeploy
+	goDeploy turbineGo.Deploy
 }
 
 var (
@@ -164,6 +168,7 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
+// TODO: Move this to each turbine library
 func (d *Deploy) createApplication(ctx context.Context) error {
 	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
 	if err != nil {
@@ -244,9 +249,13 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	switch d.lang {
 	case GoLang:
-		err = d.goDeploy.DeployGoApp(ctx, d.path, d.logger)
+		// The only reason Deploy is scoped this other way is so we can have the Docker Credentials
+		// Maybe that function should take care of checking type of deployment, only passing flags
+		// and environment variables
+		// err = turbineGo.Deploy(ctx, d.path, d.logger)
+		err = d.goDeploy.Deploy(ctx, d.path, d.logger)
 	case "js", JavaScript, NodeJs:
-		err = turbineCLI.DeployJSApp(ctx, d.path, d.logger)
+		err = turbineJS.Deploy(ctx, d.path, d.logger)
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}

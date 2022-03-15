@@ -1,51 +1,27 @@
-package turbinecli
+package turbineGo
 
 import (
 	"context"
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path"
 	"regexp"
-	"time"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
+	turbine "github.com/meroxa/turbine/deploy"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
-	turbine "github.com/meroxa/turbine/deploy"
-
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 )
 
-type GoDeploy struct {
+type Deploy struct {
 	DockerHubUserNameEnv    string
 	DockerHubAccessTokenEnv string
 	LocalDeployment         bool
-}
-
-// buildBinary will create a go binary with a specific name on a specific path.
-func buildBinary(ctx context.Context, l log.Logger, appPath, appName string, platform bool) error {
-	var cmd *exec.Cmd
-
-	if platform {
-		cmd = exec.Command("go", "build", "--tags", "platform", "-o", appName, "./...")
-	} else {
-		cmd = exec.Command("go", "build", "-o", appName, "./...")
-	}
-	cmd.Dir = appPath
-
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		l.Errorf(ctx, string(stdout))
-		return err
-	}
-
-	return nil
 }
 
 // runDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources
@@ -72,50 +48,7 @@ func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 	return nil
 }
 
-func (gd *GoDeploy) getAuthConfig() string {
-	dhUsername := gd.DockerHubUserNameEnv
-	dhAccessToken := gd.DockerHubAccessTokenEnv
-	authConfig := types.AuthConfig{
-		Username:      dhUsername,
-		Password:      dhAccessToken,
-		ServerAddress: "https://index.docker.io/v1/",
-	}
-	authConfigBytes, _ := json.Marshal(authConfig)
-	return base64.URLEncoding.EncodeToString(authConfigBytes)
-}
-
-func (gd *GoDeploy) pushImage(l log.Logger, imageName string) error {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	if err != nil {
-		return err
-	}
-	authConfig := gd.getAuthConfig()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120) // nolint:gomnd
-	defer cancel()
-
-	l.Infof(ctx, "pushing image %q to container registry", imageName)
-	opts := types.ImagePushOptions{RegistryAuth: authConfig}
-	rd, err := cli.ImagePush(ctx, imageName, opts)
-	if err != nil {
-		return err
-	}
-	defer func(rd io.ReadCloser) {
-		err = rd.Close()
-		if err != nil {
-			l.Error(ctx, err.Error())
-		}
-	}(rd)
-
-	_, err = io.Copy(os.Stdout, rd)
-	if err != nil {
-		return err
-	}
-	l.Info(ctx, "image successfully pushed to container registry!")
-
-	return nil
-}
-
-func (*GoDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName string) error {
+func (*Deploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName string) error {
 	l.Infof(ctx, "Building image %q located at %q", imageName, pwd)
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -164,34 +97,6 @@ func (*GoDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName st
 	return nil
 }
 
-// RunGoApp will build a go binary and will run it.
-func RunGoApp(ctx context.Context, appPath string, l log.Logger) error {
-	// grab current location to use it as project name
-	appName := path.Base(appPath)
-
-	// building is a requirement prior to running for go apps
-	err := buildBinary(ctx, l, appPath, appName, false)
-	if err != nil {
-		return err
-	}
-
-	err = os.Chdir(appPath)
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.Command("./" + appName) //nolint:gosec
-
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		l.Error(ctx, err.Error())
-		return err
-	}
-
-	l.Info(ctx, string(out))
-	return nil
-}
-
 // needsToBuild reads from the Turbine application to determine whether it needs to be built or not
 // this is currently based on the number of functions
 func needsToBuild(appPath, appName string) (bool, error) {
@@ -212,12 +117,12 @@ func needsToBuild(appPath, appName string) (bool, error) {
 	return hasFunctions, nil
 }
 
-// DeployGoApp takes care of all the necessary steps to deploy a Turbine application
+// Deploy takes care of all the necessary steps to deploy a Turbine application
 //	1. Build binary
 //	2. Build image
 //	3. Push image
 //	4. Run Turbine deploy
-func (gd *GoDeploy) DeployGoApp(ctx context.Context, appPath string, l log.Logger) error {
+func (gd *Deploy) Deploy(ctx context.Context, appPath string, l log.Logger) error {
 	var fqImageName string
 	appName := path.Base(appPath)
 
