@@ -44,7 +44,9 @@ type createApplicationClient interface {
 
 type Deploy struct {
 	flags struct {
-		Path string `long:"path" description:"path to the app directory"`
+		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
+		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the application image"`
+		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the application image"`
 	}
 
 	client   createApplicationClient
@@ -105,15 +107,56 @@ func (d *Deploy) getDockerHubAccessTokenEnv() string {
 	return d.config.GetString(dockerHubAccessTokenEnv)
 }
 
-func (d *Deploy) checkRequiredEnvVars() error {
-	if d.getDockerHubUserNameEnv() == "" || d.getDockerHubAccessTokenEnv() == "" {
-		msg := fmt.Sprintf("both %q and %q are required to be set to deploy your application", dockerHubUserNameEnv, dockerHubAccessTokenEnv)
-		return errors.New(msg)
+func (d *Deploy) validateDockerHubFlags() error {
+	if d.flags.DockerHubUserName != "" {
+		d.goDeploy.DockerHubUserNameEnv = d.flags.DockerHubUserName
+		if d.flags.DockerHubAccessToken == "" {
+			return errors.New("--docker-hub-access-token is required when --docker-hub-username is present")
+		}
 	}
 
-	d.goDeploy.DockerHubUserNameEnv = d.getDockerHubUserNameEnv()
-	d.goDeploy.DockerHubAccessTokenEnv = d.getDockerHubAccessTokenEnv()
+	if d.flags.DockerHubAccessToken != "" {
+		d.goDeploy.DockerHubAccessTokenEnv = d.flags.DockerHubAccessToken
+		if d.flags.DockerHubUserName == "" {
+			return errors.New("--docker-hub-username is required when --docker-hub-access-token is present")
+		}
+	}
+	return nil
+}
 
+func (d *Deploy) validateDockerHubEnvVars() error {
+	if d.getDockerHubUserNameEnv() != "" {
+		d.goDeploy.DockerHubUserNameEnv = d.getDockerHubUserNameEnv()
+		if d.getDockerHubAccessTokenEnv() == "" {
+			return fmt.Errorf("%s is required when %s is present", dockerHubAccessTokenEnv, dockerHubUserNameEnv)
+		}
+	}
+	if d.getDockerHubAccessTokenEnv() != "" {
+		d.goDeploy.DockerHubAccessTokenEnv = d.getDockerHubAccessTokenEnv()
+		if d.getDockerHubUserNameEnv() == "" {
+			return fmt.Errorf("%s is required when %s is present", dockerHubUserNameEnv, dockerHubAccessTokenEnv)
+		}
+	}
+	return nil
+}
+
+func (d *Deploy) validateLocalDeploymentConfig() error {
+	// Check if users had an old configuration where DockerHub credentials were set as environment variables
+	err := d.validateDockerHubEnvVars()
+	if err != nil {
+		return err
+	}
+
+	// Check if users are making use of DockerHub flags
+	err = d.validateDockerHubFlags()
+	if err != nil {
+		return err
+	}
+
+	// If there are DockerHub credentials, we consider it a local deployment
+	if d.goDeploy.DockerHubUserNameEnv != "" && d.goDeploy.DockerHubAccessTokenEnv != "" {
+		d.goDeploy.LocalDeployment = true
+	}
 	return nil
 }
 
@@ -182,7 +225,8 @@ func (d *Deploy) gitChecks(ctx context.Context) error {
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
-	err := d.checkRequiredEnvVars()
+	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not
+	err := d.validateLocalDeploymentConfig()
 	if err != nil {
 		return err
 	}

@@ -3,10 +3,13 @@ package apps
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/meroxa/cli/config"
 
 	"github.com/volatiletech/null/v8"
 
@@ -29,6 +32,8 @@ func TestDeployAppFlags(t *testing.T) {
 		hidden    bool
 	}{
 		{name: "path", required: false},
+		{name: "docker-hub-username", required: false},
+		{name: "docker-hub-access-token", required: false},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})
@@ -54,6 +59,165 @@ func TestDeployAppFlags(t *testing.T) {
 				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
 			}
 		}
+	}
+}
+
+func TestValidateDockerHubFlags(t *testing.T) {
+	tests := []struct {
+		desc                 string
+		dockerHubUserName    string
+		dockerHubAccessToken string
+		err                  error
+	}{
+		{
+			desc:                 "Neither DockerHub flags are present",
+			dockerHubUserName:    "",
+			dockerHubAccessToken: "",
+			err:                  nil,
+		},
+		{
+			desc:                 "DockerHubUserName is specified, but DockerHubAccessToken isn't",
+			dockerHubUserName:    "my-docker-hub-username",
+			dockerHubAccessToken: "",
+			err:                  errors.New("--docker-hub-access-token is required when --docker-hub-username is present"),
+		},
+		{
+			desc:                 "DockerHubAccessToken is specified, but DockerHubUserName isn't",
+			dockerHubUserName:    "",
+			dockerHubAccessToken: "my-docker-hub-access-token",
+			err:                  errors.New("--docker-hub-username is required when --docker-hub-access-token is present"),
+		},
+		{
+			desc:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
+			dockerHubUserName:    "my-docker-hub-username",
+			dockerHubAccessToken: "my-docker-hub-access-token",
+			err:                  nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			d := &Deploy{}
+			d.flags.DockerHubUserName = tc.dockerHubUserName
+			d.flags.DockerHubAccessToken = tc.dockerHubAccessToken
+			err := d.validateDockerHubFlags()
+
+			if err != nil && tc.err.Error() != err.Error() {
+				t.Fatalf("expected %v, got %v", tc.err, err)
+			}
+
+			if err == nil {
+				if d.goDeploy.DockerHubUserNameEnv != tc.dockerHubUserName {
+					t.Fatalf("expected DockerHubUserNameEnv to be %q, got %q", tc.dockerHubUserName, d.goDeploy.DockerHubUserNameEnv)
+				}
+
+				if d.goDeploy.DockerHubAccessTokenEnv != tc.dockerHubAccessToken {
+					t.Fatalf("expected DockerHubAccessTokenEnv to be %q, got %q", tc.dockerHubAccessToken, d.goDeploy.DockerHubAccessTokenEnv)
+				}
+			}
+		})
+	}
+}
+
+func TestValidateDockerHubEnVars(t *testing.T) {
+	tests := []struct {
+		desc                 string
+		dockerHubUserName    string
+		dockerHubAccessToken string
+		err                  error
+	}{
+		{
+			desc:                 "Neither DockerHub flags are present",
+			dockerHubUserName:    "",
+			dockerHubAccessToken: "",
+			err:                  nil,
+		},
+		{
+			desc:                 "DockerHubUserName is specified, but DockerHubAccessToken isn't",
+			dockerHubUserName:    "my-docker-hub-username",
+			dockerHubAccessToken: "",
+			err:                  fmt.Errorf("%s is required when %s is present", dockerHubAccessTokenEnv, dockerHubUserNameEnv),
+		},
+		{
+			desc:                 "DockerHubAccessToken is specified, but DockerHubUserName isn't",
+			dockerHubUserName:    "",
+			dockerHubAccessToken: "my-docker-hub-access-token",
+			err:                  fmt.Errorf("%s is required when %s is present", dockerHubUserNameEnv, dockerHubAccessTokenEnv),
+		},
+		{
+			desc:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
+			dockerHubUserName:    "my-docker-hub-username",
+			dockerHubAccessToken: "my-docker-hub-access-token",
+			err:                  nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			cfg := config.NewInMemoryConfig()
+
+			d := &Deploy{
+				config: cfg,
+			}
+			d.config.Set(dockerHubUserNameEnv, tc.dockerHubUserName)
+			d.config.Set(dockerHubAccessTokenEnv, tc.dockerHubAccessToken)
+			err := d.validateDockerHubEnvVars()
+
+			if err != nil && tc.err.Error() != err.Error() {
+				t.Fatalf("expected %v, got %v", tc.err, err)
+			}
+
+			if err == nil {
+				if d.goDeploy.DockerHubUserNameEnv != tc.dockerHubUserName {
+					t.Fatalf("expected DockerHubUserNameEnv to be %q, got %q", tc.dockerHubUserName, d.goDeploy.DockerHubUserNameEnv)
+				}
+
+				if d.goDeploy.DockerHubAccessTokenEnv != tc.dockerHubAccessToken {
+					t.Fatalf("expected DockerHubAccessTokenEnv to be %q, got %q", tc.dockerHubAccessToken, d.goDeploy.DockerHubAccessTokenEnv)
+				}
+			}
+		})
+	}
+}
+
+func TestValidateLocalDeploymentConfig(t *testing.T) {
+	tests := []struct {
+		desc                 string
+		dockerHubUserName    string
+		dockerHubAccessToken string
+		localDeployment      bool
+	}{
+		{
+			desc:                 "Neither DockerHub flags are present",
+			dockerHubUserName:    "",
+			dockerHubAccessToken: "",
+			localDeployment:      false,
+		},
+		{
+			desc:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
+			dockerHubUserName:    "my-docker-hub-username",
+			dockerHubAccessToken: "my-docker-hub-access-token",
+			localDeployment:      true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			cfg := config.NewInMemoryConfig()
+			d := &Deploy{
+				config: cfg,
+			}
+			d.flags.DockerHubUserName = tc.dockerHubUserName
+			d.flags.DockerHubAccessToken = tc.dockerHubAccessToken
+			d.config.Set(dockerHubUserNameEnv, tc.dockerHubUserName)
+			d.config.Set(dockerHubAccessTokenEnv, tc.dockerHubAccessToken)
+
+			err := d.validateLocalDeploymentConfig()
+
+			if err == nil && d.goDeploy.LocalDeployment != tc.localDeployment {
+				t.Fatalf("expected localDeployment to be %v, got %v", tc.localDeployment, d.goDeploy.LocalDeployment)
+			}
+		})
 	}
 }
 

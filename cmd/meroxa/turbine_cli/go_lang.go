@@ -25,6 +25,7 @@ import (
 type GoDeploy struct {
 	DockerHubUserNameEnv    string
 	DockerHubAccessTokenEnv string
+	LocalDeployment         bool
 }
 
 // buildBinary will create a go binary with a specific name on a specific path.
