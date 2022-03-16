@@ -97,6 +97,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		cmd := exec.Command("npx", "turbine", "generate", name, i.path)
 		stdout, err := cmd.CombinedOutput()
 		if err != nil {
+			i.logger.Error(ctx, string(stdout))
 			return err
 		}
 		i.logger.Info(ctx, string(stdout))
