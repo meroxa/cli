@@ -230,6 +230,7 @@ func TestCreateApplication(t *testing.T) {
 	logger := log.NewTestLogger()
 	name := "my-application"
 	lang := GoLang
+	pipelineUUID := "5d0c9667-1626-4ffd-9a94-fab4092eec5a"
 
 	// Create application locally
 	path, err := initLocalApp(name)
@@ -244,7 +245,7 @@ func TestCreateApplication(t *testing.T) {
 		Name:     name,
 		Language: lang,
 		GitSha:   "hardcoded",
-		Pipeline: meroxa.EntityIdentifier{Name: null.StringFrom("default")},
+		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
 	}
 
 	a := &meroxa.Application{
@@ -268,7 +269,7 @@ func TestCreateApplication(t *testing.T) {
 		lang:   lang,
 	}
 
-	err = d.createApplication(ctx)
+	err = d.createApplication(ctx, pipelineUUID)
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
