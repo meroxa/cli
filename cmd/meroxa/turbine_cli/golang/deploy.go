@@ -19,7 +19,7 @@ type Deploy struct {
 }
 
 // runDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources
-func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) error {
+func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) (string, error) {
 	l.Infof(ctx, "Deploying application %q...", appName)
 	var cmd *exec.Cmd
 
@@ -31,7 +31,7 @@ func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
-		return err
+		return "", err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
@@ -39,12 +39,12 @@ func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		l.Errorf(ctx, string(stdout))
-		return err
+		return "", err
 	}
 
 	l.Info(ctx, string(stdout))
 	l.Info(ctx, "deploy complete!")
-	return nil
+	return string(stdout), nil
 }
 
 // needsToBuild reads from the Turbine application to determine whether it needs to be built or not
@@ -59,11 +59,13 @@ func needsToBuild(appPath, appName string) (bool, error) {
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	re := regexp.MustCompile(`\[(.*?)]`)
+	// TODO: Implement in Turbine something that returns a boolean rather than having to regex its output
+	re := regexp.MustCompile(`\[(.+?)]`)
 	stdout, err := cmd.CombinedOutput()
 
 	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function
-	hasFunctions := len(re.FindAllString(string(stdout), -1)) > 1
+	hasFunctions := len(re.FindAllString(string(stdout), -1)) > 0
+
 	return hasFunctions, nil
 }
 
@@ -72,37 +74,40 @@ func needsToBuild(appPath, appName string) (bool, error) {
 //	2. Build image
 //	3. Push image
 //	4. Run Turbine deploy
-func (gd *Deploy) Deploy(ctx context.Context, appPath string, l log.Logger) error {
+func (gd *Deploy) Deploy(ctx context.Context, appPath string, l log.Logger) (string, error) {
 	var fqImageName string
 	appName := path.Base(appPath)
 
 	err := buildBinary(ctx, l, appPath, appName, true)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// check for image instances
 	if ok, err := needsToBuild(appPath, appName); ok {
 		if err != nil {
 			l.Errorf(ctx, err.Error())
-			return err
+			return "", err
 		}
 
 		if gd.LocalDeployment {
 			fqImageName, err = gd.getDockerImageName(ctx, l, appPath, appName)
+			l.Infof(ctx, "fqImageName: %q", fqImageName)
 			if err != nil {
-				return err
+				return "", err
 			}
 		} else {
 			fqImageName, err = gd.getPlatformImage(ctx, l)
+			// Returns so it doesn't error the next step
+			return "", fmt.Errorf("using build service not working at the moment, please use your own dockerhub credentials in the meantime")
 		}
 	}
 
 	// creates all resources
-	err = runDeployApp(ctx, l, appPath, appName, fqImageName)
+	output, err := runDeployApp(ctx, l, appPath, appName, fqImageName)
 	if err != nil {
 		l.Errorf(ctx, "unable to deploy app; %s", err)
-		return err
+		return output, err
 	}
-	return nil
+	return output, nil
 }

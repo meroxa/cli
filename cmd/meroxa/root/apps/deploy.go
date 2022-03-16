@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
@@ -169,7 +170,7 @@ func (d *Deploy) Logger(logger log.Logger) {
 }
 
 // TODO: Move this to each turbine library
-func (d *Deploy) createApplication(ctx context.Context) error {
+func (d *Deploy) createApplication(ctx context.Context, pipelineUUID string) error {
 	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
 	if err != nil {
 		return err
@@ -179,7 +180,7 @@ func (d *Deploy) createApplication(ctx context.Context) error {
 		Name:     appName,
 		Language: d.lang,
 		GitSha:   "hardcoded",
-		Pipeline: meroxa.EntityIdentifier{Name: null.StringFrom("default")},
+		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
 	}
 	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
 
@@ -229,7 +230,18 @@ func (d *Deploy) gitChecks(ctx context.Context) error {
 	return os.Chdir(pwd)
 }
 
+// getPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create
+func getPipelineUUID(output string) string {
+	// Example output:
+	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e")
+	re := regexp.MustCompile(`pipeline created:."[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+".(\([^)]*\))`)
+	res := re.FindStringSubmatch(output)[1]
+	res = strings.Trim(res, "()\"")
+	return res
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
+	var deployOuput string
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not
 	err := d.validateLocalDeploymentConfig()
 	if err != nil {
@@ -249,21 +261,21 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	switch d.lang {
 	case GoLang:
-		// The only reason Deploy is scoped this other way is so we can have the Docker Credentials
+		// The only reason Deploy is scoped this other way is, so we can have the Docker Credentials
 		// Maybe that function should take care of checking type of deployment, only passing flags
 		// and environment variables
 		// err = turbineGo.Deploy(ctx, d.path, d.logger)
-		err = d.goDeploy.Deploy(ctx, d.path, d.logger)
+		deployOuput, err = d.goDeploy.Deploy(ctx, d.path, d.logger)
 	case "js", JavaScript, NodeJs:
 		err = turbineJS.Deploy(ctx, d.path, d.logger)
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
-
 	if err != nil {
 		return err
 	}
 
-	// Build was successful, we're ready to create the application
-	return d.createApplication(ctx)
+	pipelineUUID := getPipelineUUID(deployOuput)
+
+	return d.createApplication(ctx, pipelineUUID)
 }
