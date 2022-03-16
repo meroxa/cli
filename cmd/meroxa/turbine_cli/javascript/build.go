@@ -1,4 +1,4 @@
-package turbineJS
+package turbinejs
 
 import (
 	"context"

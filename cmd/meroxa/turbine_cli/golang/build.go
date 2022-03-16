@@ -1,4 +1,4 @@
-package turbineGo
+package turbinego
 
 import (
 	"context"

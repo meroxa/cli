@@ -50,8 +50,8 @@ type createApplicationClient interface {
 type Deploy struct {
 	flags struct {
 		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
-		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the application image"`
-		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the application image"`
+		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app"`
+		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app"`
 	}
 
 	client   createApplicationClient
@@ -169,7 +169,7 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-// TODO: Move this to each turbine library
+// TODO: Move this to each turbine library.
 func (d *Deploy) createApplication(ctx context.Context, pipelineUUID string) error {
 	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
 	if err != nil {
@@ -230,10 +230,10 @@ func (d *Deploy) gitChecks(ctx context.Context) error {
 	return os.Chdir(pwd)
 }
 
-// getPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create
+// getPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create.
 func getPipelineUUID(output string) string {
 	// Example output:
-	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e")
+	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e").
 	re := regexp.MustCompile(`pipeline created:."[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+".(\([^)]*\))`)
 	res := re.FindStringSubmatch(output)[1]
 	res = strings.Trim(res, "()\"")
@@ -242,7 +242,7 @@ func getPipelineUUID(output string) string {
 
 func (d *Deploy) Execute(ctx context.Context) error {
 	var deployOuput string
-	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not
+	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
 	err := d.validateLocalDeploymentConfig()
 	if err != nil {
 		return err

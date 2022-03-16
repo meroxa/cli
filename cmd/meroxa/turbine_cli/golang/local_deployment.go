@@ -1,5 +1,5 @@
 // Package turbineGo TODO: Reorganize this in a different pkg
-package turbineGo
+package turbinego
 
 import (
 	"context"
@@ -29,9 +29,9 @@ func (gd *Deploy) getAuthConfig() string {
 	return base64.URLEncoding.EncodeToString(authConfigBytes)
 }
 
-// getDockerImageName Will create the image via DockerHub
+// getDockerImageName Will create the image via DockerHub.
 func (gd *Deploy) getDockerImageName(ctx context.Context, l log.Logger, appPath, appName string) (string, error) {
-	//fqImageName will be eventually taken from the build endpoint
+	// fqImageName will be eventually taken from the build endpoint.
 	fqImageName := gd.DockerHubUserNameEnv + "/" + appName
 
 	err := gd.buildImage(ctx, l, appPath, fqImageName)
@@ -40,7 +40,7 @@ func (gd *Deploy) getDockerImageName(ctx context.Context, l log.Logger, appPath,
 		return "", err
 	}
 
-	// this will go away when using the new service
+	// this will go away when using the new service.
 	err = gd.pushImage(l, fqImageName)
 	if err != nil {
 		l.Errorf(ctx, "unable to push image; %q\n%s", fqImageName, err)

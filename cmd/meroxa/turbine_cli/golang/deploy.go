@@ -1,4 +1,4 @@
-package turbineGo
+package turbinego
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type Deploy struct {
 	LocalDeployment         bool
 }
 
-// runDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources
+// runDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources.
 func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) (string, error) {
 	l.Infof(ctx, "Deploying application %q...", appName)
 	var cmd *exec.Cmd
@@ -26,7 +26,7 @@ func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 	if imageName != "" {
 		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName) // nolint:gosec
 	} else {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy")
+		cmd = exec.Command(appPath+"/"+appName, "--deploy") // nolint:gosec
 	}
 
 	accessToken, refreshToken, err := global.GetUserToken()
@@ -48,9 +48,9 @@ func runDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 }
 
 // needsToBuild reads from the Turbine application to determine whether it needs to be built or not
-// this is currently based on the number of functions
+// this is currently based on the number of functions.
 func needsToBuild(appPath, appName string) (bool, error) {
-	cmd := exec.Command(appPath+"/"+appName, "--listfunctions")
+	cmd := exec.Command(appPath+"/"+appName, "--listfunctions") // nolint:gosec
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
@@ -62,8 +62,11 @@ func needsToBuild(appPath, appName string) (bool, error) {
 	// TODO: Implement in Turbine something that returns a boolean rather than having to regex its output
 	re := regexp.MustCompile(`\[(.+?)]`)
 	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		return false, err
+	}
 
-	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function
+	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function.
 	hasFunctions := len(re.FindAllString(string(stdout), -1)) > 0
 
 	return hasFunctions, nil
@@ -84,7 +87,8 @@ func (gd *Deploy) Deploy(ctx context.Context, appPath string, l log.Logger) (str
 	}
 
 	// check for image instances
-	if ok, err := needsToBuild(appPath, appName); ok {
+	var ok bool
+	if ok, err = needsToBuild(appPath, appName); ok {
 		if err != nil {
 			l.Errorf(ctx, err.Error())
 			return "", err
@@ -97,7 +101,8 @@ func (gd *Deploy) Deploy(ctx context.Context, appPath string, l log.Logger) (str
 				return "", err
 			}
 		} else {
-			fqImageName, err = gd.getPlatformImage(ctx, l)
+			// fqImageName, err = gd.getPlatformImage(ctx, l).
+			_, _ = gd.getPlatformImage(ctx, l)
 			// Returns so it doesn't error the next step
 			return "", fmt.Errorf("using build service not working at the moment, please use your own dockerhub credentials in the meantime")
 		}
