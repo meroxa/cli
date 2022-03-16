@@ -86,7 +86,7 @@ func (i *Init) Execute(ctx context.Context) error {
 
 	i.logger.Infof(ctx, "Initializing application %q in %q...", name, i.path)
 	switch lang {
-	case GoLang:
+	case "go", GoLang:
 		err := turbine.Init(name, i.path)
 		if err != nil {
 			return err
