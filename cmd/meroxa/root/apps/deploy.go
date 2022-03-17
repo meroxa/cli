@@ -21,18 +21,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
-	"regexp"
-	"strings"
-
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
-
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
 
 	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -170,7 +165,7 @@ func (d *Deploy) Logger(logger log.Logger) {
 }
 
 // TODO: Move this to each turbine library.
-func (d *Deploy) createApplication(ctx context.Context, pipelineUUID string) error {
+func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha string) error {
 	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
 	if err != nil {
 		return err
@@ -179,7 +174,7 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID string) err
 	input := meroxa.CreateApplicationInput{
 		Name:     appName,
 		Language: d.lang,
-		GitSha:   "hardcoded",
+		GitSha:   gitSha,
 		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
 	}
 	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
@@ -192,52 +187,6 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID string) err
 	d.logger.Infof(ctx, "Application %q successfully created!", res.Name)
 	d.logger.JSON(ctx, res)
 	return nil
-}
-
-// gitChecks prints warnings about uncommitted tracked and untracked files.
-func (d *Deploy) gitChecks(ctx context.Context) error {
-	// temporarily switching to the app's directory
-	pwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-	err = os.Chdir(d.path)
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.Command("git", "status", "--porcelain=v2")
-	output, err := cmd.Output()
-	if err != nil {
-		return err
-	}
-	all := string(output)
-	lines := strings.Split(strings.TrimSpace(all), "\n")
-	if len(lines) > 0 && lines[0] != "" {
-		cmd = exec.Command("git", "status")
-		output, err = cmd.Output()
-		if err != nil {
-			return err
-		}
-		d.logger.Error(ctx, string(output))
-		err = os.Chdir(pwd)
-		if err != nil {
-			return err
-		}
-		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
-	}
-
-	return os.Chdir(pwd)
-}
-
-// getPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create.
-func getPipelineUUID(output string) string {
-	// Example output:
-	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e").
-	re := regexp.MustCompile(`pipeline created:."[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+".(\([^)]*\))`)
-	res := re.FindStringSubmatch(output)[1]
-	res = strings.Trim(res, "()\"")
-	return res
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
@@ -254,7 +203,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = d.gitChecks(ctx)
+	err = turbineCLI.GitChecks(ctx, d.logger, d.path)
 	if err != nil {
 		return err
 	}
@@ -275,7 +224,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	pipelineUUID := getPipelineUUID(deployOuput)
+	pipelineUUID := turbineCLI.GetPipelineUUID(deployOuput)
+	gitSha, err := turbineCLI.GetGitSha(d.path)
+	if err != nil {
+		return err
+	}
 
-	return d.createApplication(ctx, pipelineUUID)
+	return d.createApplication(ctx, pipelineUUID, gitSha)
 }

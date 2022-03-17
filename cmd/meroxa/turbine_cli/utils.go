@@ -1,10 +1,16 @@
 package turbinecli
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
+	"regexp"
+	"strings"
+
+	"github.com/meroxa/cli/log"
 )
 
 type AppConfig struct {
@@ -73,4 +79,71 @@ func readConfigFile(appPath string) (AppConfig, error) {
 	}
 
 	return appConfig, nil
+}
+
+// GitChecks prints warnings about uncommitted tracked and untracked files.
+func GitChecks(ctx context.Context, l log.Logger, path string) error {
+	// temporarily switching to the app's directory
+	pwd, err := switchToAppDirectory(path)
+
+	cmd := exec.Command("git", "status", "--porcelain=v2")
+	output, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	all := string(output)
+	lines := strings.Split(strings.TrimSpace(all), "\n")
+	if len(lines) > 0 && lines[0] != "" {
+		cmd = exec.Command("git", "status")
+		output, err = cmd.Output()
+		if err != nil {
+			return err
+		}
+		l.Error(ctx, string(output))
+		err = os.Chdir(pwd)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
+	}
+	return os.Chdir(pwd)
+}
+
+// GetPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create.
+func GetPipelineUUID(output string) string {
+	// Example output:
+	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e").
+	re := regexp.MustCompile(`pipeline created:."[a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+".(\([^)]*\))`)
+	res := re.FindStringSubmatch(output)[1]
+	res = strings.Trim(res, "()\"")
+	return res
+}
+
+// GetGitSha will return the latest gitSha that will be used to create an application
+func GetGitSha(path string) (string, error) {
+	// temporarily switching to the app's directory
+	pwd, err := switchToAppDirectory(path)
+
+	// Gets latest git sha
+	cmd := exec.Command("git", "rev-parse", "HEAD")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+
+	err = os.Chdir(pwd)
+	if err != nil {
+		return "", err
+	}
+
+	return string(output), nil
+}
+
+// switchToAppDirectory switches temporarily to the application's directory
+func switchToAppDirectory(path string) (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return pwd, err
+	}
+	return pwd, os.Chdir(path)
 }
