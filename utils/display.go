@@ -69,8 +69,8 @@ func ResourceTable(res *meroxa.Resource) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
-			{Align: simpletable.AlignRight, Text: "ID:"},
-			{Text: fmt.Sprintf("%d", res.ID)},
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: res.UUID},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Name:"},
@@ -102,17 +102,17 @@ func ResourceTable(res *meroxa.Resource) string {
 	}
 
 	if res.Environment != nil {
-		if e := res.Environment.UUID; e != "" {
+		if res.Environment.UUID.Valid {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
-				{Text: e},
+				{Text: res.Environment.UUID.String},
 			})
 		}
 
-		if e := res.Environment.Name; e != "" {
+		if res.Environment.Name.Valid {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment Name:"},
-				{Text: e},
+				{Text: res.Environment.Name.String},
 			})
 		}
 	} else {
@@ -135,26 +135,22 @@ func PipelineTable(p *meroxa.Pipeline) string {
 			{Text: p.UUID},
 		},
 		{
-			{Align: simpletable.AlignRight, Text: "ID:"},
-			{Text: fmt.Sprintf("%d", p.ID)},
-		},
-		{
 			{Align: simpletable.AlignRight, Text: "Name:"},
 			{Text: p.Name},
 		},
 	}
 
 	if p.Environment != nil {
-		if pU := p.Environment.UUID; pU != "" {
+		if p.Environment.UUID.Valid {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
-				{Text: pU},
+				{Text: p.Environment.UUID.String},
 			})
 		}
-		if pN := p.Environment.Name; pN != "" {
+		if p.Environment.Name.Valid {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment Name:"},
-				{Text: pN},
+				{Text: p.Environment.Name.String},
 			})
 		}
 	} else {
@@ -185,7 +181,7 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
-					{Align: simpletable.AlignCenter, Text: "ID"},
+					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "TYPE"},
 					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
@@ -204,14 +200,14 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 
 			var env string
 
-			if res.Environment != nil && res.Environment.Name != "" {
-				env = res.Environment.Name
+			if res.Environment != nil && res.Environment.Name.Valid {
+				env = res.Environment.Name.String
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}
 
 			r := []*simpletable.Cell{
-				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", res.ID)},
+				{Align: simpletable.AlignRight, Text: res.UUID},
 				{Text: res.Name},
 				{Text: string(res.Type)},
 				{Text: env},
@@ -283,10 +279,6 @@ func ConnectorTable(connector *meroxa.Connector) string {
 			{Text: connector.UUID},
 		},
 		{
-			{Align: simpletable.AlignRight, Text: "ID:"},
-			{Text: fmt.Sprintf("%d", connector.ID)},
-		},
-		{
 			{Align: simpletable.AlignRight, Text: "Name:"},
 			{Text: connector.Name},
 		},
@@ -315,16 +307,16 @@ func ConnectorTable(connector *meroxa.Connector) string {
 		})
 	}
 	if connector.Environment != nil {
-		if envUUID := connector.Environment.UUID; envUUID != "" {
+		if connector.Environment.UUID.Valid {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
-				{Text: envUUID},
+				{Text: connector.Environment.UUID.String},
 			})
 		}
-		if envName := connector.Environment.Name; envName != "" {
+		if connector.Environment.Name.Valid {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment Name:"},
-				{Text: envName},
+				{Text: connector.Environment.Name.String},
 			})
 		}
 	} else {
@@ -347,7 +339,6 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
 					{Align: simpletable.AlignCenter, Text: "UUID"},
-					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "TYPE"},
 					{Align: simpletable.AlignCenter, Text: "STREAMS"},
@@ -361,8 +352,8 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 		for _, conn := range connectors {
 			var env string
 
-			if conn.Environment != nil && conn.Environment.Name != "" {
-				env = conn.Environment.Name
+			if conn.Environment != nil && conn.Environment.Name.Valid {
+				env = conn.Environment.Name.String
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}
@@ -370,7 +361,6 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 			streamStr := formatStreams(conn.Streams)
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: conn.UUID},
-				{Align: simpletable.AlignRight, Text: fmt.Sprintf("%d", conn.ID)},
 				{Text: conn.Name},
 				{Text: string(conn.Type)},
 				{Text: streamStr},
@@ -457,7 +447,6 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
 					{Align: simpletable.AlignCenter, Text: "UUID"},
-					{Align: simpletable.AlignCenter, Text: "ID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 					{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 					{Align: simpletable.AlignCenter, Text: "STATE"},
@@ -468,15 +457,14 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 		for _, p := range pipelines {
 			var env string
 
-			if p.Environment != nil && p.Environment.Name != "" {
-				env = p.Environment.Name
+			if p.Environment != nil && p.Environment.Name.Valid {
+				env = p.Environment.Name.String
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}
 
 			r := []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: p.UUID},
-				{Align: simpletable.AlignRight, Text: strconv.Itoa(p.ID)},
 				{Align: simpletable.AlignCenter, Text: p.Name},
 				{Align: simpletable.AlignCenter, Text: env},
 				{Align: simpletable.AlignCenter, Text: string(p.State)},

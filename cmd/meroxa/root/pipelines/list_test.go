@@ -39,7 +39,7 @@ func TestListPipelinesExecution(t *testing.T) {
 	var pipelines []*meroxa.Pipeline
 
 	rP := meroxa.Pipeline{
-		ID:    1,
+		UUID:  "9483768f-c384-4b4a-96bf-b80a79a23b5c",
 		Name:  "my-pipeline",
 		State: "healthy",
 	}

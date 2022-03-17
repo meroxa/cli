@@ -29,8 +29,8 @@ import (
 
 type updatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
-	UpdatePipelineStatus(ctx context.Context, pipelineID int, state meroxa.Action) (*meroxa.Pipeline, error)
-	UpdatePipeline(ctx context.Context, pipelineID int, pipeline *meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
+	UpdatePipelineStatus(ctx context.Context, pipelineNameOrID string, state meroxa.Action) (*meroxa.Pipeline, error)
+	UpdatePipeline(ctx context.Context, pipelineNameOrID string, pipeline *meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error)
 }
 
 type Update struct {
@@ -71,15 +71,11 @@ func (u *Update) Execute(ctx context.Context) error {
 
 	u.logger.Infof(ctx, "Updating pipeline %q...", u.args.Name)
 
-	p, err := u.client.GetPipelineByName(ctx, u.args.Name)
-
-	if err != nil {
-		return err
-	}
-
+	var p *meroxa.Pipeline
 	// update state/status separately
 	if u.flags.State != "" {
-		p, err = u.client.UpdatePipelineStatus(ctx, p.ID, meroxa.Action(u.flags.State))
+		var err error
+		p, err = u.client.UpdatePipelineStatus(ctx, u.args.Name, meroxa.Action(u.flags.State))
 		if err != nil {
 			return err
 		}
@@ -93,14 +89,15 @@ func (u *Update) Execute(ctx context.Context) error {
 		if u.flags.Metadata != "" {
 			metadata := map[string]interface{}{}
 
-			err = json.Unmarshal([]byte(u.flags.Metadata), &metadata)
+			err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
 			if err != nil {
 				return fmt.Errorf("could not parse metadata: %w", err)
 			}
 			pi.Metadata = metadata
 		}
 
-		p, err = u.client.UpdatePipeline(ctx, p.ID, pi)
+		var err error
+		p, err = u.client.UpdatePipeline(ctx, u.args.Name, pi)
 		if err != nil {
 			return err
 		}

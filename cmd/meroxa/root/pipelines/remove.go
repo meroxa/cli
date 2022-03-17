@@ -27,7 +27,7 @@ import (
 
 type removePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
-	DeletePipeline(ctx context.Context, id int) error
+	DeletePipeline(ctx context.Context, nameOrID string) error
 }
 
 type Remove struct {
@@ -56,19 +56,13 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing pipeline %q...", r.args.Name)
 
-	p, err := r.client.GetPipelineByName(ctx, r.args.Name)
-	if err != nil {
-		return err
-	}
-
-	err = r.client.DeletePipeline(ctx, p.ID)
+	err := r.client.DeletePipeline(ctx, r.args.Name)
 
 	if err != nil {
 		return err
 	}
 
 	r.logger.Infof(ctx, "Pipeline %q successfully removed", r.args.Name)
-	r.logger.JSON(ctx, p)
 
 	return nil
 }

@@ -84,10 +84,10 @@ func TestConnectExecution(t *testing.T) {
 	c.flags.Destination = rDestination.Name
 	c.flags.Pipeline = "my-pipeline"
 
-	cSource := utils.GenerateConnector(0, "")
+	cSource := utils.GenerateConnector("", "")
 	cSource.Type = meroxa.ConnectorTypeSource
 
-	cDestination := utils.GenerateConnector(0, "")
+	cDestination := utils.GenerateConnector("", "")
 	cDestination.Type = meroxa.ConnectorTypeDestination
 
 	// Create source
@@ -104,8 +104,8 @@ func TestConnectExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			&meroxa.CreateConnectorInput{
-				Name:       "",
-				ResourceID: rSource.ID,
+				Name:         "",
+				ResourceName: rSource.Name,
 				Configuration: map[string]interface{}{
 					"key": "value",
 				},
@@ -132,8 +132,8 @@ func TestConnectExecution(t *testing.T) {
 		CreateConnector(
 			ctx,
 			&meroxa.CreateConnectorInput{
-				Name:       "",
-				ResourceID: rDestination.ID,
+				Name:         "",
+				ResourceName: rDestination.Name,
 				Configuration: map[string]interface{}{
 					"key": "value",
 				},

@@ -68,7 +68,7 @@ func TestRemoveConnectorExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	c := utils.GenerateConnector(0, "")
+	c := utils.GenerateConnector("", "")
 	r.args.Name = c.Name
 
 	client.

@@ -167,7 +167,7 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 		URL:         "https://foo.url",
 		Credentials: nil,
 		Metadata:    nil,
-		Environment: &meroxa.EnvironmentIdentifier{
+		Environment: &meroxa.EntityIdentifier{
 			Name: cr.Environment.Name,
 		},
 	}
@@ -183,7 +183,7 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
-	c.flags.Environment = r.Environment.Name
+	c.flags.Environment = r.Environment.Name.String
 
 	// override feature flags
 	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
@@ -206,7 +206,7 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
 Resource %q is successfully created!
-`, cr.Type, cr.Environment.Name, cr.Name)
+`, cr.Type, cr.Environment.Name.String, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -250,7 +250,7 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 		URL:         "https://foo.url",
 		Credentials: nil,
 		Metadata:    nil,
-		Environment: &meroxa.EnvironmentIdentifier{
+		Environment: &meroxa.EntityIdentifier{
 			UUID: cr.Environment.UUID,
 		},
 	}
@@ -266,7 +266,7 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
-	c.flags.Environment = r.Environment.UUID
+	c.flags.Environment = r.Environment.UUID.String
 
 	// override feature flags
 	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
@@ -289,7 +289,7 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
 Resource %q is successfully created!
-`, cr.Type, cr.Environment.UUID, cr.Name)
+`, cr.Type, cr.Environment.UUID.String, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -328,7 +328,7 @@ func TestCreateResourceExecutionWithEnvironmentUUIDWithoutFeatureFlag(t *testing
 		URL:         "https://foo.url",
 		Credentials: nil,
 		Metadata:    nil,
-		Environment: &meroxa.EnvironmentIdentifier{
+		Environment: &meroxa.EntityIdentifier{
 			UUID: cr.Environment.UUID,
 		},
 	}
@@ -336,7 +336,7 @@ func TestCreateResourceExecutionWithEnvironmentUUIDWithoutFeatureFlag(t *testing
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
-	c.flags.Environment = r.Environment.UUID
+	c.flags.Environment = r.Environment.UUID.String
 
 	err := c.Execute(ctx)
 	if err == nil {

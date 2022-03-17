@@ -3,8 +3,9 @@ package utils
 import (
 	"bytes"
 	"io"
-	"math/rand"
 	"os"
+
+	"github.com/volatiletech/null/v8"
 
 	"github.com/google/uuid"
 	"github.com/spf13/pflag"
@@ -14,7 +15,7 @@ import (
 
 func GeneratePipeline() meroxa.Pipeline {
 	return meroxa.Pipeline{
-		ID:    1,
+		UUID:  "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
 		Name:  "pipeline-name",
 		State: "healthy",
 	}
@@ -23,9 +24,9 @@ func GeneratePipeline() meroxa.Pipeline {
 func GeneratePipelineWithEnvironment() meroxa.Pipeline {
 	p := GeneratePipeline()
 
-	p.Environment = &meroxa.EnvironmentIdentifier{
-		UUID: "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
-		Name: "my-env",
+	p.Environment = &meroxa.EntityIdentifier{
+		UUID: null.StringFrom("236d6e81-6a22-4805-b64f-3fa0a57fdbdc"),
+		Name: null.StringFrom("my-env"),
 	}
 
 	return p
@@ -33,7 +34,7 @@ func GeneratePipelineWithEnvironment() meroxa.Pipeline {
 
 func GenerateResource() meroxa.Resource {
 	return meroxa.Resource{
-		ID:       1,
+		UUID:     "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
 		Type:     meroxa.ResourceTypePostgres,
 		Name:     "resource-1234",
 		URL:      "https://user:password",
@@ -44,16 +45,16 @@ func GenerateResource() meroxa.Resource {
 func GenerateResourceWithEnvironment() meroxa.Resource {
 	r := GenerateResource()
 
-	r.Environment = &meroxa.EnvironmentIdentifier{
-		UUID: "424ec647-9f0f-45a5-8e4b-3e0441f12444",
-		Name: "my-environment",
+	r.Environment = &meroxa.EntityIdentifier{
+		UUID: null.StringFrom("424ec647-9f0f-45a5-8e4b-3e0441f12444"),
+		Name: null.StringFrom("my-environment"),
 	}
 	return r
 }
 
-func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
-	if pipelineID == 0 {
-		pipelineID = rand.Intn(10000)
+func GenerateConnector(pipelineName string, connectorName string) meroxa.Connector {
+	if pipelineName == "" {
+		pipelineName = "pipeline-1234"
 	}
 
 	if connectorName == "" {
@@ -61,40 +62,40 @@ func GenerateConnector(pipelineID int, connectorName string) meroxa.Connector {
 	}
 
 	return meroxa.Connector{
-		ID:         1,
-		Type:       meroxa.ConnectorTypeSource,
-		Name:       connectorName,
-		State:      meroxa.ConnectorStateRunning,
-		PipelineID: pipelineID,
+		UUID:         "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
+		Type:         meroxa.ConnectorTypeSource,
+		Name:         connectorName,
+		State:        meroxa.ConnectorStateRunning,
+		PipelineName: pipelineName,
 		Streams: map[string]interface{}{
 			"output": []interface{}{"my-resource.Table"},
 		},
 	}
 }
 
-func GenerateConnectorWithEnvironment(pipelineID int, connectorName, envNameOrUUID string) meroxa.Connector {
-	if pipelineID == 0 {
-		pipelineID = rand.Intn(10000)
+func GenerateConnectorWithEnvironment(pipelineName string, connectorName, envNameOrUUID string) meroxa.Connector {
+	if pipelineName == "" {
+		pipelineName = "pipeline-1234"
 	}
 
 	if connectorName == "" {
 		connectorName = "connector-1234"
 	}
 
-	var env meroxa.EnvironmentIdentifier
+	var env meroxa.EntityIdentifier
 	_, err := uuid.Parse(envNameOrUUID)
 	if err == nil {
-		env.UUID = envNameOrUUID
+		env.UUID = null.StringFrom(envNameOrUUID)
 	} else {
-		env.Name = envNameOrUUID
+		env.Name = null.StringFrom(envNameOrUUID)
 	}
 
 	return meroxa.Connector{
-		ID:         1,
-		Type:       meroxa.ConnectorTypeSource,
-		Name:       connectorName,
-		State:      meroxa.ConnectorStateRunning,
-		PipelineID: pipelineID,
+		UUID:         "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
+		Type:         meroxa.ConnectorTypeSource,
+		Name:         connectorName,
+		State:        meroxa.ConnectorStateRunning,
+		PipelineName: pipelineName,
 		Streams: map[string]interface{}{
 			"output": []interface{}{"my-resource.Table"},
 		},

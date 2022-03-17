@@ -64,7 +64,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 
 	connectorName := "my-connector"
 
-	c := utils.GenerateConnector(0, connectorName)
+	c := utils.GenerateConnector("", connectorName)
 	c.State = "failed"
 	c.Trace = "exception goes here"
 	client.

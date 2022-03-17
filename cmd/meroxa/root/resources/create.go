@@ -21,6 +21,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/volatiletech/null/v8"
+
 	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -130,15 +132,15 @@ func (c *Create) Execute(ctx context.Context) error {
 			return err
 		}
 
-		input.Environment = &meroxa.EnvironmentIdentifier{}
+		input.Environment = &meroxa.EntityIdentifier{}
 		env = c.flags.Environment
 
 		_, err = uuid.Parse(c.flags.Environment)
 
 		if err == nil {
-			input.Environment.UUID = c.flags.Environment
+			input.Environment.UUID = null.StringFrom(c.flags.Environment)
 		} else {
-			input.Environment.Name = c.flags.Environment
+			input.Environment.Name = null.StringFrom(c.flags.Environment)
 		}
 	} else {
 		env = string(meroxa.EnvironmentTypeCommon)

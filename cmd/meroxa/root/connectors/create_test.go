@@ -116,7 +116,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 	c.flags.Source = sourceName
 	c.flags.Pipeline = "my-pipeline"
 
-	cr := utils.GenerateConnector(0, "")
+	cr := utils.GenerateConnector("", "")
 
 	client.
 		EXPECT().
@@ -124,7 +124,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 			ctx,
 			sourceName,
 		).
-		Return(&meroxa.Resource{ID: 123}, nil)
+		Return(&meroxa.Resource{Name: sourceName}, nil)
 
 	client.
 		EXPECT().
@@ -132,7 +132,7 @@ func TestCreateConnectorExecution(t *testing.T) {
 			ctx,
 			&meroxa.CreateConnectorInput{
 				Name:         "",
-				ResourceID:   123,
+				ResourceName: sourceName,
 				PipelineName: c.flags.Pipeline,
 				Configuration: map[string]interface{}{
 					"key": "value",

@@ -18,13 +18,9 @@ package pipelines
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"reflect"
 	"testing"
-
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
@@ -72,12 +68,7 @@ func TestRemovePipelineExecution(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetPipelineByName(ctx, p.Name).
-		Return(&p, nil)
-
-	client.
-		EXPECT().
-		DeletePipeline(ctx, p.ID).
+		DeletePipeline(ctx, p.Name).
 		Return(nil)
 
 	err := r.Execute(ctx)
@@ -93,16 +84,5 @@ Pipeline %q successfully removed
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
-	}
-
-	gotJSONOutput := logger.JSONOutput()
-	var gotPipeline meroxa.Pipeline
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotPipeline)
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
-
-	if !reflect.DeepEqual(gotPipeline, p) {
-		t.Fatalf("expected \"%v\", got \"%v\"", p, gotPipeline)
 	}
 }
