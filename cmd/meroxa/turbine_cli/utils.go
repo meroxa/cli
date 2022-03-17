@@ -82,9 +82,12 @@ func readConfigFile(appPath string) (AppConfig, error) {
 }
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
-func GitChecks(ctx context.Context, l log.Logger, path string) error {
+func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(path)
+	pwd, err := switchToAppDirectory(appPath)
+	if err != nil {
+		return err
+	}
 
 	cmd := exec.Command("git", "status", "--porcelain=v2")
 	output, err := cmd.Output()
@@ -119,10 +122,10 @@ func GetPipelineUUID(output string) string {
 	return res
 }
 
-// ValidateBranch validates the deployment is being performed from one of the allowed branches
-func ValidateBranch(path string) error {
+// ValidateBranch validates the deployment is being performed from one of the allowed branches.
+func ValidateBranch(appPath string) error {
 	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(path)
+	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
 		return err
 	}
@@ -144,10 +147,10 @@ func ValidateBranch(path string) error {
 	return nil
 }
 
-// GetGitSha will return the latest gitSha that will be used to create an application
-func GetGitSha(path string) (string, error) {
+// GetGitSha will return the latest gitSha that will be used to create an application.
+func GetGitSha(appPath string) (string, error) {
 	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(path)
+	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
 		return "", err
 	}
@@ -167,11 +170,11 @@ func GetGitSha(path string) (string, error) {
 	return string(output), nil
 }
 
-// switchToAppDirectory switches temporarily to the application's directory
-func switchToAppDirectory(path string) (string, error) {
+// switchToAppDirectory switches temporarily to the application's directory.
+func switchToAppDirectory(appPath string) (string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		return pwd, err
 	}
-	return pwd, os.Chdir(path)
+	return pwd, os.Chdir(appPath)
 }
