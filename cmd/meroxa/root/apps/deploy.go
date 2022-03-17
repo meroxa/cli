@@ -208,6 +208,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
+	err = turbineCLI.ValidateBranch(d.path)
+	if err != nil {
+		return err
+	}
+
 	switch d.lang {
 	case GoLang:
 		// The only reason Deploy is scoped this other way is, so we can have the Docker Credentials

@@ -119,10 +119,38 @@ func GetPipelineUUID(output string) string {
 	return res
 }
 
+// ValidateBranch validates the deployment is being performed from one of the allowed branches
+func ValidateBranch(path string) error {
+	// temporarily switching to the app's directory
+	pwd, err := switchToAppDirectory(path)
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("git", "branch", "--show-current")
+	output, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+	branchName := strings.TrimSpace(string(output))
+	if branchName != "main" && branchName != "master" {
+		return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
+	}
+
+	err = os.Chdir(pwd)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetGitSha will return the latest gitSha that will be used to create an application
 func GetGitSha(path string) (string, error) {
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(path)
+	if err != nil {
+		return "", err
+	}
 
 	// Gets latest git sha
 	cmd := exec.Command("git", "rev-parse", "HEAD")
