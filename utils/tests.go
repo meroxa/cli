@@ -52,7 +52,7 @@ func GenerateResourceWithEnvironment() meroxa.Resource {
 	return r
 }
 
-func GenerateConnector(pipelineName string, connectorName string) meroxa.Connector {
+func GenerateConnector(pipelineName, connectorName string) meroxa.Connector {
 	if pipelineName == "" {
 		pipelineName = "pipeline-1234"
 	}
@@ -73,7 +73,7 @@ func GenerateConnector(pipelineName string, connectorName string) meroxa.Connect
 	}
 }
 
-func GenerateConnectorWithEnvironment(pipelineName string, connectorName, envNameOrUUID string) meroxa.Connector {
+func GenerateConnectorWithEnvironment(pipelineName, connectorName, envNameOrUUID string) meroxa.Connector {
 	if pipelineName == "" {
 		pipelineName = "pipeline-1234"
 	}
