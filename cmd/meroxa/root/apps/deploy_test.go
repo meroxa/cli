@@ -32,8 +32,8 @@ func TestDeployAppFlags(t *testing.T) {
 		hidden    bool
 	}{
 		{name: "path", required: false},
-		{name: "docker-hub-username", required: false},
-		{name: "docker-hub-access-token", required: false},
+		{name: "docker-hub-username", required: false, hidden: true},
+		{name: "docker-hub-access-token", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})

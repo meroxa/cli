@@ -17,13 +17,10 @@ limitations under the License.
 package apps
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
-	"os"
-
-	"github.com/volatiletech/null/v8"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
@@ -31,6 +28,14 @@ import (
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	turbine "github.com/meroxa/turbine/deploy"
+	"github.com/volatiletech/null/v8"
+	"io"
+	"net/http"
+	"os"
+	"path"
+	"path/filepath"
+	"time"
 )
 
 const (
@@ -38,20 +43,24 @@ const (
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" // nolint:gosec
 )
 
-type createApplicationClient interface {
+type deployApplicationClient interface {
 	CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
+	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
+	CreateSource(ctx context.Context) (*meroxa.Source, error)
+	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
 }
 
 type Deploy struct {
 	flags struct {
 		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
-		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app"`
-		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app"`
+		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app" hidden:"true"`
+		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"`
 	}
 
-	client   createApplicationClient
+	client   deployApplicationClient
 	config   config.Config
 	logger   log.Logger
+	appName  string
 	path     string
 	lang     string
 	goDeploy turbineGo.Deploy
@@ -189,13 +198,194 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 	return nil
 }
 
+// uploadSource creates first a Dockerfile to then, package the entire folder which will be later uploaded
+// this should ignore .git files and fixtures/
+func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
+	// Before creating a .tar.zip, we make sure it contains a Dockerfile
+	err := turbine.CreateDockerfile(appPath)
+	if err != nil {
+		return err
+	}
+
+	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
+
+	pwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	var buf bytes.Buffer
+	d.logger.Infof(ctx, "Packaging application located at %q...", appPath)
+	_ = turbineCLI.CreateTarAndZipFile(appPath, &buf)
+
+	err = os.Chdir(pwd)
+	if err != nil {
+		return err
+	}
+
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777))
+	defer func(fileToWrite *os.File) {
+		err := fileToWrite.Close()
+		if err != nil {
+			panic(err.Error())
+		}
+	}(fileToWrite)
+
+	if err != nil {
+		panic(err)
+	}
+	if _, err := io.Copy(fileToWrite, &buf); err != nil {
+		panic(err)
+	}
+
+	// We clean up Dockerfile as last step
+	err = os.Remove(filepath.Join(appPath, "Dockerfile"))
+	if err != nil {
+		return err
+	}
+
+	err = d.uploadFile(ctx, dFile, url)
+	if err != nil {
+		return err
+	}
+
+	// remove .tar.gz file
+	return os.Remove(dFile)
+}
+
+func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
+	d.logger.Info(ctx, "Uploading file to our build service...")
+	fh, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer func(fh *os.File) {
+		err := fh.Close()
+		if err != nil {
+
+		}
+	}(fh)
+
+	req, err := http.NewRequest("PUT", url, fh)
+	if err != nil {
+		return err
+	}
+
+	fi, err := fh.Stat()
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Content-Type", "multipart/form-data")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Connection", "keep-alive")
+
+	req.ContentLength = fi.Size()
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		d.logger.Infof(ctx, "Uploaded!")
+		if err != nil {
+			d.logger.Error(ctx, err.Error())
+		}
+
+	}(res.Body)
+
+	return nil
+}
+
+func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, error) {
+	s, err := d.client.CreateSource(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	err = d.uploadSource(ctx, appPath, s.PutUrl)
+
+	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
+	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
+
+	build, err := d.client.CreateBuild(ctx, buildInput)
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Print("Getting status for build: ", build.Uuid)
+	for {
+		fmt.Printf(".")
+		b, err := d.client.GetBuild(ctx, build.Uuid)
+		if err != nil {
+			return "", err
+		}
+
+		switch b.Status.State {
+		case "error":
+			return "", fmt.Errorf("build with uuid %q errored ", b.Uuid)
+		}
+		if b.Status.State == "complete" {
+			fmt.Println("Image built! ")
+			return build.Image, nil
+		}
+		time.Sleep(2 * time.Second)
+	}
+}
+
+// Deploy takes care of all the necessary steps to deploy a Turbine application
+//	1. Build binary // different for jS
+//	2. Build image // common
+//	3. Push image // common
+//	4. Run Turbine deploy // different
+func (d *Deploy) deploy(ctx context.Context, appPath string, l log.Logger) (string, error) {
+	var fqImageName string
+	d.appName = path.Base(appPath)
+
+	err := turbineGo.BuildBinary(ctx, l, appPath, d.appName, true)
+	if err != nil {
+		return "", err
+	}
+
+	// check for image instances
+	if ok, err := turbineGo.NeedsToBuild(appPath, d.appName); ok {
+		if err != nil {
+			l.Errorf(ctx, err.Error())
+			return "", err
+		}
+
+		if d.goDeploy.LocalDeployment {
+			fqImageName, err = d.goDeploy.GetDockerImageName(ctx, l, appPath, d.appName)
+			if err != nil {
+				return "", err
+			}
+		} else {
+			fqImageName, err = d.getPlatformImage(ctx, appPath)
+			if err != nil {
+				return "", err
+			}
+		}
+	}
+
+	// creates all resources
+	output, err := turbineGo.RunDeployApp(ctx, l, appPath, d.appName, fqImageName)
+	if err != nil {
+		l.Errorf(ctx, "unable to deploy app; %s", err)
+		return output, err
+	}
+	return output, nil
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
-	var deployOuput string
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
 	err := d.validateLocalDeploymentConfig()
 	if err != nil {
 		return err
 	}
+	var deployOutput string
 
 	d.path, err = turbineCLI.GetPath(d.flags.Path)
 	if err != nil {
@@ -216,13 +406,17 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
+	// 1. set up the app structure (CLI does this for any language)
+	// 2. *depending on the language* call something to create the dockerfile <=
+	// 3. CLI would handle:
+	//	3.1 creating the tar.zip,
+	//	3.2 post /sources
+	// 	3.3 uploading the tar.zip
+	//  3.4 post /builds
+	// 4. CLI would call (depending on language) the deploy script <=
 	switch d.lang {
 	case GoLang:
-		// The only reason Deploy is scoped this other way is, so we can have the Docker Credentials
-		// Maybe that function should take care of checking type of deployment, only passing flags
-		// and environment variables
-		// err = turbineGo.Deploy(ctx, d.path, d.logger)
-		deployOuput, err = d.goDeploy.Deploy(ctx, d.path, d.logger)
+		deployOutput, err = d.deploy(ctx, d.path, d.logger)
 	case "js", JavaScript, NodeJs:
 		err = turbineJS.Deploy(ctx, d.path, d.logger)
 	default:
@@ -232,7 +426,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	pipelineUUID := turbineCLI.GetPipelineUUID(deployOuput)
+	pipelineUUID := turbineCLI.GetPipelineUUID(deployOutput)
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {
 		return err

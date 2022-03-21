@@ -15,7 +15,7 @@ func Run(ctx context.Context, appPath string, l log.Logger) error {
 	appName := path.Base(appPath)
 
 	// building is a requirement prior to running for go apps
-	err := buildBinary(ctx, l, appPath, appName, false)
+	err := BuildBinary(ctx, l, appPath, appName, false)
 	if err != nil {
 		return err
 	}
