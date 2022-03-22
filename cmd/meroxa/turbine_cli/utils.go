@@ -19,15 +19,15 @@ type AppConfig struct {
 	Language string `json:"language"`
 }
 
-func GetPath(path string) (string, error) {
-	if path == "." || path == "" {
+func GetPath(flag string) (string, error) {
+	if flag == "." || flag == "" {
 		var err error
-		path, err = filepath.Abs(".")
+		flag, err = filepath.Abs(".")
 		if err != nil {
 			return "", err
 		}
 	}
-	return path, nil
+	return flag, nil
 }
 
 // GetLang will return language defined either by `--lang` or the one defined by user in the app.json.

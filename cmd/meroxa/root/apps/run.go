@@ -19,12 +19,11 @@ package apps
 import (
 	"context"
 	"fmt"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
-
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
 	"github.com/meroxa/cli/log"
 )
 
