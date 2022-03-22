@@ -19,8 +19,6 @@ package apps
 import (
 	"context"
 	"fmt"
-	"path/filepath"
-
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
 
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
@@ -72,13 +70,10 @@ func (r *Run) Flags() []builder.Flag {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
-	r.path = turbineCLI.GetPath(r.flags.Path)
-	if r.path == "." || r.path == "" {
-		var err error
-		r.path, err = filepath.Abs(".")
-		if err != nil {
-			return err
-		}
+	var err error
+	r.path, err = turbineCLI.GetPath(r.flags.Path)
+	if err != nil {
+		return err
 	}
 	lang, err := turbineCLI.GetLang(r.flags.Lang, r.path)
 	if err != nil {

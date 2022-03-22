@@ -82,7 +82,11 @@ func (i *Init) Execute(ctx context.Context) error {
 	name := i.args.appName
 	lang := i.flags.Lang
 
-	i.path = turbineCLI.GetPath(i.flags.Path)
+	var err error
+	i.path, err = turbineCLI.GetPath(i.flags.Path)
+	if err != nil {
+		return err
+	}
 
 	i.logger.Infof(ctx, "Initializing application %q in %q...", name, i.path)
 	switch lang {
@@ -105,7 +109,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
 
-	err := i.GitInit(ctx, i.path+"/"+name)
+	err = i.GitInit(ctx, i.path+"/"+name)
 	if err != nil {
 		return err
 	}
