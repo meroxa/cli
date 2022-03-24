@@ -1,8 +1,10 @@
 package turbinecli
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -182,4 +184,21 @@ func switchToAppDirectory(appPath string) (string, error) {
 		return pwd, err
 	}
 	return pwd, os.Chdir(appPath)
+}
+
+// RunCmdWithErrorDetection checks exit codes and stderr for failures and logs on success.
+func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) (string, error) {
+	stdout, stderr := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	err := cmd.Run()
+	successMsg := stdout.String()
+	errMsg := stderr.String()
+	if err != nil {
+		return "", err
+	} else if errMsg != "" {
+		return "", errors.New(successMsg + errMsg)
+	}
+	l.Info(ctx, successMsg)
+	return successMsg, nil
 }

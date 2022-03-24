@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"path"
 
+	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+
 	"github.com/meroxa/cli/log"
 )
 
@@ -27,12 +29,6 @@ func Run(ctx context.Context, appPath string, l log.Logger) error {
 
 	cmd := exec.Command("./" + appName) //nolint:gosec
 
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		l.Error(ctx, err.Error())
-		return err
-	}
-
-	l.Info(ctx, string(out))
-	return nil
+	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }

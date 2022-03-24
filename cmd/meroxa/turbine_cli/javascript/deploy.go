@@ -7,6 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 )
 
@@ -20,11 +21,6 @@ func Deploy(ctx context.Context, path string, l log.Logger) error {
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		l.Error(ctx, string(stdout))
-		return err
-	}
-	l.Info(ctx, string(stdout))
-	return nil
+	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }
