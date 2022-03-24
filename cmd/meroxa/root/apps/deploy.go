@@ -197,7 +197,10 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.path = turbineCLI.GetPath(d.flags.Path)
+	d.path, err = turbineCLI.GetPath(d.flags.Path)
+	if err != nil {
+		return err
+	}
 	d.lang, err = turbineCLI.GetLangFromAppJSON(d.path)
 	if err != nil {
 		return err

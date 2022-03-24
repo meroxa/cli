@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -18,11 +19,15 @@ type AppConfig struct {
 	Language string `json:"language"`
 }
 
-func GetPath(pwd string) string {
-	if pwd != "" {
-		return pwd
+func GetPath(flag string) (string, error) {
+	if flag == "." || flag == "" {
+		var err error
+		flag, err = filepath.Abs(".")
+		if err != nil {
+			return "", err
+		}
 	}
-	return "."
+	return flag, nil
 }
 
 // GetLang will return language defined either by `--lang` or the one defined by user in the app.json.
