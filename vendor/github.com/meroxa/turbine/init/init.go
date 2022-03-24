@@ -29,6 +29,7 @@ func createAppDirectory(path, appName string) error {
 func createFixtures(path, appName string) error {
 	directory := "fixtures"
 	fileName := "README.md"
+	jsonFile := "none.json"
 
 	err := os.Mkdir(filepath.Join(path, appName, directory), 0755)
 	if err != nil {
@@ -60,7 +61,8 @@ func createFixtures(path, appName string) error {
 	if err != nil {
 		return err
 	}
-	return nil
+
+	return duplicateFile("fixtures/"+jsonFile, path, appName)
 }
 
 // duplicateFile reads from a template and write to a file located to a path provided by the user

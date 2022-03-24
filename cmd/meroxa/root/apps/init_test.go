@@ -3,13 +3,15 @@ package apps
 import (
 	"context"
 	"errors"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/log"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 )
 
@@ -106,4 +108,91 @@ func TestGitInit(t *testing.T) {
 	}
 
 	os.RemoveAll(testDir)
+}
+
+func TestGoInit(t *testing.T) {
+	gopath := os.Getenv("GOPATH")
+	_ = os.Setenv("GO_PRIVATE", "github.com/meroxa")
+	tests := []struct {
+		desc        string
+		path        string
+		skipModInit bool
+		vendor      bool
+		err         error
+	}{
+		{
+			desc: "Init without go mod init",
+			path: func() string {
+				return filepath.Join(gopath, "src/github.com/meroxa/tests", uuid.New().String()) //nolint:gocritic
+			}(),
+			skipModInit: true,
+			vendor:      false,
+			err:         nil,
+		},
+		{
+			desc: "Init with go mod init and without vendoring",
+			path: func() string {
+				return filepath.Join(gopath, "src/github.com/meroxa/tests", uuid.New().String()) //nolint:gocritic
+			}(),
+			skipModInit: false,
+			vendor:      false,
+			err:         nil,
+		},
+		{
+			desc: "Init with go mod init and with vendoring",
+			path: func() string {
+				return filepath.Join(gopath, "src/github.com/meroxa/tests", uuid.New().String()) //nolint:gocritic
+			}(),
+			skipModInit: false,
+			vendor:      true,
+			err:         nil,
+		},
+		{
+			desc: "Init without go mod init and with vendor flag",
+			path: func() string {
+				return filepath.Join(gopath, "src/github.com/meroxa/tests", uuid.New().String()) //nolint:gocritic
+			}(),
+			skipModInit: true,
+			vendor:      true,
+			err:         nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			cc := &Init{}
+			cc.Logger(global.NewLogger()) //log.NewTestLogger())
+			cc.flags.Path = tt.path
+			cc.flags.Lang = "golang"
+			cc.flags.ModVendor = tt.vendor
+			cc.flags.SkipModInit = tt.skipModInit
+			cc.args.appName = "app-name"
+
+			err := cc.Execute(context.Background())
+			if err != nil {
+				if tt.err == nil {
+					t.Fatalf("unexpected error \"%s\"", err)
+				} else if tt.err.Error() != err.Error() {
+					t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+				}
+			}
+
+			if err == nil && tt.err == nil {
+				if !tt.skipModInit {
+					p, _ := filepath.Abs(tt.path + "/" + cc.args.appName + "/go.mod")
+					if _, err := os.Stat(p); os.IsNotExist(err) {
+						t.Fatalf("expected file \"%s\" to be created", p)
+					}
+
+					if tt.vendor {
+						p, _ = filepath.Abs(tt.path + "/" + cc.args.appName + "/go.mod")
+						if _, err := os.Stat(p); os.IsNotExist(err) {
+							t.Fatalf("expected directory \"%s\" to be created", p)
+						}
+					}
+				}
+			}
+			os.RemoveAll(tt.path)
+		})
+	}
 }

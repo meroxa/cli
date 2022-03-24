@@ -23,8 +23,10 @@ type Init struct {
 	}
 
 	flags struct {
-		Lang string `long:"lang" short:"l" usage:"language to use (js|go)" required:"true"`
-		Path string `long:"path" usage:"path where application will be initialized (current directory as default)"`
+		Lang        string `long:"lang" short:"l" usage:"language to use (js|go)" required:"true"`
+		Path        string `long:"path" usage:"path where application will be initialized (current directory as default)"`
+		ModVendor   bool   `long:"mod-vendor" usage:"whether to download modules to vendor or globally while initializing a Go application"`
+		SkipModInit bool   `long:"skip-mod-init" usage:"whether to run 'go mod init' while initializing a Go application"`
 	}
 }
 
@@ -44,7 +46,9 @@ func (*Init) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Initialize a Meroxa Data Application",
 		Example: "meroxa apps init my-app --path ~/code --lang js" +
-			"meroxa apps init my-app --lang go # will be initialized in current directory",
+			"meroxa apps init my-app --lang go # will be initialized in current directory" +
+			"meroxa apps init my-app --lang go --skip-mod-init # will not initialize the new go module" +
+			"meroxa apps init my-app --lang go --mod-vendor # will initialize the new go module and download dependendies to the vendor directory",
 	}
 }
 
@@ -76,7 +80,6 @@ func (i *Init) GitInit(ctx context.Context, path string) error {
 		i.logger.Error(ctx, string(output))
 		return err
 	}
-
 	return nil
 }
 
@@ -94,6 +97,10 @@ func (i *Init) Execute(ctx context.Context) error {
 	switch lang {
 	case "go", GoLang:
 		err = turbine.Init(name, i.path)
+		if err != nil {
+			return err
+		}
+		err = turbineCLI.GoInit(ctx, i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
 	case "js", JavaScript, NodeJs:
 		err = turbinejs.Init(ctx, i.logger, name, i.path)
 	case "py", Python:

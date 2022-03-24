@@ -3,6 +3,6 @@
   "language": "golang",
   "environment": "common",
   "resources": {
-    "name": "fixtures/path"
+    "source_name": "fixtures/none.json"
   }
 }
