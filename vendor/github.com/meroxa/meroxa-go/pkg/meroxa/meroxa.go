@@ -83,13 +83,13 @@ type Client interface {
 	PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *RepairEnvironmentInput) (*Environment, error)
 
 	CreatePipeline(ctx context.Context, input *CreatePipelineInput) (*Pipeline, error)
-	DeletePipeline(ctx context.Context, id int) error
+	DeletePipeline(ctx context.Context, nameOrID string) error
 	GetPipeline(ctx context.Context, pipelineID int) (*Pipeline, error)
 	GetPipelineByName(ctx context.Context, name string) (*Pipeline, error)
 	ListPipelines(ctx context.Context) ([]*Pipeline, error)
-	ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*Connector, error)
-	UpdatePipeline(ctx context.Context, pipelineID int, input *UpdatePipelineInput) (*Pipeline, error)
-	UpdatePipelineStatus(ctx context.Context, pipelineID int, action Action) (*Pipeline, error)
+	ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*Connector, error)
+	UpdatePipeline(ctx context.Context, pipelineNameOrID string, input *UpdatePipelineInput) (*Pipeline, error)
+	UpdatePipelineStatus(ctx context.Context, pipelineNameOrID string, action Action) (*Pipeline, error)
 
 	CreateResource(ctx context.Context, input *CreateResourceInput) (*Resource, error)
 	DeleteResource(ctx context.Context, nameOrID string) error

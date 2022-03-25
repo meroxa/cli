@@ -24,6 +24,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/volatiletech/null/v8"
+
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -107,7 +109,6 @@ func TestCreatePipelineWithoutEnvironmentExecution(t *testing.T) {
 	}
 
 	p := &meroxa.Pipeline{
-		ID:    1,
 		Name:  pName,
 		State: "healthy",
 	}
@@ -176,15 +177,14 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
-		Environment: &meroxa.EnvironmentIdentifier{Name: env},
+		Environment: &meroxa.EntityIdentifier{Name: null.StringFrom(env)},
 	}
 
 	p := &meroxa.Pipeline{
-		ID:   1,
 		Name: pName,
-		Environment: &meroxa.EnvironmentIdentifier{
-			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
-			Name: env,
+		Environment: &meroxa.EntityIdentifier{
+			UUID: null.StringFrom("2560fbcc-b9ee-461a-a959-fa5656422dc2"),
+			Name: null.StringFrom(env),
 		},
 		State: "healthy",
 	}
@@ -200,7 +200,7 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 		Return(p, nil)
 
 	c.args.Name = pi.Name
-	c.flags.Environment = pi.Environment.Name
+	c.flags.Environment = pi.Environment.Name.String
 
 	// override feature flags
 	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
@@ -260,15 +260,14 @@ func TestCreatePipelineWithEnvironmentExecutionWithoutFeatureFlag(t *testing.T) 
 
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
-		Environment: &meroxa.EnvironmentIdentifier{Name: env},
+		Environment: &meroxa.EntityIdentifier{Name: null.StringFrom(env)},
 	}
 
 	p := &meroxa.Pipeline{
-		ID:   1,
 		Name: pName,
-		Environment: &meroxa.EnvironmentIdentifier{
-			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
-			Name: env,
+		Environment: &meroxa.EntityIdentifier{
+			UUID: null.StringFrom("2560fbcc-b9ee-461a-a959-fa5656422dc2"),
+			Name: null.StringFrom(env),
 		},
 		State: "healthy",
 	}
@@ -276,7 +275,7 @@ func TestCreatePipelineWithEnvironmentExecutionWithoutFeatureFlag(t *testing.T) 
 	p.Name = pName
 
 	c.args.Name = pi.Name
-	c.flags.Environment = pi.Environment.Name
+	c.flags.Environment = pi.Environment.Name.String
 
 	err := c.Execute(ctx)
 

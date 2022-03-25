@@ -84,6 +84,7 @@ const (
 	EnvironmentRegionApNortheast1 EnvironmentRegion = "ap-northeast-1"
 	EnvironmentRegionEuCentral    EnvironmentRegion = "eu-central-1"
 	EnvironmentRegionUsEast1      EnvironmentRegion = "us-east-1"
+	EnvironmentRegionUsEast2      EnvironmentRegion = "us-east-2"
 	EnvironmentRegionUsWest2      EnvironmentRegion = "us-west-2"
 )
 

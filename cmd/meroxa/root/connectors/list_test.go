@@ -33,16 +33,16 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
-func getConnectors(pipelineID int) []*meroxa.Connector {
+func getConnectors() []*meroxa.Connector {
 	var connectors []*meroxa.Connector
-	c := utils.GenerateConnector(pipelineID, "")
+	c := utils.GenerateConnector("", "")
 	connectors = append(connectors, &c)
 	return connectors
 }
 
-func getConnectorsWithEnvironment(pipelineID int) []*meroxa.Connector {
+func getConnectorsWithEnvironment(pipelineName string) []*meroxa.Connector {
 	var connectors []*meroxa.Connector
-	c := utils.GenerateConnectorWithEnvironment(pipelineID, "", "my-env")
+	c := utils.GenerateConnectorWithEnvironment(pipelineName, "", "my-env")
 	connectors = append(connectors, &c)
 	return connectors
 }
@@ -80,8 +80,8 @@ func TestListConnectorsExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	connectors := getConnectors(1)
-	connectors = append(connectors, getConnectorsWithEnvironment(1)...)
+	connectors := getConnectors()
+	connectors = append(connectors, getConnectorsWithEnvironment("pipeline1")...)
 
 	client.
 		EXPECT().

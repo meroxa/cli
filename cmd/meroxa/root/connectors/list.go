@@ -37,7 +37,7 @@ var (
 
 type listConnectorsClient interface {
 	ListConnectors(ctx context.Context) ([]*meroxa.Connector, error)
-	ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*meroxa.Connector, error)
+	ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*meroxa.Connector, error)
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 }
 
@@ -71,15 +71,7 @@ func (l *List) Execute(ctx context.Context) error {
 
 	// Filtering by pipeline name
 	if l.flags.Pipeline != "" {
-		var p *meroxa.Pipeline
-
-		p, err = l.client.GetPipelineByName(ctx, l.flags.Pipeline)
-
-		if err != nil {
-			return err
-		}
-
-		connectors, err = l.client.ListPipelineConnectors(ctx, p.ID)
+		connectors, err = l.client.ListPipelineConnectors(ctx, l.flags.Pipeline)
 
 		if err != nil {
 			return err

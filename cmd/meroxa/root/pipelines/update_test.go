@@ -120,12 +120,7 @@ func TestUpdatePipelineExecutionWithNewState(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetPipelineByName(ctx, p.Name).
-		Return(&p, nil)
-
-	client.
-		EXPECT().
-		UpdatePipelineStatus(ctx, p.ID, newState).
+		UpdatePipelineStatus(ctx, p.Name, newState).
 		Return(&p, nil)
 
 	u := &Update{
@@ -177,12 +172,7 @@ func TestUpdatePipelineExecutionWithNewName(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetPipelineByName(ctx, p.Name).
-		Return(&p, nil)
-
-	client.
-		EXPECT().
-		UpdatePipeline(ctx, p.ID, pi).
+		UpdatePipeline(ctx, p.Name, pi).
 		Return(&p, nil)
 
 	u := &Update{
@@ -234,12 +224,7 @@ func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
 
 	client.
 		EXPECT().
-		GetPipelineByName(ctx, p.Name).
-		Return(&p, nil)
-
-	client.
-		EXPECT().
-		UpdatePipeline(ctx, p.ID, pi).
+		UpdatePipeline(ctx, p.Name, pi).
 		Return(&p, nil)
 
 	u := &Update{

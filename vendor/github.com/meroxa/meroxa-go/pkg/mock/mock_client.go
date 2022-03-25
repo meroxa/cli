@@ -214,17 +214,17 @@ func (mr *MockClientMockRecorder) DeleteFunction(ctx, nameOrUUID interface{}) *g
 }
 
 // DeletePipeline mocks base method.
-func (m *MockClient) DeletePipeline(ctx context.Context, id int) error {
+func (m *MockClient) DeletePipeline(ctx context.Context, nameOrID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeletePipeline", ctx, id)
+	ret := m.ctrl.Call(m, "DeletePipeline", ctx, nameOrID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeletePipeline indicates an expected call of DeletePipeline.
-func (mr *MockClientMockRecorder) DeletePipeline(ctx, id interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeletePipeline(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePipeline", reflect.TypeOf((*MockClient)(nil).DeletePipeline), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePipeline", reflect.TypeOf((*MockClient)(nil).DeletePipeline), ctx, nameOrID)
 }
 
 // DeleteResource mocks base method.
@@ -482,18 +482,18 @@ func (mr *MockClientMockRecorder) ListFunctions(ctx interface{}) *gomock.Call {
 }
 
 // ListPipelineConnectors mocks base method.
-func (m *MockClient) ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*meroxa.Connector, error) {
+func (m *MockClient) ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*meroxa.Connector, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListPipelineConnectors", ctx, pipelineID)
+	ret := m.ctrl.Call(m, "ListPipelineConnectors", ctx, pipelineNameOrID)
 	ret0, _ := ret[0].([]*meroxa.Connector)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListPipelineConnectors indicates an expected call of ListPipelineConnectors.
-func (mr *MockClientMockRecorder) ListPipelineConnectors(ctx, pipelineID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) ListPipelineConnectors(ctx, pipelineNameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPipelineConnectors", reflect.TypeOf((*MockClient)(nil).ListPipelineConnectors), ctx, pipelineID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPipelineConnectors", reflect.TypeOf((*MockClient)(nil).ListPipelineConnectors), ctx, pipelineNameOrID)
 }
 
 // ListPipelines mocks base method.
@@ -647,33 +647,33 @@ func (mr *MockClientMockRecorder) UpdateEnvironment(ctx, nameOrUUID, input inter
 }
 
 // UpdatePipeline mocks base method.
-func (m *MockClient) UpdatePipeline(ctx context.Context, pipelineID int, input *meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error) {
+func (m *MockClient) UpdatePipeline(ctx context.Context, pipelineNameOrID string, input *meroxa.UpdatePipelineInput) (*meroxa.Pipeline, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePipeline", ctx, pipelineID, input)
+	ret := m.ctrl.Call(m, "UpdatePipeline", ctx, pipelineNameOrID, input)
 	ret0, _ := ret[0].(*meroxa.Pipeline)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdatePipeline indicates an expected call of UpdatePipeline.
-func (mr *MockClientMockRecorder) UpdatePipeline(ctx, pipelineID, input interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) UpdatePipeline(ctx, pipelineNameOrID, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePipeline", reflect.TypeOf((*MockClient)(nil).UpdatePipeline), ctx, pipelineID, input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePipeline", reflect.TypeOf((*MockClient)(nil).UpdatePipeline), ctx, pipelineNameOrID, input)
 }
 
 // UpdatePipelineStatus mocks base method.
-func (m *MockClient) UpdatePipelineStatus(ctx context.Context, pipelineID int, action meroxa.Action) (*meroxa.Pipeline, error) {
+func (m *MockClient) UpdatePipelineStatus(ctx context.Context, pipelineNameOrID string, action meroxa.Action) (*meroxa.Pipeline, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdatePipelineStatus", ctx, pipelineID, action)
+	ret := m.ctrl.Call(m, "UpdatePipelineStatus", ctx, pipelineNameOrID, action)
 	ret0, _ := ret[0].(*meroxa.Pipeline)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdatePipelineStatus indicates an expected call of UpdatePipelineStatus.
-func (mr *MockClientMockRecorder) UpdatePipelineStatus(ctx, pipelineID, action interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) UpdatePipelineStatus(ctx, pipelineNameOrID, action interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePipelineStatus", reflect.TypeOf((*MockClient)(nil).UpdatePipelineStatus), ctx, pipelineID, action)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePipelineStatus", reflect.TypeOf((*MockClient)(nil).UpdatePipelineStatus), ctx, pipelineNameOrID, action)
 }
 
 // UpdateResource mocks base method.

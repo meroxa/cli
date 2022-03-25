@@ -124,7 +124,7 @@ func (c *Create) CreateConnector(ctx context.Context) (*meroxa.Connector, error)
 
 	ci := &meroxa.CreateConnectorInput{
 		Name:          c.args.Name,
-		ResourceID:    res.ID,
+		ResourceName:  res.Name,
 		PipelineName:  c.flags.Pipeline,
 		Configuration: config,
 		Metadata:      metadata,

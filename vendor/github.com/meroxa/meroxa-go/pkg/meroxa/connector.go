@@ -39,12 +39,11 @@ const (
 type Connector struct {
 	Configuration map[string]interface{} `json:"config"`
 	CreatedAt     time.Time              `json:"created_at"`
-	Environment   *EnvironmentIdentifier `json:"environment,omitempty"`
-	ID            int                    `json:"id"`
+	Environment   *EntityIdentifier      `json:"environment,omitempty"`
 	Metadata      map[string]interface{} `json:"metadata"`
 	Name          string                 `json:"name"`
-	PipelineID    int                    `json:"pipeline_id"`
 	PipelineName  string                 `json:"pipeline_name"`
+	ResourceName  string                 `json:"resource_name"`
 	Streams       map[string]interface{} `json:"streams"`
 	State         ConnectorState         `json:"state"`
 	Trace         string                 `json:"trace,omitempty"`
@@ -55,9 +54,8 @@ type Connector struct {
 
 type CreateConnectorInput struct {
 	Name          string                 `json:"name,omitempty"`
-	ResourceID    int                    `json:"resource_id"`
-	PipelineID    int                    `json:"pipeline_id,omitempty"`
-	PipelineName  string                 `json:"pipeline_name,omitempty"`
+	ResourceName  string                 `json:"resource_name"`
+	PipelineName  string                 `json:"pipeline_name"`
 	Configuration map[string]interface{} `json:"config,omitempty"`
 	Metadata      map[string]interface{} `json:"metadata,omitempty"`
 	Type          ConnectorType          `json:"connector_type,omitempty"`
@@ -151,8 +149,8 @@ func (c *client) UpdateConnector(ctx context.Context, nameOrID string, input *Up
 }
 
 // ListPipelineConnectors returns an array of Connectors (scoped to the calling user)
-func (c *client) ListPipelineConnectors(ctx context.Context, pipelineID int) ([]*Connector, error) {
-	path := fmt.Sprintf("/v1/pipelines/%d/connectors", pipelineID)
+func (c *client) ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*Connector, error) {
+	path := fmt.Sprintf("/v1/pipelines/%s/connectors", pipelineNameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {

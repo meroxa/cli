@@ -119,7 +119,7 @@ func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 		logger: logger,
 	}
 
-	c := utils.GenerateConnector(0, "")
+	c := utils.GenerateConnector("", "")
 	u.args.NameOrID = c.Name
 	u.flags.State = "pause"
 
@@ -166,7 +166,7 @@ func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 		logger: logger,
 	}
 
-	c := utils.GenerateConnector(0, "")
+	c := utils.GenerateConnector("", "")
 	u.args.NameOrID = c.Name
 
 	newName := "new-name"
@@ -218,7 +218,7 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 		logger: logger,
 	}
 
-	c := utils.GenerateConnector(0, "")
+	c := utils.GenerateConnector("", "")
 	u.args.NameOrID = c.Name
 
 	newConfig := "{\"table.name.format\":\"public.copy\"}"

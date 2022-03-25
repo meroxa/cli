@@ -3,16 +3,17 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func TestResourcesTable(t *testing.T) {
 	resource := &meroxa.Resource{
-		ID:          0,
+		UUID:        "1dc8c9c6-d1d3-4b41-8f16-08302e87fc7b",
 		Type:        "jdbc",
 		Name:        "my-db-jdbc-source",
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
@@ -23,7 +24,7 @@ func TestResourcesTable(t *testing.T) {
 		},
 	}
 	resIDAlign := &meroxa.Resource{
-		ID:          1000,
+		UUID:        "9483768f-c384-4b4a-96bf-b80a79a23b5c",
 		Type:        "jdbc",
 		Name:        "my-db-jdbc-source",
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
@@ -58,8 +59,8 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, resource.Name) {
 					t.Errorf("%s, not found", resource.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(resource.ID)) {
-					t.Errorf("%d, not found", resource.ID)
+				if !strings.Contains(out, resource.UUID) {
+					t.Errorf("%s, not found", resource.UUID)
 				}
 				if !strings.Contains(out, strings.Title(string(resource.Status.State))) {
 					t.Errorf("state %s, not found", resource.Status.State)
@@ -68,8 +69,8 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, resIDAlign.Name) {
 					t.Errorf("%s, not found", resIDAlign.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(resIDAlign.ID)) {
-					t.Errorf("%d, not found", resIDAlign.ID)
+				if !strings.Contains(out, resIDAlign.UUID) {
+					t.Errorf("%s, not found", resIDAlign.UUID)
 				}
 				if !strings.Contains(out, strings.Title(string(resIDAlign.Status.State))) {
 					t.Errorf("state %s, not found", resource.Status.State)
@@ -82,7 +83,7 @@ func TestResourcesTable(t *testing.T) {
 
 func TestResourcesTableWithoutHeaders(t *testing.T) {
 	resource := &meroxa.Resource{
-		ID:          0,
+		UUID:        "9483768f-c384-4b4a-96bf-b80a79a23b5c",
 		Type:        "jdbc",
 		Name:        "my-db-jdbc-source",
 		URL:         "postgres://display.test.us-east-1.rds.amazonaws.com:5432/display",
@@ -111,8 +112,8 @@ func TestResourcesTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, resource.Name) {
 		t.Errorf("%s, not found", resource.Name)
 	}
-	if !strings.Contains(out, strconv.Itoa(resource.ID)) {
-		t.Errorf("%d, not found", resource.ID)
+	if !strings.Contains(out, resource.UUID) {
+		t.Errorf("%s, not found", resource.UUID)
 	}
 	if !strings.Contains(out, strings.Title(string(resource.Status.State))) {
 		t.Errorf("state %s, not found", resource.Status.State)
@@ -193,7 +194,7 @@ func TestResourceTypesTableWithoutHeaders(t *testing.T) {
 
 func TestConnectorRunningTable(t *testing.T) {
 	connector := &meroxa.Connector{
-		ID:            0,
+		UUID:          "9483768f-c384-4b4a-96bf-b80a79a23b5c",
 		Type:          "jdbc",
 		Name:          "base",
 		Configuration: nil,
@@ -202,10 +203,10 @@ func TestConnectorRunningTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:       "running",
-		Trace:       "",
-		PipelineID:  1,
-		Environment: &meroxa.EnvironmentIdentifier{Name: "my-env"},
+		State:        "running",
+		Trace:        "",
+		PipelineName: "pipeline-1",
+		Environment:  &meroxa.EntityIdentifier{Name: null.StringFrom("my-env")},
 	}
 	failedConnector := &meroxa.Connector{}
 	deepCopy(connector, failedConnector)
@@ -239,8 +240,8 @@ func TestConnectorRunningTable(t *testing.T) {
 				if !strings.Contains(out, connector.Name) {
 					t.Errorf("%s, not found", connector.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(connector.ID)) {
-					t.Errorf("%d, not found", connector.ID)
+				if !strings.Contains(out, connector.UUID) {
+					t.Errorf("%s, not found", connector.UUID)
 				}
 			case "failed":
 				if !strings.Contains(out, connector.UUID) {
@@ -249,8 +250,8 @@ func TestConnectorRunningTable(t *testing.T) {
 				if !strings.Contains(out, connector.Name) {
 					t.Errorf("%s, not found", connector.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(connector.ID)) {
-					t.Errorf("%d, not found", connector.ID)
+				if !strings.Contains(out, connector.UUID) {
+					t.Errorf("%s, not found", connector.UUID)
 				}
 				if !strings.Contains(out, connector.Trace) {
 					t.Errorf("%s, not found", connector.Trace)
@@ -265,7 +266,7 @@ func TestConnectorsTable(t *testing.T) {
 	connectionIDAlign := &meroxa.Connector{}
 	connectionInputOutput := &meroxa.Connector{}
 	connection := &meroxa.Connector{
-		ID:            0,
+		UUID:          "9483768f-c384-4b4a-96bf-b80a79a23b5c",
 		Type:          "jdbc",
 		Name:          "base",
 		Configuration: nil,
@@ -274,15 +275,15 @@ func TestConnectorsTable(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:       "running",
-		Trace:       "",
-		PipelineID:  1,
-		Environment: &meroxa.EnvironmentIdentifier{UUID: "2c5326ac-041f-4679-b446-d6d95b91f497"},
+		State:        "running",
+		Trace:        "",
+		PipelineName: "pipeline-1",
+		Environment:  &meroxa.EntityIdentifier{UUID: null.StringFrom("2c5326ac-041f-4679-b446-d6d95b91f497")},
 	}
 
 	deepCopy(connection, connectionIDAlign)
 	connectionIDAlign.Name = "id-alignment"
-	connectionIDAlign.ID = 1000
+	connectionIDAlign.UUID = "1000"
 
 	deepCopy(connection, connectionInputOutput)
 	connectionInputOutput.Name = "input-output"
@@ -320,15 +321,15 @@ func TestConnectorsTable(t *testing.T) {
 				if !strings.Contains(out, connection.Name) {
 					t.Errorf("%s, not found", connection.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(connection.ID)) {
-					t.Errorf("%d, not found", connection.ID)
+				if !strings.Contains(out, connection.UUID) {
+					t.Errorf("%s, not found", connection.UUID)
 				}
 			case "ID_Alignment":
 				if !strings.Contains(out, connectionIDAlign.Name) {
 					t.Errorf("%s, not found", connectionIDAlign.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(connectionIDAlign.ID)) {
-					t.Errorf("%d, not found", connectionIDAlign.ID)
+				if !strings.Contains(out, connectionIDAlign.UUID) {
+					t.Errorf("%s, not found", connectionIDAlign.UUID)
 				}
 			case "Input_Output":
 				if !strings.Contains(out, connectionInputOutput.Name) {
@@ -348,7 +349,7 @@ func TestConnectorsTable(t *testing.T) {
 
 func TestConnectorsTableWithoutHeaders(t *testing.T) {
 	connection := &meroxa.Connector{
-		ID:            0,
+		UUID:          "9483768f-c384-4b4a-96bf-b80a79a23b5c",
 		Type:          "jdbc",
 		Name:          "base",
 		Configuration: nil,
@@ -357,9 +358,9 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 			"dynamic": "false",
 			"output":  []interface{}{"output-foo", "output-bar"},
 		},
-		State:      "running",
-		Trace:      "",
-		PipelineID: 1,
+		State:        "running",
+		Trace:        "",
+		PipelineName: "pipeline-1",
 	}
 
 	tableHeaders := []string{"UUID", "ID", "NAME", "TYPE", "STREAMS", "STATE", "PIPELINE", "ENVIRONMENT"}
@@ -382,8 +383,8 @@ func TestConnectorsTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, connection.Name) {
 		t.Errorf("%s, not found", connection.Name)
 	}
-	if !strings.Contains(out, strconv.Itoa(connection.ID)) {
-		t.Errorf("%d, not found", connection.ID)
+	if !strings.Contains(out, connection.UUID) {
+		t.Errorf("%s, not found", connection.UUID)
 	}
 }
 
@@ -393,19 +394,17 @@ func TestPipelinesTable(t *testing.T) {
 
 	pipelineBase := &meroxa.Pipeline{
 		UUID: "6f380820-dfed-4a69-b708-10d134866a35",
-		ID:   0,
 		Name: "pipeline-base",
 	}
 	deepCopy(pipelineBase, pipelineIDAlign)
 	pipelineIDAlign.UUID = "0e1d29b9-2e62-4cc2-a49d-126f2e1b15ef"
 	pipelineIDAlign.Name = "pipeline-align"
-	pipelineIDAlign.ID = 1000
 
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
-	pipelineWithEnv.Environment = &meroxa.EnvironmentIdentifier{
-		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
-		Name: "my-environment",
+	pipelineWithEnv.Environment = &meroxa.EntityIdentifier{
+		UUID: null.StringFrom("e56b1b2e-b6d7-455d-887e-84a0823d84a8"),
+		Name: null.StringFrom("my-environment"),
 	}
 
 	tests := map[string][]*meroxa.Pipeline{
@@ -433,8 +432,8 @@ func TestPipelinesTable(t *testing.T) {
 				if !strings.Contains(out, pipelineBase.Name) {
 					t.Errorf("%s, not found", pipelineBase.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(pipelineBase.ID)) {
-					t.Errorf("%d, not found", pipelineBase.ID)
+				if !strings.Contains(out, pipelineBase.UUID) {
+					t.Errorf("%s, not found", pipelineBase.UUID)
 				}
 				if !strings.Contains(out, string(meroxa.EnvironmentTypeCommon)) {
 					t.Errorf("environment should be %s", string(meroxa.EnvironmentTypeCommon))
@@ -443,12 +442,12 @@ func TestPipelinesTable(t *testing.T) {
 				if !strings.Contains(out, pipelineIDAlign.Name) {
 					t.Errorf("%s, not found", pipelineIDAlign.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(pipelineIDAlign.ID)) {
-					t.Errorf("%d, not found", pipelineIDAlign.ID)
+				if !strings.Contains(out, pipelineIDAlign.UUID) {
+					t.Errorf("%s, not found", pipelineIDAlign.UUID)
 				}
 			case "With_Environment":
-				if !strings.Contains(out, pipelineWithEnv.Environment.Name) {
-					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name)
+				if !strings.Contains(out, pipelineWithEnv.Environment.Name.String) {
+					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name.String)
 				}
 			}
 
@@ -462,15 +461,14 @@ func TestPipelineTable(t *testing.T) {
 
 	pipelineBase := &meroxa.Pipeline{
 		UUID: "6f380820-dfed-4a69-b708-10d134866a35",
-		ID:   0,
 		Name: "pipeline-base",
 	}
 
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
-	pipelineWithEnv.Environment = &meroxa.EnvironmentIdentifier{
-		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
-		Name: "my-environment",
+	pipelineWithEnv.Environment = &meroxa.EntityIdentifier{
+		UUID: null.StringFrom("e56b1b2e-b6d7-455d-887e-84a0823d84a8"),
+		Name: null.StringFrom("my-environment"),
 	}
 
 	tests := map[string]*meroxa.Pipeline{
@@ -498,8 +496,8 @@ func TestPipelineTable(t *testing.T) {
 				if !strings.Contains(out, pipelineBase.Name) {
 					t.Errorf("%s, not found", pipelineBase.Name)
 				}
-				if !strings.Contains(out, strconv.Itoa(pipelineBase.ID)) {
-					t.Errorf("%d, not found", pipelineBase.ID)
+				if !strings.Contains(out, pipelineBase.UUID) {
+					t.Errorf("%s, not found", pipelineBase.UUID)
 				}
 				if !strings.Contains(out, pipelineBase.UUID) {
 					t.Errorf("%s, not found", pipelineBase.UUID)
@@ -508,8 +506,8 @@ func TestPipelineTable(t *testing.T) {
 					t.Errorf("%q not found", envHeader)
 				}
 			case "With_Environment":
-				if !strings.Contains(out, pipelineWithEnv.Environment.UUID) {
-					t.Errorf("expected environment UUID to be %q", pipelineWithEnv.Environment.UUID)
+				if !strings.Contains(out, pipelineWithEnv.Environment.UUID.String) {
+					t.Errorf("expected environment UUID to be %q", pipelineWithEnv.Environment.UUID.String)
 				}
 			}
 			fmt.Println(out)
@@ -519,7 +517,7 @@ func TestPipelineTable(t *testing.T) {
 
 func TestPipelinesTableWithoutHeaders(t *testing.T) {
 	pipeline := &meroxa.Pipeline{
-		ID:   0,
+		UUID: "6f380820-dfed-4a69-b708-10d134866a35",
 		Name: "pipeline-base",
 	}
 
@@ -541,8 +539,8 @@ func TestPipelinesTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, pipeline.Name) {
 		t.Errorf("%s, not found", pipeline.Name)
 	}
-	if !strings.Contains(out, strconv.Itoa(pipeline.ID)) {
-		t.Errorf("%d, not found", pipeline.ID)
+	if !strings.Contains(out, pipeline.UUID) {
+		t.Errorf("%s, not found", pipeline.UUID)
 	}
 }
 
