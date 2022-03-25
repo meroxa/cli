@@ -4,6 +4,8 @@ import (
 	"context"
 	"os/exec"
 
+	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+
 	"github.com/meroxa/cli/log"
 )
 
@@ -18,11 +20,6 @@ func buildBinary(ctx context.Context, l log.Logger, appPath, appName string, pla
 	}
 	cmd.Dir = appPath
 
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		l.Errorf(ctx, string(stdout))
-		return err
-	}
-
-	return nil
+	_, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }

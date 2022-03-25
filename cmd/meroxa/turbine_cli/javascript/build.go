@@ -4,6 +4,8 @@ import (
 	"context"
 	"os/exec"
 
+	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+
 	"github.com/meroxa/cli/log"
 )
 
@@ -12,10 +14,6 @@ func Build(ctx context.Context, l log.Logger) error {
 	// TODO: Handle the requirement of https://github.com/meroxa/turbine-js.git being installed
 	// cd into the path first
 	cmd := exec.Command("npx", "turbine", "test")
-	stdout, err := cmd.CombinedOutput()
-	if err != nil {
-		return err
-	}
-	l.Info(ctx, string(stdout))
-	return nil
+	_, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }

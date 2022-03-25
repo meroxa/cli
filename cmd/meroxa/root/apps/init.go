@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os/exec"
 
+	turbinejs "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
@@ -92,27 +94,16 @@ func (i *Init) Execute(ctx context.Context) error {
 	switch lang {
 	case "go", GoLang:
 		err = turbine.Init(name, i.path)
-		if err != nil {
-			return err
-		}
-		i.logger.Infof(ctx, "Application successfully initialized!\n"+
-			"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 	case "js", JavaScript, NodeJs:
-		cmd := exec.Command("npx", "turbine", "generate", name, i.path)
-		stdout, err := cmd.CombinedOutput() //nolint:govet
-		if err != nil {
-			i.logger.Error(ctx, string(stdout))
-			return err
-		}
-		i.logger.Info(ctx, string(stdout))
+		err = turbinejs.Init(ctx, i.logger, name, i.path)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
-
-	err = i.GitInit(ctx, i.path+"/"+name)
 	if err != nil {
 		return err
 	}
+	i.logger.Infof(ctx, "Application successfully initialized!\n"+
+		"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 
-	return nil
+	return i.GitInit(ctx, i.path+"/"+name)
 }
