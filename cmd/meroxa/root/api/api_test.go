@@ -102,7 +102,7 @@ func TestAPIExecution(t *testing.T) {
 	a.args.Method = "GET"
 	a.args.Path = "/v1/my-path"
 
-	bodyResponse := `{ "key": "value" }`
+	bodyResponse := `{"key": "value"}`
 
 	var httpResponse = &http.Response{
 		Status:     "200 OK",
@@ -126,12 +126,10 @@ func TestAPIExecution(t *testing.T) {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	expectedBody := `{
-	"key": "value"
-}`
+	expectedBody := "{\n" + `  "key": "value"` + "\n}"
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`> %s %s
+	wantLeveledOutput := fmt.Sprintf("\n"+`> %s %s
 < %s 
 %s
 `, a.args.Method, a.args.Path, httpResponse.Status, expectedBody)

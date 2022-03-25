@@ -104,7 +104,7 @@ func (a *API) Execute(ctx context.Context) error {
 
 	buf := new(bytes.Buffer)
 	enc := json.NewEncoder(buf)
-	enc.SetIndent("", "    ")
+	enc.SetIndent("", "  ")
 	enc.SetEscapeHTML(false)
 	_ = enc.Encode(body)
 
