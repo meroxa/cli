@@ -96,16 +96,25 @@ func (a *API) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	defer resp.Body.Close()
+
+	var body interface{}
+	err = json.NewDecoder(resp.Body).Decode(&body)
+
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetIndent("", "    ")
+	enc.SetEscapeHTML(false)
+	_ = enc.Encode(body)
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	var prettyJSON bytes.Buffer
 
-	if err = json.Indent(&prettyJSON, b, "", "\t"); err != nil {
-		prettyJSON.Write(b)
+	if err = json.Indent(buf, b, "", "\t"); err != nil {
+		a.logger.Info(ctx, string(b))
 	}
 
 	a.logger.Infof(ctx, "> %s %s", a.args.Method, a.args.Path)
@@ -114,8 +123,8 @@ func (a *API) Execute(ctx context.Context) error {
 		a.logger.Infof(ctx, "< %s %s", k, strings.Join(v, " "))
 	}
 
-	a.logger.Info(ctx, prettyJSON.String())
-	a.logger.JSON(ctx, prettyJSON.String())
+	a.logger.Info(ctx, buf.String())
+	a.logger.JSON(ctx, buf.String())
 
 	return nil
 }
