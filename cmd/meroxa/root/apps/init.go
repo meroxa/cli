@@ -9,6 +9,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbinejs "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
+	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
 	"github.com/meroxa/cli/log"
 	turbine "github.com/meroxa/turbine/init"
 )
@@ -96,13 +97,7 @@ func (i *Init) Execute(ctx context.Context) error {
 	case "js", JavaScript, NodeJs:
 		err = turbinejs.Init(ctx, i.logger, name, i.path)
 	case "py", Python:
-		cmd := exec.Command("turbine", "--generate", name, i.path)
-		stdout, err := cmd.CombinedOutput()
-		if err != nil {
-			i.logger.Error(ctx, string(stdout))
-			return err
-		}
-		i.logger.Info(ctx, string(stdout))
+		err = turbinepy.Init(ctx, i.logger, name, i.path)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
