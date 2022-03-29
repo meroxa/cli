@@ -17,17 +17,24 @@ import (
 )
 
 type AppConfig struct {
-	Name     string `json:"name"`
-	Language string `json:"language"`
+	Name        string            `json:"name"`
+	Environment string            `json:"environment"`
+	Language    string            `json:"language"`
+	Resources   map[string]string `json:"resources"`
+	Vendor      string            `json:"vendor"`
+	ModuleInit  string            `json:"module_init"`
 }
 
+var prefetched *AppConfig
+
 func GetPath(flag string) (string, error) {
-	if flag == "." || flag == "" {
-		var err error
-		flag, err = filepath.Abs(".")
-		if err != nil {
-			return "", err
-		}
+	if flag == "" {
+		flag = "."
+	}
+	var err error
+	flag, err = filepath.Abs(flag)
+	if err != nil {
+		return "", err
 	}
 	return flag, nil
 }
@@ -71,21 +78,66 @@ func GetAppNameFromAppJSON(pwd string) (string, error) {
 	return appConfig.Name, nil
 }
 
+// SetModuleInitInAppJSON returns whether to run mod init.
+func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
+	appConfig, err := readConfigFile(pwd)
+	if err != nil {
+		return err
+	}
+	appConfig.ModuleInit = "true"
+	if skipInit {
+		appConfig.ModuleInit = "false"
+	}
+	err = writeConfigFile(pwd, appConfig) // will never be programmatically read again, but a marker of what turbine did
+	return err
+}
+
+// SetVendorInAppJSON returns whether to vendor modules.
+func SetVendorInAppJSON(pwd string, vendor bool) error {
+	appConfig, err := readConfigFile(pwd)
+	if err != nil {
+		return err
+	}
+	appConfig.Vendor = "false"
+	if vendor {
+		appConfig.Vendor = "true"
+	}
+	err = writeConfigFile(pwd, appConfig) // will never be programmatically read again, but a marker of what turbine did
+	return err
+}
+
 // readConfigFile will read the content of an app.json based on path.
 func readConfigFile(appPath string) (AppConfig, error) {
 	var appConfig AppConfig
 
-	appConfigPath := path.Join(appPath, "app.json")
-	appConfigBytes, err := os.ReadFile(appConfigPath)
-	if err != nil {
-		return appConfig, fmt.Errorf("%v\n"+
-			"We couldn't find an app.json file on path %q. Maybe try in another using `--path`", err, appPath)
-	}
-	if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
-		return appConfig, err
+	if prefetched == nil {
+		appConfigPath := path.Join(appPath, "app.json")
+		appConfigBytes, err := os.ReadFile(appConfigPath)
+		if err != nil {
+			return appConfig, fmt.Errorf("%v\n"+
+				"We couldn't find an app.json file on path %q. Maybe try using a different value for `--path`", err, appPath)
+		}
+		if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
+			return appConfig, err
+		}
+		prefetched = &appConfig
 	}
 
-	return appConfig, nil
+	return *prefetched, nil
+}
+
+func writeConfigFile(appPath string, cfg AppConfig) error {
+	appConfigPath := path.Join(appPath, "app.json")
+	data, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(appConfigPath, data, 0664) //nolint:gosec,gomnd
+	if err != nil {
+		return fmt.Errorf("%v\n"+
+			"unable to update app.json file on path %q. Maybe try using a different value for `--path`", err, appPath)
+	}
+	return nil
 }
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
@@ -177,6 +229,62 @@ func GetGitSha(appPath string) (string, error) {
 	return string(output), nil
 }
 
+func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
+	// temporarily switching to the app's directory
+	pwd, err := switchToAppDirectory(appPath)
+	if err != nil {
+		return err
+	}
+
+	// initialize the user's module
+	err = SetModuleInitInAppJSON(appPath, skipInit)
+	if err != nil {
+		return err
+	}
+	if !skipInit {
+		l.Info(ctx, "Initializing the application's go module...")
+		cmd := exec.Command("go", "mod", "init")
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			l.Error(ctx, string(output))
+			return err
+		}
+		cmd = exec.Command("go", "get", "github.com/meroxa/turbine")
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			l.Error(ctx, string(output))
+			return err
+		}
+		cmd = exec.Command("go", "get", "github.com/meroxa/turbine/runner")
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			l.Error(ctx, string(output))
+			return err
+		}
+
+		// download dependencies
+		err = SetVendorInAppJSON(appPath, vendor)
+		if err != nil {
+			return err
+		}
+		depsLog := "Downloading dependencies "
+		cmd = exec.Command("go", "mod", "download")
+		if vendor {
+			depsLog += "to vendor"
+			cmd = exec.Command("go", "mod", "vendor")
+		}
+		depsLog += "..."
+		l.Info(ctx, depsLog)
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			l.Error(ctx, string(output))
+			return err
+		}
+	}
+
+	return os.Chdir(pwd)
+}
+
 // switchToAppDirectory switches temporarily to the application's directory.
 func switchToAppDirectory(appPath string) (string, error) {
 	pwd, err := os.Getwd()
@@ -194,9 +302,7 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	err := cmd.Run()
 	successMsg := stdout.String()
 	errMsg := stderr.String()
-	if err != nil {
-		return "", err
-	} else if errMsg != "" {
+	if err != nil || errMsg != "" {
 		return "", errors.New(successMsg + errMsg)
 	}
 	l.Info(ctx, successMsg)
