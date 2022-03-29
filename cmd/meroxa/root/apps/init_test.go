@@ -3,8 +3,6 @@ package apps
 import (
 	"context"
 	"errors"
-	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,6 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 )
 
@@ -112,7 +111,6 @@ func TestGitInit(t *testing.T) {
 
 func TestGoInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
-	_ = os.Setenv("GO_PRIVATE", "github.com/meroxa")
 	tests := []struct {
 		desc        string
 		path        string
@@ -161,7 +159,7 @@ func TestGoInit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			cc := &Init{}
-			cc.Logger(global.NewLogger()) //log.NewTestLogger())
+			cc.Logger(log.NewTestLogger())
 			cc.flags.Path = tt.path
 			cc.flags.Lang = "golang"
 			cc.flags.ModVendor = tt.vendor
