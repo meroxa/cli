@@ -27,10 +27,11 @@ import (
 type Apps struct{}
 
 const (
+	Python                    = "python"
 	JavaScript                = "javascript"
 	GoLang                    = "golang"
 	NodeJs                    = "nodejs"
-	LanguageNotSupportedError = "Currently, we support \"javascript\" and \"golang\""
+	LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", and \"python\""
 )
 
 var (
