@@ -300,11 +300,19 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 	err := cmd.Run()
-	successMsg := stdout.String()
-	errMsg := stderr.String()
-	if err != nil || errMsg != "" {
-		return "", errors.New(successMsg + errMsg)
+	stdOutMsg := stdout.String()
+	stdErrMsg := stderr.String()
+	if err != nil || stdErrMsg != "" {
+		var errMsg, log string
+		if err != nil {
+			errMsg = err.Error()
+		}
+		log = stdOutMsg + errMsg
+		if errMsg != "" {
+			log = errMsg
+		}
+		return "", errors.New(log)
 	}
-	l.Info(ctx, successMsg)
-	return successMsg, nil
+	l.Info(ctx, stdOutMsg)
+	return stdOutMsg, nil
 }

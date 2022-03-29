@@ -24,6 +24,7 @@ import (
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
+	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
 	"github.com/meroxa/cli/log"
 )
 
@@ -84,6 +85,8 @@ func (r *Run) Execute(ctx context.Context) error {
 		return turbineGo.Run(ctx, r.path, r.logger)
 	case "js", JavaScript, NodeJs:
 		return turbineJS.Build(ctx, r.logger)
+	case "py", Python:
+		return turbinepy.Run(ctx, r.logger, r.path)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
