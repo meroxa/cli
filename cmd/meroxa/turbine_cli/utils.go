@@ -307,8 +307,10 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 		if err != nil {
 			errMsg = err.Error()
 		}
-		log = stdOutMsg + errMsg
-		if errMsg != "" {
+		log = stdOutMsg
+		if stdErrMsg != "" {
+			log += stdErrMsg
+		} else if errMsg != "" {
 			log = errMsg
 		}
 		return "", errors.New(log)
