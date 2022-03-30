@@ -303,17 +303,17 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	stdOutMsg := stdout.String()
 	stdErrMsg := stderr.String()
 	if err != nil || stdErrMsg != "" {
-		var errMsg, log string
+		var errMsg, errLog string
 		if err != nil {
 			errMsg = err.Error()
 		}
-		log = stdOutMsg
+		errLog = stdOutMsg
 		if stdErrMsg != "" {
-			log += stdErrMsg
+			errLog += stdErrMsg
 		} else if errMsg != "" {
-			log = errMsg
+			errLog = errMsg
 		}
-		return "", errors.New(log)
+		return "", errors.New(errLog)
 	}
 	l.Info(ctx, stdOutMsg)
 	return stdOutMsg, nil
