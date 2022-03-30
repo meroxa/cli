@@ -68,4 +68,3 @@ func NeedsToBuild(appPath, appName string) (bool, error) {
 
 	return hasFunctions, nil
 }
-

@@ -27,7 +27,6 @@ func Deploy(ctx context.Context, path string, l log.Logger) error {
 	return err
 }
 
-
 // 1. we build binary (Go) // we set up the app structure (JS/Python) <- CLI could do this
 // 2. we create the docker file (each turbine-lib does this)
-// 3. we call the binary passing --platform ("deploying") //
+// 3. we call the binary passing --platform ("deploying")

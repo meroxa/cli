@@ -21,6 +21,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path"
+	"path/filepath"
+	"time"
+
+	"github.com/volatiletech/null/v8"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
@@ -29,18 +38,12 @@ import (
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	turbine "github.com/meroxa/turbine/deploy"
-	"github.com/volatiletech/null/v8"
-	"io"
-	"net/http"
-	"os"
-	"path"
-	"path/filepath"
-	"time"
 )
 
 const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" // nolint:gosec
+	pollDuration            = 2 * time.Second
 )
 
 type deployApplicationClient interface {
@@ -53,8 +56,8 @@ type deployApplicationClient interface {
 type Deploy struct {
 	flags struct {
 		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
-		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app" hidden:"true"`
-		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"`
+		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
+		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
 	}
 
 	client   deployApplicationClient
@@ -199,9 +202,9 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 }
 
 // uploadSource creates first a Dockerfile to then, package the entire folder which will be later uploaded
-// this should ignore .git files and fixtures/
+// this should ignore .git files and fixtures/.
 func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
-	// Before creating a .tar.zip, we make sure it contains a Dockerfile
+	// Before creating a .tar.zip, we make sure it contains a Dockerfile.
 	err := turbine.CreateDockerfile(appPath)
 	if err != nil {
 		return err
@@ -223,9 +226,9 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
-	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777))
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
 	defer func(fileToWrite *os.File) {
-		err := fileToWrite.Close()
+		err = fileToWrite.Close()
 		if err != nil {
 			panic(err.Error())
 		}
@@ -234,7 +237,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	if err != nil {
 		panic(err)
 	}
-	if _, err := io.Copy(fileToWrite, &buf); err != nil {
+	if _, err = io.Copy(fileToWrite, &buf); err != nil {
 		panic(err)
 	}
 
@@ -260,13 +263,13 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 		return err
 	}
 	defer func(fh *os.File) {
-		err := fh.Close()
+		err = fh.Close()
 		if err != nil {
-
+			d.logger.Warn(ctx, err.Error())
 		}
 	}(fh)
 
-	req, err := http.NewRequest("PUT", url, fh)
+	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
 	if err != nil {
 		return err
 	}
@@ -284,7 +287,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 	req.ContentLength = fi.Size()
 
 	client := &http.Client{}
-	res, err := client.Do(req)
+	res, err := client.Do(req) //nolint:bodyclose
 	if err != nil {
 		return err
 	}
@@ -294,7 +297,6 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 		if err != nil {
 			d.logger.Error(ctx, err.Error())
 		}
-
 	}(res.Body)
 
 	return nil
@@ -307,6 +309,9 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	}
 
 	err = d.uploadSource(ctx, appPath, s.PutUrl)
+	if err != nil {
+		return "", err
+	}
 
 	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
 	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
@@ -327,12 +332,11 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		switch b.Status.State {
 		case "error":
 			return "", fmt.Errorf("build with uuid %q errored ", b.Uuid)
-		}
-		if b.Status.State == "complete" {
+		case "complete":
 			fmt.Println("Image built! ")
 			return build.Image, nil
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(pollDuration)
 	}
 }
 
@@ -350,8 +354,9 @@ func (d *Deploy) deploy(ctx context.Context, appPath string, l log.Logger) (stri
 		return "", err
 	}
 
+	var ok bool
 	// check for image instances
-	if ok, err := turbineGo.NeedsToBuild(appPath, d.appName); ok {
+	if ok, err = turbineGo.NeedsToBuild(appPath, d.appName); ok {
 		if err != nil {
 			l.Errorf(ctx, err.Error())
 			return "", err
