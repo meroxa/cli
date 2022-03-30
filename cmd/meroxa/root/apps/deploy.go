@@ -228,10 +228,10 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	}(fileToWrite)
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if _, err = io.Copy(fileToWrite, &buf); err != nil {
-		panic(err)
+		return err
 	}
 
 	// We clean up Dockerfile as last step
