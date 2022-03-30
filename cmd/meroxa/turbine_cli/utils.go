@@ -318,7 +318,7 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	appDir := filepath.Base(src)
 
 	// Change to parent's app directory
-	err := os.Chdir(filepath.Dir(src))
+	pwd, err := switchToAppDirectory(filepath.Dir(appDir))
 	if err != nil {
 		return err
 	}
@@ -364,5 +364,9 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	if err := tarWriter.Close(); err != nil {
 		return err
 	}
-	return zipWriter.Close()
+	if err := zipWriter.Close(); err != nil {
+		return err
+	}
+
+	return os.Chdir(pwd)
 }

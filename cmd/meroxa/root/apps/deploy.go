@@ -212,16 +212,9 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
 
-	pwd, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
 	var buf bytes.Buffer
 	d.logger.Infof(ctx, "Packaging application located at %q...", appPath)
-	_ = turbineCLI.CreateTarAndZipFile(appPath, &buf)
-
-	err = os.Chdir(pwd)
+	err = turbineCLI.CreateTarAndZipFile(appPath, &buf)
 	if err != nil {
 		return err
 	}
