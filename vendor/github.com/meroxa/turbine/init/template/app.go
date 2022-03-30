@@ -1,6 +1,12 @@
 package main
 
 import (
+// Dependencies of the example data app
+	"crypto/md5"
+	"encoding/hex"
+	"log"
+	
+// Dependencies of Turbine
 	"github.com/meroxa/turbine"
 	"github.com/meroxa/turbine/runner"
 )
@@ -64,6 +70,20 @@ func (a App) Run(v turbine.Turbine) error {
 
 type Anonymize struct{}
 
-func (f Anonymize) Process(rr []turbine.Record) ([]turbine.Record, []turbine.RecordWithError) {
-	return rr, nil
+func (f Anonymize) Process(stream []turbine.Record) ([]turbine.Record, []turbine.RecordWithError) {
+	for i, r := range stream {
+		hashedEmail := consistentHash(r.Payload.Get("email").(string))
+		err := r.Payload.Set("email", hashedEmail)
+		if err != nil {
+			log.Println("error setting value: ", err)
+			break
+		}
+		stream[i] = r
+	}
+	return stream, nil
+}
+
+func consistentHash(s string) string {
+	h := md5.Sum([]byte(s))
+	return hex.EncodeToString(h[:])
 }
