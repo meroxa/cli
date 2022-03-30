@@ -15,6 +15,8 @@ import (
 	"github.com/meroxa/funtime/proto"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type ProtoWrapper struct {
@@ -44,6 +46,11 @@ func ServeFunc(f turbine.Function) error {
 	{
 		gsrv := grpc.NewServer()
 		proto.RegisterFunctionServer(gsrv, fn)
+
+		// health check endpoint
+		hsrv := health.NewServer()
+		hsrv.SetServingStatus("function", healthpb.HealthCheckResponse_SERVING)
+		healthpb.RegisterHealthServer(gsrv, hsrv)
 
 		g.Add(func() error {
 			ln, err := net.Listen("tcp", addr)
