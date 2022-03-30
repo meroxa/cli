@@ -84,7 +84,7 @@ func (r *Run) Execute(ctx context.Context) error {
 	case GoLang:
 		return turbineGo.Run(ctx, r.path, r.logger)
 	case "js", JavaScript, NodeJs:
-		return turbineJS.Build(ctx, r.logger)
+		return turbineJS.Build(ctx, r.logger, r.path)
 	case "py", Python:
 		return turbinepy.Run(ctx, r.logger, r.path)
 	default:
