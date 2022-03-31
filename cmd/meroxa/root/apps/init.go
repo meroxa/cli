@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"regexp"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
@@ -83,11 +85,34 @@ func (i *Init) GitInit(ctx context.Context, path string) error {
 	return nil
 }
 
+func validateAppName(name string) (string, error) {
+	var err error
+
+	// must be lowercase because of reusing the name for the Docker image
+	name = strings.ToLower(name)
+
+	// Platform API requires the first character be a letter and
+	// that the whole name be alphanumeric except for '-' as separators.
+	r := regexp.MustCompile(`^([a-z][a-z0-9-]*)$`)
+	matches := r.FindStringSubmatch(name)
+	if len(matches) == 0 {
+		err = fmt.Errorf(
+			"invaid application name: %s;"+
+				" should start with a letter, be alphanumeric, and only have dashes as separators",
+			name)
+	}
+	return name, err
+}
+
 func (i *Init) Execute(ctx context.Context) error {
 	name := i.args.appName
 	lang := i.flags.Lang
 
-	var err error
+	name, err := validateAppName(name)
+	if err != nil {
+		return err
+	}
+
 	i.path, err = turbineCLI.GetPath(i.flags.Path)
 	if err != nil {
 		return err
