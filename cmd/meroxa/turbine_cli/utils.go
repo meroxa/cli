@@ -303,13 +303,23 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 	err := cmd.Run()
-	successMsg := stdout.String()
-	errMsg := stderr.String()
-	if err != nil || errMsg != "" {
-		return "", errors.New(successMsg + errMsg)
+	stdOutMsg := stdout.String()
+	stdErrMsg := stderr.String()
+	if err != nil || stdErrMsg != "" {
+		var errMsg, errLog string
+		if err != nil {
+			errMsg = err.Error()
+		}
+		errLog = stdOutMsg
+		if stdErrMsg != "" {
+			errLog += stdErrMsg
+		} else if errMsg != "" {
+			errLog = errMsg
+		}
+		return "", errors.New(errLog)
 	}
-	l.Info(ctx, successMsg)
-	return successMsg, nil
+	l.Info(ctx, stdOutMsg)
+	return stdOutMsg, nil
 }
 
 // CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
