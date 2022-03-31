@@ -26,6 +26,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/volatiletech/null/v8"
@@ -192,7 +193,7 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
 
 	res, err := d.client.CreateApplication(ctx, &input)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "already exists") {
 		return err
 	}
 
