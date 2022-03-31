@@ -960,6 +960,70 @@ func extendedFunctionsTable(functions []*meroxa.Function) string {
 	return subTable
 }
 
+// BuildsTable displays multiple build records for future listing per app.
+func BuildsTable(builds []*meroxa.Build, hideHeaders bool) string {
+	if len(builds) == 0 {
+		return ""
+	}
+
+	table := simpletable.New()
+	if !hideHeaders {
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "UUID"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
+				{Align: simpletable.AlignCenter, Text: "CREATED AT"},
+				{Align: simpletable.AlignCenter, Text: "UPDATED AT"},
+			},
+		}
+	}
+
+	for _, p := range builds {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: p.Uuid},
+			{Align: simpletable.AlignCenter, Text: p.Status.State},
+			{Align: simpletable.AlignCenter, Text: p.CreatedAt},
+			{Align: simpletable.AlignCenter, Text: p.UpdatedAt},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+
+	table.SetStyle(simpletable.StyleCompact)
+	return table.String()
+}
+
+func BuildTable(build *meroxa.Build) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: build.Uuid},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Created At:"},
+			{Text: build.CreatedAt},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Updated At:"},
+			{Text: build.UpdatedAt},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "State:"},
+			{Text: build.Status.State},
+		},
+	}
+	if build.Status.Details != "" {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Status Details:"},
+			{Text: build.Status.Details},
+		}
+		mainTable.Body.Cells = append(mainTable.Body.Cells, r)
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+	return mainTable.String()
+}
+
 func truncateString(oldString string, l int) string {
 	str := oldString
 
