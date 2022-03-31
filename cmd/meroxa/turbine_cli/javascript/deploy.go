@@ -11,6 +11,8 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
+// npx turbine whatever path => CLI could carry on with creating the tar.zip, post source, build...
+// once that's complete, it's when we'd call `npx turbine deploy path`.
 func Deploy(ctx context.Context, path string, l log.Logger) error {
 	cmd := exec.Command("npx", "turbine", "deploy", path)
 
@@ -24,3 +26,7 @@ func Deploy(ctx context.Context, path string, l log.Logger) error {
 	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
 	return err
 }
+
+// 1. we build binary (Go) // we set up the app structure (JS/Python) <- CLI could do this
+// 2. we create the docker file (each turbine-lib does this)
+// 3. we call the binary passing --platform ("deploying")

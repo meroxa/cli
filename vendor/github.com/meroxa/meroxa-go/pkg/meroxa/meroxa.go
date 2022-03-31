@@ -56,6 +56,9 @@ type Client interface {
 	GetApplication(ctx context.Context, name string) (*Application, error)
 	ListApplications(ctx context.Context) ([]*Application, error)
 
+	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
+	GetBuild(ctx context.Context, uuid string) (*Build, error)
+
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*Connector, error)
@@ -100,6 +103,8 @@ type Client interface {
 	ValidateResource(ctx context.Context, nameOrID string) (*Resource, error)
 
 	ListResourceTypes(ctx context.Context) ([]string, error)
+
+	CreateSource(ctx context.Context) (*Source, error)
 
 	ListTransforms(ctx context.Context) ([]*Transform, error)
 

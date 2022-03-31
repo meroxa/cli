@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/docker/docker/pkg/archive"
@@ -29,8 +30,8 @@ func (gd *Deploy) getAuthConfig() string {
 	return base64.URLEncoding.EncodeToString(authConfigBytes)
 }
 
-// getDockerImageName Will create the image via DockerHub.
-func (gd *Deploy) getDockerImageName(ctx context.Context, l log.Logger, appPath, appName string) (string, error) {
+// GetDockerImageName Will create the image via DockerHub.
+func (gd *Deploy) GetDockerImageName(ctx context.Context, l log.Logger, appPath, appName string) (string, error) {
 	// fqImageName will be eventually taken from the build endpoint.
 	fqImageName := gd.DockerHubUserNameEnv + "/" + appName
 
@@ -96,7 +97,9 @@ func (*Deploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName stri
 	if err != nil {
 		l.Errorf(ctx, "unable to read image build response; %s", err)
 	}
-	return nil
+
+	// Cleanup
+	return os.Remove(filepath.Join(pwd, "Dockerfile"))
 }
 
 func (gd *Deploy) pushImage(l log.Logger, imageName string) error {

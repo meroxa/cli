@@ -1,11 +1,14 @@
 package turbinecli
 
 import (
+	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -307,4 +310,63 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	}
 	l.Info(ctx, successMsg)
 	return successMsg, nil
+}
+
+// CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
+func CreateTarAndZipFile(src string, buf io.Writer) error {
+	// Grab the directory we care about (app's directory)
+	appDir := filepath.Base(src)
+
+	// Change to parent's app directory
+	pwd, err := switchToAppDirectory(filepath.Dir(appDir))
+	if err != nil {
+		return err
+	}
+
+	zipWriter := gzip.NewWriter(buf)
+	tarWriter := tar.NewWriter(zipWriter)
+
+	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
+		if fi.IsDir() && ((fi.Name() == ".git") || (fi.Name() == "fixtures")) {
+			return filepath.SkipDir
+		}
+		header, err := tar.FileInfoHeader(fi, file)
+		if err != nil {
+			return err
+		}
+
+		header.Name = filepath.ToSlash(file)
+		if err := tarWriter.WriteHeader(header); err != nil { //nolint:govet
+			return err
+		}
+		if !fi.IsDir() {
+			var data *os.File
+			data, err = os.Open(file)
+			defer func(data *os.File) {
+				err = data.Close()
+				if err != nil {
+					panic(err.Error())
+				}
+			}(data)
+			if err != nil {
+				return err
+			}
+			if _, err := io.Copy(tarWriter, data); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := tarWriter.Close(); err != nil {
+		return err
+	}
+	if err := zipWriter.Close(); err != nil {
+		return err
+	}
+
+	return os.Chdir(pwd)
 }
