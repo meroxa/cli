@@ -29,6 +29,7 @@ import (
 var (
 	_ builder.CommandWithDocs    = (*Describe)(nil)
 	_ builder.CommandWithArgs    = (*Describe)(nil)
+	_ builder.CommandWithFlags   = (*Describe)(nil)
 	_ builder.CommandWithClient  = (*Describe)(nil)
 	_ builder.CommandWithLogger  = (*Describe)(nil)
 	_ builder.CommandWithExecute = (*Describe)(nil)
@@ -36,6 +37,9 @@ var (
 
 type describeApplicationClient interface {
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
+	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
+	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
 }
 
 type Describe struct {
@@ -45,6 +49,14 @@ type Describe struct {
 	args struct {
 		NameOrUUID string
 	}
+
+	flags struct {
+		Extended bool `long:"extended" usage:"whether to show additional details about the Meroxa Data Application"`
+	}
+}
+
+func (d *Describe) Flags() []builder.Flag {
+	return builder.BuildFlags(&d.flags)
 }
 
 func (d *Describe) Usage() string {
@@ -58,12 +70,44 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
+	extended := d.flags.Extended
+
 	app, err := d.client.GetApplication(ctx, d.args.NameOrUUID)
 	if err != nil {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.AppTable(app))
+	output := utils.AppTable(app)
+	if extended {
+		resources := make([]*meroxa.Resource, 0)
+		connectors := make(map[string]*meroxa.Connector)
+		functions := make([]*meroxa.Function, 0)
+
+		for _, id := range app.Resources {
+			resource, err := d.client.GetResourceByNameOrID(ctx, id.Name.String)
+			if err != nil {
+				return err
+			}
+			resources = append(resources, resource)
+		}
+		for _, id := range app.Connectors {
+			connector, err := d.client.GetConnectorByNameOrID(ctx, id.Name.String)
+			if err != nil {
+				return err
+			}
+			connectors[connector.ResourceName] = connector
+		}
+		for _, id := range app.Functions {
+			function, err := d.client.GetFunction(ctx, id.UUID.String)
+			if err != nil {
+				return err
+			}
+			functions = append(functions, function)
+		}
+
+		output = utils.ExtendedAppTable(app, resources, connectors, functions)
+	}
+	d.logger.Info(ctx, output)
 	d.logger.JSON(ctx, app)
 
 	return nil
