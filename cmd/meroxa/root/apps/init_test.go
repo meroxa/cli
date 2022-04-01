@@ -3,6 +3,7 @@ package apps
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -191,6 +192,61 @@ func TestGoInit(t *testing.T) {
 				}
 			}
 			os.RemoveAll(tt.path)
+		})
+	}
+}
+
+func TestAppNameValidation(t *testing.T) {
+	tests := []struct {
+		desc       string
+		inputName  string
+		outputName string
+		err        error
+	}{
+		{
+			desc:       "Valid app name",
+			inputName:  "perfect-name",
+			outputName: "perfect-name",
+			err:        nil,
+		},
+		{
+			desc:       "Valid capitalized app name",
+			inputName:  "Perfect-name",
+			outputName: "perfect-name",
+			err:        nil,
+		},
+		{
+			desc:       "Invalid app name - leading number",
+			inputName:  "3otherwisegoodname",
+			outputName: "",
+			err: fmt.Errorf("invaid application name: %s; should start with a letter, be alphanumeric,"+
+				" and only have dashes as separators", "3otherwisegoodname"),
+		},
+		{
+			desc:       "Invalid app name - invalid characters",
+			inputName:  "!ch@os",
+			outputName: "",
+			err: fmt.Errorf("invaid application name: %s; should start with a letter, be alphanumeric,"+
+				" and only have dashes as separators", "!ch@os"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			output, err := validateAppName(tt.inputName)
+			if err != nil {
+				if tt.err == nil {
+					t.Fatalf("unexpected error \"%s\"", err)
+				} else if tt.err.Error() != err.Error() {
+					t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+				}
+			}
+
+			if err == nil && tt.err == nil {
+				if output != tt.outputName {
+					t.Fatalf("expected \"%s\" got \"%s\"", tt.outputName, output)
+				}
+			}
 		})
 	}
 }
