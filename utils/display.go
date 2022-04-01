@@ -876,7 +876,8 @@ func AppTable(app *meroxa.Application) string {
 	return mainTable.String()
 }
 
-func ExtendedAppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors map[string]*meroxa.Connector, functions []*meroxa.Function) string {
+func ExtendedAppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors map[string]*meroxa.Connector,
+	functions []*meroxa.Function) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
