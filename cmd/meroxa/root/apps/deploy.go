@@ -49,6 +49,7 @@ const (
 
 type deployApplicationClient interface {
 	CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
+	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
@@ -193,7 +194,18 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
 
 	res, err := d.client.CreateApplication(ctx, &input)
-	if err != nil && !strings.Contains(err.Error(), "already exists") {
+	if err != nil {
+		if strings.Contains(err.Error(), "already exists") {
+			// Double check that the created application has the expected pipeline.
+			app, err := d.client.GetApplication(ctx, appName)
+			if err != nil {
+				return err
+			}
+			if app.Pipeline.UUID.String != pipelineUUID {
+				return fmt.Errorf("unable to finish creating the %s Application because its entities are in an"+
+					" unrecoverable state; try deleting and re-deploying", appName)
+			}
+		}
 		return err
 	}
 
