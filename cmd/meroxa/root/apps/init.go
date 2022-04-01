@@ -97,7 +97,7 @@ func validateAppName(name string) (string, error) {
 	matches := r.FindStringSubmatch(name)
 	if len(matches) == 0 {
 		err = fmt.Errorf(
-			"invaid application name: %s;"+
+			"invalid application name: %s;"+
 				" should start with a letter, be alphanumeric, and only have dashes as separators",
 			name)
 	}
