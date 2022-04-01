@@ -953,7 +953,7 @@ func extendedFunctionsTable(functions []*meroxa.Function) string {
 	for _, f := range functions {
 		subTable += fmt.Sprintf("\t    %s\n", f.Name)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", f.UUID)
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", string(f.Status.State))
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", f.Status.State)
 	}
 
 	return subTable
