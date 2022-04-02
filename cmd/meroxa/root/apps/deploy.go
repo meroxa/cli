@@ -197,7 +197,8 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 	if err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			// Double check that the created application has the expected pipeline.
-			app, err := d.client.GetApplication(ctx, appName)
+			var app *meroxa.Application
+			app, err = d.client.GetApplication(ctx, appName)
 			if err != nil {
 				return err
 			}
