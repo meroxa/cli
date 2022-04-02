@@ -50,6 +50,8 @@ func GetLang(flag, pwd string) (string, error) {
 
 	lang, err := GetLangFromAppJSON(pwd)
 	if err != nil {
+		return "", err
+	} else if lang == "" {
 		return "", fmt.Errorf("flag --lang is required unless lang is specified in your app.json")
 	}
 	return lang, nil
@@ -117,8 +119,8 @@ func readConfigFile(appPath string) (AppConfig, error) {
 		appConfigPath := path.Join(appPath, "app.json")
 		appConfigBytes, err := os.ReadFile(appConfigPath)
 		if err != nil {
-			return appConfig, fmt.Errorf("%v\n"+
-				"We couldn't find an app.json file on path %q. Maybe try using a different value for `--path`", err, appPath)
+			return appConfig, fmt.Errorf("could not find an app.json file on path %q."+
+				" Try a different value for `--path`", appPath)
 		}
 		if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
 			return appConfig, err
@@ -233,6 +235,17 @@ func GetGitSha(appPath string) (string, error) {
 }
 
 func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
+	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		l.Warnf(ctx, "$GOPATH not set up; skipping go module initialization")
+		return nil
+	}
+	i := strings.Index(appPath, goPath)
+	if i == -1 || i != 0 {
+		l.Warnf(ctx, "%s is not under $GOPATH; skipping go module initialization", appPath)
+		return nil
+	}
+
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
