@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/alexeyco/simpletable"
-
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -849,7 +848,7 @@ func AppTable(app *meroxa.Application) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Git SHA:"},
-			{Text: app.GitSha},
+			{Text: strings.TrimSpace(app.GitSha)},
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "Created At:"},
@@ -873,53 +872,92 @@ func AppTable(app *meroxa.Application) string {
 		})
 	}
 
-	if len(app.Connectors) != 0 {
-		names := make([]string, 0)
-		for _, f := range app.Connectors {
-			id, err := f.GetNameOrUUID()
-			if err != nil {
-				continue
-			}
-			names = append(names, id)
-		}
-
-		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: "Connectors:"},
-			{Text: strings.Join(names, ", ")},
-		})
-	}
-	if len(app.Functions) != 0 {
-		names := make([]string, 0)
-		for _, f := range app.Functions {
-			id, err := f.GetNameOrUUID()
-			if err != nil {
-				continue
-			}
-			names = append(names, id)
-		}
-
-		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: "Functions:"},
-			{Text: strings.Join(names, ", ")},
-		})
-	}
-	if len(app.Resources) != 0 {
-		names := make([]string, 0)
-		for _, f := range app.Resources {
-			id, err := f.GetNameOrUUID()
-			if err != nil {
-				continue
-			}
-			names = append(names, id)
-		}
-
-		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: "Resources:"},
-			{Text: strings.Join(names, ", ")},
-		})
-	}
 	mainTable.SetStyle(simpletable.StyleCompact)
 	return mainTable.String()
+}
+
+func ExtendedAppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors map[string]*meroxa.Connector,
+	functions []*meroxa.Function) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: app.UUID},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Name:"},
+			{Text: app.Name},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Language:"},
+			{Text: app.Language},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Git SHA:"},
+			{Text: strings.TrimSpace(app.GitSha)},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Created At:"},
+			{Text: app.CreatedAt.String()},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Updated At:"},
+			{Text: app.UpdatedAt.String()},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "State:"},
+			{Text: strings.Title(string(app.Status.State))},
+		},
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+	output := mainTable.String()
+
+	subTable := extendedResourcesTable(resources, connectors)
+	if subTable != "" {
+		output += "\n" + subTable
+	}
+	subTable = extendedFunctionsTable(functions)
+	if subTable != "" {
+		output += "\n" + subTable
+	}
+	return output
+}
+
+func extendedResourcesTable(resources []*meroxa.Resource, connectors map[string]*meroxa.Connector) string {
+	if len(resources) == 0 {
+		return ""
+	}
+	subTable := "\tResources\n"
+
+	for _, r := range resources {
+		c, ok := connectors[r.Name]
+		if !ok {
+			panic("internal error")
+		}
+
+		subTable += fmt.Sprintf("\t    %s\n", r.Name)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", string(r.Type))
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", string(c.State))
+		subTable += fmt.Sprintf("\t\t%5s:   %s", "As", string(c.Type))
+	}
+
+	return subTable
+}
+
+func extendedFunctionsTable(functions []*meroxa.Function) string {
+	if len(functions) == 0 {
+		return ""
+	}
+	subTable := "\tFunctions\n"
+
+	for _, f := range functions {
+		subTable += fmt.Sprintf("\t    %s\n", f.Name)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", f.UUID)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", f.Status.State)
+	}
+
+	return subTable
 }
 
 func truncateString(oldString string, l int) string {

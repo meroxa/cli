@@ -371,7 +371,6 @@ func (d *Deploy) deploy(ctx context.Context, appPath string, l log.Logger) (stri
 	// creates all resources
 	output, err := turbineGo.RunDeployApp(ctx, l, appPath, d.appName, fqImageName)
 	if err != nil {
-		l.Errorf(ctx, "unable to deploy app; %s", err)
 		return output, err
 	}
 	return output, nil

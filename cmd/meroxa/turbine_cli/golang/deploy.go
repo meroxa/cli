@@ -7,8 +7,6 @@ import (
 	"os/exec"
 	"regexp"
 
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
-
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 )
@@ -37,11 +35,11 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	stdout, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	stdout, err := cmd.CombinedOutput()
 	if err == nil {
-		l.Info(ctx, "deploy complete!")
+		l.Infof(ctx, "%s\ndeploy complete!", string(stdout))
 	}
-	return stdout, err
+	return string(stdout), err
 }
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
