@@ -219,14 +219,14 @@ func TestAppNameValidation(t *testing.T) {
 			desc:       "Invalid app name - leading number",
 			inputName:  "3otherwisegoodname",
 			outputName: "",
-			err: fmt.Errorf("invaid application name: %s; should start with a letter, be alphanumeric,"+
+			err: fmt.Errorf("invalid application name: %s; should start with a letter, be alphanumeric,"+
 				" and only have dashes as separators", "3otherwisegoodname"),
 		},
 		{
 			desc:       "Invalid app name - invalid characters",
 			inputName:  "!ch@os",
 			outputName: "",
-			err: fmt.Errorf("invaid application name: %s; should start with a letter, be alphanumeric,"+
+			err: fmt.Errorf("invalid application name: %s; should start with a letter, be alphanumeric,"+
 				" and only have dashes as separators", "!ch@os"),
 		},
 	}
