@@ -62,7 +62,7 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, resource.UUID) {
 					t.Errorf("%s, not found", resource.UUID)
 				}
-				if !strings.Contains(out, strings.Title(string(resource.Status.State))) {
+				if !strings.Contains(out, formatter.String(string(resource.Status.State))) {
 					t.Errorf("state %s, not found", resource.Status.State)
 				}
 			case "ID_Alignment":
@@ -72,7 +72,7 @@ func TestResourcesTable(t *testing.T) {
 				if !strings.Contains(out, resIDAlign.UUID) {
 					t.Errorf("%s, not found", resIDAlign.UUID)
 				}
-				if !strings.Contains(out, strings.Title(string(resIDAlign.Status.State))) {
+				if !strings.Contains(out, formatter.String(string(resIDAlign.Status.State))) {
 					t.Errorf("state %s, not found", resource.Status.State)
 				}
 			}
@@ -115,7 +115,7 @@ func TestResourcesTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, resource.UUID) {
 		t.Errorf("%s, not found", resource.UUID)
 	}
-	if !strings.Contains(out, strings.Title(string(resource.Status.State))) {
+	if !strings.Contains(out, formatter.String(string(resource.Status.State))) {
 		t.Errorf("state %s, not found", resource.Status.State)
 	}
 }
