@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"time"
 
 	"github.com/volatiletech/null/v8"
 
@@ -174,6 +175,20 @@ func GenerateApplication() meroxa.Application {
 	return meroxa.Application{
 		Name:     "application-name",
 		Language: "golang",
+	}
+}
+
+func GenerateBuild() meroxa.Build {
+	return meroxa.Build{
+		Uuid: "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
+		Status: meroxa.BuildStatus{
+			State:   "status",
+			Details: "details",
+		},
+		CreatedAt:  time.Time{}.String(),
+		UpdatedAt:  time.Time{}.String(),
+		SourceBlob: meroxa.SourceBlob{Url: "url"},
+		Image:      "image",
 	}
 }
 

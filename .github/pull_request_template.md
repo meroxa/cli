@@ -17,6 +17,7 @@ Fixes <GitHub Issue>
 
 - [ ]  Unit Tests
 - [ ]  Tested in staging
+- [ ]  Tested in minikube
 
 ## Demo
 

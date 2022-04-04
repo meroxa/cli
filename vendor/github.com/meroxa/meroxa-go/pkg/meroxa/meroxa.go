@@ -58,6 +58,7 @@ type Client interface {
 
 	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
 	GetBuild(ctx context.Context, uuid string) (*Build, error)
+	GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error)
 
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error

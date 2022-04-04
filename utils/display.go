@@ -7,9 +7,14 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
+
+var formatter = cases.Title(language.Und, cases.NoLower)
 
 func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
 	if len(ends) == 0 {
@@ -49,7 +54,7 @@ func EndpointsTable(ends []meroxa.Endpoint, hideHeaders bool) string {
 			{Text: string(end.Protocol)},
 			{Text: end.Stream},
 			{Text: u},
-			{Text: strings.Title(strconv.FormatBool(end.Ready))},
+			{Text: formatter.String(strconv.FormatBool(end.Ready))},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -89,14 +94,14 @@ func ResourceTable(res *meroxa.Resource) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: strings.Title(string(res.Status.State))},
+			{Text: formatter.String(string(res.Status.State))},
 		},
 	}
 
 	if d := res.Status.Details; d != "" {
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "State details:"},
-			{Text: strings.Title(d)},
+			{Text: formatter.String(d)},
 		})
 	}
 
@@ -161,7 +166,7 @@ func PipelineTable(p *meroxa.Pipeline) string {
 
 	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 		{Align: simpletable.AlignRight, Text: "State:"},
-		{Text: strings.Title(string(p.State))},
+		{Text: formatter.String(string(p.State))},
 	})
 
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -212,7 +217,7 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 				{Text: env},
 				{Text: res.URL},
 				{Align: simpletable.AlignCenter, Text: tunnel},
-				{Align: simpletable.AlignCenter, Text: strings.Title(string(res.Status.State))},
+				{Align: simpletable.AlignCenter, Text: formatter.String(string(res.Status.State))},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
@@ -563,7 +568,7 @@ func FunctionTable(fun *meroxa.Function) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: strings.Title(fun.Status.State)},
+			{Text: formatter.String(fun.Status.State)},
 		},
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -860,7 +865,7 @@ func AppTable(app *meroxa.Application) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: strings.Title(string(app.Status.State))},
+			{Text: formatter.String(string(app.Status.State))},
 		},
 	}
 
@@ -868,7 +873,7 @@ func AppTable(app *meroxa.Application) string {
 	if details != "" {
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "State details:"},
-			{Text: strings.Title(details)},
+			{Text: formatter.String(details)},
 		})
 	}
 
@@ -906,7 +911,7 @@ func ExtendedAppTable(app *meroxa.Application, resources []*meroxa.Resource, con
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: strings.Title(string(app.Status.State))},
+			{Text: formatter.String(string(app.Status.State))},
 		},
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -958,6 +963,70 @@ func extendedFunctionsTable(functions []*meroxa.Function) string {
 	}
 
 	return subTable
+}
+
+// BuildsTable displays multiple build records for future listing per app.
+func BuildsTable(builds []*meroxa.Build, hideHeaders bool) string {
+	if len(builds) == 0 {
+		return ""
+	}
+
+	table := simpletable.New()
+	if !hideHeaders {
+		table.Header = &simpletable.Header{
+			Cells: []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: "UUID"},
+				{Align: simpletable.AlignCenter, Text: "STATE"},
+				{Align: simpletable.AlignCenter, Text: "CREATED AT"},
+				{Align: simpletable.AlignCenter, Text: "UPDATED AT"},
+			},
+		}
+	}
+
+	for _, p := range builds {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: p.Uuid},
+			{Align: simpletable.AlignCenter, Text: p.Status.State},
+			{Align: simpletable.AlignCenter, Text: p.CreatedAt},
+			{Align: simpletable.AlignCenter, Text: p.UpdatedAt},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+
+	table.SetStyle(simpletable.StyleCompact)
+	return table.String()
+}
+
+func BuildTable(build *meroxa.Build) string {
+	mainTable := simpletable.New()
+	mainTable.Body.Cells = [][]*simpletable.Cell{
+		{
+			{Align: simpletable.AlignRight, Text: "UUID:"},
+			{Text: build.Uuid},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Created At:"},
+			{Text: build.CreatedAt},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "Updated At:"},
+			{Text: build.UpdatedAt},
+		},
+		{
+			{Align: simpletable.AlignRight, Text: "State:"},
+			{Text: build.Status.State},
+		},
+	}
+	if build.Status.Details != "" {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: "Status Details:"},
+			{Text: build.Status.Details},
+		}
+		mainTable.Body.Cells = append(mainTable.Body.Cells, r)
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+	return mainTable.String()
 }
 
 func truncateString(oldString string, l int) string {

@@ -13,7 +13,7 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20220330051015-d0051c2a233b
+	github.com/meroxa/meroxa-go v0.0.0-20220404191043-2fff202066b1
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -29,6 +29,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine v0.0.0-20220330190835-414127120d1e
 	github.com/volatiletech/null/v8 v8.1.2
+	golang.org/x/text v0.3.7
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -78,7 +79,6 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
 	golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f // indirect
-	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220329172620-7be39ac1afc7 // indirect
@@ -88,5 +88,3 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/meroxa/meroxa-go => ../meroxa-go
