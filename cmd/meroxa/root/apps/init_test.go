@@ -112,11 +112,12 @@ func TestGitInit(t *testing.T) {
 func TestGoInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	tests := []struct {
-		desc        string
-		path        string
-		skipModInit bool
-		vendor      bool
-		err         error
+		desc                 string
+		path                 string
+		skipModInit          bool
+		effectiveSkipModInit bool
+		vendor               bool
+		err                  error
 	}{
 		{
 			desc: "Init without go mod init",
@@ -154,6 +155,16 @@ func TestGoInit(t *testing.T) {
 			vendor:      true,
 			err:         nil,
 		},
+		{
+			desc: "Init without go mod init because the path is not under GOPATH and with vendor flag",
+			path: func() string {
+				return filepath.Join("/tmp", uuid.New().String()) //nolint:gocritic
+			}(),
+			skipModInit:          false,
+			effectiveSkipModInit: true,
+			vendor:               true,
+			err:                  nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -176,7 +187,7 @@ func TestGoInit(t *testing.T) {
 			}
 
 			if err == nil && tt.err == nil {
-				if !tt.skipModInit {
+				if !tt.skipModInit && !tt.effectiveSkipModInit {
 					p, _ := filepath.Abs(tt.path + "/" + cc.args.appName + "/go.mod")
 					if _, err := os.Stat(p); os.IsNotExist(err) {
 						t.Fatalf("expected file \"%s\" to be created", p)

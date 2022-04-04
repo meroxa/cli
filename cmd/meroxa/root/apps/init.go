@@ -46,9 +46,10 @@ func (*Init) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Initialize a Meroxa Data Application",
 		Example: "meroxa apps init my-app --path ~/code --lang js" +
-			"meroxa apps init my-app --lang go # will be initialized in current directory" +
+			"meroxa apps init my-app --lang go # will be initialized in a dir called my-app in the current directory" +
+			"meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org" +
 			"meroxa apps init my-app --lang go --skip-mod-init # will not initialize the new go module" +
-			"meroxa apps init my-app --lang go --mod-vendor # will initialize the new go module and download dependendies to the vendor directory",
+			"meroxa apps init my-app --lang go --mod-vendor # will initialize the new go module and download dependencies to the vendor directory",
 	}
 }
 
@@ -111,8 +112,14 @@ func (i *Init) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	err = i.GitInit(ctx, i.path+"/"+name)
+	if err != nil {
+		return err
+	}
+
 	i.logger.Infof(ctx, "Application successfully initialized!\n"+
 		"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 
-	return i.GitInit(ctx, i.path+"/"+name)
+	return nil
 }
