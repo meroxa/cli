@@ -328,7 +328,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		return "", err
 	}
 
-	fmt.Print("Getting status for build: ", build.Uuid)
+	fmt.Printf("Getting status for build: %s ", build.Uuid)
 	for {
 		fmt.Printf(".")
 		b, err := d.client.GetBuild(ctx, build.Uuid)
@@ -340,7 +340,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		case "error":
 			return "", fmt.Errorf("build with uuid %q errored ", b.Uuid)
 		case "complete":
-			fmt.Println("Image built! ")
+			fmt.Println("\nImage built! ")
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)

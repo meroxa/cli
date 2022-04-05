@@ -35,11 +35,13 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	stdout, err := cmd.CombinedOutput()
-	if err == nil {
-		l.Infof(ctx, "%s\ndeploy complete!", string(stdout))
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		l.Errorf(ctx, "%s", string(output))
+		return "", fmt.Errorf("deploy failed")
 	}
-	return string(stdout), err
+	l.Infof(ctx, "%s\ndeploy complete!", string(output))
+	return string(output), nil
 }
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
@@ -56,13 +58,14 @@ func NeedsToBuild(appPath, appName string) (bool, error) {
 
 	// TODO: Implement in Turbine something that returns a boolean rather than having to regex its output
 	re := regexp.MustCompile(`\[(.+?)]`)
-	stdout, err := cmd.CombinedOutput()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return false, err
+		fmt.Println(string(output))
+		return false, fmt.Errorf("build failed")
 	}
 
 	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function.
-	hasFunctions := len(re.FindAllString(string(stdout), -1)) > 0
+	hasFunctions := len(re.FindAllString(string(output), -1)) > 0
 
 	return hasFunctions, nil
 }
