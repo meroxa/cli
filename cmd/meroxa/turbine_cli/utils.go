@@ -265,13 +265,13 @@ func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor 
 			l.Error(ctx, string(output))
 			return err
 		}
-		cmd = exec.Command("go", "get", "github.com/meroxa/turbine")
+		cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go")
 		output, err = cmd.CombinedOutput()
 		if err != nil {
 			l.Error(ctx, string(output))
 			return err
 		}
-		cmd = exec.Command("go", "get", "github.com/meroxa/turbine/runner")
+		cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go/runner")
 		output, err = cmd.CombinedOutput()
 		if err != nil {
 			l.Error(ctx, string(output))

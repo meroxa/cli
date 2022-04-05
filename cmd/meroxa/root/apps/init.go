@@ -13,7 +13,7 @@ import (
 	turbinejs "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
 	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
 	"github.com/meroxa/cli/log"
-	turbine "github.com/meroxa/turbine/init"
+	turbine "github.com/meroxa/turbine-go/init"
 )
 
 type Init struct {

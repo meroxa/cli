@@ -14,7 +14,7 @@ import (
 	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	turbine "github.com/meroxa/turbine/init"
+	turbine "github.com/meroxa/turbine-go/init"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"

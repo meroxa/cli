@@ -8,7 +8,7 @@ build: docs
 install:
 	go build -o $$(go env GOPATH)/bin/meroxa cmd/meroxa/main.go
 
-PRIVATE_REPOS = github.com/meroxa/meroxa-go,github.com/meroxa/turbine
+PRIVATE_REPOS = github.com/meroxa/meroxa-go,github.com/meroxa/turbine-go
 .PHONY: gomod
 gomod:
 	GOPRIVATE=$(PRIVATE_REPOS) go mod tidy && go mod vendor
