@@ -5,11 +5,23 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 )
+
+func NeedsToBuild(path string) (bool, error) {
+	// TODO: change to `hasfunctions` when it's ready
+	cmd := exec.Command("npx", "turbine", "functions", path)
+	// => "true" | "false"
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return false, err
+	}
+	return strconv.ParseBool(string(output))
+}
 
 // npx turbine whatever path => CLI could carry on with creating the tar.zip, post source, build...
 // once that's complete, it's when we'd call `npx turbine deploy path`.
@@ -26,6 +38,6 @@ func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {
 	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
 }
 
-// 1. we build binary (Go) // we set up the app structure (JS/Python) <- CLI could do this
-// 2. we create the docker file (each turbine-lib does this)
-// 3. we call the binary passing --platform ("deploying")
+// TODO: Have a script to cleanup the temp directory used (right after source is uploaded)
+
+// TODO: Add a function that creates the needed structure for a JS app (separate from the deploy step)

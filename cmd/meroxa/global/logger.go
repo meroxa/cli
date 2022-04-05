@@ -28,6 +28,7 @@ func NewLogger() log.Logger {
 		logLevel         = log.Info
 		leveledLoggerOut = os.Stdout
 		jsonLoggerOut    = io.Discard
+		spinnerLoggerOut = os.Stdout
 	)
 
 	if flagJSON {
@@ -41,5 +42,6 @@ func NewLogger() log.Logger {
 	return log.New(
 		log.NewLeveledLogger(leveledLoggerOut, logLevel),
 		log.NewJSONLogger(jsonLoggerOut),
+		log.NewSpinnerLogger(spinnerLoggerOut),
 	)
 }

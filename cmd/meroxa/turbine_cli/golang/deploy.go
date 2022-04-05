@@ -2,6 +2,7 @@ package turbinego
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,15 +12,8 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-type Deploy struct {
-	DockerHubUserNameEnv    string
-	DockerHubAccessTokenEnv string
-	LocalDeployment         bool
-}
-
 // RunDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources.
 func RunDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) (string, error) {
-	l.Infof(ctx, "Deploying application %q...", appName)
 	var cmd *exec.Cmd
 
 	if imageName != "" {
@@ -37,10 +31,8 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		l.Errorf(ctx, "%s", string(output))
-		return "", fmt.Errorf("deploy failed")
+		return "", errors.New(string(output))
 	}
-	l.Infof(ctx, "%s\ndeploy complete!", string(output))
 	return string(output), nil
 }
 

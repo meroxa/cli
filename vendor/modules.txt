@@ -29,6 +29,9 @@ github.com/Microsoft/hcsshim/osversion
 # github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 ## explicit
 github.com/alexeyco/simpletable
+# github.com/briandowns/spinner v1.18.1
+## explicit; go 1.14
+github.com/briandowns/spinner
 # github.com/cased/cased-go v1.0.4
 ## explicit; go 1.14
 github.com/cased/cased-go
@@ -94,7 +97,7 @@ github.com/docker/go-connections/tlsconfig
 # github.com/docker/go-units v0.4.0
 ## explicit
 github.com/docker/go-units
-# github.com/fatih/color v1.9.0
+# github.com/fatih/color v1.13.0
 ## explicit; go 1.13
 github.com/fatih/color
 # github.com/friendsofgo/errors v0.9.2
@@ -171,7 +174,7 @@ github.com/magiconair/properties
 github.com/manifoldco/promptui
 github.com/manifoldco/promptui/list
 github.com/manifoldco/promptui/screenbuf
-# github.com/mattn/go-colorable v0.1.8
+# github.com/mattn/go-colorable v0.1.12
 ## explicit; go 1.13
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.14

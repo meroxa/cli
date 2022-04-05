@@ -147,6 +147,7 @@ func writeConfigFile(appPath string, cfg AppConfig) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
+	l.Info(ctx, "Checking for uncommitted changes...")
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
@@ -173,6 +174,7 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 		}
 		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
 	}
+	l.Info(ctx, "\t✔ No uncommitted changes!")
 	return os.Chdir(pwd)
 }
 
@@ -189,7 +191,8 @@ func GetPipelineUUID(output string) (string, error) {
 }
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
-func ValidateBranch(appPath string) error {
+func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
+	l.Info(ctx, "Validating branch...")
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
@@ -205,7 +208,7 @@ func ValidateBranch(appPath string) error {
 	if branchName != "main" && branchName != "master" {
 		return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
 	}
-
+	l.Infof(ctx, "\t✔ Deployment allowed from %s branch!", branchName)
 	err = os.Chdir(pwd)
 	if err != nil {
 		return err
@@ -333,7 +336,9 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 		}
 		return "", errors.New(errLog)
 	}
-	l.Info(ctx, stdOutMsg)
+	if stdOutMsg != "" {
+		l.Info(ctx, stdOutMsg)
+	}
 	return stdOutMsg, nil
 }
 
@@ -343,7 +348,7 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	appDir := filepath.Base(src)
 
 	// Change to parent's app directory
-	pwd, err := switchToAppDirectory(filepath.Dir(appDir))
+	pwd, err := switchToAppDirectory(filepath.Dir(src))
 	if err != nil {
 		return err
 	}

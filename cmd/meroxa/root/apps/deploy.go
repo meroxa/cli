@@ -62,13 +62,14 @@ type Deploy struct {
 		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
 	}
 
-	client   deployApplicationClient
-	config   config.Config
-	logger   log.Logger
-	appName  string
-	path     string
-	lang     string
-	goDeploy turbineGo.Deploy
+	client      deployApplicationClient
+	config      config.Config
+	logger      log.Logger
+	appName     string
+	path        string
+	lang        string
+	localDeploy turbineCLI.LocalDeploy
+	fnName      string
 }
 
 var (
@@ -123,14 +124,14 @@ func (d *Deploy) getDockerHubAccessTokenEnv() string {
 
 func (d *Deploy) validateDockerHubFlags() error {
 	if d.flags.DockerHubUserName != "" {
-		d.goDeploy.DockerHubUserNameEnv = d.flags.DockerHubUserName
+		d.localDeploy.DockerHubUserNameEnv = d.flags.DockerHubUserName
 		if d.flags.DockerHubAccessToken == "" {
 			return errors.New("--docker-hub-access-token is required when --docker-hub-username is present")
 		}
 	}
 
 	if d.flags.DockerHubAccessToken != "" {
-		d.goDeploy.DockerHubAccessTokenEnv = d.flags.DockerHubAccessToken
+		d.localDeploy.DockerHubAccessTokenEnv = d.flags.DockerHubAccessToken
 		if d.flags.DockerHubUserName == "" {
 			return errors.New("--docker-hub-username is required when --docker-hub-access-token is present")
 		}
@@ -140,13 +141,13 @@ func (d *Deploy) validateDockerHubFlags() error {
 
 func (d *Deploy) validateDockerHubEnvVars() error {
 	if d.getDockerHubUserNameEnv() != "" {
-		d.goDeploy.DockerHubUserNameEnv = d.getDockerHubUserNameEnv()
+		d.localDeploy.DockerHubUserNameEnv = d.getDockerHubUserNameEnv()
 		if d.getDockerHubAccessTokenEnv() == "" {
 			return fmt.Errorf("%s is required when %s is present", dockerHubAccessTokenEnv, dockerHubUserNameEnv)
 		}
 	}
 	if d.getDockerHubAccessTokenEnv() != "" {
-		d.goDeploy.DockerHubAccessTokenEnv = d.getDockerHubAccessTokenEnv()
+		d.localDeploy.DockerHubAccessTokenEnv = d.getDockerHubAccessTokenEnv()
 		if d.getDockerHubUserNameEnv() == "" {
 			return fmt.Errorf("%s is required when %s is present", dockerHubUserNameEnv, dockerHubAccessTokenEnv)
 		}
@@ -168,8 +169,8 @@ func (d *Deploy) validateLocalDeploymentConfig() error {
 	}
 
 	// If there are DockerHub credentials, we consider it a local deployment
-	if d.goDeploy.DockerHubUserNameEnv != "" && d.goDeploy.DockerHubAccessTokenEnv != "" {
-		d.goDeploy.LocalDeployment = true
+	if d.localDeploy.DockerHubUserNameEnv != "" && d.localDeploy.DockerHubAccessTokenEnv != "" {
+		d.localDeploy.Enabled = true
 	}
 	return nil
 }
@@ -191,7 +192,8 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 		GitSha:   gitSha,
 		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
 	}
-	d.logger.Infof(ctx, "Creating application %q with language %q...", input.Name, d.lang)
+
+	d.logger.StartSpinner("\t", fmt.Sprintf("Creating application %q (%s)...", input.Name, d.lang))
 
 	res, err := d.client.CreateApplication(ctx, &input)
 	if err != nil {
@@ -203,14 +205,19 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 				return err
 			}
 			if app.Pipeline.UUID.String != pipelineUUID {
-				return fmt.Errorf("unable to finish creating the %s Application because its entities are in an"+
-					" unrecoverable state; try deleting and re-deploying", appName)
+				d.logger.StopSpinner(fmt.Sprintf("\t  𐄂 unable to finish creating the %s Application because its entities are in an"+
+					" unrecoverable state; try deleting and re-deploying", appName))
+
+				// TODO: Rollback here?
+				return fmt.Errorf("unable to finish creating application")
 			}
 		}
 		return err
 	}
 
-	d.logger.Infof(ctx, "Application %q successfully created!", res.Name)
+	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/v2/apps/%s/detail", res.UUID)
+	output := fmt.Sprintf("\t✔ Application %q successfully created!\n\n  ✨ To visualize your application visit %s", res.Name, dashboardURL)
+	d.logger.StopSpinner(output)
 	d.logger.JSON(ctx, res)
 	return nil
 }
@@ -227,7 +234,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
 
 	var buf bytes.Buffer
-	d.logger.Infof(ctx, "Packaging application located at %q...", appPath)
+
 	err = turbineCLI.CreateTarAndZipFile(appPath, &buf)
 	if err != nil {
 		return err
@@ -264,16 +271,14 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 }
 
 func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
-	d.logger.Info(ctx, "Uploading file to our build service...")
+	d.logger.StartSpinner("\t", " Uploading source...")
+
 	fh, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}
 	defer func(fh *os.File) {
-		err = fh.Close()
-		if err != nil {
-			d.logger.Warn(ctx, err.Error())
-		}
+		fh.Close()
 	}(fh)
 
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
@@ -300,20 +305,24 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
-		d.logger.Infof(ctx, "Uploaded!")
 		if err != nil {
 			d.logger.Error(ctx, err.Error())
 		}
 	}(res.Body)
 
+	d.logger.StopSpinner("\t✔ Source uploaded!")
 	return nil
 }
 
 func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, error) {
+	d.logger.StartSpinner("\t", " Fetching Meroxa Platform source...")
+
 	s, err := d.client.CreateSource(ctx)
 	if err != nil {
+		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source; %q", err.Error())
 		return "", err
 	}
+	d.logger.StopSpinner("\t✔ Platform source fetched!")
 
 	err = d.uploadSource(ctx, appPath, s.PutUrl)
 	if err != nil {
@@ -323,14 +332,14 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
 	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
 
+	d.logger.StartSpinner("\t", " Building process image...")
+
 	build, err := d.client.CreateBuild(ctx, buildInput)
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Printf("Getting status for build: %s ", build.Uuid)
 	for {
-		fmt.Printf(".")
 		b, err := d.client.GetBuild(ctx, build.Uuid)
 		if err != nil {
 			return "", err
@@ -338,9 +347,10 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 
 		switch b.Status.State {
 		case "error":
-			return "", fmt.Errorf("build with uuid %q errored ", b.Uuid)
+			d.logger.StopSpinner(fmt.Sprintf("\t 𐄂 build with uuid %q errored\nRun `meroxa build logs %s` for more information", b.Uuid, b.Uuid))
+			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			fmt.Println("\nImage built! ")
+			d.logger.StopSpinner("\t✔ Process image built!")
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
@@ -352,57 +362,135 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 //	2. Build image // common
 //	3. Push image // common
 //	4. Run Turbine deploy // different
-func (d *Deploy) deploy(ctx context.Context, appPath string, l log.Logger) (string, error) {
-	var fqImageName string
-	d.appName = path.Base(appPath)
+func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error) {
+	var output string
+	var err error
 
-	err := turbineGo.BuildBinary(ctx, l, appPath, d.appName, true)
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
+	switch d.lang {
+	case GoLang:
+		output, err = turbineGo.RunDeployApp(ctx, d.logger, d.path, d.appName, imageName)
+	case JavaScript:
+		// TODO: @james
+		// TODO: Do less here!!!
+		output, err = turbineJS.Deploy(ctx, d.path, d.logger)
+	case Python:
+		// TODO: @eric
+	}
+
+	if err != nil {
+		d.logger.StopSpinner("\t𐄂 Deployment failed\n\n")
+		return "", err
+	}
+
+	d.logger.StopSpinner("\t✔ Deploy complete!")
+	return output, nil
+}
+
+// buildApp will call any specifics to the turbine library to prepare a directory that's ready
+// to compress, and build, to then later on call the specific command to deploy depending on the language.
+func (d *Deploy) buildApp(ctx context.Context) error {
+	var err error
+	d.logger.StartSpinner("\t", "Building application...")
+
+	switch d.lang {
+	case GoLang:
+		err = turbineGo.BuildBinary(ctx, d.logger, d.path, d.appName, true)
+	case JavaScript:
+		// TODO: @james
+		// path only for zipping = turbineJS.BuildApp(ctx, d.logger, d.path) => newPath string
+		// Dockerfile will already exist
+		// https://github.com/meroxa/turbine-js/blob/7b53de6c9d91e636995ab13ad2c696d1b44fe0c2/src/runner/platform-build.ts#L17-L25
+	case Python:
+		// TODO: @eric
+		// path only for zipping = turbinePy.BuildApp(ctx, d.logger, d.path) => newPath string
+		// Dockerfile will already exist
+	}
+	if err != nil {
+		return err
+	}
+	d.logger.StopSpinner("\t✔ Application built!")
+	return nil
+}
+
+// getAppImage will check what type of build needs to perform and ultimately will return the image name to use
+// when deploying.
+func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
+	d.logger.StartSpinner("\t", "Checking if application has processes...")
+	var fqImageName string
+	var needsToBuild bool
+	var err error
+
+	switch d.lang {
+	case GoLang:
+		needsToBuild, err = turbineGo.NeedsToBuild(d.path, d.appName)
+	case JavaScript:
+		needsToBuild, err = turbineJS.NeedsToBuild(d.path)
+	case Python:
+		// TODO: @eric
+	}
 	if err != nil {
 		return "", err
 	}
 
-	var ok bool
-	// check for image instances
-	if ok, err = turbineGo.NeedsToBuild(appPath, d.appName); ok {
+	// If no need to build, return empty imageName which won't be utilized by the deploy process anyways
+	if !needsToBuild {
+		d.logger.StopSpinner("\t✔ No need to create process image...")
+		return "", nil
+	}
+
+	d.logger.StopSpinner("\t✔ Application processes found. Creating application image...")
+
+	if d.localDeploy.Enabled {
+		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName, d.lang)
 		if err != nil {
-			l.Errorf(ctx, err.Error())
 			return "", err
 		}
-
-		if d.goDeploy.LocalDeployment {
-			fqImageName, err = d.goDeploy.GetDockerImageName(ctx, l, appPath, d.appName)
-			if err != nil {
-				return "", err
-			}
-		} else {
-			fqImageName, err = d.getPlatformImage(ctx, appPath)
-			if err != nil {
-				return "", err
-			}
+	} else {
+		fqImageName, err = d.getPlatformImage(ctx, d.path)
+		if err != nil {
+			return "", err
 		}
 	}
 
-	// creates all resources
-	output, err := turbineGo.RunDeployApp(ctx, l, appPath, d.appName, fqImageName)
-	if err != nil {
-		return output, err
-	}
-	return output, nil
+	return fqImageName, nil
 }
 
-func (d *Deploy) Execute(ctx context.Context) error {
+// validateLanguage stops execution of the deployment in case language is not supported.
+// It also consolidates lang used in API in case user specified a supported language using an unexpected description.
+func (d *Deploy) validateLanguage() error {
+	switch d.lang {
+	case "go", GoLang:
+		d.lang = GoLang
+	case "js", JavaScript, NodeJs:
+		d.lang = JavaScript
+	case "py", Python:
+		d.lang = Python
+	default:
+		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
+	}
+	return nil
+}
+
+func (d *Deploy) validate(ctx context.Context) error {
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
 	err := d.validateLocalDeploymentConfig()
 	if err != nil {
 		return err
 	}
-	var deployOutput string
 
 	d.path, err = turbineCLI.GetPath(d.flags.Path)
 	if err != nil {
 		return err
 	}
+	d.appName = path.Base(d.path)
+
 	d.lang, err = turbineCLI.GetLangFromAppJSON(d.path)
+	if err != nil {
+		return err
+	}
+
+	err = d.validateLanguage()
 	if err != nil {
 		return err
 	}
@@ -412,27 +500,34 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = turbineCLI.ValidateBranch(d.path)
+	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+}
+
+func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
+	d.logger.Infof(ctx, "Preparing application %q (%s) for deployment...", d.appName, d.lang)
+
+	// After this point, CLI will package it up and will build it
+	err := d.buildApp(ctx)
 	if err != nil {
 		return err
 	}
 
-	// 1. set up the app structure (CLI does this for any language)
-	// 2. *depending on the language* call something to create the dockerfile <=
-	// 3. CLI would handle:
-	//	3.1 creating the tar.zip,
-	//	3.2 post /sources
-	// 	3.3 uploading the tar.zip
-	//  3.4 post /builds
-	// 4. CLI would call (depending on language) the deploy script <=
-	switch d.lang {
-	case GoLang:
-		deployOutput, err = d.deploy(ctx, d.path, d.logger)
-	case "js", JavaScript, NodeJs:
-		deployOutput, err = turbineJS.Deploy(ctx, d.path, d.logger)
-	default:
-		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
+	d.fnName, err = d.getAppImage(ctx)
+	return err
+}
+
+func (d *Deploy) Execute(ctx context.Context) error {
+	err := d.validate(ctx)
+	if err != nil {
+		return err
 	}
+
+	err = d.prepareAppForDeployment(ctx)
+	if err != nil {
+		return err
+	}
+
+	deployOutput, err := d.deployApp(ctx, d.fnName)
 	if err != nil {
 		return err
 	}
@@ -441,6 +536,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {
 		return err

@@ -29,6 +29,7 @@ import (
 
 var (
 	_ builder.CommandWithDocs    = (*Logs)(nil)
+	_ builder.CommandWithAliases = (*Logs)(nil)
 	_ builder.CommandWithArgs    = (*Logs)(nil)
 	_ builder.CommandWithClient  = (*Logs)(nil)
 	_ builder.CommandWithLogger  = (*Logs)(nil)
@@ -48,18 +49,22 @@ type Logs struct {
 	}
 }
 
-func (d *Logs) Usage() string {
+func (l *Logs) Usage() string {
 	return "logs [UUID]"
 }
 
-func (d *Logs) Docs() builder.Docs {
+func (*Logs) Aliases() []string {
+	return []string{"log"}
+}
+
+func (l *Logs) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "List a Meroxa Process Build's Logs",
 	}
 }
 
-func (d *Logs) Execute(ctx context.Context) error {
-	response, err := d.client.GetBuildLogs(ctx, d.args.UUID)
+func (l *Logs) Execute(ctx context.Context) error {
+	response, err := l.client.GetBuildLogs(ctx, l.args.UUID)
 	if err != nil {
 		return err
 	}
@@ -70,24 +75,24 @@ func (d *Logs) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, string(body))
+	l.logger.Info(ctx, string(body))
 
 	return nil
 }
 
-func (d *Logs) Client(client meroxa.Client) {
-	d.client = client
+func (l *Logs) Client(client meroxa.Client) {
+	l.client = client
 }
 
-func (d *Logs) Logger(logger log.Logger) {
-	d.logger = logger
+func (l *Logs) Logger(logger log.Logger) {
+	l.logger = logger
 }
 
-func (d *Logs) ParseArgs(args []string) error {
+func (l *Logs) ParseArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires build UUID")
 	}
 
-	d.args.UUID = args[0]
+	l.args.UUID = args[0]
 	return nil
 }

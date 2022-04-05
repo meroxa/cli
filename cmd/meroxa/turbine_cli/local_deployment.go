@@ -1,5 +1,4 @@
-// Package turbineGo TODO: Reorganize this in a different pkg
-package turbinego
+package turbinecli
 
 import (
 	"context"
@@ -18,9 +17,15 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-func (gd *Deploy) getAuthConfig() string {
-	dhUsername := gd.DockerHubUserNameEnv
-	dhAccessToken := gd.DockerHubAccessTokenEnv
+type LocalDeploy struct {
+	DockerHubUserNameEnv    string
+	DockerHubAccessTokenEnv string
+	Enabled                 bool
+}
+
+func (ld *LocalDeploy) getAuthConfig() string {
+	dhUsername := ld.DockerHubUserNameEnv
+	dhAccessToken := ld.DockerHubAccessTokenEnv
 	authConfig := types.AuthConfig{
 		Username:      dhUsername,
 		Password:      dhAccessToken,
@@ -31,37 +36,41 @@ func (gd *Deploy) getAuthConfig() string {
 }
 
 // GetDockerImageName Will create the image via DockerHub.
-func (gd *Deploy) GetDockerImageName(ctx context.Context, l log.Logger, appPath, appName string) (string, error) {
+func (ld *LocalDeploy) GetDockerImageName(ctx context.Context, l log.Logger, appPath, appName, lang string) (string, error) {
+	l.Info(ctx, "\t  Using DockerHub...")
 	// fqImageName will be eventually taken from the build endpoint.
-	fqImageName := gd.DockerHubUserNameEnv + "/" + appName
+	fqImageName := ld.DockerHubUserNameEnv + "/" + appName
 
-	err := gd.buildImage(ctx, l, appPath, fqImageName)
+	err := ld.buildImage(ctx, l, appPath, fqImageName, lang)
 	if err != nil {
-		l.Errorf(ctx, "unable to build image; %q\n%s", fqImageName, err)
+		l.Errorf(ctx, "\t 𐄂 Unable to build image; %q\n\t\t%s", fqImageName, err)
 		return "", err
 	}
 
 	// this will go away when using the new service.
-	err = gd.pushImage(l, fqImageName)
+	err = ld.pushImage(l, fqImageName)
 	if err != nil {
-		l.Errorf(ctx, "unable to push image; %q\n%s", fqImageName, err)
+		l.Errorf(ctx, "\t 𐄂 Unable to push image; %q\n\t\t%s", fqImageName, err)
 		return "", err
 	}
 
+	l.Infof(ctx, "\t✔ Image built!")
 	return fqImageName, nil
 }
 
-func (*Deploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName string) error {
-	l.Infof(ctx, "Building image %q located at %q", imageName, pwd)
+func (*LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName, lang string) error {
+	l.Infof(ctx, "\t  Building image %q located at %q", imageName, pwd)
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		l.Errorf(ctx, "unable to init docker client; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to init docker client; %s", err)
 	}
 
 	// Generate dockerfile
-	err = turbine.CreateDockerfile(pwd)
-	if err != nil {
-		return err
+	if lang == "golang" {
+		err = turbine.CreateDockerfile(pwd)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Read local Dockerfile
@@ -70,7 +79,7 @@ func (*Deploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName stri
 		ExcludePatterns: []string{".git", "fixtures"},
 	})
 	if err != nil {
-		l.Errorf(ctx, "unable to create tar; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to create tar; %s", err)
 	}
 
 	buildOptions := types.ImageBuildOptions{
@@ -85,29 +94,29 @@ func (*Deploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName stri
 		buildOptions,
 	)
 	if err != nil {
-		l.Errorf(ctx, "unable to build docker image; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to build docker image; %s", err)
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
 		if err != nil {
-			l.Errorf(ctx, "unable to close docker build response body; %s", err)
+			l.Errorf(ctx, "\t 𐄂 Unable to close docker build response body; %s", err)
 		}
 	}(resp.Body)
 	_, err = io.Copy(os.Stdout, resp.Body)
 	if err != nil {
-		l.Errorf(ctx, "unable to read image build response; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to read image build response; %s", err)
 	}
 
 	// Cleanup
 	return os.Remove(filepath.Join(pwd, "Dockerfile"))
 }
 
-func (gd *Deploy) pushImage(l log.Logger, imageName string) error {
+func (ld *LocalDeploy) pushImage(l log.Logger, imageName string) error {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
-	authConfig := gd.getAuthConfig()
+	authConfig := ld.getAuthConfig()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120) // nolint:gomnd
 	defer cancel()
 
