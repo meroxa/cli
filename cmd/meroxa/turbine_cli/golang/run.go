@@ -2,6 +2,7 @@ package turbinego
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"path"
@@ -29,7 +30,7 @@ func Run(ctx context.Context, appPath string, l log.Logger) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		l.Error(ctx, string(output))
-		return err
+		return fmt.Errorf("run failed")
 	}
 	l.Info(ctx, string(output))
 	return nil

@@ -2,9 +2,8 @@ package turbinego
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
-
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 
 	"github.com/meroxa/cli/log"
 )
@@ -20,6 +19,10 @@ func BuildBinary(ctx context.Context, l log.Logger, appPath, appName string, pla
 	}
 	cmd.Dir = appPath
 
-	_, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		l.Errorf(ctx, "%s", string(stdout))
+		return fmt.Errorf("build failed")
+	}
 	return err
 }
