@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/archive"
-	turbine "github.com/meroxa/turbine/deploy"
+	turbine "github.com/meroxa/turbine-go/deploy"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"

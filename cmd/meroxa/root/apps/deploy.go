@@ -38,7 +38,7 @@ import (
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	turbine "github.com/meroxa/turbine/deploy"
+	turbine "github.com/meroxa/turbine-go/deploy"
 )
 
 const (

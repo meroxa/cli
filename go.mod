@@ -27,7 +27,7 @@ require (
 require (
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine v0.0.0-20220330190835-414127120d1e
+	github.com/meroxa/turbine-go v0.0.0-20220405102922-2d9a299a1e02
 	github.com/volatiletech/null/v8 v8.1.2
 	golang.org/x/text v0.3.7
 )

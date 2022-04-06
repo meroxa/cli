@@ -7,7 +7,10 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.16
-
+        environment:
+          GO111MODULE: "on"
+          GOPATH: "/go"
+    working_directory: /go/src/github.com/meroxa/cli
     steps:
       - checkout
 
