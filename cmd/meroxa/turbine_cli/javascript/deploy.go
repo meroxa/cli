@@ -13,18 +13,17 @@ import (
 
 // npx turbine whatever path => CLI could carry on with creating the tar.zip, post source, build...
 // once that's complete, it's when we'd call `npx turbine deploy path`.
-func Deploy(ctx context.Context, path string, l log.Logger) error {
+func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {
 	cmd := exec.Command("npx", "turbine", "deploy", path)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
-		return err
+		return "", err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
-	return err
+	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
 }
 
 // 1. we build binary (Go) // we set up the app structure (JS/Python) <- CLI could do this

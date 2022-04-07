@@ -429,7 +429,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	case GoLang:
 		deployOutput, err = d.deploy(ctx, d.path, d.logger)
 	case "js", JavaScript, NodeJs:
-		err = turbineJS.Deploy(ctx, d.path, d.logger)
+		deployOutput, err = turbineJS.Deploy(ctx, d.path, d.logger)
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
@@ -437,7 +437,10 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	pipelineUUID := turbineCLI.GetPipelineUUID(deployOutput)
+	pipelineUUID, err := turbineCLI.GetPipelineUUID(deployOutput)
+	if err != nil {
+		return err
+	}
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {
 		return err

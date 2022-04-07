@@ -177,13 +177,15 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 }
 
 // GetPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create.
-func GetPipelineUUID(output string) string {
+func GetPipelineUUID(output string) (string, error) {
 	// Example output:
 	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e").
 	re := regexp.MustCompile(`pipeline:."turbine-pipeline-[a-z0-9-]+".(\([^)]*\))`)
-	res := re.FindStringSubmatch(output)[1]
-	res = strings.Trim(res, "()\"")
-	return res
+	matches := re.FindStringSubmatch(output)
+	if len(matches) < 2 { //nolint:gomnd
+		return "", fmt.Errorf("pipeline UUID not found")
+	}
+	return strings.Trim(matches[1], "()\""), nil
 }
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
