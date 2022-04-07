@@ -2,6 +2,7 @@ package turbinecli
 
 import (
 	"archive/tar"
+	"bufio"
 	"bytes"
 	"compress/gzip"
 	"context"
@@ -315,9 +316,25 @@ func switchToAppDirectory(appPath string) (string, error) {
 // RunCmdWithErrorDetection checks exit codes and stderr for failures and logs on success.
 func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) (string, error) {
 	stdout, stderr := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-	err := cmd.Run()
+	//cmd.Stdout = stdout
+	//cmd.Stderr = stderr
+
+	pipe, err := cmd.StdoutPipe()
+	if err != nil {
+		return "", err
+	}
+	err = cmd.Start()
+	if err != nil {
+		return "", err
+	}
+	scanner := bufio.NewScanner(pipe)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		m := scanner.Text()
+		fmt.Println(m)
+	}
+	cmd.Wait()
+
 	stdOutMsg := stdout.String()
 	stdErrMsg := stderr.String()
 	if err != nil || stdErrMsg != "" {
@@ -333,7 +350,7 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 		}
 		return "", errors.New(errLog)
 	}
-	l.Info(ctx, stdOutMsg)
+	//l.Info(ctx, stdOutMsg)
 	return stdOutMsg, nil
 }
 
