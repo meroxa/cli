@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
@@ -18,7 +19,7 @@ func NeedsToBuild(path string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return strconv.ParseBool(string(output))
+	return strconv.ParseBool(strings.TrimSpace(string(output)))
 }
 
 func BuildApp(path string) (string, error) {
