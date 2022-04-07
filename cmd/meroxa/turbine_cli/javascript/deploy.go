@@ -13,9 +13,7 @@ import (
 )
 
 func NeedsToBuild(path string) (bool, error) {
-	// TODO: change to `hasfunctions` when it's ready
-	cmd := exec.Command("npx", "turbine", "functions", path)
-	// => "true" | "false"
+	cmd := exec.Command("npx", "turbine", "hasfunctions", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return false, err
@@ -23,10 +21,17 @@ func NeedsToBuild(path string) (bool, error) {
 	return strconv.ParseBool(string(output))
 }
 
-// npx turbine whatever path => CLI could carry on with creating the tar.zip, post source, build...
-// once that's complete, it's when we'd call `npx turbine deploy path`.
+func BuildApp(path string) (string, error) {
+	cmd := exec.Command("npx", "turbine", "clibuild", path)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return string(output), err
+}
+
 func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {
-	cmd := exec.Command("npx", "turbine", "deploy", path)
+	cmd := exec.Command("npx", "turbine", "clideploy", path)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -37,7 +42,3 @@ func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {
 
 	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
 }
-
-// TODO: Have a script to cleanup the temp directory used (right after source is uploaded)
-
-// TODO: Add a function that creates the needed structure for a JS app (separate from the deploy step)

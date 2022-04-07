@@ -70,6 +70,7 @@ type Deploy struct {
 	lang        string
 	localDeploy turbineCLI.LocalDeploy
 	fnName      string
+	tempPath    string // find something more elegant to this
 }
 
 var (
@@ -225,15 +226,22 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 // uploadSource creates first a Dockerfile to then, package the entire folder which will be later uploaded
 // this should ignore .git files and fixtures/.
 func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
-	// Before creating a .tar.zip, we make sure it contains a Dockerfile.
-	err := turbine.CreateDockerfile(appPath)
-	if err != nil {
-		return err
+	var err error
+
+	if d.lang == GoLang {
+		err = turbine.CreateDockerfile(appPath)
+		if err != nil {
+			return err
+		}
 	}
 
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
 
 	var buf bytes.Buffer
+
+	if d.lang == JavaScript || d.lang == Python {
+		appPath = d.tempPath
+	}
 
 	err = turbineCLI.CreateTarAndZipFile(appPath, &buf)
 	if err != nil {
@@ -266,6 +274,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
+	// TODO: Remove d.tempPath for JS and Python apps
 	// remove .tar.gz file
 	return os.Remove(dFile)
 }
@@ -357,11 +366,6 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	}
 }
 
-// Deploy takes care of all the necessary steps to deploy a Turbine application
-//	1. Build binary // different for jS
-//	2. Build image // common
-//	3. Push image // common
-//	4. Run Turbine deploy // different
 func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error) {
 	var output string
 	var err error
@@ -391,16 +395,14 @@ func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error
 // to compress, and build, to then later on call the specific command to deploy depending on the language.
 func (d *Deploy) buildApp(ctx context.Context) error {
 	var err error
+
 	d.logger.StartSpinner("\t", "Building application...")
 
 	switch d.lang {
 	case GoLang:
 		err = turbineGo.BuildBinary(ctx, d.logger, d.path, d.appName, true)
 	case JavaScript:
-		// TODO: @james
-		// path only for zipping = turbineJS.BuildApp(ctx, d.logger, d.path) => newPath string
-		// Dockerfile will already exist
-		// https://github.com/meroxa/turbine-js/blob/7b53de6c9d91e636995ab13ad2c696d1b44fe0c2/src/runner/platform-build.ts#L17-L25
+		d.tempPath, err = turbineJS.BuildApp(d.path)
 	case Python:
 		// TODO: @eric
 		// path only for zipping = turbinePy.BuildApp(ctx, d.logger, d.path) => newPath string
