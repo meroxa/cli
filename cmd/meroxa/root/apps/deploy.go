@@ -438,6 +438,9 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	pipelineUUID, err := turbineCLI.GetPipelineUUID(deployOutput)
+	if err != nil {
+		return err
+	}
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {
 		return err
