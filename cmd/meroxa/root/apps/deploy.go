@@ -207,8 +207,8 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 				return err
 			}
 			if app.Pipeline.UUID.String != pipelineUUID {
-				d.logger.StopSpinner(fmt.Sprintf("\t  𐄂 unable to finish creating the %s Application because its entities are in an"+
-					" unrecoverable state; try deleting and re-deploying", appName))
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf("unable to finish creating the %s Application because its entities are in an"+
+					" unrecoverable state; try deleting and re-deploying", appName), log.Failed)
 
 				d.logger.StopSpinner("\t")
 				// TODO: Rollback here?
@@ -220,7 +220,8 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 	}
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/v2/apps/%s/detail", res.UUID)
-	output := fmt.Sprintf("\t✔ Application %q successfully created!\n\n  ✨ To visualize your application visit %s", res.Name, dashboardURL)
+	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
+		d.logger.SuccessfulCheck(), res.Name, dashboardURL)
 	d.logger.StopSpinner(output)
 	d.logger.JSON(ctx, res)
 	return nil
@@ -328,7 +329,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 		}
 	}(res.Body)
 
-	d.logger.StopSpinner("\t✔ Source uploaded!")
+	d.logger.StopSpinnerWithStatus("Source uploaded!", log.Successful)
 	return nil
 }
 
@@ -341,7 +342,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		d.logger.StopSpinner("\t")
 		return "", err
 	}
-	d.logger.StopSpinner("\t✔ Platform source fetched!")
+	d.logger.StopSpinnerWithStatus("Platform source fetched!", log.Successful)
 
 	err = d.uploadSource(ctx, appPath, s.PutUrl)
 	if err != nil {
@@ -368,10 +369,10 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 
 		switch b.Status.State {
 		case "error":
-			d.logger.StopSpinner(fmt.Sprintf("\t 𐄂 build with uuid %q errored\nRun `meroxa build logs %s` for more information", b.Uuid, b.Uuid))
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("build with uuid %q errored\nRun `meroxa build logs %s` for more information", b.Uuid, b.Uuid), log.Failed)
 			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			d.logger.StopSpinner("\t✔ Process image built!")
+			d.logger.StopSpinnerWithStatus("Process image built!", log.Successful)
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
@@ -394,11 +395,11 @@ func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error
 	}
 
 	if err != nil {
-		d.logger.StopSpinner("\t𐄂 Deployment failed\n\n")
+		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
 		return "", err
 	}
 
-	d.logger.StopSpinner("\t✔ Deploy complete!")
+	d.logger.StopSpinnerWithStatus("Deploy complete!", log.Successful)
 	return output, nil
 }
 
@@ -423,7 +424,7 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 		d.logger.StopSpinner("\t")
 		return err
 	}
-	d.logger.StopSpinner("\t✔ Application built!")
+	d.logger.StopSpinnerWithStatus("Application built!", log.Successful)
 	return nil
 }
 
@@ -450,11 +451,11 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	// If no need to build, return empty imageName which won't be utilized by the deploy process anyways
 	if !needsToBuild {
-		d.logger.StopSpinner("\t✔ No need to create process image...")
+		d.logger.StopSpinnerWithStatus("No need to create process image...", log.Successful)
 		return "", nil
 	}
 
-	d.logger.StopSpinner("\t✔ Application processes found. Creating application image...")
+	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
 
 	d.localDeploy.TempPath = d.tempPath
 	d.localDeploy.Lang = d.lang

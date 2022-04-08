@@ -174,7 +174,7 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 		}
 		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
 	}
-	l.Info(ctx, "\t✔ No uncommitted changes!")
+	l.Infof(ctx, "\t%s No uncommitted changes!", l.SuccessfulCheck())
 	return os.Chdir(pwd)
 }
 
@@ -208,7 +208,7 @@ func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 	if branchName != "main" && branchName != "master" {
 		return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
 	}
-	l.Infof(ctx, "\t✔ Deployment allowed from %s branch!", branchName)
+	l.Infof(ctx, "\t%s Deployment allowed from %s branch!", l.SuccessfulCheck(), branchName)
 	err = os.Chdir(pwd)
 	if err != nil {
 		return err
