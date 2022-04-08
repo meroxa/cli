@@ -107,12 +107,12 @@ func TestValidateDockerHubFlags(t *testing.T) {
 			}
 
 			if err == nil {
-				if d.goDeploy.DockerHubUserNameEnv != tc.dockerHubUserName {
-					t.Fatalf("expected DockerHubUserNameEnv to be %q, got %q", tc.dockerHubUserName, d.goDeploy.DockerHubUserNameEnv)
+				if d.localDeploy.DockerHubUserNameEnv != tc.dockerHubUserName {
+					t.Fatalf("expected DockerHubUserNameEnv to be %q, got %q", tc.dockerHubUserName, d.localDeploy.DockerHubUserNameEnv)
 				}
 
-				if d.goDeploy.DockerHubAccessTokenEnv != tc.dockerHubAccessToken {
-					t.Fatalf("expected DockerHubAccessTokenEnv to be %q, got %q", tc.dockerHubAccessToken, d.goDeploy.DockerHubAccessTokenEnv)
+				if d.localDeploy.DockerHubAccessTokenEnv != tc.dockerHubAccessToken {
+					t.Fatalf("expected DockerHubAccessTokenEnv to be %q, got %q", tc.dockerHubAccessToken, d.localDeploy.DockerHubAccessTokenEnv)
 				}
 			}
 		})
@@ -168,12 +168,12 @@ func TestValidateDockerHubEnVars(t *testing.T) {
 			}
 
 			if err == nil {
-				if d.goDeploy.DockerHubUserNameEnv != tc.dockerHubUserName {
-					t.Fatalf("expected DockerHubUserNameEnv to be %q, got %q", tc.dockerHubUserName, d.goDeploy.DockerHubUserNameEnv)
+				if d.localDeploy.DockerHubUserNameEnv != tc.dockerHubUserName {
+					t.Fatalf("expected DockerHubUserNameEnv to be %q, got %q", tc.dockerHubUserName, d.localDeploy.DockerHubUserNameEnv)
 				}
 
-				if d.goDeploy.DockerHubAccessTokenEnv != tc.dockerHubAccessToken {
-					t.Fatalf("expected DockerHubAccessTokenEnv to be %q, got %q", tc.dockerHubAccessToken, d.goDeploy.DockerHubAccessTokenEnv)
+				if d.localDeploy.DockerHubAccessTokenEnv != tc.dockerHubAccessToken {
+					t.Fatalf("expected DockerHubAccessTokenEnv to be %q, got %q", tc.dockerHubAccessToken, d.localDeploy.DockerHubAccessTokenEnv)
 				}
 			}
 		})
@@ -214,8 +214,8 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 
 			err := d.validateLocalDeploymentConfig()
 
-			if err == nil && d.goDeploy.LocalDeployment != tc.localDeployment {
-				t.Fatalf("expected localDeployment to be %v, got %v", tc.localDeployment, d.goDeploy.LocalDeployment)
+			if err == nil && d.localDeploy.Enabled != tc.localDeployment {
+				t.Fatalf("expected localDeployment to be %v, got %v", tc.localDeployment, d.localDeploy.Enabled)
 			}
 		})
 	}
@@ -274,15 +274,6 @@ func TestCreateApplication(t *testing.T) {
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
-	}
-
-	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf(`Creating application %q with language %q...
-Application %q successfully created!
-`, name, lang, name)
-
-	if gotLeveledOutput != wantLeveledOutput {
-		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
 	gotJSONOutput := logger.JSONOutput()

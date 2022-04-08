@@ -5,13 +5,13 @@ go 1.17
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 	github.com/cased/cased-go v1.0.4
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.13.0
 	github.com/golang/mock v1.6.0
 	github.com/google/go-cmp v0.5.6
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.7.3
 	github.com/manifoldco/promptui v0.8.0
-	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/meroxa/meroxa-go v0.0.0-20220404191043-2fff202066b1
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
@@ -25,6 +25,7 @@ require (
 )
 
 require (
+	github.com/briandowns/spinner v1.18.1
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-go v0.0.0-20220405102922-2d9a299a1e02

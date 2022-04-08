@@ -481,7 +481,11 @@ func buildCommandWithExecute(cmd *cobra.Command, c Command) {
 				return err
 			}
 		}
-		return v.Execute(cmd.Context())
+		err := v.Execute(cmd.Context())
+		if err != nil && strings.Contains(err.Error(), "Unknown or invalid refresh token") {
+			return fmt.Errorf("unknown or invalid refresh token, please run `meroxa login` again")
+		}
+		return err
 	}
 }
 

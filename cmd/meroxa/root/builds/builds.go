@@ -34,7 +34,7 @@ var (
 
 type Builds struct{}
 
-func (o *Builds) Usage() string {
+func (*Builds) Usage() string {
 	return "builds"
 }
 
@@ -47,16 +47,16 @@ func (*Builds) Hidden() bool {
 }
 
 func (*Builds) FeatureFlag() (string, error) {
-	return "turbine", fmt.Errorf("no access to the Meroxa Data Processes feature")
+	return "turbine", fmt.Errorf("no access to the Meroxa Data Application feature")
 }
 
-func (o *Builds) Docs() builder.Docs {
+func (*Builds) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Manage Process builds on Meroxa",
+		Short: "Manage Process Builds on Meroxa",
 	}
 }
 
-func (o *Builds) SubCommands() []*cobra.Command {
+func (*Builds) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&Logs{}),

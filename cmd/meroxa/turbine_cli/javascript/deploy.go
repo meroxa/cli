@@ -5,16 +5,38 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 )
 
-// npx turbine whatever path => CLI could carry on with creating the tar.zip, post source, build...
-// once that's complete, it's when we'd call `npx turbine deploy path`.
-func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {
-	cmd := exec.Command("npx", "turbine", "deploy", path)
+func NeedsToBuild(path string) (bool, error) {
+	cmd := exec.Command("npx", "turbine", "hasfunctions", path)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		err := fmt.Errorf(
+			"unable to determine if the Meroxa Application at %s has a Process; %s",
+			path,
+			string(output))
+		return false, err
+	}
+	return strconv.ParseBool(strings.TrimSpace(string(output)))
+}
+
+func BuildApp(path string) (string, error) {
+	cmd := exec.Command("npx", "turbine", "clibuild", path)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
+	}
+	return strings.TrimSpace(string(output)), err
+}
+
+func Deploy(ctx context.Context, path, imageName string, l log.Logger) (string, error) {
+	cmd := exec.Command("npx", "turbine", "clideploy", imageName, path)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -25,7 +47,3 @@ func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {
 
 	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
 }
-
-// 1. we build binary (Go) // we set up the app structure (JS/Python) <- CLI could do this
-// 2. we create the docker file (each turbine-lib does this)
-// 3. we call the binary passing --platform ("deploying")

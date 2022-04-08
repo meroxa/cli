@@ -62,12 +62,12 @@ func TestLogsBuildExecution(t *testing.T) {
 
 	buildUUID := "236d6e81-6a22-4805-b64f-3fa0a57fdbdc"
 
-	c := &Logs{
+	l := &Logs{
 		client: client,
 		logger: logger,
 	}
 
-	c.args.UUID = buildUUID
+	l.args.UUID = buildUUID
 
 	var responseDetails = io.NopCloser(bytes.NewReader([]byte(
 		`[2021-04-29T12:16:42Z] Beep boop, robots doing build things`,
@@ -83,7 +83,7 @@ func TestLogsBuildExecution(t *testing.T) {
 		GetBuildLogs(ctx, buildUUID).
 		Return(httpResponse, nil)
 
-	err := c.Execute(ctx)
+	err := l.Execute(ctx)
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
