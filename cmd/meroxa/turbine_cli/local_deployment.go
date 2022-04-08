@@ -54,11 +54,11 @@ func (ld *LocalDeploy) GetDockerImageName(ctx context.Context, l log.Logger, app
 	// this will go away when using the new service.
 	err = ld.pushImage(l, fqImageName)
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to push image %q", fqImageName)
+		l.Errorf(ctx, "\t %s Unable to push image %q", l.FailedMark(), fqImageName)
 		return "", err
 	}
 
-	l.Infof(ctx, "\t✔ Image built!")
+	l.Infof(ctx, "\t%s Image built!", l.SuccessfulCheck())
 	return fqImageName, nil
 }
 
@@ -66,7 +66,7 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 	l.Infof(ctx, "\t  Building image %q located at %q", imageName, pwd)
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to init docker client")
+		l.Errorf(ctx, "\t %s Unable to init docker client", l.FailedMark())
 		return err
 	}
 
@@ -87,7 +87,7 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 		ExcludePatterns: []string{".git", "fixtures"},
 	})
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to create tar")
+		l.Errorf(ctx, "\t %s Unable to create tar", l.FailedMark())
 		return err
 	}
 
@@ -103,20 +103,20 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 		buildOptions,
 	)
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to build docker image")
+		l.Errorf(ctx, "\t %s Unable to build docker image", l.FailedMark())
 		return err
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
 		if err != nil {
-			l.Errorf(ctx, "\t 𐄂 Unable to close docker build response body; %s", err)
+			l.Errorf(ctx, "\t %s Unable to close docker build response body; %s", l.FailedMark(), err)
 		}
 	}(resp.Body)
 
 	buf := new(strings.Builder)
 	_, err = io.Copy(buf, resp.Body)
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to read image build response")
+		l.Errorf(ctx, "\t %s Unable to read image build response", l.FailedMark())
 		return err
 	}
 	dockerBuildOutput := buf.String()
@@ -133,7 +133,7 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 			errMsg += "\n" + str[1]
 		}
 		err = fmt.Errorf("%s", errMsg)
-		l.Errorf(ctx, "\t 𐄂 Unable to build docker image")
+		l.Errorf(ctx, "\t %s Unable to build docker image", l.FailedMark())
 		return err
 	}
 	l.Info(ctx, dockerBuildOutput)

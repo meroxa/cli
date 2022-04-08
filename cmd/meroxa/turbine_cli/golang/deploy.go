@@ -13,7 +13,7 @@ import (
 )
 
 // RunDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func RunDeployApp(ctx context.Context, l log.Logger, appPath, appName, imageName string) (string, error) {
+func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName string) (string, error) {
 	var cmd *exec.Cmd
 
 	if imageName != "" {

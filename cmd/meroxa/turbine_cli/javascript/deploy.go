@@ -35,7 +35,7 @@ func BuildApp(path string) (string, error) {
 	return strings.TrimSpace(string(output)), err
 }
 
-func Deploy(ctx context.Context, path, imageName string, l log.Logger) (string, error) {
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (string, error) {
 	cmd := exec.Command("npx", "turbine", "clideploy", imageName, path)
 
 	accessToken, _, err := global.GetUserToken()
