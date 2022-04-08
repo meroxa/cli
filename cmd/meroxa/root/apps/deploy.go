@@ -203,16 +203,19 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 			var app *meroxa.Application
 			app, err = d.client.GetApplication(ctx, appName)
 			if err != nil {
+				d.logger.StopSpinner("\t")
 				return err
 			}
 			if app.Pipeline.UUID.String != pipelineUUID {
 				d.logger.StopSpinner(fmt.Sprintf("\t  𐄂 unable to finish creating the %s Application because its entities are in an"+
 					" unrecoverable state; try deleting and re-deploying", appName))
 
+				d.logger.StopSpinner("\t")
 				// TODO: Rollback here?
 				return fmt.Errorf("unable to finish creating application")
 			}
 		}
+		d.logger.StopSpinner("\t")
 		return err
 	}
 
@@ -286,6 +289,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 
 	fh, err := os.Open(filePath)
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return err
 	}
 	defer func(fh *os.File) {
@@ -294,11 +298,13 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return err
 	}
 
 	fi, err := fh.Stat()
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return err
 	}
 
@@ -312,6 +318,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 	client := &http.Client{}
 	res, err := client.Do(req) //nolint:bodyclose
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return err
 	}
 	defer func(Body io.ReadCloser) {
@@ -330,7 +337,8 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 
 	s, err := d.client.CreateSource(ctx)
 	if err != nil {
-		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source; %q", err.Error())
+		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source")
+		d.logger.StopSpinner("\t")
 		return "", err
 	}
 	d.logger.StopSpinner("\t✔ Platform source fetched!")
@@ -347,12 +355,14 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 
 	build, err := d.client.CreateBuild(ctx, buildInput)
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return "", err
 	}
 
 	for {
 		b, err := d.client.GetBuild(ctx, build.Uuid)
 		if err != nil {
+			d.logger.StopSpinner("\t")
 			return "", err
 		}
 
@@ -435,6 +445,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 		// TODO: @eric
 	}
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return "", err
 	}
 
