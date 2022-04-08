@@ -124,14 +124,15 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 	re := regexp.MustCompile(`{"errorDetail":{"message":"([^"]+)"}`)
 	matches := re.FindAllStringSubmatch(dockerBuildOutput, -1)
 	if len(matches) != 0 {
+		const subMatchArraySize = 2
 		errMsg := ""
 		for _, str := range matches {
-			if len(str) < 2 {
+			if len(str) < subMatchArraySize {
 				continue
 			}
 			errMsg += "\n" + str[1]
 		}
-		err = fmt.Errorf(errMsg)
+		err = fmt.Errorf("%s", errMsg)
 		l.Errorf(ctx, "\t 𐄂 Unable to build docker image")
 		return err
 	}
