@@ -389,7 +389,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error
 	case JavaScript:
 		// TODO: @james
 		// TODO: Do less here!!!
-		output, err = turbineJS.Deploy(ctx, d.path, d.logger)
+		output, err = turbineJS.Deploy(ctx, d.path, imageName, d.logger)
 	case Python:
 		// TODO: @eric
 	}
