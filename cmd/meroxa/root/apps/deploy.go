@@ -385,11 +385,10 @@ func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error
 	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
 	switch d.lang {
 	case GoLang:
-		output, err = turbineGo.RunDeployApp(ctx, d.logger, d.path, d.appName, imageName)
+		output, err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName)
 	case JavaScript:
-		// TODO: @james
-		// TODO: Do less here!!!
-		output, err = turbineJS.Deploy(ctx, d.path, imageName, d.logger)
+		//output, err = turbineJS.RunDeployApp(ctx, d.path, imageName, d.logger)
+		output, err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName)
 	case Python:
 		// TODO: @eric
 	}
