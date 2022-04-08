@@ -17,6 +17,10 @@ func NeedsToBuild(path string) (bool, error) {
 	cmd := exec.Command("npx", "turbine", "hasfunctions", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		err := fmt.Errorf(
+			"unable to determine if the Meroxa Application at %s has a Process; %s",
+			path,
+			string(output))
 		return false, err
 	}
 	return strconv.ParseBool(strings.TrimSpace(string(output)))
@@ -26,9 +30,9 @@ func BuildApp(path string) (string, error) {
 	cmd := exec.Command("npx", "turbine", "clibuild", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
 	}
-	return string(output), err
+	return strings.TrimSpace(string(output)), err
 }
 
 func Deploy(ctx context.Context, path string, l log.Logger) (string, error) {

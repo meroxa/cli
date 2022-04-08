@@ -4,9 +4,12 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/pkg/archive"
@@ -21,6 +24,8 @@ type LocalDeploy struct {
 	DockerHubUserNameEnv    string
 	DockerHubAccessTokenEnv string
 	Enabled                 bool
+	TempPath                string
+	Lang                    string
 }
 
 func (ld *LocalDeploy) getAuthConfig() string {
@@ -41,16 +46,15 @@ func (ld *LocalDeploy) GetDockerImageName(ctx context.Context, l log.Logger, app
 	// fqImageName will be eventually taken from the build endpoint.
 	fqImageName := ld.DockerHubUserNameEnv + "/" + appName
 
-	err := ld.buildImage(ctx, l, appPath, fqImageName, lang)
+	err := ld.buildImage(ctx, l, appPath, fqImageName)
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to build image; %q\n\t\t%s", fqImageName, err)
 		return "", err
 	}
 
 	// this will go away when using the new service.
 	err = ld.pushImage(l, fqImageName)
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to push image; %q\n\t\t%s", fqImageName, err)
+		l.Errorf(ctx, "\t 𐄂 Unable to push image %q", fqImageName)
 		return "", err
 	}
 
@@ -58,28 +62,33 @@ func (ld *LocalDeploy) GetDockerImageName(ctx context.Context, l log.Logger, app
 	return fqImageName, nil
 }
 
-func (*LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName, lang string) error {
+func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName string) error {
 	l.Infof(ctx, "\t  Building image %q located at %q", imageName, pwd)
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to init docker client; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to init docker client")
+		return err
 	}
 
 	// Generate dockerfile
-	if lang == "golang" {
+	if ld.Lang == "golang" {
 		err = turbine.CreateDockerfile(pwd)
 		if err != nil {
 			return err
 		}
 	}
 
+	if ld.Lang == "javascript" || ld.Lang == "python" {
+		pwd = ld.TempPath
+	}
 	// Read local Dockerfile
 	tar, err := archive.TarWithOptions(pwd, &archive.TarOptions{
 		Compression:     archive.Uncompressed,
 		ExcludePatterns: []string{".git", "fixtures"},
 	})
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to create tar; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to create tar")
+		return err
 	}
 
 	buildOptions := types.ImageBuildOptions{
@@ -94,7 +103,8 @@ func (*LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName
 		buildOptions,
 	)
 	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to build docker image; %s", err)
+		l.Errorf(ctx, "\t 𐄂 Unable to build docker image")
+		return err
 	}
 	defer func(Body io.ReadCloser) {
 		err = Body.Close()
@@ -102,13 +112,36 @@ func (*LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageName
 			l.Errorf(ctx, "\t 𐄂 Unable to close docker build response body; %s", err)
 		}
 	}(resp.Body)
-	_, err = io.Copy(os.Stdout, resp.Body)
-	if err != nil {
-		l.Errorf(ctx, "\t 𐄂 Unable to read image build response; %s", err)
-	}
 
-	// Cleanup
-	return os.Remove(filepath.Join(pwd, "Dockerfile"))
+	buf := new(strings.Builder)
+	_, err = io.Copy(buf, resp.Body)
+	if err != nil {
+		l.Errorf(ctx, "\t 𐄂 Unable to read image build response")
+		return err
+	}
+	dockerBuildOutput := buf.String()
+
+	re := regexp.MustCompile(`{"errorDetail":{"message":"([^"]+)"}`)
+	matches := re.FindAllStringSubmatch(dockerBuildOutput, -1)
+	if len(matches) != 0 {
+		errMsg := ""
+		for _, str := range matches {
+			if len(str) < 2 {
+				continue
+			}
+			errMsg += "\n" + str[1]
+		}
+		err = fmt.Errorf(errMsg)
+		l.Errorf(ctx, "\t 𐄂 Unable to build docker image")
+		return err
+	}
+	l.Info(ctx, dockerBuildOutput)
+
+	if ld.Lang == "golang" {
+		// Cleanup
+		return os.Remove(filepath.Join(pwd, "Dockerfile"))
+	}
+	return nil
 }
 
 func (ld *LocalDeploy) pushImage(l log.Logger, imageName string) error {

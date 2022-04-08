@@ -344,9 +344,6 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 
 // CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
 func CreateTarAndZipFile(src string, buf io.Writer) error {
-	// Grab the directory we care about (app's directory)
-	appDir := filepath.Base(src)
-
 	// Change to parent's app directory
 	pwd, err := switchToAppDirectory(filepath.Dir(src))
 	if err != nil {
@@ -356,7 +353,10 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	zipWriter := gzip.NewWriter(buf)
 	tarWriter := tar.NewWriter(zipWriter)
 
-	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
+	err = filepath.Walk(src, func(file string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if fi.IsDir() && ((fi.Name() == ".git") || (fi.Name() == "fixtures")) {
 			return filepath.SkipDir
 		}
@@ -368,6 +368,9 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 		header.Name = filepath.ToSlash(file)
 		if err := tarWriter.WriteHeader(header); err != nil { //nolint:govet
 			return err
+		}
+		if !fi.Mode().IsRegular() { //nothing more to do for non-regular
+			return nil
 		}
 		if !fi.IsDir() {
 			var data *os.File

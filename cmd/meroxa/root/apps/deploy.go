@@ -263,10 +263,12 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
-	// We clean up Dockerfile as last step
-	err = os.Remove(filepath.Join(appPath, "Dockerfile"))
-	if err != nil {
-		return err
+	if d.lang == GoLang {
+		// We clean up Dockerfile as last step
+		err = os.Remove(filepath.Join(appPath, "Dockerfile"))
+		if err != nil {
+			return err
+		}
 	}
 
 	err = d.uploadFile(ctx, dFile, url)
@@ -341,7 +343,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
 	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
 
-	d.logger.StartSpinner("\t", " Building process image...")
+	d.logger.StartSpinner("\t", " Building Meroxa Process image...")
 
 	build, err := d.client.CreateBuild(ctx, buildInput)
 	if err != nil {
@@ -409,6 +411,7 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 		// Dockerfile will already exist
 	}
 	if err != nil {
+		d.logger.StopSpinner("\t")
 		return err
 	}
 	d.logger.StopSpinner("\t✔ Application built!")
@@ -443,6 +446,8 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	d.logger.StopSpinner("\t✔ Application processes found. Creating application image...")
 
+	d.localDeploy.TempPath = d.tempPath
+	d.localDeploy.Lang = d.lang
 	if d.localDeploy.Enabled {
 		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName, d.lang)
 		if err != nil {
