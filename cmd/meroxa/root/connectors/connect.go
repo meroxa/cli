@@ -25,6 +25,15 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
+var (
+	_ builder.CommandWithDocs       = (*Connect)(nil)
+	_ builder.CommandWithFlags      = (*Connect)(nil)
+	_ builder.CommandWithLogger     = (*Connect)(nil)
+	_ builder.CommandWithExecute    = (*Connect)(nil)
+	_ builder.CommandWithClient     = (*Connect)(nil)
+	_ builder.CommandWithDeprecated = (*Connect)(nil)
+)
+
 type Connect struct {
 	logger log.Logger
 	client createConnectorClient
@@ -112,10 +121,6 @@ func (c *Connect) Logger(logger log.Logger) {
 	c.logger = logger
 }
 
-var (
-	_ builder.CommandWithDocs    = (*Connect)(nil)
-	_ builder.CommandWithFlags   = (*Connect)(nil)
-	_ builder.CommandWithLogger  = (*Connect)(nil)
-	_ builder.CommandWithExecute = (*Connect)(nil)
-	_ builder.CommandWithClient  = (*Connect)(nil)
-)
+func (*Connect) Deprecated() string {
+	return "we encourage you to operate with your applications via `apps` instead."
+}

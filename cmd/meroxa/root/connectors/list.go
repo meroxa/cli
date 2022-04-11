@@ -26,13 +26,14 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs      = (*List)(nil)
-	_ builder.CommandWithClient    = (*List)(nil)
-	_ builder.CommandWithLogger    = (*List)(nil)
-	_ builder.CommandWithExecute   = (*List)(nil)
-	_ builder.CommandWithFlags     = (*List)(nil)
-	_ builder.CommandWithAliases   = (*List)(nil)
-	_ builder.CommandWithNoHeaders = (*List)(nil)
+	_ builder.CommandWithDocs       = (*List)(nil)
+	_ builder.CommandWithClient     = (*List)(nil)
+	_ builder.CommandWithLogger     = (*List)(nil)
+	_ builder.CommandWithExecute    = (*List)(nil)
+	_ builder.CommandWithFlags      = (*List)(nil)
+	_ builder.CommandWithAliases    = (*List)(nil)
+	_ builder.CommandWithNoHeaders  = (*List)(nil)
+	_ builder.CommandWithDeprecated = (*List)(nil)
 )
 
 type listConnectorsClient interface {
@@ -104,4 +105,8 @@ func (l *List) Client(client meroxa.Client) {
 
 func (l *List) HideHeaders(hide bool) {
 	l.hideHeaders = hide
+}
+
+func (*List) Deprecated() string {
+	return "we encourage you to list your applications via `apps list` instead."
 }

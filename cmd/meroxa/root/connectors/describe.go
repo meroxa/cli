@@ -28,11 +28,12 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Describe)(nil)
-	_ builder.CommandWithArgs    = (*Describe)(nil)
-	_ builder.CommandWithClient  = (*Describe)(nil)
-	_ builder.CommandWithLogger  = (*Describe)(nil)
-	_ builder.CommandWithExecute = (*Describe)(nil)
+	_ builder.CommandWithDocs       = (*Describe)(nil)
+	_ builder.CommandWithArgs       = (*Describe)(nil)
+	_ builder.CommandWithClient     = (*Describe)(nil)
+	_ builder.CommandWithLogger     = (*Describe)(nil)
+	_ builder.CommandWithExecute    = (*Describe)(nil)
+	_ builder.CommandWithDeprecated = (*Describe)(nil)
 )
 
 type describeConnectorClient interface {
@@ -85,4 +86,8 @@ func (d *Describe) ParseArgs(args []string) error {
 
 	d.args.NameOrID = args[0]
 	return nil
+}
+
+func (*Describe) Deprecated() string {
+	return "we encourage you to describe your application via `apps describe` instead."
 }

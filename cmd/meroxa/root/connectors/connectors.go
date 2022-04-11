@@ -27,6 +27,7 @@ var (
 	_ builder.CommandWithAliases     = (*Connectors)(nil)
 	_ builder.CommandWithSubCommands = (*Connectors)(nil)
 	_ builder.CommandWithDocs        = (*Connectors)(nil)
+	_ builder.CommandWithDeprecated  = (*Connectors)(nil)
 )
 
 func (*Connectors) Usage() string {
@@ -52,4 +53,8 @@ func (*Connectors) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&Update{}),
 	}
+}
+
+func (c *Connectors) Deprecated() string {
+	return "we encourage you to operate with your application via `apps` instead."
 }

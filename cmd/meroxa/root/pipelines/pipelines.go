@@ -27,6 +27,7 @@ var (
 	_ builder.CommandWithDocs        = (*Pipelines)(nil)
 	_ builder.CommandWithAliases     = (*Pipelines)(nil)
 	_ builder.CommandWithSubCommands = (*Pipelines)(nil)
+	_ builder.CommandWithDeprecated  = (*Pipelines)(nil)
 )
 
 func (*Pipelines) Aliases() []string {
@@ -41,6 +42,10 @@ func (*Pipelines) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Manage pipelines on Meroxa",
 	}
+}
+
+func (*Pipelines) Deprecated() string {
+	return "we encourage you operate with applications via `apps` instead"
 }
 
 func (*Pipelines) SubCommands() []*cobra.Command {

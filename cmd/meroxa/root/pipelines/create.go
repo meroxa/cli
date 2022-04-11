@@ -33,12 +33,13 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Create)(nil)
-	_ builder.CommandWithArgs    = (*Create)(nil)
-	_ builder.CommandWithFlags   = (*Create)(nil)
-	_ builder.CommandWithClient  = (*Create)(nil)
-	_ builder.CommandWithLogger  = (*Create)(nil)
-	_ builder.CommandWithExecute = (*Create)(nil)
+	_ builder.CommandWithDocs       = (*Create)(nil)
+	_ builder.CommandWithArgs       = (*Create)(nil)
+	_ builder.CommandWithFlags      = (*Create)(nil)
+	_ builder.CommandWithClient     = (*Create)(nil)
+	_ builder.CommandWithLogger     = (*Create)(nil)
+	_ builder.CommandWithExecute    = (*Create)(nil)
+	_ builder.CommandWithDeprecated = (*Create)(nil)
 )
 
 type createPipelineClient interface {
@@ -140,4 +141,8 @@ func (c *Create) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Create a pipeline",
 	}
+}
+
+func (*Create) Deprecated() string {
+	return "we encourage you to create applications via `apps deploy` instead."
 }

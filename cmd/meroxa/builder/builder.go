@@ -112,6 +112,11 @@ type Docs struct {
 	Example string
 }
 
+type CommandWithDeprecated interface {
+	Command
+	Deprecated() string
+}
+
 type CommandWithExecute interface {
 	Command
 	// Execute is the actual work function. Most commands will implement this.
@@ -201,6 +206,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithDocs(cmd, c)
 	buildCommandWithFlags(cmd, c)
 	buildCommandWithHidden(cmd, c)
+	buildCommandWithDeprecated(cmd, c)
 	buildCommandWithLogger(cmd, c)
 	buildCommandWithNoHeaders(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
@@ -621,6 +627,37 @@ func buildCommandWithHidden(cmd *cobra.Command, c Command) {
 	}
 
 	cmd.Hidden = v.Hidden()
+}
+
+func buildCommandWithDeprecated(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithDeprecated)
+	if !ok {
+		return
+	}
+
+	cmd.Hidden = true
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+
+			if cmd.Flags().Changed("json") {
+				return nil
+			}
+
+			c := cmd.Name()
+			if cmd.HasParent() {
+				c = fmt.Sprintf("%s %s", cmd.Parent().Name(), c)
+			}
+			fmt.Printf("Command %q is deprecated, %s\n", c, v.Deprecated())
+		}
+
+		return nil
+	}
 }
 
 func buildCommandWithLogger(cmd *cobra.Command, c Command) {
