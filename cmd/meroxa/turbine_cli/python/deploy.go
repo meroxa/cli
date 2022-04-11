@@ -9,7 +9,7 @@ import (
 
 // TODO: Add a function that creates the needed structure for a python app
 
-// NeedsToBuild determines if the app has functions or not
+// NeedsToBuild determines if the app has functions or not.
 func NeedsToBuild(path string) (bool, error) {
 	cmd := exec.Command("turbine-py", "hasFunctions", path)
 	output, err := cmd.CombinedOutput()
