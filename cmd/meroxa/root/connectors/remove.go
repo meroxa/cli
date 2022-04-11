@@ -27,6 +27,17 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
+var (
+	_ builder.CommandWithDocs             = (*Remove)(nil)
+	_ builder.CommandWithAliases          = (*Remove)(nil)
+	_ builder.CommandWithArgs             = (*Remove)(nil)
+	_ builder.CommandWithClient           = (*Remove)(nil)
+	_ builder.CommandWithLogger           = (*Remove)(nil)
+	_ builder.CommandWithExecute          = (*Remove)(nil)
+	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)
+	_ builder.CommandWithDeprecated       = (*Remove)(nil)
+)
+
 type removeConnectorClient interface {
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error
@@ -96,12 +107,6 @@ func (r *Remove) Aliases() []string {
 	return []string{"rm", "delete"}
 }
 
-var (
-	_ builder.CommandWithDocs             = (*Remove)(nil)
-	_ builder.CommandWithAliases          = (*Remove)(nil)
-	_ builder.CommandWithArgs             = (*Remove)(nil)
-	_ builder.CommandWithClient           = (*Remove)(nil)
-	_ builder.CommandWithLogger           = (*Remove)(nil)
-	_ builder.CommandWithExecute          = (*Remove)(nil)
-	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)
-)
+func (*Remove) Deprecated() string {
+	return "We encourage you to remove your application via `meroxa apps remove` instead."
+}

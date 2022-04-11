@@ -29,11 +29,12 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Logs)(nil)
-	_ builder.CommandWithArgs    = (*Logs)(nil)
-	_ builder.CommandWithClient  = (*Logs)(nil)
-	_ builder.CommandWithLogger  = (*Logs)(nil)
-	_ builder.CommandWithExecute = (*Logs)(nil)
+	_ builder.CommandWithDocs       = (*Logs)(nil)
+	_ builder.CommandWithArgs       = (*Logs)(nil)
+	_ builder.CommandWithClient     = (*Logs)(nil)
+	_ builder.CommandWithLogger     = (*Logs)(nil)
+	_ builder.CommandWithExecute    = (*Logs)(nil)
+	_ builder.CommandWithDeprecated = (*Logs)(nil)
 )
 
 type logsConnectorClient interface {
@@ -47,6 +48,10 @@ type Logs struct {
 	args struct {
 		NameOrID string
 	}
+}
+
+func (l *Logs) Deprecated() string {
+	return "We encourage you to operate with your applications via `meroxa apps` instead."
 }
 
 func (l *Logs) Usage() string {

@@ -29,6 +29,16 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
+var (
+	_ builder.CommandWithDocs       = (*Update)(nil)
+	_ builder.CommandWithArgs       = (*Update)(nil)
+	_ builder.CommandWithFlags      = (*Update)(nil)
+	_ builder.CommandWithClient     = (*Update)(nil)
+	_ builder.CommandWithLogger     = (*Update)(nil)
+	_ builder.CommandWithExecute    = (*Update)(nil)
+	_ builder.CommandWithDeprecated = (*Update)(nil)
+)
+
 type updateConnectorClient interface {
 	UpdateConnectorStatus(ctx context.Context, nameOrID string, state meroxa.Action) (*meroxa.Connector, error)
 	UpdateConnector(ctx context.Context, nameOrID string, input *meroxa.UpdateConnectorInput) (*meroxa.Connector, error)
@@ -133,11 +143,6 @@ func (u *Update) ParseArgs(args []string) error {
 	return nil
 }
 
-var (
-	_ builder.CommandWithDocs    = (*Update)(nil)
-	_ builder.CommandWithArgs    = (*Update)(nil)
-	_ builder.CommandWithFlags   = (*Update)(nil)
-	_ builder.CommandWithClient  = (*Update)(nil)
-	_ builder.CommandWithLogger  = (*Update)(nil)
-	_ builder.CommandWithExecute = (*Update)(nil)
-)
+func (*Update) Deprecated() string {
+	return "We encourage you to operate with applications via `meroxa apps` instead."
+}
