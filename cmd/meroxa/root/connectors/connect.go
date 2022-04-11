@@ -122,5 +122,5 @@ func (c *Connect) Logger(logger log.Logger) {
 }
 
 func (*Connect) Deprecated() string {
-	return "We encourage you to operate with your applications via `meroxa apps` instead."
+	return "we encourage you to operate with your applications via `meroxa apps` instead."
 }

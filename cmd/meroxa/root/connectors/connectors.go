@@ -56,5 +56,5 @@ func (*Connectors) SubCommands() []*cobra.Command {
 }
 
 func (c *Connectors) Deprecated() string {
-	return "We encourage you to operate with your application via `meroxa apps` instead."
+	return "we encourage you to operate with your application via `meroxa apps` instead."
 }

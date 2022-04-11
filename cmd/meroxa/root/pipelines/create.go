@@ -144,5 +144,5 @@ func (c *Create) Docs() builder.Docs {
 }
 
 func (*Create) Deprecated() string {
-	return "We encourage you to create applications via `meroxa apps deploy` instead."
+	return "we encourage you to create applications via `meroxa apps deploy` instead."
 }

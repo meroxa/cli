@@ -51,7 +51,7 @@ type Logs struct {
 }
 
 func (l *Logs) Deprecated() string {
-	return "We encourage you to operate with your applications via `meroxa apps` instead."
+	return "we encourage you to operate with your applications via `meroxa apps` instead."
 }
 
 func (l *Logs) Usage() string {
