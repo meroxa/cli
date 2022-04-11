@@ -381,6 +381,266 @@ _meroxa_api()
     noun_aliases=()
 }
 
+_meroxa_apps_deploy()
+{
+    last_command="meroxa_apps_deploy"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--path=")
+    two_word_flags+=("--path")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_apps_describe()
+{
+    last_command="meroxa_apps_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--extended")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_apps_help()
+{
+    last_command="meroxa_apps_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_apps_init()
+{
+    last_command="meroxa_apps_init"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--lang=")
+    two_word_flags+=("--lang")
+    two_word_flags+=("-l")
+    flags+=("--mod-vendor")
+    flags+=("--path=")
+    two_word_flags+=("--path")
+    flags+=("--skip-mod-init")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_flag+=("--lang=")
+    must_have_one_flag+=("-l")
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_apps_list()
+{
+    last_command="meroxa_apps_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--no-headers")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_apps_remove()
+{
+    last_command="meroxa_apps_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_apps_run()
+{
+    last_command="meroxa_apps_run"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--lang=")
+    two_word_flags+=("--lang")
+    two_word_flags+=("-l")
+    flags+=("--path=")
+    two_word_flags+=("--path")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_apps()
+{
+    last_command="meroxa_apps"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("deploy")
+    commands+=("describe")
+    commands+=("help")
+    commands+=("init")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("run")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_auth_help()
 {
     last_command="meroxa_auth_help"
@@ -1775,6 +2035,11 @@ _meroxa_root_command()
 
     commands=()
     commands+=("api")
+    commands+=("apps")
+    if [[ -z "${BASH_VERSION}" || "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+        command_aliases+=("app")
+        aliashash["app"]="apps"
+    fi
     commands+=("auth")
     commands+=("billing")
     commands+=("completion")

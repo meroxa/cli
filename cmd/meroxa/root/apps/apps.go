@@ -17,8 +17,6 @@ limitations under the License.
 package apps
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -38,8 +36,6 @@ var (
 	_ builder.CommandWithDocs        = (*Apps)(nil)
 	_ builder.CommandWithAliases     = (*Apps)(nil)
 	_ builder.CommandWithSubCommands = (*Apps)(nil)
-	_ builder.CommandWithHidden      = (*Apps)(nil)
-	_ builder.CommandWithFeatureFlag = (*Apps)(nil)
 )
 
 func (*Apps) Aliases() []string {
@@ -50,18 +46,10 @@ func (*Apps) Usage() string {
 	return "apps"
 }
 
-func (*Apps) Hidden() bool {
-	return true
-}
-
 func (*Apps) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Manage Meroxa Data Applications",
 	}
-}
-
-func (*Apps) FeatureFlag() (string, error) {
-	return "turbine", fmt.Errorf("no access to the Meroxa Data Applications feature")
 }
 
 func (*Apps) SubCommands() []*cobra.Command {
