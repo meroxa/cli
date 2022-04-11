@@ -45,7 +45,7 @@ func (*Pipelines) Docs() builder.Docs {
 }
 
 func (*Pipelines) Deprecated() string {
-	return "we encourage you operate with applications via `meroxa apps` instead"
+	return "we encourage you operate with applications via `apps` instead"
 }
 
 func (*Pipelines) SubCommands() []*cobra.Command {

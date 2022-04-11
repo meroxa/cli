@@ -108,5 +108,5 @@ func (r *Remove) Aliases() []string {
 }
 
 func (*Remove) Deprecated() string {
-	return "we encourage you to remove your application via `meroxa apps remove` instead."
+	return "we encourage you to remove your application via `apps remove` instead."
 }

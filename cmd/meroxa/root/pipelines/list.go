@@ -85,5 +85,5 @@ func (l *List) HideHeaders(hide bool) {
 }
 
 func (*List) Deprecated() string {
-	return "we encourage you to list your applications via `meroxa apps ls` instead."
+	return "we encourage you to list your applications via `apps list` instead."
 }

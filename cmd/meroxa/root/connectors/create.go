@@ -174,5 +174,5 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (*Create) Deprecated() string {
-	return "we encourage you to create applications via `meroxa apps deploy` instead."
+	return "we encourage you to create applications via `apps deploy` instead."
 }

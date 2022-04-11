@@ -144,5 +144,5 @@ func (u *Update) ParseArgs(args []string) error {
 }
 
 func (*Update) Deprecated() string {
-	return "we encourage you to operate with applications via `meroxa apps` instead."
+	return "we encourage you to operate with applications via `apps` instead."
 }

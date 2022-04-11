@@ -89,5 +89,5 @@ func (d *Describe) ParseArgs(args []string) error {
 }
 
 func (*Describe) Deprecated() string {
-	return "we encourage you to describe your application via `meroxa apps describe` instead."
+	return "we encourage you to describe your application via `apps describe` instead."
 }

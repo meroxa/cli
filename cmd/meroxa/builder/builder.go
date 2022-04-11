@@ -635,7 +635,29 @@ func buildCommandWithDeprecated(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	cmd.Deprecated = v.Deprecated()
+	cmd.Hidden = true
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+
+			if cmd.Flags().Changed("json") {
+				return nil
+			}
+
+			c := cmd.Name()
+			if cmd.HasParent() {
+				c = fmt.Sprintf("%s %s", cmd.Parent().Name(), c)
+			}
+			fmt.Printf("Command %q is deprecated, %s\n", c, v.Deprecated())
+		}
+
+		return nil
+	}
 }
 
 func buildCommandWithLogger(cmd *cobra.Command, c Command) {
