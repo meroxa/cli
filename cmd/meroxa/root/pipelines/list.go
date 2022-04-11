@@ -26,12 +26,13 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs      = (*List)(nil)
-	_ builder.CommandWithClient    = (*List)(nil)
-	_ builder.CommandWithLogger    = (*List)(nil)
-	_ builder.CommandWithExecute   = (*List)(nil)
-	_ builder.CommandWithAliases   = (*List)(nil)
-	_ builder.CommandWithNoHeaders = (*List)(nil)
+	_ builder.CommandWithDocs       = (*List)(nil)
+	_ builder.CommandWithClient     = (*List)(nil)
+	_ builder.CommandWithLogger     = (*List)(nil)
+	_ builder.CommandWithExecute    = (*List)(nil)
+	_ builder.CommandWithAliases    = (*List)(nil)
+	_ builder.CommandWithNoHeaders  = (*List)(nil)
+	_ builder.CommandWithDeprecated = (*List)(nil)
 )
 
 type listPipelinesClient interface {
@@ -81,4 +82,8 @@ func (l *List) Client(client meroxa.Client) {
 
 func (l *List) HideHeaders(hide bool) {
 	l.hideHeaders = hide
+}
+
+func (*List) Deprecated() string {
+	return "We encourage you to list your applications via `meroxa apps ls` instead."
 }

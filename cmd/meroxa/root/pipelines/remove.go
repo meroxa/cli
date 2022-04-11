@@ -25,18 +25,20 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
+var (
+	_ builder.CommandWithDocs             = (*Remove)(nil)
+	_ builder.CommandWithAliases          = (*Remove)(nil)
+	_ builder.CommandWithArgs             = (*Remove)(nil)
+	_ builder.CommandWithClient           = (*Remove)(nil)
+	_ builder.CommandWithLogger           = (*Remove)(nil)
+	_ builder.CommandWithExecute          = (*Remove)(nil)
+	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)
+	_ builder.CommandWithDeprecated       = (*Remove)(nil)
+)
+
 type removePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 	DeletePipeline(ctx context.Context, nameOrID string) error
-}
-
-type Remove struct {
-	client removePipelineClient
-	logger log.Logger
-
-	args struct {
-		Name string
-	}
 }
 
 func (r *Remove) Usage() string {
@@ -46,6 +48,15 @@ func (r *Remove) Usage() string {
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Remove pipeline",
+	}
+}
+
+type Remove struct {
+	client removePipelineClient
+	logger log.Logger
+
+	args struct {
+		Name string
 	}
 }
 
@@ -88,12 +99,6 @@ func (r *Remove) Aliases() []string {
 	return []string{"rm", "delete"}
 }
 
-var (
-	_ builder.CommandWithDocs             = (*Remove)(nil)
-	_ builder.CommandWithAliases          = (*Remove)(nil)
-	_ builder.CommandWithArgs             = (*Remove)(nil)
-	_ builder.CommandWithClient           = (*Remove)(nil)
-	_ builder.CommandWithLogger           = (*Remove)(nil)
-	_ builder.CommandWithExecute          = (*Remove)(nil)
-	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)
-)
+func (*Remove) Deprecated() string {
+	return "We encourage you to remove your application via `meroxa apps remove` instead."
+}

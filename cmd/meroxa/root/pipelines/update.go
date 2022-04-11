@@ -27,6 +27,16 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
+var (
+	_ builder.CommandWithDocs       = (*Update)(nil)
+	_ builder.CommandWithArgs       = (*Update)(nil)
+	_ builder.CommandWithFlags      = (*Update)(nil)
+	_ builder.CommandWithClient     = (*Update)(nil)
+	_ builder.CommandWithLogger     = (*Update)(nil)
+	_ builder.CommandWithExecute    = (*Update)(nil)
+	_ builder.CommandWithDeprecated = (*Update)(nil)
+)
+
 type updatePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 	UpdatePipelineStatus(ctx context.Context, pipelineNameOrID string, state meroxa.Action) (*meroxa.Pipeline, error)
@@ -129,11 +139,6 @@ func (u *Update) ParseArgs(args []string) error {
 	return nil
 }
 
-var (
-	_ builder.CommandWithDocs    = (*Update)(nil)
-	_ builder.CommandWithArgs    = (*Update)(nil)
-	_ builder.CommandWithFlags   = (*Update)(nil)
-	_ builder.CommandWithClient  = (*Update)(nil)
-	_ builder.CommandWithLogger  = (*Update)(nil)
-	_ builder.CommandWithExecute = (*Update)(nil)
-)
+func (*Update) Deprecated() string {
+	return "We encourage you to operate with applications via `meroxa apps` instead."
+}

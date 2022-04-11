@@ -37,7 +37,6 @@ meroxa resources list --types
 * [meroxa login](meroxa_login.md)	 - Login or Sign up to the Meroxa Platform
 * [meroxa logout](meroxa_logout.md)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](meroxa_open.md)	 - Open in a web browser
-* [meroxa pipelines](meroxa_pipelines.md)	 - Manage pipelines on Meroxa
 * [meroxa resources](meroxa_resources.md)	 - Manage resources on Meroxa
 * [meroxa transforms](meroxa_transforms.md)	 - Manage transforms on Meroxa
 * [meroxa version](meroxa_version.md)	 - Display the Meroxa CLI version
