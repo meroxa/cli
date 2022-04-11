@@ -36,6 +36,15 @@ var (
 	_ builder.CommandWithDeprecated       = (*Remove)(nil)
 )
 
+type Remove struct {
+	client removePipelineClient
+	logger log.Logger
+
+	args struct {
+		Name string
+	}
+}
+
 type removePipelineClient interface {
 	GetPipelineByName(ctx context.Context, name string) (*meroxa.Pipeline, error)
 	DeletePipeline(ctx context.Context, nameOrID string) error
@@ -48,15 +57,6 @@ func (r *Remove) Usage() string {
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Remove pipeline",
-	}
-}
-
-type Remove struct {
-	client removePipelineClient
-	logger log.Logger
-
-	args struct {
-		Name string
 	}
 }
 
