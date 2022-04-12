@@ -45,7 +45,7 @@ func (*Builds) Hidden() bool {
 
 func (*Builds) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Operate with Process Builds on Meroxa",
+		Short: "Manage Process Builds on Meroxa",
 	}
 }
 
