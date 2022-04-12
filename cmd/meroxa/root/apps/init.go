@@ -78,7 +78,11 @@ func (i *Init) GitInit(ctx context.Context, path string) error {
 		return errors.New("path is required")
 	}
 
-	cmd := exec.Command("git", "init", path)
+	cmd := exec.Command("git", "config", "--global", "init.defaultBranch", "main")
+	cmd.Path = path
+	_ = cmd.Run()
+
+	cmd = exec.Command("git", "init", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		i.logger.Error(ctx, string(output))
