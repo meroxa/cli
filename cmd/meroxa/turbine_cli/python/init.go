@@ -9,7 +9,7 @@ import (
 )
 
 func Init(ctx context.Context, l log.Logger, name, path string) error {
-	cmd := exec.Command("turbine-py", "--generate", name, path)
+	cmd := exec.Command("turbine-py", "generate", name, path)
 	_, err := turbineCLI.RunCmdWithErrorDetection(ctx, cmd, l)
 	return err
 }
