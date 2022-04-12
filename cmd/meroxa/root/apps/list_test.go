@@ -40,7 +40,7 @@ func TestListAppsExecution(t *testing.T) {
 		Name:     "my-app",
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
 		Language: GoLang,
-		Status:   meroxa.ApplicationStatus{State: meroxa.ApplicationStateReady},
+		Status:   meroxa.ApplicationStatus{State: meroxa.ApplicationStateRunning},
 	}
 
 	apps := []*meroxa.Application{aa}

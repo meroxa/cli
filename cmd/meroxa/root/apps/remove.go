@@ -19,6 +19,7 @@ package apps
 import (
 	"context"
 	"errors"
+	"net/http"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -26,8 +27,7 @@ import (
 )
 
 type removeAppClient interface {
-	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
-	DeleteApplication(ctx context.Context, nameOrUUID string) error
+	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 }
 
 type Remove struct {
@@ -56,15 +56,12 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing application %q...", r.args.NameOrUUID)
 
-	res, err := r.client.GetApplication(ctx, r.args.NameOrUUID)
+	res, err := r.client.DeleteApplicationEntities(ctx, r.args.NameOrUUID)
 	if err != nil {
 		return err
 	}
-
-	err = r.client.DeleteApplication(ctx, r.args.NameOrUUID)
-
-	if err != nil {
-		return err
+	if res.Body != nil {
+		defer res.Body.Close()
 	}
 
 	r.logger.Infof(ctx, "Application %q successfully removed", r.args.NameOrUUID)

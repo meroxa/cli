@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"reflect"
 	"testing"
@@ -285,6 +286,101 @@ func TestCreateApplication(t *testing.T) {
 
 	if !reflect.DeepEqual(gotApplication, *a) {
 		t.Fatalf("expected \"%v\", got \"%v\"", *a, gotApplication)
+	}
+}
+
+func TestTearDownExistingResourcesWithAppRunning(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	d := &Deploy{
+		client: client,
+		logger: logger,
+	}
+
+	app := utils.GenerateApplication("")
+	d.appName = app.Name
+
+	client.
+		EXPECT().
+		GetApplication(ctx, app.Name).
+		Return(&app, nil)
+
+	err := d.tearDownExistingResources(ctx)
+
+	expectedError := fmt.Sprintf("application %q is already %s", app.Name, app.Status.State)
+	expectedError = fmt.Sprintf("%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", expectedError, app.Name)
+	if err.Error() != expectedError {
+		t.Fatalf("expected %s error, got \"%s\"", expectedError, err.Error())
+	}
+}
+
+func TestTearDownExistingResourcesWithAppDegraded(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	d := &Deploy{
+		client: client,
+		logger: logger,
+	}
+
+	app := utils.GenerateApplication(meroxa.ApplicationStateDegraded)
+	d.appName = app.Name
+
+	client.
+		EXPECT().
+		GetApplication(ctx, app.Name).
+		Return(&app, nil)
+
+	res := &http.Response{
+		StatusCode: http.StatusNoContent,
+	}
+	client.
+		EXPECT().
+		DeleteApplicationEntities(ctx, d.appName).
+		Return(res, nil)
+
+	err := d.tearDownExistingResources(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+}
+
+func TestTearDownExistingResourcesWithAppNotFound(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	d := &Deploy{
+		client: client,
+		logger: logger,
+	}
+
+	d.appName = "test"
+
+	client.
+		EXPECT().
+		GetApplication(ctx, d.appName).
+		Return(nil, nil)
+
+	res := &http.Response{
+		StatusCode: http.StatusNoContent,
+	}
+	client.
+		EXPECT().
+		DeleteApplicationEntities(ctx, d.appName).
+		Return(res, nil)
+
+	err := d.tearDownExistingResources(ctx)
+
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
 	}
 }
 

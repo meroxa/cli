@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"reflect"
 	"testing"
 
@@ -28,7 +29,6 @@ import (
 
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
@@ -67,18 +67,17 @@ func TestRemoveAppExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	res := utils.GenerateApplication()
-	r.args.NameOrUUID = res.Name
+	app := utils.GenerateApplication("")
+	r.args.NameOrUUID = app.Name
+
+	res := &http.Response{
+		StatusCode: http.StatusNoContent,
+	}
 
 	client.
 		EXPECT().
-		GetApplication(ctx, r.args.NameOrUUID).
-		Return(&res, nil)
-
-	client.
-		EXPECT().
-		DeleteApplication(ctx, r.args.NameOrUUID).
-		Return(nil)
+		DeleteApplicationEntities(ctx, r.args.NameOrUUID).
+		Return(res, nil)
 
 	err := r.Execute(ctx)
 
@@ -89,20 +88,21 @@ func TestRemoveAppExecution(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Removing application %q...
 Application %q successfully removed
-`, res.Name, res.Name)
+`, app.Name, app.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotApplication meroxa.Application
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotApplication)
+
+	var gotResponse *http.Response
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotResponse)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !reflect.DeepEqual(gotApplication, res) {
-		t.Fatalf("expected \"%v\", got \"%v\"", res, gotApplication)
+	if !reflect.DeepEqual(gotResponse, res) {
+		t.Fatalf("expected \"%v\", got \"%v\"", gotResponse, res)
 	}
 }

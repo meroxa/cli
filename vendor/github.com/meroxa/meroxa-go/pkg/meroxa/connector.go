@@ -150,7 +150,7 @@ func (c *client) UpdateConnector(ctx context.Context, nameOrID string, input *Up
 
 // ListPipelineConnectors returns an array of Connectors (scoped to the calling user)
 func (c *client) ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*Connector, error) {
-	path := fmt.Sprintf("/v1/pipelines/%s/connectors", pipelineNameOrID)
+	path := fmt.Sprintf("%s/%s/connectors", pipelinesBasePath, pipelineNameOrID)
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
