@@ -93,8 +93,8 @@ func validateAppName(name string) (string, error) {
 	name = strings.ToLower(name)
 
 	// Platform API requires the first character be a letter and
-	// that the whole name be alphanumeric except for '-' as separators.
-	r := regexp.MustCompile(`^([a-z][a-z0-9-]*)$`)
+	// that the whole name be alphanumeric with dashes and underscores.
+	r := regexp.MustCompile(`^([a-z][a-z0-9-_]*)$`)
 	matches := r.FindStringSubmatch(name)
 	if len(matches) == 0 {
 		err = fmt.Errorf(

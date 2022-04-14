@@ -227,6 +227,12 @@ func TestAppNameValidation(t *testing.T) {
 			err:        nil,
 		},
 		{
+			desc:       "Valid app name with underscore",
+			inputName:  "perfect_name",
+			outputName: "perfect_name",
+			err:        nil,
+		},
+		{
 			desc:       "Invalid app name - leading number",
 			inputName:  "3otherwisegoodname",
 			outputName: "",
