@@ -89,11 +89,13 @@ func (*Deploy) Usage() string {
 func (*Deploy) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Deploy a Meroxa Data Application",
-		Long: "This command will deploy the application specified in `--path`" +
-			"(or current working directory if not specified) to our Meroxa Platform." +
-			"If deployment was successful, you should expect an application you'll be able to fully manage",
-		Example: "meroxa apps deploy # assumes you run it from the app directory\n" +
-			"meroxa apps deploy --path ./my-app",
+		Long: `This command will deploy the application specified in '--path'
+(or current working directory if not specified) to our Meroxa Platform.
+If deployment was successful, you should expect an application you'll be able to fully manage
+`,
+		Example: `meroxa apps deploy # assumes you run it from the app directory
+meroxa apps deploy --path ./my-app
+`,
 	}
 }
 
