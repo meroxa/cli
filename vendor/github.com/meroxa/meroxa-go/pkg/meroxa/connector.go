@@ -32,6 +32,10 @@ const (
 type ConnectorType string
 
 const (
+	// ConnectorTypeSource should be changed these since they are associated to `Type` where in fact we're representing
+	// source or destination connectors as part of their metadata not this attribute.
+	// `Type` should be simply a string (`jdbc-source`, `s3-destination`)
+	// They're currently being used in the CLI.
 	ConnectorTypeSource      ConnectorType = "source"
 	ConnectorTypeDestination ConnectorType = "destination"
 )
@@ -230,4 +234,15 @@ func (c *client) DeleteConnector(ctx context.Context, nameOrID string) error {
 	}
 
 	return nil
+}
+
+func filterConnectorsPerType(list []*Connector, cType ConnectorType) []*Connector {
+	connectors := make([]*Connector, 0)
+	for _, connector := range list {
+		if connector.Metadata != nil &&
+			connector.Metadata["mx:connectorType"] == string(cType) {
+			connectors = append(connectors, connector)
+		}
+	}
+	return connectors
 }

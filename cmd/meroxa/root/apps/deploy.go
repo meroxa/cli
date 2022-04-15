@@ -35,6 +35,7 @@ import (
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
+	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -283,7 +284,13 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
-	// TODO: Remove d.tempPath for JS and Python apps
+	// TODO: Remove d.tempPath for JS apps
+	if d.lang == Python {
+		output, err := turbinePY.CleanUpApp(appPath)
+		if err != nil {
+			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
+		}
+	}
 	// remove .tar.gz file
 	return os.Remove(dFile)
 }
@@ -355,13 +362,12 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
 	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
 
-	d.logger.StartSpinner("\t", " Building Meroxa Process image...")
-
 	build, err := d.client.CreateBuild(ctx, buildInput)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
 	}
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Building Meroxa Process image (%s)...", build.Uuid))
 
 	for {
 		b, err := d.client.GetBuild(ctx, build.Uuid)
@@ -376,7 +382,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 			d.logger.StopSpinnerWithStatus(msg, log.Failed)
 			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			d.logger.StopSpinnerWithStatus("Process image built!", log.Successful)
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built Process image! (%s)", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
@@ -394,7 +400,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error
 	case JavaScript:
 		output, err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName)
 	case Python:
-		// TODO: @eric
+		output, err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName)
 	}
 
 	if err != nil {
@@ -421,9 +427,8 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 	case JavaScript:
 		d.tempPath, err = turbineJS.BuildApp(d.path)
 	case Python:
-		// TODO: @eric
-		// path only for zipping = turbinePy.BuildApp(ctx, d.logger, d.path) => newPath string
 		// Dockerfile will already exist
+		d.tempPath, err = turbinePY.BuildApp(d.path)
 	}
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -447,7 +452,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	case JavaScript:
 		needsToBuild, err = turbineJS.NeedsToBuild(d.path)
 	case Python:
-		// TODO: @eric
+		needsToBuild, err = turbinePY.NeedsToBuild(d.path)
 	}
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -548,7 +553,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 		return errors.New(msg)
 	}
 	resp, _ := d.client.DeleteApplicationEntities(ctx, d.appName)
-	if resp.Body != nil {
+	if resp != nil && resp.Body != nil {
 		defer resp.Body.Close()
 	}
 	return nil
