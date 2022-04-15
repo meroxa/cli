@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
@@ -23,7 +23,17 @@ func NeedsToBuild(path string) (bool, error) {
 			string(output))
 		return false, err
 	}
-	return strconv.ParseBool(strings.TrimSpace(string(output)))
+
+	r := regexp.MustCompile("\nturbine-response: (true|false)\n")
+	match := r.FindStringSubmatch(string(output))
+	if match == nil || len(match) < 2 {
+		err := fmt.Errorf(
+			"unable to determine if the Meroxa Application at %s has a Process; %s",
+			path,
+			string(output))
+		return false, err
+	}
+	return strconv.ParseBool(match[1])
 }
 
 func BuildApp(path string) (string, error) {
@@ -32,7 +42,13 @@ func BuildApp(path string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
 	}
-	return strings.TrimSpace(string(output)), err
+
+	r := regexp.MustCompile("\nturbine-response: (.*)\n")
+	match := r.FindStringSubmatch(string(output))
+	if match == nil || len(match) < 2 {
+		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
+	}
+	return match[1], err
 }
 
 func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (string, error) {
