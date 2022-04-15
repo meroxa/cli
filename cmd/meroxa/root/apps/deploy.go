@@ -552,8 +552,8 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 		msg := fmt.Sprintf("%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appIsReady, d.appName)
 		return errors.New(msg)
 	}
-	resp, _ := d.client.DeleteApplicationEntities(ctx, d.appName)
-	if resp.Body != nil {
+	resp, err := d.client.DeleteApplicationEntities(ctx, d.appName)
+	if err == nil && resp != nil && resp.Body != nil {
 		defer resp.Body.Close()
 	}
 	return nil
