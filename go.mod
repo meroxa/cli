@@ -28,9 +28,8 @@ require (
 	github.com/briandowns/spinner v1.18.1
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220405102922-2d9a299a1e02
+	github.com/meroxa/turbine-go v0.0.0-20220415162617-7cd06570b49b
 	github.com/volatiletech/null/v8 v8.1.2
-	golang.org/x/text v0.3.7
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -80,6 +79,7 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
 	golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f // indirect
+	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220329172620-7be39ac1afc7 // indirect

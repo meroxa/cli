@@ -1,0 +1,166 @@
+{
+  "collection_name": [
+    {
+      "key": "1",
+      "value": {
+        "schema": {
+          "type": "struct",
+          "fields": [
+            { "field": "id", "optional": false, "type": "int32" },
+            { "field": "category", "optional": false, "type": "string" },
+            { "field": "product_type", "optional": false, "type": "string" },
+            { "field": "product_name", "optional": false, "type": "string" },
+            { "field": "stock", "optional": false, "type": "boolean" },
+            { "field": "product_id", "optional": false, "type": "int32" },
+            { "field": "shipping_address", "optional": false, "type": "string" },
+            { "field": "customer_email", "optional": false, "type": "varchar" },
+            {
+              "field": "created_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": false,
+              "type": "int64",
+              "version": 1
+            },
+            {
+              "field": "updated_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": false,
+              "type": "int64",
+              "version": 1
+            },
+            {
+              "field": "deleted_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": true,
+              "type": "int64",
+              "version": 1
+            }
+          ],
+          "optional": false,
+          "name": "collection_name"
+        },
+        "payload": {
+          "id": 9582724,
+          "category": "camping",
+          "product_type": "sleeping-bag",
+          "product_name": "Forte 35 Sleeping Bag - Womens",
+          "stock": true,
+          "product_id": 361632,
+          "shipping_address": "9718 East Virginia Avenue Silver Spring, MD 20901",
+          "customer_email": "usera@example.com",
+          "updated_at": "2022-01-22 18:25:31",
+          "created_at": "2022-01-22 18:25:31",
+          "deleted_at": null
+        }
+      }
+    },
+    {
+      "key": "2",
+      "value": {
+        "schema": {
+          "type": "struct",
+          "fields": [
+            { "field": "id", "optional": false, "type": "int32" },
+            { "field": "category", "optional": false, "type": "string" },
+            { "field": "product_type", "optional": false, "type": "string" },
+            { "field": "product_name", "optional": false, "type": "string" },
+            { "field": "stock", "optional": false, "type": "boolean" },
+            { "field": "product_id", "optional": false, "type": "int32" },
+            { "field": "shipping_address", "optional": false, "type": "string" },
+            { "field": "customer_email", "optional": false, "type": "varchar" },
+            {
+              "field": "created_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": false,
+              "type": "timestamp",
+              "version": 1
+            },
+            {
+              "field": "updated_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": false,
+              "type": "timestamp",
+              "version": 1
+            },
+            {
+              "field": "deleted_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": true,
+              "type": "timestamp",
+              "version": 1
+            }
+          ],
+          "optional": false,
+          "name": "collection_name"
+        },
+        "payload": {
+          "id": 9582725,
+          "category": "camping",
+          "product_type": "sleeping-bag",
+          "product_name": "Cosmic 20 Sleeping Bag - Mens",
+          "stock": true,
+          "product_id": 235367,
+          "shipping_address": "881 South Newbridge Lane Upland, CA 91784",
+          "customer_email": "userb@example.com",
+          "updated_at": "2022-01-22 19:10:25",
+          "created_at": "2022-01-22 19:10:25",
+          "deleted_at": null
+        }
+      }
+    },
+    {
+      "key": "3",
+      "value": {
+        "schema": {
+          "type": "struct",
+          "fields": [
+            { "field": "id", "optional": false, "type": "int32" },
+            { "field": "category", "optional": false, "type": "string" },
+            { "field": "product_type", "optional": false, "type": "string" },
+            { "field": "product_name", "optional": false, "type": "string" },
+            { "field": "stock", "optional": false, "type": "boolean" },
+            { "field": "product_id", "optional": false, "type": "int32" },
+            { "field": "shipping_address", "optional": false, "type": "string" },
+            { "field": "customer_email", "optional": false, "type": "varchar" },
+            {
+              "field": "created_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": false,
+              "type": "timestamp",
+              "version": 1
+            },
+            {
+              "field": "updated_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": false,
+              "type": "timestamp",
+              "version": 1
+            },
+            {
+              "field": "deleted_at",
+              "name": "org.apache.kafka.connect.data.Timestamp",
+              "optional": true,
+              "type": "timestamp",
+              "version": 1
+            }
+          ],
+          "optional": false,
+          "name": "collection_name"
+        },
+        "payload": {
+          "id": 9582726,
+          "category": "camping",
+          "product_type": "sleeping-bag",
+          "product_name": "Zephyr 25 Recycled Sleeping Bag - Kids",
+          "stock": true,
+          "product_id": 203000,
+          "shipping_address": "43 Sunnyslope Street Port Richey, FL 34668",
+          "customer_email": "userc@example.com",
+          "updated_at": "2022-01-22 19:43:12",
+          "created_at": "2022-01-22 19:43:12",
+          "deleted_at": null
+        }
+      }
+    }
+  ]
+}
