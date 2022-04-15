@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 )
 
@@ -28,41 +29,26 @@ func createAppDirectory(path, appName string) error {
 // createFixtures will create exclusively a fixtures folder and its content
 func createFixtures(path, appName string) error {
 	directory := "fixtures"
-	fileName := "README.md"
-	jsonFile := "demo.json"
 
 	err := os.Mkdir(filepath.Join(path, appName, directory), 0755)
 	if err != nil {
 		return err
 	}
 
-	t, err := template.ParseFS(templateFS, filepath.Join(templateDir, directory, fileName))
+	content, err := templateFS.ReadDir(filepath.Join(templateDir, directory))
 	if err != nil {
 		return err
 	}
 
-	appJSON := TurbineAppInitTrait{
-		AppName: appName,
-	}
-
-	f, err := os.Create(filepath.Join(path, appName, directory, fileName))
-	if err != nil {
-		return err
-	}
-
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			log.Fatal(err)
+	for _, f := range content {
+		if !f.IsDir() && strings.Contains(f.Name(), "json") {
+			if err = duplicateFile("fixtures/"+f.Name(), path, appName); err != nil {
+				return err
+			}
 		}
-	}(f)
-
-	err = t.Execute(f, appJSON)
-	if err != nil {
-		return err
 	}
 
-	return duplicateFile("fixtures/"+jsonFile, path, appName)
+	return nil
 }
 
 // duplicateFile reads from a template and write to a file located to a path provided by the user
