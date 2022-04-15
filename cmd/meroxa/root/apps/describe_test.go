@@ -65,7 +65,7 @@ func TestDescribeApplicationExecution(t *testing.T) {
 
 	appName := "my-env"
 
-	a := utils.GenerateApplication()
+	a := utils.GenerateApplication("")
 	a.Name = appName
 
 	client.
@@ -114,7 +114,7 @@ func TestDescribeApplicationExecutionWithFunctions(t *testing.T) {
 
 	appName := "my-app-with-funcs"
 
-	a := utils.GenerateApplication()
+	a := utils.GenerateApplication("")
 	a.Name = appName
 	a.Functions = []meroxa.EntityIdentifier{
 		{Name: null.StringFrom("fun1")},

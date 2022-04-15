@@ -574,10 +574,10 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/funtime v0.0.0-20220113012133-85e6e898fc73/go.mod h1:K2y2GvcA4Cg3dJtckcwYWnwnJzF63FDdtAQI0fToU0Q=
 github.com/meroxa/meroxa-go v0.0.0-20220208195203-71ddc3133fab/go.mod h1:HDFszURCM1cOpKE699o5Hs0T2tEIXqY+vFcsur3RiwY=
-github.com/meroxa/meroxa-go v0.0.0-20220404191043-2fff202066b1 h1:RXAOz9J0QeJS4w62qOkBc1bYRxMq8FwsV0L7BoAkvJU=
-github.com/meroxa/meroxa-go v0.0.0-20220404191043-2fff202066b1/go.mod h1:BsqYa9jqfyGOAgfkggfK567b2Ahkb+RCH3lXDQGgrh8=
-github.com/meroxa/turbine-go v0.0.0-20220415162617-7cd06570b49b h1:Elj6aOiV+ZQaWA8CfsozVIlBKEzQQKgbYncCbXNv7TU=
-github.com/meroxa/turbine-go v0.0.0-20220415162617-7cd06570b49b/go.mod h1:F4ODyjX+tn5dYFRc1bQlHLUnTtlJIxs09AKHqfCD5Cg=
+github.com/meroxa/meroxa-go v0.0.0-20220415204845-92b08f71390e h1:Gkv7fU8Bc2sBbNoJu1K5ElHyJ3HsYb7k43ikJpaE4uM=
+github.com/meroxa/meroxa-go v0.0.0-20220415204845-92b08f71390e/go.mod h1:BsqYa9jqfyGOAgfkggfK567b2Ahkb+RCH3lXDQGgrh8=
+github.com/meroxa/turbine-go v0.0.0-20220415203703-5ab9fcaf547d h1:JWJ0rrFmm9zV3WMMm3hIXS0Ebegm129SVs3zPcFi2Kk=
+github.com/meroxa/turbine-go v0.0.0-20220415203703-5ab9fcaf547d/go.mod h1:F4ODyjX+tn5dYFRc1bQlHLUnTtlJIxs09AKHqfCD5Cg=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=

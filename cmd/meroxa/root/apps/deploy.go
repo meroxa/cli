@@ -50,6 +50,7 @@ const (
 type deployApplicationClient interface {
 	CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
@@ -410,7 +411,9 @@ func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error
 func (d *Deploy) buildApp(ctx context.Context) error {
 	var err error
 
-	d.logger.StartSpinner("\t", "Building application...")
+	// Without the " " at the beginning of `suffix`, spinner looks next to word (only on this occurrence)
+	// TODO: Fix this (not having to add that extra blank space at the beginning)
+	d.logger.StartSpinner("\t", " Building application...")
 
 	switch d.lang {
 	case GoLang:
@@ -536,8 +539,29 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 	return err
 }
 
+func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
+	app, _ := d.client.GetApplication(ctx, d.appName)
+
+	if app != nil && app.Status.State == meroxa.ApplicationStateRunning {
+		appIsReady := fmt.Sprintf("application %q is already %s", d.appName, app.Status.State)
+		msg := fmt.Sprintf("%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appIsReady, d.appName)
+		return errors.New(msg)
+	}
+	resp, _ := d.client.DeleteApplicationEntities(ctx, d.appName)
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
+	return nil
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
 	err := d.validate(ctx)
+	if err != nil {
+		return err
+	}
+
+	// ⚠️ This is only until we re-deploy applications applying only the changes made
+	err = d.tearDownExistingResources(ctx)
 	if err != nil {
 		return err
 	}

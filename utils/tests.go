@@ -171,10 +171,16 @@ func GenerateEnvironment(environmentName string) meroxa.Environment {
 	}
 }
 
-func GenerateApplication() meroxa.Application {
+func GenerateApplication(state meroxa.ApplicationState) meroxa.Application {
+	if state == "" {
+		state = meroxa.ApplicationStateRunning
+	}
 	return meroxa.Application{
 		Name:     "application-name",
 		Language: "golang",
+		Status: meroxa.ApplicationStatus{
+			State: state,
+		},
 	}
 }
 
