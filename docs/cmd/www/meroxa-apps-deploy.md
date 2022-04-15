@@ -11,7 +11,10 @@ Deploy a Meroxa Data Application
 
 ### Synopsis
 
-This command will deploy the application specified in `--path`(or current working directory if not specified) to our Meroxa Platform.If deployment was successful, you should expect an application you'll be able to fully manage
+This command will deploy the application specified in '--path'
+(or current working directory if not specified) to our Meroxa Platform.
+If deployment was successful, you should expect an application you'll be able to fully manage
+
 
 ```
 meroxa apps deploy [flags]
@@ -22,6 +25,7 @@ meroxa apps deploy [flags]
 ```
 meroxa apps deploy # assumes you run it from the app directory
 meroxa apps deploy --path ./my-app
+
 ```
 
 ### Options

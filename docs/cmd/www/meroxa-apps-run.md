@@ -11,8 +11,7 @@ Execute a Meroxa Data Application locally
 
 ### Synopsis
 
-meroxa apps run will build your app locally to then run it
-locally on --path.
+meroxa apps run will build your app locally to then run it locally in --path.
 
 ```
 meroxa apps run [flags]
@@ -21,8 +20,9 @@ meroxa apps run [flags]
 ### Examples
 
 ```
-meroxa apps run # assumes you run it from the app directory
-meroxa apps run --path ../js-demo --lang js # in case you didn't specify lang on your app.jsonmeroxa apps run --path ../go-demo # it'll use lang defined in your app.json
+meroxa apps run 			# assumes you run it from the app directory
+meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
+
 ```
 
 ### Options
