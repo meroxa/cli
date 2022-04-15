@@ -93,17 +93,17 @@ func (c *client) DeleteApplicationEntities(ctx context.Context, name string) (*h
 
 		// Fetch connectors associated to that pipeline and delete each one.
 		respConnectorsList, _ := c.ListPipelineConnectors(ctx, respPipelineGet.Name)
-		// Source connectors cannot be deleted before destination connectors,
-		// so delete connectors in two passes.
-		const passes = 2
-		for i := 0; i < passes; i++ {
-			for _, connector := range respConnectorsList {
-				if i == 0 && connector.Type == ConnectorTypeDestination {
-					_ = c.DeleteConnector(ctx, connector.Name)
-				} else if i == 1 && connector.Type == ConnectorTypeSource {
-					_ = c.DeleteConnector(ctx, connector.Name)
-				}
-			}
+
+		// Delete destination connectors first
+		destConnectors := filterConnectorsPerType(respConnectorsList, ConnectorTypeDestination)
+		for _, connector := range destConnectors {
+			_ = c.DeleteConnector(ctx, connector.Name)
+		}
+
+		// Delete source connectors
+		srcConnectors := filterConnectorsPerType(respConnectorsList, ConnectorTypeSource)
+		for _, connector := range srcConnectors {
+			_ = c.DeleteConnector(ctx, connector.Name)
 		}
 
 		// Fetch all functions (we don't have way to filter functions from the API) and delete
