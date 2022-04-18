@@ -24,7 +24,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -186,13 +185,8 @@ func (d *Deploy) Logger(logger log.Logger) {
 
 // TODO: Move this to each turbine library.
 func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha string) error {
-	appName, err := turbineCLI.GetAppNameFromAppJSON(d.path)
-	if err != nil {
-		return err
-	}
-
 	input := meroxa.CreateApplicationInput{
-		Name:     appName,
+		Name:     d.appName,
 		Language: d.lang,
 		GitSha:   gitSha,
 		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
@@ -205,14 +199,14 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 		if strings.Contains(err.Error(), "already exists") {
 			// Double check that the created application has the expected pipeline.
 			var app *meroxa.Application
-			app, err = d.client.GetApplication(ctx, appName)
+			app, err = d.client.GetApplication(ctx, d.appName)
 			if err != nil {
 				d.logger.StopSpinnerWithStatus("\t", log.Failed)
 				return err
 			}
 			if app.Pipeline.UUID.String != pipelineUUID {
 				d.logger.StopSpinnerWithStatus(fmt.Sprintf("unable to finish creating the %s Application because its entities are in an"+
-					" unrecoverable state; try deleting and re-deploying", appName), log.Failed)
+					" unrecoverable state; try deleting and re-deploying", d.appName), log.Failed)
 
 				d.logger.StopSpinnerWithStatus("\t", log.Failed)
 				// TODO: Rollback here?
@@ -511,7 +505,6 @@ func (d *Deploy) validate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	d.appName = path.Base(d.path)
 
 	d.lang, err = turbineCLI.GetLangFromAppJSON(d.path)
 	if err != nil {
@@ -519,6 +512,11 @@ func (d *Deploy) validate(ctx context.Context) error {
 	}
 
 	err = d.validateLanguage()
+	if err != nil {
+		return err
+	}
+
+	d.appName, err = turbineCLI.GetAppNameFromAppJSON(d.path)
 	if err != nil {
 		return err
 	}
@@ -553,6 +551,8 @@ func (d *Deploy) rmBinary() {
 	}
 }
 
+// tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
+// or whether it's in a non runnin state.
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	app, _ := d.client.GetApplication(ctx, d.appName)
 
