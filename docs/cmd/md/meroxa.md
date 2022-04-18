@@ -29,6 +29,7 @@ meroxa resources list --types
 * [meroxa apps](meroxa_apps.md)	 - Manage Meroxa Data Applications
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
 * [meroxa billing](meroxa_billing.md)	 - Open your billing page in a web browser
+* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa
 * [meroxa completion](meroxa_completion.md)	 - Generate completion script
 * [meroxa config](meroxa_config.md)	 - Manage your Meroxa CLI configuration
 * [meroxa endpoints](meroxa_endpoints.md)	 - Manage endpoints on Meroxa

@@ -25,7 +25,6 @@ import (
 var (
 	_ builder.CommandWithDocs        = (*Builds)(nil)
 	_ builder.CommandWithAliases     = (*Builds)(nil)
-	_ builder.CommandWithHidden      = (*Builds)(nil)
 	_ builder.CommandWithSubCommands = (*Builds)(nil)
 )
 
@@ -39,13 +38,9 @@ func (*Builds) Aliases() []string {
 	return []string{"build"}
 }
 
-func (*Builds) Hidden() bool {
-	return true
-}
-
 func (*Builds) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Manage Process Builds on Meroxa",
+		Short: "Inspect Process Builds on Meroxa",
 	}
 }
 
