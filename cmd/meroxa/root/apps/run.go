@@ -52,7 +52,7 @@ func (*Run) Usage() string {
 
 func (*Run) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Execute a Meroxa Data Application locally",
+		Short: "Execute a Turbine Data Application locally",
 		Long:  "meroxa apps run will build your app locally to then run it locally in --path.",
 		Example: `meroxa apps run 			# assumes you run it from the app directory
 meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json

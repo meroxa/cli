@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-describe/
 ---
 ## meroxa apps describe
 
-Describe Meroxa Data Application
+Describe a Turbine Data Application
 
 ```
 meroxa apps describe [NAMEorUUID] [flags]
@@ -16,7 +16,7 @@ meroxa apps describe [NAMEorUUID] [flags]
 ### Options
 
 ```
-      --extended   whether to show additional details about the Meroxa Data Application
+      --extended   whether to show additional details about the Turbine Data Application
   -h, --help       help for describe
 ```
 
@@ -31,5 +31,5 @@ meroxa apps describe [NAMEorUUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Meroxa Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

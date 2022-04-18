@@ -1,6 +1,6 @@
 ## meroxa apps describe
 
-Describe Meroxa Data Application
+Describe a Turbine Data Application
 
 ```
 meroxa apps describe [NAMEorUUID] [flags]
@@ -9,7 +9,7 @@ meroxa apps describe [NAMEorUUID] [flags]
 ### Options
 
 ```
-      --extended   whether to show additional details about the Meroxa Data Application
+      --extended   whether to show additional details about the Turbine Data Application
   -h, --help       help for describe
 ```
 
@@ -24,5 +24,5 @@ meroxa apps describe [NAMEorUUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Meroxa Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

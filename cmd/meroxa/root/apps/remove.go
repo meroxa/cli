@@ -45,7 +45,7 @@ func (r *Remove) Usage() string {
 
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Removes a Meroxa Data Application",
+		Short: "Removes a Turbine Data Application",
 	}
 }
 

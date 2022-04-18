@@ -51,7 +51,7 @@ type Describe struct {
 	}
 
 	flags struct {
-		Extended bool `long:"extended" usage:"whether to show additional details about the Meroxa Data Application"`
+		Extended bool `long:"extended" usage:"whether to show additional details about the Turbine Data Application"`
 	}
 }
 
@@ -65,7 +65,7 @@ func (d *Describe) Usage() string {
 
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Describe Meroxa Data Application",
+		Short: "Describe a Turbine Data Application",
 	}
 }
 

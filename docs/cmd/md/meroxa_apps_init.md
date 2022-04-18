@@ -1,6 +1,6 @@
 ## meroxa apps init
 
-Initialize a Meroxa Data Application
+Initialize a Turbine Data Application
 
 ```
 meroxa apps init [APP_NAME] [--path pwd] --lang js|go [flags]
@@ -38,5 +38,5 @@ meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Meroxa Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 
