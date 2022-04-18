@@ -544,6 +544,15 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 	return err
 }
 
+func (d *Deploy) rmBinary() {
+	if d.lang == GoLang {
+		err := os.Remove(filepath.Join(d.path, d.appName+"*"))
+		if err != nil {
+			fmt.Printf("warning: failed to clean up app at %s: %v\n", d.path, err)
+		}
+	}
+}
+
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	app, _ := d.client.GetApplication(ctx, d.appName)
 
@@ -572,6 +581,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	err = d.prepareAppForDeployment(ctx)
+	defer d.rmBinary()
 	if err != nil {
 		return err
 	}

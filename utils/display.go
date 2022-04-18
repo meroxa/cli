@@ -939,7 +939,7 @@ func extendedResourcesTable(resources []*meroxa.Resource, connectors map[string]
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", string(r.Type))
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", string(c.State))
-		subTable += fmt.Sprintf("\t\t%5s:   %s", "As", string(c.Type))
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "As", string(c.Type))
 	}
 
 	return subTable
