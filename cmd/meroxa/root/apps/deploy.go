@@ -272,27 +272,38 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	}
 
 	if d.lang == GoLang {
-		// We clean up Dockerfile as last step
+		// Clean up the Dockerfile as the last step.
 		err = os.Remove(filepath.Join(appPath, "Dockerfile"))
 		if err != nil {
-			return err
+			fmt.Printf("warning: failed to clean up app at %s: %v\n", appPath, err)
+		}
+	}
+	// TODO: Remove d.tempPath for JS apps
+	if d.lang == Python {
+		var output string
+		output, err = turbinePY.CleanUpApp(appPath)
+		if err != nil {
+			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
 		}
 	}
 
 	err = d.uploadFile(ctx, dFile, url)
 	if err != nil {
+		err2 := os.Remove(dFile)
+		if err2 != nil {
+			fmt.Printf("warning: failed to clean up app at %s: %v\n", appPath, err)
+		}
+
 		return err
 	}
 
-	// TODO: Remove d.tempPath for JS apps
-	if d.lang == Python {
-		output, err := turbinePY.CleanUpApp(appPath)
-		if err != nil {
-			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
-		}
-	}
 	// remove .tar.gz file
-	return os.Remove(dFile)
+	err = os.Remove(dFile)
+	if err != nil {
+		fmt.Printf("warning: failed to clean up app at %s: %v\n", appPath, err)
+	}
+
+	return nil
 }
 
 func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
