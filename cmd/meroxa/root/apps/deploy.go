@@ -24,6 +24,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -546,9 +547,16 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 
 func (d *Deploy) rmBinary() {
 	if d.lang == GoLang {
-		err := os.Remove(filepath.Join(d.path, d.appName+"*"))
+		cmd := exec.Command("rm", filepath.Join(d.path, d.appName))
+		_, err := cmd.CombinedOutput()
 		if err != nil {
-			fmt.Printf("warning: failed to clean up app at %s: %v\n", d.path, err)
+			fmt.Printf("warning: failed to clean up %s at %s\n", filepath.Join(d.path, d.appName), d.path)
+		}
+
+		cmd = exec.Command("rm", filepath.Join(d.path, d.appName)+".cross")
+		_, err = cmd.CombinedOutput()
+		if err != nil {
+			fmt.Printf("warning: failed to clean up %s at %s\n", filepath.Join(d.path, d.appName)+".cross", d.path)
 		}
 	}
 }
