@@ -547,13 +547,13 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 func (d *Deploy) rmBinary() {
 	if d.lang == GoLang {
 		localBinary := filepath.Join(d.path, d.appName)
-		err := os.Remove(localBinary) //nolint:gosec
+		err := os.Remove(localBinary)
 		if err != nil {
 			fmt.Printf("warning: failed to clean up %s at %s\n", localBinary, d.path)
 		}
 
 		crossCompiledBinary := filepath.Join(d.path, d.appName) + ".cross"
-		err = os.Remove(crossCompiledBinary) //nolint:gosec
+		err = os.Remove(crossCompiledBinary)
 		if err != nil {
 			fmt.Printf("warning: failed to clean up %s at %s\n", crossCompiledBinary, d.path)
 		}
