@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-list/
 ---
 ## meroxa apps list
 
-List Meroxa Data apps
+List Turbine Data Applications
 
 ```
 meroxa apps list [flags]
@@ -31,5 +31,5 @@ meroxa apps list [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Meroxa Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

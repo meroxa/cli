@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-run/
 ---
 ## meroxa apps run
 
-Execute a Meroxa Data Application locally
+Execute a Turbine Data Application locally
 
 ### Synopsis
 
@@ -44,5 +44,5 @@ meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Meroxa Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

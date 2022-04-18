@@ -90,7 +90,7 @@ func (*Deploy) Usage() string {
 
 func (*Deploy) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Deploy a Meroxa Data Application",
+		Short: "Deploy a Turbine Data Application",
 		Long: `This command will deploy the application specified in '--path'
 (or current working directory if not specified) to our Meroxa Platform.
 If deployment was successful, you should expect an application you'll be able to fully manage

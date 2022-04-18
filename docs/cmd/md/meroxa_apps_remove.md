@@ -1,6 +1,6 @@
 ## meroxa apps remove
 
-Removes a Meroxa Data Application
+Removes a Turbine Data Application
 
 ```
 meroxa apps remove NAME [flags]
@@ -24,5 +24,5 @@ meroxa apps remove NAME [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Meroxa Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

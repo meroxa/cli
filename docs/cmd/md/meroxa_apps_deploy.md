@@ -1,6 +1,6 @@
 ## meroxa apps deploy
 
-Deploy a Meroxa Data Application
+Deploy a Turbine Data Application
 
 ### Synopsis
 
@@ -39,5 +39,5 @@ meroxa apps deploy --path ./my-app
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Meroxa Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 
