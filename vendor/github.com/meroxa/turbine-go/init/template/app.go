@@ -75,7 +75,7 @@ func (f Anonymize) Process(stream []turbine.Record) ([]turbine.Record, []turbine
 	for i, r := range stream {
 		e := fmt.Sprintf("%s", r.Payload.Get("customer_email"))
 		if e == "" {
-			log.Println("unable to find customer_email value in %d record", i)
+			log.Printf("unable to find customer_email value in %d record\n", i)
 			break
 		}
 		hashedEmail := consistentHash(e)

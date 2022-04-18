@@ -576,6 +576,8 @@ github.com/meroxa/funtime v0.0.0-20220113012133-85e6e898fc73/go.mod h1:K2y2GvcA4
 github.com/meroxa/meroxa-go v0.0.0-20220208195203-71ddc3133fab/go.mod h1:HDFszURCM1cOpKE699o5Hs0T2tEIXqY+vFcsur3RiwY=
 github.com/meroxa/meroxa-go v0.0.0-20220415221139-f31436f83dca h1:HTg9REXt9NqbX2syACtpUEwF/unzwWRjG9AkSaqcnLc=
 github.com/meroxa/meroxa-go v0.0.0-20220415221139-f31436f83dca/go.mod h1:BsqYa9jqfyGOAgfkggfK567b2Ahkb+RCH3lXDQGgrh8=
+github.com/meroxa/turbine-go v0.0.0-20220418141359-a37ec2862d9a h1:wcfOhNkl719CrPe8OmgiZInm448enMDrOwr/pBy5/7w=
+github.com/meroxa/turbine-go v0.0.0-20220418141359-a37ec2862d9a/go.mod h1:F4ODyjX+tn5dYFRc1bQlHLUnTtlJIxs09AKHqfCD5Cg=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
