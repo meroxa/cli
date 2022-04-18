@@ -32,6 +32,7 @@ func buildForCrossCompile(ctx context.Context, l log.Logger, appPath, appName st
 	cmd := exec.Command("go", "build", "--tags", "platform", "-o", appName+".cross", "./...") //nolint:gosec
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, "CGO_ENABLED=0", "GOOS=linux", "GOARCH=amd64")
+	cmd.Dir = appPath
 
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
