@@ -367,7 +367,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
 	}
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Building Meroxa Process image (%s)...", build.Uuid))
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Building Meroxa Process image (%q)...", build.Uuid))
 
 	for {
 		b, err := d.client.GetBuild(ctx, build.Uuid)
@@ -382,7 +382,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 			d.logger.StopSpinnerWithStatus(msg, log.Failed)
 			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built Process image! (%s)", build.Uuid), log.Successful)
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built Process image! (%q)", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
