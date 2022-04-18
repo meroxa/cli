@@ -121,7 +121,7 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 	}
 	dockerBuildOutput := buf.String()
 
-	re := regexp.MustCompile(`{"errorDetail":{"message":"([^"]+)"}`)
+	re := regexp.MustCompile(`{"errorDetail":{[^}]*"message":"([^"]+)"}`)
 	matches := re.FindAllStringSubmatch(dockerBuildOutput, -1)
 	if len(matches) != 0 {
 		const subMatchArraySize = 2
