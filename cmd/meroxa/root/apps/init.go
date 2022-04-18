@@ -148,7 +148,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		return err
 	}
 
-	i.logger.Infof(ctx, "Turbine Application successfully initialized!\n"+
+	i.logger.Infof(ctx, "Turbine Data Application successfully initialized!\n"+
 		"You can start interacting with Meroxa in your app located at \"%s/%s\"", i.path, name)
 
 	return nil
