@@ -549,13 +549,13 @@ func (d *Deploy) rmBinary() {
 		localBinary := filepath.Join(d.path, d.appName)
 		err := os.Remove(localBinary)
 		if err != nil {
-			fmt.Printf("warning: failed to clean up %s at %s\n", localBinary, d.path)
+			fmt.Printf("warning: failed to clean up %s\n", localBinary)
 		}
 
 		crossCompiledBinary := filepath.Join(d.path, d.appName) + ".cross"
 		err = os.Remove(crossCompiledBinary)
 		if err != nil {
-			fmt.Printf("warning: failed to clean up %s at %s\n", crossCompiledBinary, d.path)
+			fmt.Printf("warning: failed to clean up %s\n", crossCompiledBinary)
 		}
 	}
 }
