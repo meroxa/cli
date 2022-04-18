@@ -271,6 +271,8 @@ func TestCreateApplication(t *testing.T) {
 		lang:   lang,
 	}
 
+	d.appName = name
+
 	err = d.createApplication(ctx, pipelineUUID, gitSha)
 
 	if err != nil {
