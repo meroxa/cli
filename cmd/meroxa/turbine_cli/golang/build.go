@@ -31,9 +31,7 @@ func BuildBinary(ctx context.Context, l log.Logger, appPath, appName string, pla
 func buildForCrossCompile(ctx context.Context, l log.Logger, appPath, appName string) error {
 	cmd := exec.Command("go", "build", "--tags", "platform", "-o", appName+".cross", "./...") //nolint:gosec
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, "CGO_ENABLED=0", "GOOS=linux", "GOARCH=amd64",
-		fmt.Sprintf("MEROXA_APP_PATH=%s", appPath),
-	)
+	cmd.Env = append(cmd.Env, "CGO_ENABLED=0", "GOOS=linux", "GOARCH=amd64")
 
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
