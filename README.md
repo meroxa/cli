@@ -43,7 +43,7 @@ Prerequisite Tools:
 
 To build from source:
 
-1. The CLI depends on [meroxa-go](github.com/meroxa/meroxa-go) (which is currently a private repo). To update vendoring the dependency, you'll need to run the following:
+1. The CLI depends on [meroxa-go](github.com/meroxa/meroxa-go). To update vendoring the dependency, you'll need to run the following:
 
 ```
 make gomod

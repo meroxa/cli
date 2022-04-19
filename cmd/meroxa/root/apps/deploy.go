@@ -183,7 +183,6 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-// TODO: Move this to each turbine library.
 func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha string) error {
 	input := meroxa.CreateApplicationInput{
 		Name:     d.appName,
@@ -209,7 +208,6 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 					" unrecoverable state; try deleting and re-deploying", d.appName), log.Failed)
 
 				d.logger.StopSpinnerWithStatus("\t", log.Failed)
-				// TODO: Rollback here?
 				return fmt.Errorf("unable to finish creating application")
 			}
 		}
@@ -278,7 +276,6 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
-	// TODO: Remove d.tempPath for JS apps
 	if d.lang == Python {
 		output, err := turbinePY.CleanUpApp(appPath)
 		if err != nil {
@@ -412,7 +409,6 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 	var err error
 
 	// Without the " " at the beginning of `suffix`, spinner looks next to word (only on this occurrence)
-	// TODO: Fix this (not having to add that extra blank space at the beginning)
 	d.logger.StartSpinner("\t", " Building application...")
 
 	switch d.lang {
