@@ -20,9 +20,8 @@ type Function struct {
 	EnvVars      map[string]string  `json:"env_vars"`
 	Status       FunctionStatus     `json:"status"`
 	Pipeline     PipelineIdentifier `json:"pipeline"`
-	Logs		 string 			`json:"logs"` // CLI includes what's returned by GetFunctionLogs
+	Logs         string             `json:"logs"` // CLI includes what's returned by GetFunctionLogs
 }
-
 
 type FunctionStatus struct {
 	State   string `json:"state"`

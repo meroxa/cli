@@ -151,34 +151,6 @@ func (c *client) GetApplication(ctx context.Context, name string) (*Application,
 	return a, nil
 }
 
-func (c *client) GetApplicationExtended(ctx context.Context, name string) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var a *Application
-	err = json.NewDecoder(resp.Body).Decode(&a)
-	if err != nil {
-		return nil, err
-	}
-
-
-	// 1. Iterate over each app.Resources
-	// 2. GetResourceByNameOrID
-	// 3. Iterate over each app.Connectors
-	// 4. GetConnectorByNameOrID
-	// 5. Iterate over each app.Functions
-	// 6. GetFunction
-
-	return a, nil
-}
-
 func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
 	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePath, nil, nil)
 	if err != nil {
