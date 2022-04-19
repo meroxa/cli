@@ -876,7 +876,7 @@ func AppTable(app *meroxa.Application) string {
 	return mainTable.String()
 }
 
-func ExtendedAppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors map[string]*meroxa.Connector,
+func AppExtendedTable(app *meroxa.Application, resources []*meroxa.Resource, connectors map[string]*meroxa.Connector,
 	functions []*meroxa.Function) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
@@ -940,6 +940,10 @@ func extendedResourcesTable(resources []*meroxa.Resource, connectors map[string]
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", string(r.Type))
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", string(c.State))
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "As", string(c.Type))
+
+		if c.Trace != "" {
+			subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Trace", c.Trace)
+		}
 	}
 
 	return subTable
@@ -955,6 +959,10 @@ func extendedFunctionsTable(functions []*meroxa.Function) string {
 		subTable += fmt.Sprintf("\t    %s\n", f.Name)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", f.UUID)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", f.Status.State)
+
+		if f.Logs != "" {
+			subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Logs", f.Logs)
+		}
 	}
 
 	return subTable
