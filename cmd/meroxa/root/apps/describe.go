@@ -17,8 +17,10 @@ limitations under the License.
 package apps
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"net/http"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -37,6 +39,7 @@ var (
 
 type describeApplicationClient interface {
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
@@ -70,43 +73,61 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	extended := d.flags.Extended
+	var output string
 
 	app, err := d.client.GetApplication(ctx, d.args.NameOrUUID)
 	if err != nil {
 		return err
 	}
 
-	output := utils.AppTable(app)
-	if extended {
+	if d.flags.Extended {
 		resources := make([]*meroxa.Resource, 0)
 		connectors := make(map[string]*meroxa.Connector)
 		functions := make([]*meroxa.Function, 0)
 
-		for _, id := range app.Resources {
-			resource, err := d.client.GetResourceByNameOrID(ctx, id.Name.String)
+		for _, rr := range app.Resources {
+			resource, err := d.client.GetResourceByNameOrID(ctx, rr.Name.String)
 			if err != nil {
 				return err
 			}
 			resources = append(resources, resource)
 		}
-		for _, id := range app.Connectors {
-			connector, err := d.client.GetConnectorByNameOrID(ctx, id.Name.String)
+		for _, cc := range app.Connectors {
+			connector, err := d.client.GetConnectorByNameOrID(ctx, cc.Name.String)
 			if err != nil {
 				return err
 			}
 			connectors[connector.ResourceName] = connector
 		}
-		for _, id := range app.Functions {
-			function, err := d.client.GetFunction(ctx, id.UUID.String)
+		for _, ff := range app.Functions {
+			function, err := d.client.GetFunction(ctx, ff.UUID.String)
 			if err != nil {
 				return err
 			}
+
+			// Include logs
+			resp, err := d.client.GetFunctionLogs(ctx, ff.Name.String)
+			if err != nil {
+				return err
+			}
+			defer resp.Body.Close() //nolint:gocritic
+
+			buf := new(bytes.Buffer)
+			_, err = buf.ReadFrom(resp.Body)
+			if err != nil {
+				return err
+			}
+
+			function.Logs = buf.String()
+
 			functions = append(functions, function)
 		}
 
-		output = utils.ExtendedAppTable(app, resources, connectors, functions)
+		output = utils.AppExtendedTable(app, resources, connectors, functions)
+	} else {
+		output = utils.AppTable(app)
 	}
+
 	d.logger.Info(ctx, output)
 	d.logger.JSON(ctx, app)
 

@@ -301,6 +301,21 @@ func (mr *MockClientMockRecorder) GetApplication(ctx, name interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, name)
 }
 
+// GetApplicationExtended mocks base method.
+func (m *MockClient) GetApplicationExtended(ctx context.Context, name string) (*meroxa.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetApplicationExtended", ctx, name)
+	ret0, _ := ret[0].(*meroxa.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetApplicationExtended indicates an expected call of GetApplicationExtended.
+func (mr *MockClientMockRecorder) GetApplicationExtended(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationExtended", reflect.TypeOf((*MockClient)(nil).GetApplicationExtended), ctx, name)
+}
+
 // GetBuild mocks base method.
 func (m *MockClient) GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error) {
 	m.ctrl.T.Helper()

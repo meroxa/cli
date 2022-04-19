@@ -55,6 +55,7 @@ type Client interface {
 	DeleteApplication(ctx context.Context, name string) error
 	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 	GetApplication(ctx context.Context, name string) (*Application, error)
+	GetApplicationExtended(ctx context.Context, name string) (*Application, error)
 	ListApplications(ctx context.Context) ([]*Application, error)
 
 	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
