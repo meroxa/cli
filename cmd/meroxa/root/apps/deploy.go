@@ -361,7 +361,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
 	}
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Building Meroxa Process image (%s)...", build.Uuid))
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Building Meroxa Process image (%q)...", build.Uuid))
 
 	for {
 		b, err := d.client.GetBuild(ctx, build.Uuid)
@@ -376,7 +376,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 			d.logger.StopSpinnerWithStatus(msg, log.Failed)
 			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built Process image! (%s)", build.Uuid), log.Successful)
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built Process image! (%q)", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
@@ -544,9 +544,16 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 
 func (d *Deploy) rmBinary() {
 	if d.lang == GoLang {
-		err := os.Remove(filepath.Join(d.path, d.appName+"*"))
+		localBinary := filepath.Join(d.path, d.appName)
+		err := os.Remove(localBinary)
 		if err != nil {
-			fmt.Printf("warning: failed to clean up app at %s: %v\n", d.path, err)
+			fmt.Printf("warning: failed to clean up %s\n", localBinary)
+		}
+
+		crossCompiledBinary := filepath.Join(d.path, d.appName) + ".cross"
+		err = os.Remove(crossCompiledBinary)
+		if err != nil {
+			fmt.Printf("warning: failed to clean up %s\n", crossCompiledBinary)
 		}
 	}
 }
