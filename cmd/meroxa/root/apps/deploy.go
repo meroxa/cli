@@ -215,7 +215,7 @@ func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha str
 		return err
 	}
 
-	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/v2/apps/%s/detail", res.UUID)
+	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", res.UUID)
 	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
 		d.logger.SuccessfulCheck(), res.Name, dashboardURL)
 	d.logger.StopSpinner(output)
