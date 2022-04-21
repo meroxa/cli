@@ -57,6 +57,7 @@ func (*Run) Docs() builder.Docs {
 		Example: `meroxa apps run 			# assumes you run it from the app directory
 meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
 `,
+		Beta: true,
 	}
 }
 

@@ -46,6 +46,7 @@ func (r *Remove) Usage() string {
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Removes a Turbine Data Application",
+		Beta:  true,
 	}
 }
 

@@ -60,6 +60,7 @@ func (*Logs) Aliases() []string {
 func (l *Logs) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "List a Meroxa Process Build's Logs",
+		Beta:  true,
 	}
 }
 

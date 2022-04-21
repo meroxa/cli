@@ -1,6 +1,6 @@
 ## meroxa builds logs
 
-List a Meroxa Process Build's Logs
+List a Meroxa Process Build's Logs (Beta)
 
 ```
 meroxa builds logs [UUID] [flags]
@@ -23,5 +23,5 @@ meroxa builds logs [UUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa
+* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa (Beta)
 

@@ -54,6 +54,7 @@ func (d *Describe) Usage() string {
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe a Meroxa Process Build",
+		Beta:  true,
 	}
 }
 

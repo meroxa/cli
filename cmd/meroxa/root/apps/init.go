@@ -54,6 +54,7 @@ meroxa apps init my-app --lang go --skip-mod-init 	# will not initialize the new
 meroxa apps init my-app --lang go --mod-vendor 		# will initialize the new go module and download dependencies to the vendor directory
 meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 `,
+		Beta: true,
 	}
 }
 

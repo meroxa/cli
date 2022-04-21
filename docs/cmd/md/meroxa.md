@@ -26,10 +26,10 @@ meroxa resources list --types
 ### SEE ALSO
 
 * [meroxa api](meroxa_api.md)	 - Invoke Meroxa API
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
 * [meroxa billing](meroxa_billing.md)	 - Open your billing page in a web browser
-* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa
+* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa (Beta)
 * [meroxa completion](meroxa_completion.md)	 - Generate completion script
 * [meroxa config](meroxa_config.md)	 - Manage your Meroxa CLI configuration
 * [meroxa endpoints](meroxa_endpoints.md)	 - Manage endpoints on Meroxa

@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-init/
 ---
 ## meroxa apps init
 
-Initialize a Turbine Data Application
+Initialize a Turbine Data Application (Beta)
 
 ```
 meroxa apps init [APP_NAME] [--path pwd] --lang js|go|py [flags]
@@ -46,5 +46,5 @@ meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
 
