@@ -3,17 +3,17 @@
 
 .SH NAME
 .PP
-meroxa\-apps\-init \- Initialize a Turbine Data Application
+meroxa\-apps\-init \- Initialize a Turbine Data Application (Beta)
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps init [APP\_NAME] [\-\-path pwd] \-\-lang js|go [flags]\fP
+\fBmeroxa apps init [APP\_NAME] [\-\-path pwd] \-\-lang js|go|py [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Initialize a Turbine Data Application
+Initialize a Turbine Data Application (Beta)
 
 
 .SH OPTIONS
@@ -23,7 +23,7 @@ Initialize a Turbine Data Application
 
 .PP
 \fB\-l\fP, \fB\-\-lang\fP=""
-	language to use (js|go) (required)
+	language to use (js|go|py) (required)
 
 .PP
 \fB\-\-mod\-vendor\fP[=false]
@@ -62,6 +62,7 @@ Initialize a Turbine Data Application
 
 .nf
 meroxa apps init my\-app \-\-path \~/code \-\-lang js
+meroxa apps init my\-app \-\-lang py
 meroxa apps init my\-app \-\-lang go 			# will be initialized in a dir called my\-app in the current directory
 meroxa apps init my\-app \-\-lang go \-\-skip\-mod\-init 	# will not initialize the new go module
 meroxa apps init my\-app \-\-lang go \-\-mod\-vendor 		# will initialize the new go module and download dependencies to the vendor directory

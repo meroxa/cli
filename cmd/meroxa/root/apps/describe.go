@@ -69,6 +69,7 @@ func (d *Describe) Usage() string {
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe a Turbine Data Application",
+		Beta:  true,
 	}
 }
 

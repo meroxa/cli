@@ -7,16 +7,17 @@ url: /cli/cmd/meroxa-apps-init/
 ---
 ## meroxa apps init
 
-Initialize a Turbine Data Application
+Initialize a Turbine Data Application (Beta)
 
 ```
-meroxa apps init [APP_NAME] [--path pwd] --lang js|go [flags]
+meroxa apps init [APP_NAME] [--path pwd] --lang js|go|py [flags]
 ```
 
 ### Examples
 
 ```
 meroxa apps init my-app --path ~/code --lang js
+meroxa apps init my-app --lang py
 meroxa apps init my-app --lang go 			# will be initialized in a dir called my-app in the current directory
 meroxa apps init my-app --lang go --skip-mod-init 	# will not initialize the new go module
 meroxa apps init my-app --lang go --mod-vendor 		# will initialize the new go module and download dependencies to the vendor directory
@@ -28,7 +29,7 @@ meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 
 ```
   -h, --help            help for init
-  -l, --lang string     language to use (js|go) (required)
+  -l, --lang string     language to use (js|go|py) (required)
       --mod-vendor      whether to download modules to vendor or globally while initializing a Go application
       --path string     path where application will be initialized (current directory as default)
       --skip-mod-init   whether to run 'go mod init' while initializing a Go application
@@ -45,5 +46,5 @@ meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
 

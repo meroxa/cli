@@ -1,6 +1,6 @@
 ## meroxa apps describe
 
-Describe a Turbine Data Application
+Describe a Turbine Data Application (Beta)
 
 ```
 meroxa apps describe [NAMEorUUID] [flags]
@@ -24,5 +24,5 @@ meroxa apps describe [NAMEorUUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
 

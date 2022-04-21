@@ -110,6 +110,9 @@ type Docs struct {
 	Long string
 	// Example is examples of how to use the command.
 	Example string
+
+	// Beta enabled will add (Beta) to the end of the short doc description
+	Beta bool
 }
 
 type CommandWithDeprecated interface {
@@ -430,7 +433,13 @@ func buildCommandWithDocs(cmd *cobra.Command, c Command) {
 
 	docs := v.Docs()
 	cmd.Long = docs.Long
-	cmd.Short = docs.Short
+
+	if docs.Beta {
+		cmd.Short = fmt.Sprintf("%s (Beta)", docs.Short)
+	} else {
+		cmd.Short = docs.Short
+	}
+
 	cmd.Example = docs.Example
 }
 

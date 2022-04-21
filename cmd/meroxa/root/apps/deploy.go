@@ -97,6 +97,7 @@ If deployment was successful, you should expect an application you'll be able to
 		Example: `meroxa apps deploy # assumes you run it from the app directory
 meroxa apps deploy --path ./my-app
 `,
+		Beta: true,
 	}
 }
 

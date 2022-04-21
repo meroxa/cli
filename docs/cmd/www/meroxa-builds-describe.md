@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-builds-describe/
 ---
 ## meroxa builds describe
 
-Describe a Meroxa Process Build
+Describe a Meroxa Process Build (Beta)
 
 ```
 meroxa builds describe [UUID] [flags]
@@ -30,5 +30,5 @@ meroxa builds describe [UUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa
+* [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa (Beta)
 
