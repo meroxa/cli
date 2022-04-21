@@ -14,7 +14,7 @@ import (
 )
 
 func NeedsToBuild(path string) (bool, error) {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.6", "hasfunctions", path)
+	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.2.0", "hasfunctions", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err := fmt.Errorf(
@@ -36,23 +36,8 @@ func NeedsToBuild(path string) (bool, error) {
 	return strconv.ParseBool(match[1])
 }
 
-func BuildApp(path string) (string, error) {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.6", "clibuild", path)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
-	}
-
-	r := regexp.MustCompile("\nturbine-response: (.*)\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
-	}
-	return match[1], err
-}
-
 func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (string, error) {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.6", "clideploy", imageName, path)
+	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.2.0", "deploy", imageName, path)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -62,4 +47,14 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (st
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
 	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+}
+
+func CreateDockerfile(path string) error {
+	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.2.0", "generatedockerfile", path)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
+	}
+
+	return nil
 }

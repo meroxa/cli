@@ -235,6 +235,13 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		}
 	}
 
+	if d.lang == JavaScript {
+		err = turbineJS.CreateDockerfile(appPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
 
 	var buf bytes.Buffer
@@ -263,7 +270,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
-	if d.lang == GoLang {
+	if d.lang == GoLang || d.lang == JavaScript {
 		// We clean up Dockerfile as last step
 		err = os.Remove(filepath.Join(appPath, "Dockerfile"))
 		if err != nil {
@@ -414,8 +421,6 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 	switch d.lang {
 	case GoLang:
 		err = turbineGo.BuildBinary(ctx, d.logger, d.path, d.appName, true)
-	case JavaScript:
-		d.tempPath, err = turbineJS.BuildApp(d.path)
 	case Python:
 		// Dockerfile will already exist
 		d.tempPath, err = turbinePY.BuildApp(d.path)
