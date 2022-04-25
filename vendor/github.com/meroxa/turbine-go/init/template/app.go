@@ -61,7 +61,9 @@ func (a App) Run(v turbine.Turbine) error {
 	// using the `Write` function
 	// Replace `collection_archive` with a table, collection,
 	// or bucket name in your data store
-	err = dest.Write(res, "collection_archive", nil)
+	// if a configuration is needed you can also use
+	// dest.WriteWithConfig
+	err = dest.Write(res, "collection_archive")
 	if err != nil {
 		return err
 	}
