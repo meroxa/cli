@@ -568,8 +568,8 @@ github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88J
 github.com/meroxa/meroxa-go v0.0.0-20220208195203-71ddc3133fab/go.mod h1:HDFszURCM1cOpKE699o5Hs0T2tEIXqY+vFcsur3RiwY=
 github.com/meroxa/meroxa-go v0.0.0-20220419150435-19df16177640 h1:keSIQO3busIkUlHT/Q7p0ij3VcbjeOrXs1vvSJm33J0=
 github.com/meroxa/meroxa-go v0.0.0-20220419150435-19df16177640/go.mod h1:BsqYa9jqfyGOAgfkggfK567b2Ahkb+RCH3lXDQGgrh8=
-github.com/meroxa/turbine-go v0.0.0-20220420192036-400dcc5f1248 h1:vkhTKpdjTprx2TxL+Ft2XH2TXbEqaWK5rl4WzeqrMj4=
-github.com/meroxa/turbine-go v0.0.0-20220420192036-400dcc5f1248/go.mod h1:1MRyltZ88DFkJd4PloKVoY1SagIMfF89rjoToMbnlvM=
+github.com/meroxa/turbine-go v0.0.0-20220421203002-fbd388ede780 h1:xn874Xe7nZO0Mme3YfCEFY4LUoV3OBkBQ1OjiCHk0Ls=
+github.com/meroxa/turbine-go v0.0.0-20220421203002-fbd388ede780/go.mod h1:1MRyltZ88DFkJd4PloKVoY1SagIMfF89rjoToMbnlvM=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=

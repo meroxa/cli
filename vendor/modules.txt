@@ -190,7 +190,7 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine-go v0.0.0-20220420192036-400dcc5f1248
+# github.com/meroxa/turbine-go v0.0.0-20220421203002-fbd388ede780
 ## explicit; go 1.17
 github.com/meroxa/turbine-go/deploy
 github.com/meroxa/turbine-go/init

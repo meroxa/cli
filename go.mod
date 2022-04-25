@@ -28,7 +28,7 @@ require (
 	github.com/briandowns/spinner v1.18.1
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220420192036-400dcc5f1248
+	github.com/meroxa/turbine-go v0.0.0-20220421203002-fbd388ede780
 	github.com/volatiletech/null/v8 v8.1.2
 )
 

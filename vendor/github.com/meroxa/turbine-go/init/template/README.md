@@ -90,7 +90,7 @@ func (a App) Run(v turbine.Turbine) error {
 		return err
 	}
 
-	err = dest.Write(res, "collection_archive", nil)
+	err = dest.Write(res, "collection_archive")
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ res, _ := v.Process(rr, Anonymize{})
 The `Process` function is Turbine's way of saying, for the records that are coming in, I want you to process these records against a function. Once your app is deployed on Meroxa, Meroxa will do the work to take each record or event that does get streamed to your app and then run your code against it. This allows Meroxa to scale out your processing relative to the velocity of the records streaming in.
 
 ```go
-err = dest.Write(res, "collection_archive", nil)
+err = dest.Write(res, "collection_archive")
 ```
 
 The `Write` function is optional. It takes any records given to it and streams them to the downstream system. In many cases, you might not need to stream data to another system, but this gives you an easy way to do so.
