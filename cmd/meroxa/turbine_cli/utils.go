@@ -288,7 +288,7 @@ func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor 
 		if err != nil {
 			return err
 		}
-		depsLog := "Downloading dependencies "
+		depsLog := "Downloading dependencies"
 		cmd = exec.Command("go", "mod", "download")
 		if vendor {
 			depsLog += "to vendor"
