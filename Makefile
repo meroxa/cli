@@ -1,4 +1,10 @@
 SHELL=/bin/bash -o pipefail
+GIT_COMMIT:=$(shell git rev-parse --short HEAD)
+LDFLAGS:=-X main.GitCommit=${GIT_COMMIT}
+GIT_UNTRACKED=$(shell git diff-index --quiet HEAD -- || echo "(updated)")
+LDFLAGS+=-X main.GitUntracked=${GIT_UNTRACKED}
+GIT_TAG=$(shell git describe)
+LDFLAGS+=-X main.GitLatestTag=${GIT_TAG}
 
 .PHONY: build
 build: docs
@@ -6,7 +12,7 @@ build: docs
 
 .PHONY: install
 install:
-	go build -o $$(go env GOPATH)/bin/meroxa cmd/meroxa/main.go
+	go build -ldflags "$(LDFLAGS)" -o $$(go env GOPATH)/bin/meroxa cmd/meroxa/main.go
 
 .PHONY: gomod
 gomod:
