@@ -4,9 +4,10 @@ import (
 	"embed"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"text/template"
+	
+	"github.com/meroxa/turbine-go"
 )
 
 //go:embed template/*
@@ -20,8 +21,12 @@ type TurbineDockerfileTrait struct {
 
 // CreateDockerfile will be used from the CLI to generate a new Dockerfile based on the app image
 func CreateDockerfile(pwd string) error {
+	ac, err := turbine.ReadAppConfig(pwd)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	appName := ac.Name
 	fileName := "Dockerfile"
-	appName := path.Base(pwd)
 	t, err := template.ParseFS(templateFS, filepath.Join("template", fileName))
 	if err != nil {
 		return err
