@@ -29,7 +29,25 @@ var (
 	GitLatestTag string
 )
 
+func gitInfoNotEmpty() bool {
+	return GitCommit != "" || GitLatestTag != "" || GitUntracked != ""
+}
+
 func main() {
-	global.Version = fmt.Sprintf("%s:%s %s %s", version, GitCommit, GitLatestTag, GitUntracked)
+	if gitInfoNotEmpty() {
+		if GitCommit != "" {
+			version += fmt.Sprintf(":%s", GitCommit)
+		}
+
+		if GitLatestTag != "" {
+			version += fmt.Sprintf(" %s", GitLatestTag)
+		}
+
+		if GitUntracked != "" {
+			version += fmt.Sprintf(" %s", GitUntracked)
+		}
+	}
+
+	global.Version = version
 	root.Run()
 }
