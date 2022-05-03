@@ -16,13 +16,20 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
+
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/root"
 )
 
-var version = "dev"
+var (
+	version      = "dev"
+	GitCommit    string
+	GitUntracked string
+	GitLatestTag string
+)
 
 func main() {
-	global.Version = version
+	global.Version = fmt.Sprintf("%s:%s %s %s", version, GitCommit, GitLatestTag, GitUntracked)
 	root.Run()
 }
