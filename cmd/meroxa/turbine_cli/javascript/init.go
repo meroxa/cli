@@ -9,7 +9,7 @@ import (
 )
 
 func Init(ctx context.Context, l log.Logger, name, path string) error {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.6", "generate", name, path)
+	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.7", "generate", name, path)
 	_, err := turbineCLI.RunCmdWithErrorDetection(ctx, cmd, l)
 	return err
 }
