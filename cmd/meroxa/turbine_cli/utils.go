@@ -403,3 +403,9 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 
 	return os.Chdir(pwd)
 }
+
+func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
+	turbineJSArgs := []string{"npx", "--yes", "@meroxa/turbine-js@0.1.7"}
+	args := append(turbineJSArgs, params...)
+	return exec.Command(args[0], args[1:]...)
+}
