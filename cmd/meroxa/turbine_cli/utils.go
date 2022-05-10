@@ -407,9 +407,9 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 }
 
 func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
-	isDevModeActive := global.GetDevModeSetting()
+	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
 	turbineJSBinary := "@meroxa/turbine-js@0.1.7"
-	if isDevModeActive == isTrue {
+	if shouldUseLocalTurbineJS == isTrue {
 		turbineJSBinary = "turbine"
 	}
 	args := []string{"npx", "--yes", turbineJSBinary}
