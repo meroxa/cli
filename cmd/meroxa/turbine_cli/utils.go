@@ -30,6 +30,7 @@ type AppConfig struct {
 }
 
 var prefetched *AppConfig
+var isTrue = "true"
 
 func GetPath(flag string) (string, error) {
 	if flag == "" {
@@ -90,7 +91,7 @@ func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
 	if err != nil {
 		return err
 	}
-	appConfig.ModuleInit = "true"
+	appConfig.ModuleInit = isTrue
 	if skipInit {
 		appConfig.ModuleInit = "false"
 	}
@@ -106,7 +107,7 @@ func SetVendorInAppJSON(pwd string, vendor bool) error {
 	}
 	appConfig.Vendor = "false"
 	if vendor {
-		appConfig.Vendor = "true"
+		appConfig.Vendor = isTrue
 	}
 	err = writeConfigFile(pwd, appConfig) // will never be programmatically read again, but a marker of what turbine did
 	return err
@@ -408,10 +409,10 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
 	isDevModeActive := global.GetDevModeSetting()
 	turbineJSBinary := "@meroxa/turbine-js@0.1.7"
-	if isDevModeActive == "true" {
+	if isDevModeActive == isTrue {
 		turbineJSBinary = "turbine"
 	}
-	turbineJSArgs := []string{"npx", "--yes", turbineJSBinary}
-	args := append(turbineJSArgs, params...)
-	return exec.Command(args[0], args[1:]...)
+	args := []string{"npx", "--yes", turbineJSBinary}
+	args = append(args, params...)
+	return exec.Command(args[0], args[1:]...) // nolint:gosec
 }
