@@ -16,6 +16,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 )
 
@@ -405,7 +406,12 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 }
 
 func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
-	turbineJSArgs := []string{"npx", "--yes", "@meroxa/turbine-js@0.1.7"}
+	isDevModeActive := global.GetDevModeSetting()
+	turbineJSBinary := "@meroxa/turbine-js@0.1.7"
+	if isDevModeActive == "true" {
+		turbineJSBinary = "turbine"
+	}
+	turbineJSArgs := []string{"npx", "--yes", turbineJSBinary}
 	args := append(turbineJSArgs, params...)
 	return exec.Command(args[0], args[1:]...)
 }

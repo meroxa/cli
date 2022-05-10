@@ -44,6 +44,9 @@ func GetMeroxaAuthDomain() string {
 func GetMeroxaAuthClientID() string {
 	return getEnvVal([]string{"MEROXA_AUTH_CLIENT_ID", "MEROXA_CLIENT_ID"}, "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
 }
+func GetDevModeSetting() string {
+	return getEnvVal([]string{"MEROXA_CLI_DEV_MODE", "DEV_MODE"}, "false")
+}
 
 // getEnvVal returns the value of either the first existing key specified in keys, or defaultVal if none were present.
 func getEnvVal(keys []string, defaultVal string) string {
