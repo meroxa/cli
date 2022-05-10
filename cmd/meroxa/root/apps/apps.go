@@ -26,6 +26,7 @@ type Apps struct{}
 
 const (
 	Python                    = "python"
+	Python3                   = "python3"
 	JavaScript                = "javascript"
 	GoLang                    = "golang"
 	NodeJs                    = "nodejs"
