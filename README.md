@@ -100,6 +100,20 @@ If you want to enable shell completion manually, you can generate your own using
 
 Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/md/meroxa_completion.md).
 
+## Local Development in Dev Mode
+
+The CLI offers a development mode, in which local versions of dependencies are loaded by default. Currently, dev mode supports the following dependencies to be loaded from a local copy:
+
+- [turbine-js](https://github.com/meroxa/turbine-js)
+
+You can run the cli in dev mode, by adding the following environment variable into your `.envrc` at the root of this project's directory:
+
+```bash
+MEROXA_CLI_DEV_MODE=true
+```
+
+If you'd like to see the dev mode extended with other dependencies or features, you can send us a feature request in our Github issues: https://github.com/meroxa/cli/issues
+
 ## Troubleshooting
 
 ### make gomod
