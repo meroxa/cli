@@ -483,7 +483,7 @@ func (d *Deploy) validateLanguage() error {
 		d.lang = GoLang
 	case "js", JavaScript, NodeJs:
 		d.lang = JavaScript
-	case "py", Python:
+	case "py", Python3, Python:
 		d.lang = Python
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)

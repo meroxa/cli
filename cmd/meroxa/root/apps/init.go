@@ -136,7 +136,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		err = turbineCLI.GoInit(ctx, i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
 	case "js", JavaScript, NodeJs:
 		err = turbinejs.Init(ctx, i.logger, name, i.path)
-	case "py", Python:
+	case "py", Python3, Python:
 		err = turbinepy.Init(ctx, i.logger, name, i.path)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)

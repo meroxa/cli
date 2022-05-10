@@ -85,7 +85,7 @@ func (r *Run) Execute(ctx context.Context) error {
 		return turbineGo.Run(ctx, r.path, r.logger)
 	case "js", JavaScript, NodeJs:
 		return turbineJS.Build(ctx, r.logger, r.path)
-	case "py", Python:
+	case "py", Python3, Python:
 		return turbinepy.Run(ctx, r.logger, r.path)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
