@@ -36,6 +36,25 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 	return string(output), nil
 }
 
+// GetResourceNames asks turbine for a list of resources used by the given app.
+func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
+	var cmd *exec.Cmd
+	var names []string
+
+	cmd = exec.Command(appPath+"/"+appName, "--resources") // nolint:gosec
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return names, errors.New(string(output))
+	}
+	// @TODO interpret output
+	r := regexp.MustCompile("\nturbine-response: (.*)\n")
+	match := r.FindStringSubmatch(string(output))
+	if match == nil || len(match) < 2 {
+		return names, fmt.Errorf("unable to build Meroxa Application at %s; %s", appPath, string(output))
+	}
+	return names, nil
+}
+
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
 // this is currently based on the number of functions.
 func NeedsToBuild(appPath, appName string) (bool, error) {

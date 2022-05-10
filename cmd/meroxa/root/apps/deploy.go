@@ -54,6 +54,7 @@ type deployApplicationClient interface {
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 }
 
 type Deploy struct {
@@ -524,11 +525,69 @@ func (d *Deploy) validate(ctx context.Context) error {
 	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
 }
 
+func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
+	d.logger.Infof(ctx, "Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
+
+	var resourceNames []string
+	var err error
+	switch d.lang {
+	case "go", GoLang:
+		resourceNames, err = turbineGo.GetResourceNames(ctx, d.logger, d.path, d.appName)
+	case "js", JavaScript, NodeJs:
+		resourceNames, err = turbineJS.GetResourceNames(ctx, d.logger, d.path, d.appName)
+	case "py", Python:
+		resourceNames, err = turbinePY.GetResourceNames(ctx, d.logger, d.path, d.appName)
+	default:
+		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
+	}
+	if err != nil {
+		d.logger.Warnf(ctx, "Unable to check for resource availability (%s). Moving on...", err.Error())
+		return nil
+	}
+	if len(resourceNames) == 0 {
+		// Turbine bug or misconfigured app.
+		d.logger.Warnf(ctx, "Unable to check for resource availability. Moving on...")
+		return nil
+	}
+
+	var errStr string
+	for _, name := range resourceNames {
+		resource, err := d.client.GetResourceByNameOrID(ctx, name)
+		if err != nil {
+			if errStr != "" {
+				errStr += "; "
+			} else {
+				errStr = "run 'meroxa resource list' to double check the name and try again; "
+			}
+			if strings.Contains(err.Error(), "could not find") {
+				errStr += fmt.Sprintf("could not find resource %q", name)
+			} else {
+				errStr += err.Error()
+			}
+		} else if resource.Status.State != meroxa.ResourceStateReady {
+			if errStr != "" {
+				errStr += "; "
+			}
+			errStr += fmt.Sprintf("resource %q is not ready and usable", resource.Name)
+		}
+	}
+	if errStr != "" {
+		return fmt.Errorf(errStr)
+	}
+	return nil
+}
+
 func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Preparing application %q (%s) for deployment...", d.appName, d.lang)
 
+	// check that resources exist and are ready
+	err := d.checkResourceAvailability(ctx)
+	if err != nil {
+		return err
+	}
+
 	// After this point, CLI will package it up and will build it
-	err := d.buildApp(ctx)
+	err = d.buildApp(ctx)
 	if err != nil {
 		return err
 	}
@@ -554,7 +613,7 @@ func (d *Deploy) rmBinary() {
 }
 
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
-// or whether it's in a non runnin state.
+// or whether it's in a non-running state.
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	app, _ := d.client.GetApplication(ctx, d.appName)
 

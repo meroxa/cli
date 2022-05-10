@@ -2,6 +2,7 @@ package turbinepy
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -74,4 +75,27 @@ func CleanUpApp(path string) (string, error) {
 		return "", fmt.Errorf("unable to clean up Meroxa Application at %s; %s", path, string(output))
 	}
 	return strings.TrimSpace(string(output)), err
+}
+
+// GetResourceNames asks turbine for a list of resources used by the given app.
+func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
+	var names []string
+
+	cmd := exec.Command("turbine-py", "listResources", appPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return names, errors.New(string(output))
+	}
+	r := regexp.MustCompile("^turbine-response: \\[(.*)\\]\n")
+	match := r.FindStringSubmatch(string(output))
+	if match == nil || len(match) < 2 {
+		return names, fmt.Errorf("unable to verify resource availability for Meroxa Application at %s; %s", appPath, string(output))
+	}
+	text := match[1]
+	names = strings.Split(text, ",")
+	for i, name := range names {
+		name = strings.TrimSpace(name)
+		names[i] = strings.Trim(name, "'")
+	}
+	return names, nil
 }

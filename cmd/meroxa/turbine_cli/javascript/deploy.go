@@ -2,10 +2,12 @@ package turbinejs
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
@@ -61,4 +63,27 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (st
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
 	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+}
+
+// GetResourceNames asks turbine for a list of resources used by the given app.
+func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
+	var names []string
+
+	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.7", "listresources", appPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return names, errors.New(string(output))
+	}
+	r := regexp.MustCompile("\nturbine-response: (.*)\n")
+	match := r.FindStringSubmatch(string(output))
+	if match == nil || len(match) < 2 {
+		return names, fmt.Errorf("unable to verify resource availability for Meroxa Application at %s; %s", appPath, string(output))
+	}
+	text := match[1]
+	names = strings.Split(text, ",")
+	for i, name := range names {
+		names[i] = strings.TrimSpace(name)
+	}
+
+	return names, nil
 }
