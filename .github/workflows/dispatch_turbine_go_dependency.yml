@@ -1,0 +1,48 @@
+name: Remote Dispatch Turbine Go Dependency Responder
+
+on: [repository_dispatch]
+
+jobs:
+  update_turbine_go:
+    if: github.event.action == 'update_dependencies'
+    name: Update latest Turbine Go
+    runs-on: ubuntu-latest
+    steps:
+      - name: Event Information
+        run: |
+          echo "Event '${{ github.event.action }}' received from '${{ github.event.client_payload.repository }}' for commit '${{ github.event.client_payload.sha }}'"
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ^1.17
+      - name: Inject insteadOf configuration
+        env:
+          MEROXA_MACHINE: ${{ secrets.MEROXA_MACHINE }}
+        run: |
+          git config --global url."https://${MEROXA_MACHINE}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      - name: Update Dependencies
+        run: |
+          go get -u github.com/meroxa/turbine-go@latest
+          make gomod
+      - name: Generate Branch name
+        id: branch
+        run: echo "::set-output name=branch::automated-dependency-updates-${{ github.event.client_payload.sha }}"
+      - name: Save changes in Branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b ${{ steps.branch.outputs.branch }}
+          git add go* vendor/*
+          git commit -m "chore: Upgrade to latest turbine-go"
+          git push --set-upstream origin -f ${{ steps.branch.outputs.branch }}
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: ${{ steps.branch.outputs.branch }}
+          destination_branch: "master"
+          github_token: ${{ secrets.MEROXA_MACHINE }}
+          pr_label: "ktlo, ready for review"
+          pr_title: "chore: Upgrade to latest turbine-go"
+          pr_body: "The following commands were run to generate changes: `go get -u github.com/meroxa/turbine-go@latest` and `make gomod`"
