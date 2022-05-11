@@ -16,8 +16,11 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 )
+
+const turbineJSVersion = "0.1.7"
 
 type AppConfig struct {
 	Name        string            `json:"name"`
@@ -29,6 +32,7 @@ type AppConfig struct {
 }
 
 var prefetched *AppConfig
+var isTrue = "true"
 
 func GetPath(flag string) (string, error) {
 	if flag == "" {
@@ -89,7 +93,7 @@ func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
 	if err != nil {
 		return err
 	}
-	appConfig.ModuleInit = "true"
+	appConfig.ModuleInit = isTrue
 	if skipInit {
 		appConfig.ModuleInit = "false"
 	}
@@ -105,7 +109,7 @@ func SetVendorInAppJSON(pwd string, vendor bool) error {
 	}
 	appConfig.Vendor = "false"
 	if vendor {
-		appConfig.Vendor = "true"
+		appConfig.Vendor = isTrue
 	}
 	err = writeConfigFile(pwd, appConfig) // will never be programmatically read again, but a marker of what turbine did
 	return err
@@ -402,4 +406,24 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	}
 
 	return os.Chdir(pwd)
+}
+
+func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
+	args := getTurbineJSBinary(params)
+	return executeTurbineJSCommand(args)
+}
+
+func getTurbineJSBinary(params []string) []string {
+	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
+	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js@%s", turbineJSVersion)
+	if shouldUseLocalTurbineJS == isTrue {
+		turbineJSBinary = "turbine"
+	}
+	args := []string{"npx", "--yes", turbineJSBinary}
+	args = append(args, params...)
+	return args
+}
+
+func executeTurbineJSCommand(params []string) *exec.Cmd {
+	return exec.Command(params[0], params[1:]...) // nolint:gosec
 }

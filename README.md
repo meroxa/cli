@@ -100,6 +100,21 @@ If you want to enable shell completion manually, you can generate your own using
 
 Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/md/meroxa_completion.md).
 
+## Development with local TurbineJS dependency
+
+The CLI offers a mode, in which the local version of `turbine-js` is loaded by default which can be useful for developing the CLI and the JS dependency locally when contributing to this project.
+
+You can run the cli in this mode, by adding the following environment variable into your `.envrc` at the root of this project's directory:
+
+```bash
+MEROXA_USE_LOCAL_TURBINE_JS=true
+```
+
+If you run into any `executable not found` issues, please ensure that you have cloned [turbine-js](https://github.com/meroxa/turbine-js) locally and
+installed it globally via running `npm install -g .` in the turbine-js directory.
+
+If you'd like to see this development mode extended with other dependencies or features, you can send us a feature request in our Github issues: https://github.com/meroxa/cli/issues
+
 ## Troubleshooting
 
 ### make gomod

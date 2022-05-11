@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"regexp"
 	"strconv"
 
@@ -14,7 +13,7 @@ import (
 )
 
 func NeedsToBuild(path string) (bool, error) {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.7", "hasfunctions", path)
+	cmd := turbinecli.RunTurbineJS("hasfunctions", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err := fmt.Errorf(
@@ -37,7 +36,7 @@ func NeedsToBuild(path string) (bool, error) {
 }
 
 func BuildApp(path string) (string, error) {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.7", "clibuild", path)
+	cmd := turbinecli.RunTurbineJS("clibuild", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
@@ -52,7 +51,7 @@ func BuildApp(path string) (string, error) {
 }
 
 func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (string, error) {
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.7", "clideploy", imageName, path)
+	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
