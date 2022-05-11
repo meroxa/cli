@@ -69,7 +69,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (st
 func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
 	var names []string
 
-	cmd := exec.Command("npx", "--yes", "@meroxa/turbine-js@0.1.7", "listresources", appPath)
+	cmd := turbinecli.RunTurbineJS("listresources", appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return names, errors.New(string(output))

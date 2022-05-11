@@ -531,11 +531,11 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 	var resourceNames []string
 	var err error
 	switch d.lang {
-	case "go", GoLang:
+	case GoLang:
 		resourceNames, err = turbineGo.GetResourceNames(ctx, d.logger, d.path, d.appName)
-	case "js", JavaScript, NodeJs:
+	case JavaScript, NodeJs:
 		resourceNames, err = turbineJS.GetResourceNames(ctx, d.logger, d.path, d.appName)
-	case "py", Python:
+	case Python:
 		resourceNames, err = turbinePY.GetResourceNames(ctx, d.logger, d.path, d.appName)
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
