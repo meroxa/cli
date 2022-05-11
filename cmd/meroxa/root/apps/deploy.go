@@ -572,7 +572,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		}
 	}
 	if errStr != "" {
-		return fmt.Errorf(errStr)
+		return fmt.Errorf("%s", errStr)
 	}
 	return nil
 }
