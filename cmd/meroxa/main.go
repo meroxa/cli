@@ -34,6 +34,10 @@ func gitInfoNotEmpty() bool {
 }
 
 func main() {
+	// In production this will be the updated version by `goreleaser`
+	// TODO: Indicate where this is happening
+	global.CurrentTag = version
+
 	if gitInfoNotEmpty() {
 		if GitCommit != "" {
 			version += fmt.Sprintf(":%s", GitCommit)
@@ -41,6 +45,7 @@ func main() {
 
 		if GitLatestTag != "" {
 			version += fmt.Sprintf(" %s", GitLatestTag)
+			global.CurrentTag = GitLatestTag
 		}
 
 		if GitUntracked != "" {

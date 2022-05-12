@@ -26,8 +26,9 @@ import (
 )
 
 var (
-	Version string
-	Config  *viper.Viper
+	Version    string
+	CurrentTag string
+	Config     *viper.Viper
 )
 
 var (
@@ -39,15 +40,17 @@ var (
 )
 
 const (
-	AccessTokenEnv       = "ACCESS_TOKEN"
-	ActorEnv             = "ACTOR"
-	ActorUUIDEnv         = "ACTOR_UUID"
-	CasedDebugEnv        = "CASED_DEBUG"
-	CasedPublishKeyEnv   = "CASED_PUBLISH_KEY"
-	PublishMetricsEnv    = "PUBLISH_METRICS"
-	RefreshTokenEnv      = "REFRESH_TOKEN"
-	UserFeatureFlagsEnv  = "USER_FEATURE_FLAGS"
-	UserInfoUpdatedAtEnv = "USER_INFO_UPDATED_AT"
+	AccessTokenEnv               = "ACCESS_TOKEN"
+	ActorEnv                     = "ACTOR"
+	ActorUUIDEnv                 = "ACTOR_UUID"
+	CasedDebugEnv                = "CASED_DEBUG"
+	CasedPublishKeyEnv           = "CASED_PUBLISH_KEY"
+	LatestCLIVersionUpdatedAtEnv = "LATEST_CLI_VERSION_UPDATED_AT"
+	DisableNotificationsUpdate   = "DISABLE_NOTIFICATIONS_UPDATE"
+	PublishMetricsEnv            = "PUBLISH_METRICS"
+	RefreshTokenEnv              = "REFRESH_TOKEN"
+	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
+	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
