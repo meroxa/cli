@@ -48,5 +48,6 @@ func (*Config) Aliases() []string {
 func (*Config) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Describe{}),
+		builder.BuildCobraCommand(&Set{}),
 	}
 }
