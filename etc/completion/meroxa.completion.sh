@@ -1017,6 +1017,34 @@ _meroxa_config_help()
     noun_aliases=()
 }
 
+_meroxa_config_set()
+{
+    last_command="meroxa_config_set"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_config()
 {
     last_command="meroxa_config"
@@ -1026,6 +1054,7 @@ _meroxa_config()
     commands=()
     commands+=("describe")
     commands+=("help")
+    commands+=("set")
 
     flags=()
     two_word_flags=()
