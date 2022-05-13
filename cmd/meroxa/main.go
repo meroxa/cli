@@ -35,8 +35,9 @@ func gitInfoNotEmpty() bool {
 
 func main() {
 	// In production this will be the updated version by `goreleaser`
-	// TODO: Indicate where this is happening
-	global.CurrentTag = version
+	// We need to include `v` since we'll compare with the actual tag in GitHub
+	// For more information see https://goreleaser.com/cookbooks/using-main.version
+	global.CurrentTag = fmt.Sprintf("v%s", version)
 
 	if gitInfoNotEmpty() {
 		if GitCommit != "" {
@@ -45,7 +46,6 @@ func main() {
 
 		if GitLatestTag != "" {
 			version += fmt.Sprintf(" %s", GitLatestTag)
-			global.CurrentTag = GitLatestTag
 		}
 
 		if GitUntracked != "" {

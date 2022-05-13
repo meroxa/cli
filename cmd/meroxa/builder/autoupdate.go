@@ -17,16 +17,18 @@ limitations under the License.
 package builder
 
 import (
+	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 )
 
-// needToCheckNewerCLIVersion checks if CLI within a week
+// needToCheckNewerCLIVersion checks different scenarios to determine whether to check or not
+// 1. If user disabled auto-updating warning
+// 2. If it checked within a week.
 func needToCheckNewerCLIVersion() bool {
 	disabledNotificationsUpdate := global.Config.GetBool(global.DisableNotificationsUpdate)
 	if disabledNotificationsUpdate {
@@ -39,46 +41,47 @@ func needToCheckNewerCLIVersion() bool {
 	}
 
 	duration := time.Now().UTC().Sub(latestUpdatedAt)
-	return duration.Hours() > 24*7 // nolint:gomnd
+	return duration.Hours() > 24*7
 }
 
-// getCurrentCLIVersion returns current CLI tag
+// getCurrentCLIVersion returns current CLI tag (example: `v2.0.0`)
+// version, set by GoReleaser + `v` at the beginning.
 func getCurrentCLIVersion() string {
 	return global.CurrentTag
 }
 
-type TagResponse struct {
-	Name string `json:"name"`
-}
-
-// getLatestCLIVersion returns latest CLI available tag
-func getLatestCLIVersion() string {
+// getLatestCLIVersion returns latest CLI available tag.
+func getLatestCLIVersion(ctx context.Context) (string, error) {
 	client := &http.Client{}
 
 	// Fetches tags in GitHub
-	req, err := http.NewRequest("GET", "https://api.github.com/repos/meroxa/cli/tags", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.github.com/repos/meroxa/cli/tags", http.NoBody)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	req.Header.Add("Accept", "application/vnd.github.v3+json")
 	resp, err := client.Do(req)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(resp.Body)
+
+	if resp.Body != nil {
+		defer resp.Body.Close()
+	}
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalln(err)
+		return "", err
 	}
 
-	var result []TagResponse
+	var result []struct {
+		Name string `json:"name"`
+	}
+
 	if err := json.Unmarshal(b, &result); err != nil {
-		return ""
+		return "", nil
 	}
 
-	return result[0].Name
+	return result[0].Name, nil
 }

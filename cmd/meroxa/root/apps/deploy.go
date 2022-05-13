@@ -324,12 +324,10 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return err
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			d.logger.Error(ctx, err.Error())
-		}
-	}(res.Body)
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
 
 	d.logger.StopSpinnerWithStatus("Source uploaded!", log.Successful)
 	return nil

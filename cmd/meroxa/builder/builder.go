@@ -215,7 +215,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithSubCommands(cmd, c)
 
 	// this will run for all commands using PostRun hook
-	buildCommandAutoUpdate(cmd, c)
+	buildCommandAutoUpdate(cmd)
 
 	// this has to be the last function, so it captures all errors from RunE
 	buildCommandEvent(cmd, c)
@@ -475,7 +475,7 @@ func buildCommandEvent(cmd *cobra.Command, c Command) {
 }
 
 // This runs for all commands.
-func buildCommandAutoUpdate(cmd *cobra.Command, c Command) {
+func buildCommandAutoUpdate(cmd *cobra.Command) {
 	oldPostRunE := cmd.PostRunE
 	cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
 		if oldPostRunE != nil {
@@ -498,12 +498,15 @@ func buildCommandAutoUpdate(cmd *cobra.Command, c Command) {
 				return err
 			}
 
-			latestCLIVersion := getLatestCLIVersion()
+			latestCLIVersion, err := getLatestCLIVersion(cmd.Context())
+			if err != nil {
+				return err
+			}
 
 			if getCurrentCLIVersion() != latestCLIVersion {
-				fmt.Printf("\n\n\t✨ meroxa %s is available! Update it by doing: `brew tap meroxa/taps && brew install meroxa`", latestCLIVersion)
-				fmt.Printf("\n\t🧐 You can check what changed in https://github.com/meroxa/cli/releases/tag/%s", latestCLIVersion)
-				fmt.Printf("\n\t💡 To disable these warnings, run `meroxa config set %s=true`\n", global.DisableNotificationsUpdate)
+				fmt.Printf("\n\n  🎁 meroxa %s is available! Update it running: `brew tap meroxa/taps && brew install meroxa`", latestCLIVersion)
+				fmt.Printf("\n  🧐 Check out latest changes in https://github.com/meroxa/cli/releases/tag/%s", latestCLIVersion)
+				fmt.Printf("\n  💡 To disable these warnings, run `meroxa config set %s=true`\n", global.DisableNotificationsUpdate)
 			}
 		}
 		return nil
