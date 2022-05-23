@@ -26,7 +26,7 @@ For a complete guide to contributing to the Meroxa CLI, see the [Contribution Gu
 
 ## Installation Guide
 
-Please follow the installation instructions in the [Meroxa Documentation](http://docs.meroxa.com/).
+Please follow the [installation instructions in the Meroxa Documentation](https://docs.meroxa.com/cli/installation-guide).
 
 ### Build and Install the Binaries from Source (Advanced Install)
 
