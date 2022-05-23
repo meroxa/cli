@@ -320,6 +320,12 @@ func TestCreateResourceExecutionWithEnvironmentUUIDWithoutFeatureFlag(t *testing
 		logger: logger,
 	}
 
+	if global.Config == nil {
+		build := builder.BuildCobraCommand(c)
+		_ = global.PersistentPreRunE(build)
+	}
+	global.Config.Set(global.UserFeatureFlagsEnv, "")
+
 	cr := utils.GenerateResourceWithEnvironment()
 
 	r := meroxa.CreateResourceInput{

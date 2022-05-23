@@ -1,0 +1,56 @@
+name: CI
+on:
+  pull_request:
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.18
+      uses: actions/setup-go@v3
+      with:
+        go-version: ^1.18
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3  
+    - name: Build
+      run: |
+       make gomod
+       make build
+    - name: Debug
+      run: |
+        pwd
+        echo ${GOPATH}
+        echo ${GOROOT}
+      env:
+        GOPATH: /home/runner/work/cli/go
+  golangci:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.45.2
+  vet:
+    name: Vet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Vet
+        run: go vet ./...
+
+  test:
+    name: Test
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ^1.18
+      - name: Run tests
+        run: |
+         make test
+        env:
+         GOPATH: /home/runner/work/cli/go

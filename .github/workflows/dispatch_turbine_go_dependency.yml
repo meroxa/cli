@@ -1,6 +1,7 @@
 name: Remote Dispatch Turbine Go Dependency Responder
 
-on: [repository_dispatch]
+on:
+  repository_dispatch:
 
 jobs:
   update_turbine_go:
@@ -11,12 +12,12 @@ jobs:
       - name: Event Information
         run: |
           echo "Event '${{ github.event.action }}' received from '${{ github.event.client_payload.repository }}' for commit '${{ github.event.client_payload.sha }}'"
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: master
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
-          go-version: ^1.17
+          go-version: ^1.18
       - name: Inject insteadOf configuration
         env:
           MEROXA_MACHINE: ${{ secrets.MEROXA_MACHINE }}
@@ -43,6 +44,6 @@ jobs:
           source_branch: ${{ steps.branch.outputs.branch }}
           destination_branch: "master"
           github_token: ${{ secrets.MEROXA_MACHINE }}
-          pr_label: "ktlo, ready for review"
+          pr_label: "ktlo,ready for review"
           pr_title: "chore: Upgrade to latest turbine-go"
-          pr_body: "The following commands were run to generate changes: `go get -u github.com/meroxa/turbine-go@latest` and `make gomod`"
+          pr_body: "The following commands were run to generate changes: go get -u github.com/meroxa/turbine-go@latest and make gomod"

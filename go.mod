@@ -1,6 +1,6 @@
 module github.com/meroxa/cli
 
-go 1.17
+go 1.18
 
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
@@ -28,7 +28,7 @@ require (
 	github.com/briandowns/spinner v1.18.1
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220504181413-5639e6491f85
+	github.com/meroxa/turbine-go v0.0.0-20220524134641-ccdb7c982741
 	github.com/stretchr/testify v1.7.0
 	github.com/volatiletech/null/v8 v8.1.2
 )
