@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Vet
-        run: make vet
+        run: go vet ./...
 
   deploy:
     runs-on: ubuntu-latest
