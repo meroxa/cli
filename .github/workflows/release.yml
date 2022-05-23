@@ -3,8 +3,8 @@ name: release
 on:
   push:
     tags:
-      - '*'
-      - '!*-nightly.*'
+      - 'v*.*.*'
+      - '!v*.*.*-nightly.*'
 
 jobs:
   goreleaser:
