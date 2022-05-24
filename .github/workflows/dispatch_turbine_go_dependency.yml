@@ -1,6 +1,10 @@
 name: Remote Dispatch Turbine Go Dependency Responder
 
-on: [workflow_dispatch,repository_dispatch]
+on:
+  repository_dispatch:
+  push:
+    branches:
+      - raul/fix-dispatch-event
 
 jobs:
   update_turbine_go:
