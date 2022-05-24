@@ -15,7 +15,7 @@ jobs:
         enable_data_plane: [true]
     steps:
       - name: Checkout Acceptance
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.MEROXA_MACHINE }}
           repository: meroxa/acceptance
@@ -26,7 +26,7 @@ jobs:
       #   - merman
       #   - platform-dev-setup
       - name: Checkout CLI
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: ./acceptance/cli
       - name: Build and Run

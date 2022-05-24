@@ -1,6 +1,6 @@
 module github.com/meroxa/cli
 
-go 1.17
+go 1.18
 
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb

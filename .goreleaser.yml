@@ -49,5 +49,3 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-release:
-  prerelease: true

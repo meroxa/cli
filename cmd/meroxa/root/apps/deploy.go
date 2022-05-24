@@ -319,7 +319,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 	req.ContentLength = fi.Size()
 
 	client := &http.Client{}
-	res, err := client.Do(req) //nolint:bodyclose
+	res, err := client.Do(req)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return err
