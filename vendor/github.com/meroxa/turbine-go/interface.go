@@ -6,6 +6,6 @@ type App interface {
 
 type Turbine interface {
 	Resources(string) (Resource, error)
-	Process(Records, Function) (Records, RecordsWithErrors)
+	Process(Records, Function) Records
 	RegisterSecret(string) error
 }

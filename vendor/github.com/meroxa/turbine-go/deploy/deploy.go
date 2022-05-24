@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
-	
+
 	"github.com/meroxa/turbine-go"
 )
 
