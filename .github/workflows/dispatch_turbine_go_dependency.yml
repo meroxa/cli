@@ -1,6 +1,6 @@
 name: Remote Dispatch Turbine Go Dependency Responder
 
-on: [repository_dispatch]
+on: [workflow_dispatch,repository_dispatch]
 
 jobs:
   update_turbine_go:
