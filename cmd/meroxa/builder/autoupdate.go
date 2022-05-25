@@ -30,6 +30,10 @@ import (
 // 1. If user disabled auto-updating warning
 // 2. If it checked within a week.
 func needToCheckNewerCLIVersion() bool {
+	if global.Config == nil {
+		return false
+	}
+
 	disabledNotificationsUpdate := global.Config.GetBool(global.DisableNotificationsUpdate)
 	if disabledNotificationsUpdate {
 		return false

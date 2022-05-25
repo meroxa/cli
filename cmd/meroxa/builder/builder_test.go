@@ -75,6 +75,9 @@ func TestBuildCobraCommand_Structural(t *testing.T) {
 	// Since we can't compare functions, we ignore RunE (coming from `buildCommandEvent`)
 	got.RunE = nil
 
+	// Since we can't compare functions, we ignore PostRunE (coming from `buildCommandAutoUpdate`)
+	got.PostRunE = nil
+
 	if v := cmp.Diff(got, want, cmpopts.IgnoreUnexported(cobra.Command{})); v != "" {
 		t.Fatalf(v)
 	}
