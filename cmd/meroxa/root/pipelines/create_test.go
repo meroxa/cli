@@ -169,6 +169,7 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 		client: client,
 		logger: logger,
 	}
+
 	// Set up feature flags
 	if global.Config == nil {
 		build := builder.BuildCobraCommand(c)
@@ -241,7 +242,6 @@ Pipeline %q successfully created!
 		t.Fatalf("expected \"%v\", got \"%v\"", *p, gotPipeline)
 	}
 
-	// Clear environments feature flags
 	global.Config.Set(global.UserFeatureFlagsEnv, startingFlags)
 }
 
@@ -257,6 +257,13 @@ func TestCreatePipelineWithEnvironmentExecutionWithoutFeatureFlag(t *testing.T) 
 		client: client,
 		logger: logger,
 	}
+
+	if global.Config == nil {
+		build := builder.BuildCobraCommand(c)
+		_ = global.PersistentPreRunE(build)
+	}
+
+	global.Config.Set(global.UserFeatureFlagsEnv, "")
 
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
