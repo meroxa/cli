@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
@@ -38,20 +39,23 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 
 // GetResourceNames asks turbine for a list of resources used by the given app.
 func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
-	var cmd *exec.Cmd
 	var names []string
 
-	cmd = exec.Command(appPath+"/"+appName, "--resources") // nolint:gosec
+	cmd := exec.Command(appPath+"/"+appName, "--listresources") // nolint:gosec
+
 	output, err := cmd.CombinedOutput()
+	stringifiedOutput := string(output)
 	if err != nil {
-		return names, errors.New(string(output))
+		return names, errors.New(stringifiedOutput)
 	}
-	// @TODO interpret output
-	r := regexp.MustCompile("\nturbine-response: (.*)\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return names, fmt.Errorf("unable to build Meroxa Application at %s; %s", appPath, string(output))
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+
+	sliceString := r.FindStringSubmatch(stringifiedOutput)
+	if len(sliceString) > 0 {
+		names = strings.Fields(sliceString[1])
 	}
+
 	return names, nil
 }
 
