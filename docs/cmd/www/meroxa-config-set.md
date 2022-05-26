@@ -20,10 +20,10 @@ meroxa config set [flags]
 ### Examples
 
 ```
-$ meroxa config set DisableUpdateNotification=true
-$ meroxa config set DISABLE_UPDATE_NOTIFICATION=true
-$ meroxa config set OneKey=true AnotherKey=false
-$ meroxa config set ApiUrl=https://staging.meroxa.com
+meroxa config set DisableUpdateNotification=true
+meroxa config set DISABLE_UPDATE_NOTIFICATION=true
+meroxa config set OneKey=true AnotherKey=false
+meroxa config set ApiUrl=https://staging.meroxa.com
 ```
 
 ### Options

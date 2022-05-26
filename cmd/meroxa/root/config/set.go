@@ -51,10 +51,10 @@ func (s *Set) Usage() string {
 func (s *Set) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Update your Meroxa CLI configuration file with a specific key=value",
-		Example: "$ meroxa config set DisableUpdateNotification=true\n" +
-			"$ meroxa config set DISABLE_UPDATE_NOTIFICATION=true\n" +
-			"$ meroxa config set OneKey=true AnotherKey=false\n" +
-			"$ meroxa config set ApiUrl=https://staging.meroxa.com",
+		Example: "meroxa config set DisableUpdateNotification=true\n" +
+			"meroxa config set DISABLE_UPDATE_NOTIFICATION=true\n" +
+			"meroxa config set OneKey=true AnotherKey=false\n" +
+			"meroxa config set ApiUrl=https://staging.meroxa.com",
 		Long: "This command will let you update your Meroxa configuration file to customize your CLI experience." +
 			"You can check the presence of this file by running `meroxa config describe`, " +
 			"or even provide your own using `--config my-other-cfg-file`" +
