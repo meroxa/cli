@@ -21,9 +21,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/meroxa/cli/cmd/meroxa/github"
 
 	"github.com/cased/cased-go"
 	"github.com/spf13/cobra"
@@ -498,14 +501,15 @@ func buildCommandAutoUpdate(cmd *cobra.Command) {
 				return err
 			}
 
-			latestCLIVersion, err := getLatestCLIVersion(cmd.Context())
+			github.Client = &http.Client{}
+			latestCLIVersion, err := github.GetLatestCLITag(cmd.Context())
 			if err != nil {
 				return err
 			}
 
 			if getCurrentCLIVersion() != latestCLIVersion {
 				fmt.Printf("\n\n  🎁 meroxa %s is available! To update it run: `brew upgrade meroxa`", latestCLIVersion)
-				fmt.Printf("\n  🧐 Check out latest changes in https://github.com/meroxa/cli/releases/tag/%s", latestCLIVersion)
+				fmt.Printf("\n  🧐 Check out latest changes in https://github.com/meroxa/cli/releases/tag/v%s", latestCLIVersion)
 				fmt.Printf("\n  💡 To disable these warnings, run `meroxa config set %s=true`\n", global.DisableNotificationsUpdate)
 			}
 		}

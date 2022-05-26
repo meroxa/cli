@@ -118,11 +118,9 @@ func TestSetConfigExecution(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	k1 := "MY_KEY"
-	k2 := "ANOTHER_KEY"
 
 	setKeys := map[string]string{
 		k1: "value",
-		k2: "anotherValue",
 	}
 
 	cfg := config.NewInMemoryConfig()
@@ -140,15 +138,14 @@ func TestSetConfigExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := fmt.Sprintf("Updating your Meroxa configuration file with %s=%s...\n"+
-		"Updating your Meroxa configuration file with %s=%s...\n"+
-		"Done!", k1, setKeys[k1], k2, setKeys[k2])
+	wantLeveledOutput := fmt.Sprintf("Updating your Meroxa configuration file with \"%s=%s\"...\n"+
+		"Done!", k1, setKeys[k1])
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
-	keys := []string{k1, k2}
+	keys := []string{k1}
 
 	for _, k := range keys {
 		if s.config.GetString(k) != setKeys[k] {

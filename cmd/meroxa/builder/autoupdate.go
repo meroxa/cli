@@ -17,10 +17,6 @@ limitations under the License.
 package builder
 
 import (
-	"context"
-	"encoding/json"
-	"io"
-	"net/http"
 	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -52,40 +48,4 @@ func needToCheckNewerCLIVersion() bool {
 // version, set by GoReleaser + `v` at the beginning.
 func getCurrentCLIVersion() string {
 	return global.CurrentTag
-}
-
-// getLatestCLIVersion returns latest CLI available tag.
-func getLatestCLIVersion(ctx context.Context) (string, error) {
-	client := &http.Client{}
-
-	// Fetches tags in GitHub
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://api.github.com/repos/meroxa/cli/tags", http.NoBody)
-	if err != nil {
-		return "", err
-	}
-
-	req.Header.Add("Accept", "application/vnd.github.v3+json")
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	if resp.Body != nil {
-		defer resp.Body.Close()
-	}
-
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	var result []struct {
-		Name string `json:"name"`
-	}
-
-	if err := json.Unmarshal(b, &result); err != nil {
-		return "", nil
-	}
-
-	return result[0].Name, nil
 }

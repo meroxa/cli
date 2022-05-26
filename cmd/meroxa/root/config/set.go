@@ -64,7 +64,7 @@ func (s *Set) Docs() builder.Docs {
 
 func (s *Set) Execute(ctx context.Context) error {
 	for k, v := range s.args.keys {
-		s.logger.Infof(ctx, "Updating your Meroxa configuration file with %s=%s...", k, v)
+		s.logger.Infof(ctx, "Updating your Meroxa configuration file with \"%s=%s\"...", k, v)
 		s.config.Set(k, v)
 	}
 	s.logger.Info(ctx, "Done!")
