@@ -57,8 +57,7 @@ func getContentHomebrewFormula(ctx context.Context) (string, error) {
 	}
 
 	type FormulaDefinition struct {
-		Content  []byte `json:"content,omitempty"`
-		Encoding string `json:"encoding,omitempty"`
+		Content []byte `json:"content,omitempty"`
 	}
 
 	var f FormulaDefinition
@@ -78,6 +77,7 @@ func parseVersionFromFormulaFile(content string) string {
 }
 
 // GetLatestCLITag fetches the content formula file from GitHub and then parses its version.
+// example: 2.0.0
 func GetLatestCLITag(ctx context.Context) (string, error) {
 	brewFormulaFile, err := getContentHomebrewFormula(ctx)
 	if err != nil {

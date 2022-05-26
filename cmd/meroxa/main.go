@@ -23,6 +23,8 @@ import (
 )
 
 var (
+	// In production this will be the updated version by `goreleaser` which strips `v` from the tag
+	// For more information see https://goreleaser.com/cookbooks/using-main.version
 	version      = "dev"
 	GitCommit    string
 	GitUntracked string
@@ -34,11 +36,6 @@ func gitInfoNotEmpty() bool {
 }
 
 func main() {
-	// In production this will be the updated version by `goreleaser`
-	// We need to include `v` since we'll compare with the actual tag in GitHub
-	// For more information see https://goreleaser.com/cookbooks/using-main.version
-	global.CurrentTag = fmt.Sprintf("v%s", version)
-
 	if gitInfoNotEmpty() {
 		if GitCommit != "" {
 			version += fmt.Sprintf(":%s", GitCommit)

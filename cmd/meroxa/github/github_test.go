@@ -33,7 +33,6 @@ end
 `, version)
 
 	sEnc := base64.StdEncoding.EncodeToString([]byte(f))
-
 	jsonResponse := fmt.Sprintf(`
 	{
 	   "content": "%s",
@@ -64,7 +63,6 @@ end
 	}
 
 	gotVersion := parseVersionFromFormulaFile(gotContent)
-
 	if gotVersion != version {
 		t.Errorf("expected version %q, got %q", version, gotVersion)
 	}

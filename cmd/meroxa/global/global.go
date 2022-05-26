@@ -26,9 +26,8 @@ import (
 )
 
 var (
-	Version    string
-	CurrentTag string
-	Config     *viper.Viper
+	Version string
+	Config  *viper.Viper
 )
 
 var (

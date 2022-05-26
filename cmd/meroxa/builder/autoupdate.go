@@ -43,9 +43,3 @@ func needToCheckNewerCLIVersion() bool {
 	duration := time.Now().UTC().Sub(latestUpdatedAt)
 	return duration.Hours() > 24*7
 }
-
-// getCurrentCLIVersion returns current CLI tag (example: `v2.0.0`)
-// version, set by GoReleaser + `v` at the beginning.
-func getCurrentCLIVersion() string {
-	return global.CurrentTag
-}

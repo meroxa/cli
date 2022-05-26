@@ -507,7 +507,7 @@ func buildCommandAutoUpdate(cmd *cobra.Command) {
 				return err
 			}
 
-			if getCurrentCLIVersion() != latestCLIVersion {
+			if global.Version != latestCLIVersion {
 				fmt.Printf("\n\n  🎁 meroxa %s is available! To update it run: `brew upgrade meroxa`", latestCLIVersion)
 				fmt.Printf("\n  🧐 Check out latest changes in https://github.com/meroxa/cli/releases/tag/v%s", latestCLIVersion)
 				fmt.Printf("\n  💡 To disable these warnings, run `meroxa config set %s=true`\n", global.DisableNotificationsUpdate)
