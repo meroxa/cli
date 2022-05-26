@@ -16,13 +16,6 @@ jobs:
       run: |
        make gomod
        make build
-    - name: Debug
-      run: |
-        pwd
-        echo ${GOPATH}
-        echo ${GOROOT}
-      env:
-        GOPATH: /home/runner/work/cli/go
   golangci:
     name: Lint
     runs-on: ubuntu-latest
