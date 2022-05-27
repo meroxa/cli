@@ -35,8 +35,7 @@ end
 	sEnc := base64.StdEncoding.EncodeToString([]byte(f))
 	jsonResponse := fmt.Sprintf(`
 	{
-	   "content": "%s",
-       "encoding": "base64"
+	   "content": "%s"
 	}
 	`, sEnc)
 
