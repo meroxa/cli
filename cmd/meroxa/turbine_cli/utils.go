@@ -209,9 +209,9 @@ func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 		return err
 	}
 	branchName := strings.TrimSpace(string(output))
-	if branchName != "main" && branchName != "master" {
-		return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
-	}
+	// if branchName != "main" && branchName != "master" {
+	// 	return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
+	// }
 	l.Infof(ctx, "\t%s Deployment allowed from %s branch!", l.SuccessfulCheck(), branchName)
 	err = os.Chdir(pwd)
 	if err != nil {
