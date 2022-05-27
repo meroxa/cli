@@ -23,6 +23,8 @@ import (
 )
 
 var (
+	// In production this will be the updated version by `goreleaser` which strips `v` from the tag
+	// For more information see https://goreleaser.com/cookbooks/using-main.version
 	version      = "dev"
 	GitCommit    string
 	GitUntracked string

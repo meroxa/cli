@@ -21,9 +21,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/meroxa/cli/cmd/meroxa/github"
 
 	"github.com/cased/cased-go"
 	"github.com/spf13/cobra"
@@ -214,6 +217,9 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithNoHeaders(cmd, c)
 	buildCommandWithSubCommands(cmd, c)
 
+	// this will run for all commands using PostRun hook
+	buildCommandAutoUpdate(cmd)
+
 	// this has to be the last function, so it captures all errors from RunE
 	buildCommandEvent(cmd, c)
 
@@ -300,18 +306,7 @@ func buildCommandWithConfig(cmd *cobra.Command, c Command) {
 			}
 		}
 
-		err := global.Config.WriteConfig()
-
-		if err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-				err = global.Config.SafeWriteConfig()
-			}
-			if err != nil {
-				return fmt.Errorf("meroxa: could not write config file: %v", err)
-			}
-		}
-
-		return nil
+		return writeConfigFile()
 	}
 }
 
@@ -479,6 +474,46 @@ func buildCommandEvent(cmd *cobra.Command, c Command) {
 			err := oldRunE(cmd, args)
 			return withEventRunE(cmd, args, c, err)
 		}
+	}
+}
+
+// This runs for all commands.
+func buildCommandAutoUpdate(cmd *cobra.Command) {
+	oldPostRunE := cmd.PostRunE
+	cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
+		if oldPostRunE != nil {
+			err := oldPostRunE(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+
+		// Do not check and show warning to update when using --json
+		if cmd.Flags().Changed("json") {
+			return nil
+		}
+
+		if needToCheckNewerCLIVersion() {
+			global.Config.Set(global.LatestCLIVersionUpdatedAtEnv, time.Now().UTC())
+
+			err := writeConfigFile()
+			if err != nil {
+				return err
+			}
+
+			github.Client = &http.Client{}
+			latestCLIVersion, err := github.GetLatestCLITag(cmd.Context())
+			if err != nil {
+				return err
+			}
+
+			if global.Version != latestCLIVersion {
+				fmt.Printf("\n\n  🎁 meroxa %s is available! To update it run: `brew upgrade meroxa`", latestCLIVersion)
+				fmt.Printf("\n  🧐 Check out latest changes in https://github.com/meroxa/cli/releases/tag/v%s", latestCLIVersion)
+				fmt.Printf("\n  💡 To disable these warnings, run `meroxa config set %s=true`\n", global.DisableNotificationsUpdate)
+			}
+		}
+		return nil
 	}
 }
 
@@ -749,6 +784,20 @@ func CheckFeatureFlag(exec Command, cmd CommandWithFeatureFlag) error {
 
 	if !hasFeatureFlag(userFeatureFlags, flagRequired) {
 		return err
+	}
+	return nil
+}
+
+func writeConfigFile() error {
+	err := global.Config.WriteConfig()
+
+	if err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			err = global.Config.SafeWriteConfig()
+		}
+		if err != nil {
+			return fmt.Errorf("meroxa: could not write config file: %v", err)
+		}
 	}
 	return nil
 }

@@ -111,7 +111,6 @@ func (d *Describe) Execute(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
-			defer resp.Body.Close() //nolint:gocritic
 
 			buf := new(bytes.Buffer)
 			_, err = buf.ReadFrom(resp.Body)

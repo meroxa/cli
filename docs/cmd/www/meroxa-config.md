@@ -32,4 +32,5 @@ meroxa config [flags]
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 * [meroxa config describe](/cli/cmd/meroxa-config-describe/)	 - Show Meroxa CLI configuration details
+* [meroxa config set](/cli/cmd/meroxa-config-set/)	 - Update your Meroxa CLI configuration file with a specific key=value
 

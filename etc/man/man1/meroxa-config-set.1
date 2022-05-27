@@ -1,0 +1,59 @@
+.nh
+.TH "Meroxa" "1" "May 2022" "Meroxa CLI " "Meroxa Manual"
+
+.SH NAME
+.PP
+meroxa\-config\-set \- Update your Meroxa CLI configuration file with a specific key=value
+
+
+.SH SYNOPSIS
+.PP
+\fBmeroxa config set [flags]\fP
+
+
+.SH DESCRIPTION
+.PP
+This command will let you update your Meroxa configuration file to customize your CLI experience.You can check the presence of this file by running \fB\fCmeroxa config describe\fR, or even provide your own using \fB\fC\-\-config my\-other\-cfg\-file\fRA key with a format such as MyKey will be converted automatically to as MY\_KEY.
+
+
+.SH OPTIONS
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+	help for set
+
+
+.SH OPTIONS INHERITED FROM PARENT COMMANDS
+.PP
+\fB\-\-cli\-config\-file\fP=""
+	meroxa configuration file
+
+.PP
+\fB\-\-debug\fP[=false]
+	display any debugging information
+
+.PP
+\fB\-\-json\fP[=false]
+	output json
+
+.PP
+\fB\-\-timeout\fP=10s
+	set the duration of the client timeout in seconds
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+meroxa config set DisableUpdateNotification=true
+meroxa config set DISABLE\_UPDATE\_NOTIFICATION=true
+meroxa config set OneKey=true AnotherKey=false
+meroxa config set ApiUrl=https://staging.meroxa.com
+
+.fi
+.RE
+
+
+.SH SEE ALSO
+.PP
+\fBmeroxa\-config(1)\fP
