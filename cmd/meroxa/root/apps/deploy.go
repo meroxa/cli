@@ -408,7 +408,7 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 	var err error
 
 	// Without the " " at the beginning of `suffix`, spinner looks next to word (only on this occurrence)
-	d.logger.StartSpinner("\t", " Building application...")
+	d.logger.StartSpinner("\t", " Building local binary...")
 
 	switch d.lang {
 	case GoLang:
@@ -423,7 +423,7 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return err
 	}
-	d.logger.StopSpinnerWithStatus("Application built!", log.Successful)
+	d.logger.StopSpinnerWithStatus("Binary built! Let's double-check your app configuration before deploying it...", log.Successful)
 	return nil
 }
 
