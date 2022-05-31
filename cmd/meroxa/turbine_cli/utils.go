@@ -200,24 +200,21 @@ func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
-		fmt.Printf("DEBUG: switch app: %s", appPath)
 		return err
 	}
 
 	cmd := exec.Command("git", "branch", "--show-current")
 	output, err := cmd.Output()
 	if err != nil {
-		fmt.Printf("DEBUG: git: %s", output)
 		return err
 	}
 	branchName := strings.TrimSpace(string(output))
-	// if branchName != "main" && branchName != "master" {
-	// 	return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
-	// }
+	if branchName != "main" && branchName != "master" {
+		return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
+	}
 	l.Infof(ctx, "\t%s Deployment allowed from %s branch!", l.SuccessfulCheck(), branchName)
 	err = os.Chdir(pwd)
 	if err != nil {
-		fmt.Printf("DEBUG: chdir: %s", pwd)
 		return err
 	}
 	return nil
