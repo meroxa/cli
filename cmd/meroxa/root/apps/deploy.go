@@ -573,35 +573,42 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 func (d *Deploy) Execute(ctx context.Context) error {
 	err := d.validate(ctx)
 	if err != nil {
+		fmt.Printf("DEBUG: validation failed")
 		return err
 	}
 
 	// ⚠️ This is only until we re-deploy applications applying only the changes made
 	err = d.tearDownExistingResources(ctx)
 	if err != nil {
+		fmt.Printf("DEBUG: resource teardown failed")
 		return err
 	}
 
 	err = d.prepareAppForDeployment(ctx)
 	defer d.rmBinary()
 	if err != nil {
+		fmt.Printf("DEBUG: prepare app for dep failed")
 		return err
 	}
 
 	deployOutput, err := d.deployApp(ctx, d.fnName)
 	if err != nil {
+		fmt.Printf("DEBUG: dep failed")
 		return err
 	}
 
 	pipelineUUID, err := turbineCLI.GetPipelineUUID(deployOutput)
 	if err != nil {
+		fmt.Printf("DEBUG: pipeline retrieval failed")
 		return err
 	}
 
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {
+		fmt.Printf("DEBUG: get sha failed")
 		return err
 	}
 
+	fmt.Printf("DEBUG: creating app")
 	return d.createApplication(ctx, pipelineUUID, gitSha)
 }
