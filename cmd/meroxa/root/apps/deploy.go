@@ -42,6 +42,8 @@ import (
 )
 
 const (
+	deployGitSha            = "DEPLOY_GIT_SHA"
+	deploySkipGitValidation = "DEPLOY_SKIP_GIT_VALIDATION"
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" // nolint:gosec
 	pollDuration            = 2 * time.Second
@@ -111,6 +113,20 @@ func (d *Deploy) Client(client meroxa.Client) {
 
 func (d *Deploy) Flags() []builder.Flag {
 	return builder.BuildFlags(&d.flags)
+}
+
+func (d *Deploy) getDeployGitSha() string {
+	if v := os.Getenv(deployGitSha); v != "" {
+		return v
+	}
+	return d.config.GetString(deployGitSha)
+}
+
+func (d *Deploy) skipGitValidation() bool {
+	if v := os.Getenv(deploySkipGitValidation); v != "" {
+		return v == "true"
+	}
+	return d.config.GetString(deployGitSha) == "true"
 }
 
 func (d *Deploy) getDockerHubUserNameEnv() string {
@@ -516,6 +532,10 @@ func (d *Deploy) validate(ctx context.Context) error {
 		return err
 	}
 
+	if d.skipGitValidation() {
+		return nil
+	}
+
 	err = turbineCLI.GitChecks(ctx, d.logger, d.path)
 	if err != nil {
 		return err
@@ -598,10 +618,18 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	gitSha, err := turbineCLI.GetGitSha(d.path)
+	gitSha, err := d.GetGitSha()
 	if err != nil {
 		return err
 	}
 
 	return d.createApplication(ctx, pipelineUUID, gitSha)
+}
+
+func (d *Deploy) GetGitSha() (string, error) {
+	if gitSha := d.getDeployGitSha(); gitSha != "" {
+		return gitSha, nil
+	}
+
+	return turbineCLI.GetGitSha(d.path)
 }
