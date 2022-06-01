@@ -193,7 +193,7 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine-go v0.0.0-20220524134641-ccdb7c982741
+# github.com/meroxa/turbine-go v0.0.0-20220601145616-453b4e74b781
 ## explicit; go 1.17
 github.com/meroxa/turbine-go
 github.com/meroxa/turbine-go/deploy
@@ -267,7 +267,7 @@ github.com/spf13/pflag
 # github.com/spf13/viper v1.8.1
 ## explicit; go 1.12
 github.com/spf13/viper
-# github.com/stretchr/testify v1.7.0
+# github.com/stretchr/testify v1.7.1
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 # github.com/subosito/gotenv v1.2.0

@@ -44,7 +44,24 @@ func (r Record) JSONSchema() bool {
 		if _, ok := p["payload"]; ok {
 			return true
 		}
+	}
+
+	return false
+}
+
+// OpenCDC returns true if the record is formatted with OpenCDC schema, false otherwise
+func (r Record) OpenCDC() bool {
+	p, err := r.Payload.Map()
+	if err != nil {
 		return false
+	}
+
+	if _, ok := p["schema"]; ok {
+		if payload, ok := p["payload"]; ok {
+			if _, ok := payload.(map[string]interface{})["after"]; ok {
+				return true
+			}
+		}
 	}
 
 	return false
@@ -101,6 +118,15 @@ func (p *Payload) Set(path string, value interface{}) error {
 		*p = []byte(sval)
 	}
 
+	return nil
+}
+
+func (p *Payload) Delete(path string) error {
+	val, err := sjson.Delete(string(*p), path)
+	if err != nil {
+		return err
+	}
+	*p = []byte(val)
 	return nil
 }
 

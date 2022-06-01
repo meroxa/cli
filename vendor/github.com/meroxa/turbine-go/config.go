@@ -33,7 +33,7 @@ func (c *AppConfig) setPipelineName() {
 	}
 }
 
-func ReadAppConfig(appPath string) (AppConfig, error) {
+var ReadAppConfig = func(appPath string) (AppConfig, error) {
 	if appPath == "" {
 		exePath, err := os.Executable()
 		if err != nil {
