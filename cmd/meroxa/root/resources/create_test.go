@@ -100,7 +100,7 @@ func TestCreateResourceExecution(t *testing.T) {
 		Metadata:    nil,
 	}
 
-	cr := utils.GenerateResource()
+	cr := utils.GenerateResource("", "")
 	client.
 		EXPECT().
 		CreateResource(

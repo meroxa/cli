@@ -12,6 +12,7 @@ import (
 
 	"github.com/meroxa/cli/config"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -383,6 +384,61 @@ func TestTearDownExistingResourcesWithAppNotFound(t *testing.T) {
 
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
+	}
+}
+
+func TestGetResourceCheckErrorMessage(t *testing.T) {
+	testCases := []struct {
+		name                 string
+		resourceNames        []string
+		resourceState        string
+		expectedErrorMessage string
+	}{
+		{
+			name:                 "getResourceCheckErrorMessage returns an empty response if all resources are found and available",
+			resourceNames:        []string{"nozzle", "engine"},
+			resourceState:        "ready",
+			expectedErrorMessage: "",
+		},
+		{
+			name:                 "getResourceCheckErrorMessage returns an error response if resources are unavailable",
+			resourceNames:        []string{"nozzle", "engine"},
+			resourceState:        "",
+			expectedErrorMessage: "resource \"nozzle\" is not ready and usable; resource \"engine\" is not ready and usable",
+		},
+	}
+
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	d := &Deploy{
+		client: client,
+		logger: logger,
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			firstName := "nozzle"
+			secondName := "engine"
+
+			firstResource := utils.GenerateResource(firstName, tc.resourceState)
+			secondResource := utils.GenerateResource(secondName, tc.resourceState)
+
+			client.
+				EXPECT().
+				GetResourceByNameOrID(ctx, firstResource.Name).
+				Return(&firstResource, nil)
+
+			client.
+				EXPECT().
+				GetResourceByNameOrID(ctx, secondResource.Name).
+				Return(&secondResource, nil)
+
+			result := d.getResourceCheckErrorMessage(ctx, tc.resourceNames)
+			assert.Equal(t, tc.expectedErrorMessage, result)
+		})
 	}
 }
 

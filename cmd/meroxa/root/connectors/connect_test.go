@@ -75,8 +75,8 @@ func TestConnectExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	var rSource = utils.GenerateResource()
-	var rDestination = utils.GenerateResource()
+	var rSource = utils.GenerateResource("", "")
+	var rDestination = utils.GenerateResource("", "")
 
 	c.flags.Input = "my-resource.Table"
 	c.flags.Config = `{"key":"value"}`

@@ -34,7 +34,7 @@ import (
 
 func getResources() []*meroxa.Resource {
 	var resources []*meroxa.Resource
-	r := utils.GenerateResource()
+	r := utils.GenerateResource("", "")
 	return append(resources, &r)
 }
 

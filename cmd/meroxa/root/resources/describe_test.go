@@ -61,7 +61,7 @@ func TestDescribeResourceExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	r := utils.GenerateResource()
+	r := utils.GenerateResource("", "")
 	client.
 		EXPECT().
 		GetResourceByNameOrID(
