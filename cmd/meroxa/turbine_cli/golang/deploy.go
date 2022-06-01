@@ -28,6 +28,9 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_AUTH_AUDIENCE=%s", global.GetMeroxaAuthAudience()))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_AUTH_DOMAIN=%s", global.GetMeroxaAuthDomain()))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_AUTH_CLIENT_ID=%s", global.GetMeroxaAuthClientID()))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
