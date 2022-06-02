@@ -578,7 +578,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 
 	if errStr != "" {
 		errStr += ";\n\n ⚠️  Run 'meroxa resources list' to verify that the resource names " +
-			"defined in your Turbine app are identical to the resources you have created on the Meroxa platform before deploying again"
+			"defined in your Turbine app are identical to the resources you have created on the Meroxa Platform before deploying again"
 		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
 		return fmt.Errorf("%s", errStr)
 	}
