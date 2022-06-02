@@ -583,7 +583,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		return fmt.Errorf("%s", errStr)
 	}
 
-	d.logger.StopSpinnerWithStatus("Found all required resources!", log.Successful)
+	d.logger.StopSpinnerWithStatus("Can access to your Turbine resources", log.Successful)
 	return nil
 }
 
