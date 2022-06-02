@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
@@ -34,6 +35,28 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 		return "", errors.New(string(output))
 	}
 	return string(output), nil
+}
+
+// GetResourceNames asks turbine for a list of resources used by the given app.
+func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
+	var names []string
+
+	cmd := exec.Command(appPath+"/"+appName, "--listresources") // nolint:gosec
+
+	output, err := cmd.CombinedOutput()
+	stringifiedOutput := string(output)
+	if err != nil {
+		return names, errors.New(stringifiedOutput)
+	}
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+
+	sliceString := r.FindStringSubmatch(stringifiedOutput)
+	if len(sliceString) > 0 {
+		names = strings.Fields(sliceString[1])
+	}
+
+	return names, nil
 }
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not

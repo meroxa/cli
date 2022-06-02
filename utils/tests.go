@@ -33,14 +33,24 @@ func GeneratePipelineWithEnvironment() meroxa.Pipeline {
 	return p
 }
 
-func GenerateResource() meroxa.Resource {
-	return meroxa.Resource{
+func GenerateResourceWithNameAndStatus(resourceName, resourceState string) meroxa.Resource {
+	if resourceName == "" {
+		resourceName = "resource-1234"
+	}
+
+	newResource := meroxa.Resource{
 		UUID:     "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
 		Type:     meroxa.ResourceTypePostgres,
-		Name:     "resource-1234",
+		Name:     resourceName,
 		URL:      "https://user:password",
 		Metadata: nil,
 	}
+
+	if resourceState == "ready" {
+		newResource.Status.State = meroxa.ResourceStateReady
+	}
+
+	return newResource
 }
 
 func GenerateResourceWithEnvironment() meroxa.Resource {
@@ -51,6 +61,10 @@ func GenerateResourceWithEnvironment() meroxa.Resource {
 		Name: null.StringFrom("my-environment"),
 	}
 	return r
+}
+
+func GenerateResource() meroxa.Resource {
+	return GenerateResourceWithNameAndStatus("", "")
 }
 
 func GenerateConnector(pipelineName, connectorName string) meroxa.Connector {

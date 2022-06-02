@@ -54,6 +54,7 @@ type deployApplicationClient interface {
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 }
 
 type Deploy struct {
@@ -524,11 +525,79 @@ func (d *Deploy) validate(ctx context.Context) error {
 	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
 }
 
+func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames []string) string {
+	var errStr string
+	for _, name := range resourceNames {
+		resource, err := d.client.GetResourceByNameOrID(ctx, name)
+		if err != nil {
+			if errStr != "" {
+				errStr += "; "
+			}
+
+			if strings.Contains(err.Error(), "could not find") {
+				errStr += fmt.Sprintf("could not find resource %q", name)
+			} else {
+				errStr += err.Error()
+			}
+		} else if resource.Status.State != meroxa.ResourceStateReady {
+			if errStr != "" {
+				errStr += "; "
+			}
+			errStr += fmt.Sprintf("resource %q is not ready and usable", resource.Name)
+		}
+	}
+	return errStr
+}
+
+func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
+	resourceCheckMessage := fmt.Sprintf("Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
+
+	d.logger.StartSpinner("\t", resourceCheckMessage)
+
+	var resourceNames []string
+	var err error
+
+	switch d.lang {
+	case GoLang:
+		resourceNames, err = turbineGo.GetResourceNames(ctx, d.logger, d.path, d.appName)
+	case JavaScript:
+		resourceNames, err = turbineJS.GetResourceNames(ctx, d.logger, d.path, d.appName)
+	case Python:
+		resourceNames, err = turbinePY.GetResourceNames(ctx, d.logger, d.path, d.appName)
+	}
+
+	if err != nil {
+		return fmt.Errorf("unable to read resource definition from app: %s", err.Error())
+	}
+
+	if len(resourceNames) == 0 {
+		return errors.New("no resources defined in your Turbine app")
+	}
+
+	errStr := d.getResourceCheckErrorMessage(ctx, resourceNames)
+
+	if errStr != "" {
+		errStr += ";\n\n ⚠️  Run 'meroxa resources list' to verify that the resource names " +
+			"defined in your Turbine app are identical to the resources you have created on the Meroxa Platform before deploying again"
+		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
+		return fmt.Errorf("%s", errStr)
+	}
+
+	d.logger.StopSpinnerWithStatus("Can access to your Turbine resources", log.Successful)
+	return nil
+}
+
 func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Preparing application %q (%s) for deployment...", d.appName, d.lang)
 
 	// After this point, CLI will package it up and will build it
 	err := d.buildApp(ctx)
+	if err != nil {
+		return err
+	}
+
+	// check that resources exist and are ready
+	err = d.checkResourceAvailability(ctx)
 	if err != nil {
 		return err
 	}
@@ -554,7 +623,7 @@ func (d *Deploy) rmBinary() {
 }
 
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
-// or whether it's in a non runnin state.
+// or whether it's in a non-running state.
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	app, _ := d.client.GetApplication(ctx, d.appName)
 
