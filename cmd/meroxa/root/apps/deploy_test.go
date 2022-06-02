@@ -423,8 +423,8 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 			firstName := "nozzle"
 			secondName := "engine"
 
-			firstResource := utils.GenerateResource(firstName, tc.resourceState)
-			secondResource := utils.GenerateResource(secondName, tc.resourceState)
+			firstResource := utils.GenerateResourceWithNameAndStatus(firstName, tc.resourceState)
+			secondResource := utils.GenerateResourceWithNameAndStatus(secondName, tc.resourceState)
 
 			client.
 				EXPECT().

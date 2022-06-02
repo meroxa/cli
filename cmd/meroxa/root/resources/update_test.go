@@ -121,7 +121,7 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	r := utils.GenerateResource("", "")
+	r := utils.GenerateResource()
 
 	newName := "my-new-resource-name"
 	nr := &meroxa.UpdateResourceInput{
@@ -174,7 +174,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	r := utils.GenerateResource("", "")
+	r := utils.GenerateResource()
 	newMetadata := `{"metakey":"metavalue"}`
 
 	var metadata map[string]interface{}
@@ -230,7 +230,7 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	r := utils.GenerateResource("", "")
+	r := utils.GenerateResource()
 	newURL := "https://newUrl.io"
 
 	nr := &meroxa.UpdateResourceInput{
@@ -285,7 +285,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 
 	newUsername := "newUsername"
 
-	r := utils.GenerateResource("", "")
+	r := utils.GenerateResource()
 
 	// Updating one of their values only
 	newCred := meroxa.Credentials{Username: newUsername}

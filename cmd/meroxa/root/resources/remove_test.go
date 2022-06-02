@@ -67,7 +67,7 @@ func TestRemoveResourceExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	res := utils.GenerateResource("", "")
+	res := utils.GenerateResource()
 	r.args.NameOrID = res.Name
 
 	client.

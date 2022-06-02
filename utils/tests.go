@@ -33,7 +33,7 @@ func GeneratePipelineWithEnvironment() meroxa.Pipeline {
 	return p
 }
 
-func GenerateResource(resourceName, resourceState string) meroxa.Resource {
+func GenerateResourceWithNameAndStatus(resourceName, resourceState string) meroxa.Resource {
 	if resourceName == "" {
 		resourceName = "resource-1234"
 	}
@@ -54,13 +54,17 @@ func GenerateResource(resourceName, resourceState string) meroxa.Resource {
 }
 
 func GenerateResourceWithEnvironment() meroxa.Resource {
-	r := GenerateResource("", "")
+	r := GenerateResource()
 
 	r.Environment = &meroxa.EntityIdentifier{
 		UUID: null.StringFrom("424ec647-9f0f-45a5-8e4b-3e0441f12444"),
 		Name: null.StringFrom("my-environment"),
 	}
 	return r
+}
+
+func GenerateResource() meroxa.Resource {
+	return GenerateResourceWithNameAndStatus("", "")
 }
 
 func GenerateConnector(pipelineName, connectorName string) meroxa.Connector {
