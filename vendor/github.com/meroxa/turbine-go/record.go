@@ -22,11 +22,6 @@ func GetRecords(r Records) []Record {
 	return r.records
 }
 
-type RecordsWithErrors struct {
-	Stream  string
-	records []RecordWithError
-}
-
 type Record struct {
 	Key       string
 	Payload   Payload
