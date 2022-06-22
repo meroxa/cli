@@ -2,10 +2,12 @@ package turbinecli
 
 import (
 	"fmt"
+	uuid2 "github.com/google/uuid"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetTurbineJSBinary(t *testing.T) {
@@ -43,6 +45,45 @@ func TestGetTurbineJSBinary(t *testing.T) {
 			params := []string{"foo", "bar"}
 			result := getTurbineJSBinary(params)
 			assert.Equal(t, []string{"npx", "--yes", tc.wantCmd, "foo", "bar"}, result)
+		})
+	}
+}
+
+func TestGetPipelineUUID(t *testing.T) {
+	uuid := uuid2.New().String()
+
+	testCases := []struct {
+		desc string
+		logs string
+		err  error
+	}{
+		{
+			desc: "Find pipeline when app has underscores",
+			logs: fmt.Sprintf(`hey\npipeline: "turbine-pipeline-n_a_m_e" (%s)\nhello`, uuid),
+			err:  nil,
+		},
+		{
+			desc: "Find pipeline when app has dashes",
+			logs: fmt.Sprintf(`hey\npipeline: "turbine-pipeline-n-a-m-e" (%s)\nhello`, uuid),
+			err:  nil,
+		},
+		{
+			desc: "Fail to find pipeline when UUID is missing",
+			logs: `hey\npipeline: "turbine-pipeline-n-a-m-e" \nhello`,
+			err:  fmt.Errorf("pipeline UUID not found"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			result, err := GetPipelineUUID(tc.logs)
+			if tc.err != nil {
+				require.Error(t, err)
+				assert.Equal(t, err, tc.err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, result, uuid)
+			}
 		})
 	}
 }
