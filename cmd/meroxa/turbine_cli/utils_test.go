@@ -2,10 +2,10 @@ package turbinecli
 
 import (
 	"fmt"
-	uuid2 "github.com/google/uuid"
 	"os"
 	"testing"
 
+	uuid2 "github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
