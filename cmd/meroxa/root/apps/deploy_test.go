@@ -2,21 +2,15 @@ package apps
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
-	"reflect"
 	"testing"
 
 	"github.com/meroxa/cli/config"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/volatiletech/null/v8"
-
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	turbine "github.com/meroxa/turbine-go/init"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
@@ -223,75 +217,6 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 	}
 }
 
-const tempAppDir = "test-app"
-
-func TestCreateApplication(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
-	name := "my-application"
-	lang := GoLang
-	pipelineUUID := "5d0c9667-1626-4ffd-9a94-fab4092eec5a"
-	gitSha := "626de930-67ee-4f2b-9af3-12e7165c86b3"
-
-	// Create application locally
-	path, err := initLocalApp(name)
-	if err != nil {
-		t.Fatalf("not expected error, got \"%s\"", err.Error())
-	}
-	defer func() {
-		_ = os.RemoveAll(tempAppDir)
-	}()
-
-	ai := &meroxa.CreateApplicationInput{
-		Name:     name,
-		Language: lang,
-		GitSha:   gitSha,
-		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
-	}
-
-	a := &meroxa.Application{
-		Name:     name,
-		Language: lang,
-		GitSha:   "hardcoded",
-	}
-
-	client.
-		EXPECT().
-		CreateApplication(
-			ctx,
-			ai,
-		).
-		Return(a, nil)
-
-	d := &Deploy{
-		client: client,
-		logger: logger,
-		path:   path,
-		lang:   lang,
-	}
-
-	d.appName = name
-
-	err = d.createApplication(ctx, pipelineUUID, gitSha)
-
-	if err != nil {
-		t.Fatalf("not expected error, got \"%s\"", err.Error())
-	}
-
-	gotJSONOutput := logger.JSONOutput()
-	var gotApplication meroxa.Application
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotApplication)
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
-
-	if !reflect.DeepEqual(gotApplication, *a) {
-		t.Fatalf("expected \"%v\", got \"%v\"", *a, gotApplication)
-	}
-}
-
 func TestTearDownExistingResourcesWithAppRunning(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
@@ -440,21 +365,4 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 			assert.Equal(t, tc.expectedErrorMessage, result)
 		})
 	}
-}
-
-func initLocalApp(name string) (string, error) {
-	if err := os.Mkdir(tempAppDir, 0700); err != nil {
-		return "", err
-	}
-
-	if err := turbine.Init(name, tempAppDir); err != nil {
-		return "", err
-	}
-
-	cwd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("%s/%s/%s", cwd, tempAppDir, name), nil
 }

@@ -52,17 +52,17 @@ func BuildApp(path string) (string, error) {
 	return match[1], err
 }
 
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (string, error) {
-	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha string) error {
+	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path, gitSha)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
-		return "", err
+		return err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
-
-	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }
 
 // GetResourceNames asks turbine for a list of resources used by the given app.

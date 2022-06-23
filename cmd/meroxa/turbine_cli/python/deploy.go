@@ -54,17 +54,17 @@ func NeedsToBuild(path string) (bool, error) {
 }
 
 // RunDeployApp creates Application entities.
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName string) (string, error) {
-	cmd := exec.Command("turbine-py", "clideploy", path, imageName)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha string) error {
+	cmd := exec.Command("turbine-py", "clideploy", path, imageName, gitSha)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
-		return "", err
+		return err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
-
-	return turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }
 
 // CleanUpApp removes any temporary artifacts in the temp directory.

@@ -28,8 +28,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/volatiletech/null/v8"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
@@ -50,6 +48,7 @@ const (
 type deployApplicationClient interface {
 	CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
@@ -183,46 +182,6 @@ func (d *Deploy) validateLocalDeploymentConfig() error {
 
 func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
-}
-
-func (d *Deploy) createApplication(ctx context.Context, pipelineUUID, gitSha string) error {
-	input := meroxa.CreateApplicationInput{
-		Name:     d.appName,
-		Language: d.lang,
-		GitSha:   gitSha,
-		Pipeline: meroxa.EntityIdentifier{UUID: null.StringFrom(pipelineUUID)},
-	}
-
-	d.logger.StartSpinner("\t", fmt.Sprintf("Creating application %q (%s)...", input.Name, d.lang))
-
-	res, err := d.client.CreateApplication(ctx, &input)
-	if err != nil {
-		if strings.Contains(err.Error(), "already exists") {
-			// Double check that the created application has the expected pipeline.
-			var app *meroxa.Application
-			app, err = d.client.GetApplication(ctx, d.appName)
-			if err != nil {
-				d.logger.StopSpinnerWithStatus("\t", log.Failed)
-				return err
-			}
-			if app.Pipeline.UUID.String != pipelineUUID {
-				d.logger.StopSpinnerWithStatus(fmt.Sprintf("unable to finish creating the %s Application because its entities are in an"+
-					" unrecoverable state; try deleting and re-deploying", d.appName), log.Failed)
-
-				d.logger.StopSpinnerWithStatus("\t", log.Failed)
-				return fmt.Errorf("unable to finish creating application")
-			}
-		}
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-
-	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", res.UUID)
-	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
-		d.logger.SuccessfulCheck(), res.Name, dashboardURL)
-	d.logger.StopSpinner(output)
-	d.logger.JSON(ctx, res)
-	return nil
 }
 
 // uploadSource creates first a Dockerfile to then, package the entire folder which will be later uploaded
@@ -380,27 +339,36 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	}
 }
 
-func (d *Deploy) deployApp(ctx context.Context, imageName string) (string, error) {
-	var output string
+func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha string) error {
 	var err error
 
 	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
 	switch d.lang {
 	case GoLang:
-		output, err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName)
+		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
 	case JavaScript:
-		output, err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName)
+		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
 	case Python:
-		output, err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName)
+		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
 	}
-
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
-		return "", err
+		return err
 	}
 
+	app, err := d.client.GetApplication(ctx, d.appName)
+	if err != nil {
+		d.logger.StopSpinnerWithStatus("Deployment failed to create Application\n\n", log.Failed)
+		return err
+	}
 	d.logger.StopSpinnerWithStatus("Deploy complete!", log.Successful)
-	return output, nil
+
+	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.UUID)
+	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
+		d.logger.SuccessfulCheck(), app.Name, dashboardURL)
+	d.logger.StopSpinner(output)
+	d.logger.JSON(ctx, app)
+	return nil
 }
 
 // buildApp will call any specifics to the turbine library to prepare a directory that's ready
@@ -657,20 +625,10 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	deployOutput, err := d.deployApp(ctx, d.fnName)
-	if err != nil {
-		return err
-	}
-
-	pipelineUUID, err := turbineCLI.GetPipelineUUID(deployOutput)
-	if err != nil {
-		return err
-	}
-
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {
 		return err
 	}
 
-	return d.createApplication(ctx, pipelineUUID, gitSha)
+	return d.deployApp(ctx, d.fnName, gitSha)
 }
