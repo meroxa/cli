@@ -186,7 +186,7 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 func GetPipelineUUID(output string) (string, error) {
 	// Example output:
 	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e").
-	re := regexp.MustCompile(`pipeline:."turbine-pipeline-[a-z0-9-]+".(\([^)]*\))`)
+	re := regexp.MustCompile(`pipeline:."turbine-pipeline-[a-z0-9-_]+".(\([^)]*\))`)
 	matches := re.FindStringSubmatch(output)
 	if len(matches) < 2 { //nolint:gomnd
 		return "", fmt.Errorf("pipeline UUID not found")
