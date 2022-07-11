@@ -1,5 +1,5 @@
 FROM gcr.io/distroless/static
-USER nonroot:nonroot
+USER nobody
 WORKDIR /app
 COPY app.json /app
 COPY {{.AppName}}.cross {{.AppName}}

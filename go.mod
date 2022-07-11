@@ -7,13 +7,13 @@ require (
 	github.com/cased/cased-go v1.0.4
 	github.com/fatih/color v1.13.0
 	github.com/golang/mock v1.6.0
-	github.com/google/go-cmp v0.5.6
+	github.com/google/go-cmp v0.5.8
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.7.3
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20220419150435-19df16177640
+	github.com/meroxa/meroxa-go v0.0.0-20220711165903-c09da3162930
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -21,14 +21,14 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.8.1
-	golang.org/x/oauth2 v0.0.0-20211028175245-ba495a64dcb5
+	golang.org/x/oauth2 v0.0.0-20220630143837-2104d58473e0
 )
 
 require (
 	github.com/briandowns/spinner v1.18.1
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220602170519-a0421623597b
+	github.com/meroxa/turbine-go v0.0.0-20220711181404-04af2a982aa9
 	github.com/stretchr/testify v1.7.4
 	github.com/volatiletech/null/v8 v8.1.2
 )
@@ -82,15 +82,15 @@ require (
 	github.com/tidwall/sjson v1.2.4 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
-	github.com/volatiletech/strmangle v0.0.2 // indirect
+	github.com/volatiletech/strmangle v0.0.4 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
-	golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f // indirect
+	golang.org/x/net v0.0.0-20220706163947-c90051bbdb60 // indirect
+	golang.org/x/sys v0.0.0-20220704084225-05e143d24a9e // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20220329172620-7be39ac1afc7 // indirect
-	google.golang.org/grpc v1.45.0 // indirect
+	google.golang.org/genproto v0.0.0-20220707150051-590a5ac7bee1 // indirect
+	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
