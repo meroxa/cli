@@ -17,7 +17,7 @@ const (
 	ResourceTypeS3            ResourceType = "s3"
 	ResourceTypeMongodb       ResourceType = "mongodb"
 	ResourceTypeElasticsearch ResourceType = "elasticsearch"
-	ResourceTypeSnowflake     ResourceType = "snowflake"
+	ResourceTypeSnowflake     ResourceType = "snowflakedb"
 	ResourceTypeBigquery      ResourceType = "bigquery"
 	ResourceTypeSqlserver     ResourceType = "sqlserver"
 	ResourceTypeCosmosdb      ResourceType = "cosmosdb"
