@@ -14,6 +14,7 @@ import (
 const (
 	Successful = "successful"
 	Failed     = "failed"
+	Warning    = "warning"
 )
 
 type SpinnerLogger interface {
@@ -50,6 +51,8 @@ func (l *spinnerLogger) StopSpinnerWithStatus(msg, status string) {
 		msg = fmt.Sprintf("\t%s %s", l.FailedMark(), msg)
 	} else if status == Successful {
 		msg = fmt.Sprintf("\t%s %s", l.SuccessfulCheck(), msg)
+	} else if status == Warning {
+		msg = fmt.Sprintf("\t%s %s", l.WarningMark(), msg)
 	}
 	l.s.Stop()
 	l.l.Printf(msg)
@@ -61,4 +64,8 @@ func (l *spinnerLogger) SuccessfulCheck() string {
 
 func (l *spinnerLogger) FailedMark() string {
 	return color.New(color.FgRed).Sprintf("x")
+}
+
+func (l *spinnerLogger) WarningMark() string {
+	return color.New(color.FgYellow).Sprintf("⚡")
 }
