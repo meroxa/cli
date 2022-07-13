@@ -20,20 +20,23 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
 	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	"github.com/volatiletech/null/v8"
 
-	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
-func TestDescribeApplicationArgs(t *testing.T) {
+func TestApplicationLogsArgs(t *testing.T) {
 	tests := []struct {
 		args []string
 		err  error
@@ -44,7 +47,7 @@ func TestDescribeApplicationArgs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		ar := &Describe{}
+		ar := &Logs{}
 		err := ar.ParseArgs(tt.args)
 
 		if err != nil && tt.err.Error() != err.Error() {
@@ -57,52 +60,64 @@ func TestDescribeApplicationArgs(t *testing.T) {
 	}
 }
 
-func TestDescribeApplicationExecution(t *testing.T) {
+func TestApplicationLogsExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	appName := "my-env"
+	appName := "my-app-with-funcs"
+	log := "hello world"
+	res1 := &http.Response{
+		Body: io.NopCloser(strings.NewReader(log)),
+	}
+	res2 := &http.Response{
+		Body: io.NopCloser(strings.NewReader(log)),
+	}
+	res3 := &http.Response{
+		Body: io.NopCloser(strings.NewReader(log)),
+	}
 
 	a := utils.GenerateApplication("")
 	a.Name = appName
-
 	a.Resources = []meroxa.ApplicationResource{
 		{meroxa.EntityIdentifier{Name: null.StringFrom("res1")}, //nolint:govet
 			meroxa.ResourceCollectionView{Name: "res1", Source: "true"}},
 		{meroxa.EntityIdentifier{Name: null.StringFrom("res2")}, //nolint:govet
 			meroxa.ResourceCollectionView{Name: "res1", Destination: "true"}},
 	}
-	resources := []*meroxa.Resource{
-		{Name: "res1", UUID: "abc-def", Type: meroxa.ResourceTypePostgres},
-		{Name: "res2", UUID: "abc-def", Type: meroxa.ResourceTypeBigquery},
-	}
 
 	a.Connectors = []meroxa.EntityIdentifier{
 		{Name: null.StringFrom("conn1")},
 		{Name: null.StringFrom("conn2")},
 	}
-	connectors := []*meroxa.Connector{
-		{Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
-		{Name: "conn2", ResourceName: "res2", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
+	connectors := []*utils.ExtendedConnector{
+		{Connector: &meroxa.Connector{
+			Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
+			Logs: log},
+		{Connector: &meroxa.Connector{
+			Name: "conn2", ResourceName: "res2", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
+			Logs: log},
 	}
 
 	functions := []*meroxa.Function{
-		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: meroxa.FunctionStateRunning}},
+		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: meroxa.FunctionStateRunning}, Logs: log},
 	}
 	a.Functions = []meroxa.EntityIdentifier{
 		{Name: null.StringFrom("fun1")},
 	}
 
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
-	client.EXPECT().GetResourceByNameOrID(ctx, "res1").Return(resources[0], nil)
-	client.EXPECT().GetResourceByNameOrID(ctx, "res2").Return(resources[1], nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn1").Return(connectors[0], nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn2").Return(connectors[1], nil)
+	client.EXPECT().GetConnectorByNameOrID(ctx, "conn1").
+		Return(&meroxa.Connector{Name: "conn1", ResourceName: "res1"}, nil)
+	client.EXPECT().GetConnectorLogs(ctx, "conn1").Return(res1, nil)
+	client.EXPECT().GetConnectorByNameOrID(ctx, "conn2").
+		Return(&meroxa.Connector{Name: "conn2", ResourceName: "res2"}, nil)
+	client.EXPECT().GetConnectorLogs(ctx, "conn2").Return(res2, nil)
 	client.EXPECT().GetFunction(ctx, "fun1").Return(functions[0], nil)
+	client.EXPECT().GetFunctionLogs(ctx, "fun1").Return(res3, nil)
 
-	dc := &Describe{
+	dc := &Logs{
 		client: client,
 		logger: logger,
 	}
@@ -114,10 +129,10 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.AppTable(&a, resources, connectors, functions)
+	wantLeveledOutput := utils.AppLogsTable(a.Resources, connectors, functions)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
-		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))
 	}
 
 	gotJSONOutput := logger.JSONOutput()
@@ -128,6 +143,6 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(gotApp, a) {
-		t.Fatalf("expected \"%v\", got \"%v\"", a, gotApp)
+		t.Fatalf(cmp.Diff(a, gotApp))
 	}
 }

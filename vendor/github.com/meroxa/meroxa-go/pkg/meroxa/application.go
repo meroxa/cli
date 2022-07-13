@@ -19,18 +19,18 @@ const applicationsBasePath = "/v1/applications"
 
 // Application represents the Meroxa Application type within the Meroxa API
 type Application struct {
-	UUID       string             `json:"uuid"`
-	Name       string             `json:"name"`
-	Language   string             `json:"language"`
-	GitSha     string             `json:"git_sha"`
-	Status     ApplicationStatus  `json:"status,omitempty"`
-	Pipeline   EntityIdentifier   `json:"pipeline,omitempty"`
-	Connectors []EntityIdentifier `json:"connectors,omitempty"`
-	Functions  []EntityIdentifier `json:"functions,omitempty"`
-	Resources  []EntityIdentifier `json:"resources,omitempty"`
-	CreatedAt  time.Time          `json:"created_at"`
-	UpdatedAt  time.Time          `json:"updated_at"`
-	DeletedAt  time.Time          `json:"deleted_at,omitempty"`
+	UUID       string                `json:"uuid"`
+	Name       string                `json:"name"`
+	Language   string                `json:"language"`
+	GitSha     string                `json:"git_sha"`
+	Status     ApplicationStatus     `json:"status,omitempty"`
+	Pipeline   EntityIdentifier      `json:"pipeline,omitempty"`
+	Connectors []EntityIdentifier    `json:"connectors,omitempty"`
+	Functions  []EntityIdentifier    `json:"functions,omitempty"`
+	Resources  []ApplicationResource `json:"resources,omitempty"`
+	CreatedAt  time.Time             `json:"created_at"`
+	UpdatedAt  time.Time             `json:"updated_at"`
+	DeletedAt  time.Time             `json:"deleted_at,omitempty"`
 }
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
@@ -44,6 +44,17 @@ type CreateApplicationInput struct {
 type ApplicationStatus struct {
 	State   ApplicationState `json:"state"`
 	Details string           `json:"details,omitempty"`
+}
+
+type ResourceCollectionView struct {
+	Name        string `json:"name,omitempty"`
+	Source      string `json:"source,omitempty"`
+	Destination string `json:"destination,omitempty"`
+}
+
+type ApplicationResource struct {
+	EntityIdentifier
+	Collection ResourceCollectionView `json:"collection,omitempty"`
 }
 
 func (c *client) CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error) {

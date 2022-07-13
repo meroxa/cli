@@ -1,15 +1,22 @@
-## meroxa apps describe
+---
+createdAt: 
+updatedAt: 
+title: "meroxa apps logs"
+slug: meroxa-apps-logs
+url: /cli/cmd/meroxa-apps-logs/
+---
+## meroxa apps logs
 
-Describe a Turbine Data Application (Beta)
+View relevant logs to the state of the given Turbine Data Application (Beta)
 
 ```
-meroxa apps describe [NAMEorUUID] [flags]
+meroxa apps logs [NAMEorUUID] [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for describe
+  -h, --help   help for logs
 ```
 
 ### Options inherited from parent commands
@@ -23,5 +30,5 @@ meroxa apps describe [NAMEorUUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
 

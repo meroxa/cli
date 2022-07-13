@@ -506,7 +506,7 @@ func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 			{Align: simpletable.AlignCenter, Text: p.Name},
 			{Align: simpletable.AlignCenter, Text: p.InputStream},
 			{Align: simpletable.AlignCenter, Text: p.OutputStream},
-			{Align: simpletable.AlignCenter, Text: p.Status.State},
+			{Align: simpletable.AlignCenter, Text: string(p.Status.State)},
 			{Align: simpletable.AlignCenter, Text: p.Pipeline.Name},
 		}
 
@@ -563,7 +563,7 @@ func FunctionTable(fun *meroxa.Function) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: fun.Status.State},
+			{Text: string(fun.Status.State)},
 		},
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -827,56 +827,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	return table.String()
 }
 
-func PrintAppsTable(apps []*meroxa.Application, hideHeaders bool) {
-	fmt.Println(AppsTable(apps, hideHeaders))
-}
-
-func AppTable(app *meroxa.Application) string {
-	mainTable := simpletable.New()
-	mainTable.Body.Cells = [][]*simpletable.Cell{
-		{
-			{Align: simpletable.AlignRight, Text: "UUID:"},
-			{Text: app.UUID},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "Name:"},
-			{Text: app.Name},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "Language:"},
-			{Text: app.Language},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "Git SHA:"},
-			{Text: strings.TrimSpace(app.GitSha)},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "Created At:"},
-			{Text: app.CreatedAt.String()},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "Updated At:"},
-			{Text: app.UpdatedAt.String()},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: string(app.Status.State)},
-		},
-	}
-
-	details := app.Status.Details
-	if details != "" {
-		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: "State details:"},
-			{Text: details},
-		})
-	}
-
-	mainTable.SetStyle(simpletable.StyleCompact)
-	return mainTable.String()
-}
-
-func AppExtendedTable(app *meroxa.Application, resources []*meroxa.Resource, connectors map[string]*meroxa.Connector,
+func AppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors []*meroxa.Connector,
 	functions []*meroxa.Function) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
@@ -923,27 +874,35 @@ func AppExtendedTable(app *meroxa.Application, resources []*meroxa.Resource, con
 	return output
 }
 
-func extendedResourcesTable(resources []*meroxa.Resource, connectors map[string]*meroxa.Connector) string {
+type ExtendedConnector struct {
+	Connector *meroxa.Connector
+	Logs      string
+}
+
+func extendedResourcesTable(resources []*meroxa.Resource, connectors []*meroxa.Connector) string {
 	if len(resources) == 0 {
 		return ""
 	}
 	subTable := "\tResources\n"
 
-	for _, r := range resources {
-		c, ok := connectors[r.Name]
-		if !ok {
+	var r *meroxa.Resource
+	for _, c := range connectors {
+		found := false
+		for _, resource := range resources {
+			if resource.Name == c.ResourceName {
+				r = resource
+				found = true
+				break
+			}
+		}
+		if !found {
 			panic("internal error")
 		}
 
-		subTable += fmt.Sprintf("\t    %s\n", r.Name)
+		subTable += fmt.Sprintf("\t    %s (%s)\n", r.Name, string(c.Type))
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", string(r.Type))
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", string(c.State))
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "As", string(c.Type))
-
-		if c.Trace != "" {
-			subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Trace", c.Trace)
-		}
 	}
 
 	return subTable
@@ -959,10 +918,42 @@ func extendedFunctionsTable(functions []*meroxa.Function) string {
 		subTable += fmt.Sprintf("\t    %s\n", f.Name)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", f.UUID)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", f.Status.State)
+	}
 
-		if f.Logs != "" {
-			subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Logs", f.Logs)
+	return subTable
+}
+
+func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*ExtendedConnector, functions []*meroxa.Function) string {
+	subTable := "\tResources:\n"
+
+	var r meroxa.ApplicationResource
+	for _, c := range connectors {
+		found := false
+		for _, resource := range resources {
+			if resource.Name.String == c.Connector.ResourceName {
+				r = resource
+				found = true
+				break
+			}
 		}
+		if !found {
+			panic("internal error")
+		}
+		where := "source"
+		dest, _ := strconv.ParseBool(r.Collection.Destination)
+		if dest {
+			where = "destination"
+		}
+
+		subTable += fmt.Sprintf("%s (%v)\n", r.Name.String, where)
+		subTable += fmt.Sprintf("%s:\n%s\n", "Trace", c.Connector.Trace)
+		subTable += fmt.Sprintf("%s:\n%s\n", "Logs", c.Logs)
+	}
+
+	subTable += "\tFunctions:\n"
+
+	for _, f := range functions {
+		subTable += fmt.Sprintf("%s Logs:\n%s\n", f.Name, f.Logs)
 	}
 
 	return subTable

@@ -99,3 +99,5 @@ require (
 )
 
 replace github.com/meroxa/turbine-go => ../turbine-go
+
+replace github.com/meroxa/meroxa-go => ../meroxa-go

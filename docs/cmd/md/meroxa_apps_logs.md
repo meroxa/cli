@@ -1,15 +1,15 @@
-## meroxa apps describe
+## meroxa apps logs
 
-Describe a Turbine Data Application (Beta)
+View relevant logs to the state of the given Turbine Data Application (Beta)
 
 ```
-meroxa apps describe [NAMEorUUID] [flags]
+meroxa apps logs [NAMEorUUID] [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for describe
+  -h, --help   help for logs
 ```
 
 ### Options inherited from parent commands
