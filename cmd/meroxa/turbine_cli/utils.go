@@ -243,7 +243,7 @@ func GetGitSha(appPath string) (string, error) {
 	return string(output), nil
 }
 
-func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
+func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit https://docs.meroxa.com/beta-overview#common-errors"
 	goPath := os.Getenv("GOPATH")
@@ -270,51 +270,63 @@ func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor 
 		l.StopSpinnerWithStatus("\t", log.Failed)
 		return err
 	}
-	if !skipInit {
-		cmd := exec.Command("go", "mod", "init")
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-			return err
-		}
-		l.StopSpinnerWithStatus("go mod init succeeded!", log.Successful)
-		l.StartSpinner("\t", "Getting latest turbine-go and turbine-go/running dependencies...")
-		cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go")
-		output, err = cmd.CombinedOutput()
-		if err != nil {
-			l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-			return err
-		}
-		cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go/runner")
-		output, err = cmd.CombinedOutput()
-		if err != nil {
-			l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-			return err
-		}
-		l.StopSpinnerWithStatus("Downloaded latest turbine-go and turbine-go/running dependencies successfully!", log.Successful)
 
-		// download dependencies
-		err = SetVendorInAppJSON(appPath, vendor)
-		if err != nil {
-			return err
-		}
-		depsLog := "Downloading dependencies"
-		cmd = exec.Command("go", "mod", "download")
-		if vendor {
-			depsLog += " to vendor"
-			cmd = exec.Command("go", "mod", "vendor")
-		}
-		depsLog += "..."
-		l.StartSpinner("\t", depsLog)
-		output, err = cmd.CombinedOutput()
-		if err != nil {
-			l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-			return err
-		}
-		l.StopSpinnerWithStatus("Downloaded all other dependencies successfully!", log.Successful)
+	err = modulesInit(l, appPath, skipInit, vendor)
+	if err != nil {
+		l.StopSpinnerWithStatus("\t", log.Failed)
+		return err
 	}
 
 	return os.Chdir(pwd)
+}
+
+func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
+	if skipInit {
+		return nil
+	}
+
+	cmd := exec.Command("go", "mod", "init")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
+		return err
+	}
+	l.StopSpinnerWithStatus("go mod init succeeded!", log.Successful)
+	l.StartSpinner("\t", "Getting latest turbine-go and turbine-go/running dependencies...")
+	cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go")
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
+		return err
+	}
+	cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go/runner")
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
+		return err
+	}
+	l.StopSpinnerWithStatus("Downloaded latest turbine-go and turbine-go/running dependencies successfully!", log.Successful)
+
+	// download dependencies
+	err = SetVendorInAppJSON(appPath, vendor)
+	if err != nil {
+		return err
+	}
+	depsLog := "Downloading dependencies"
+	cmd = exec.Command("go", "mod", "download")
+	if vendor {
+		depsLog += " to vendor"
+		cmd = exec.Command("go", "mod", "vendor")
+	}
+	depsLog += "..."
+	l.StartSpinner("\t", depsLog)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
+		return err
+	}
+	l.StopSpinnerWithStatus("Downloaded all other dependencies successfully!", log.Successful)
+	return nil
 }
 
 // switchToAppDirectory switches temporarily to the application's directory.
