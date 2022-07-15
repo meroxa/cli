@@ -26,6 +26,7 @@ type LocalDeploy struct {
 	Enabled                 bool
 	TempPath                string
 	Lang                    string
+	AppName                 string
 }
 
 func (ld *LocalDeploy) getAuthConfig() string {
@@ -72,7 +73,7 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 
 	// Generate dockerfile
 	if ld.Lang == "golang" {
-		err = turbine.CreateDockerfile("", pwd)
+		err = turbine.CreateDockerfile(ld.AppName, pwd)
 		if err != nil {
 			return err
 		}

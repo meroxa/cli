@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -452,6 +453,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	d.localDeploy.TempPath = d.tempPath
 	d.localDeploy.Lang = d.lang
+	d.localDeploy.AppName = d.appName
 	if d.localDeploy.Enabled {
 		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName, d.lang)
 		if err != nil {
@@ -512,7 +514,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	if d.configAppName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path); err != nil {
 		return err
 	}
-	d.appName = d.prepareAppName()
+	d.appName = d.prepareAppName(ctx)
 
 	return nil
 }
@@ -546,12 +548,13 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 
 	d.logger.StartSpinner("\t", resourceCheckMessage)
 
+	var resources []turbineGo.Resource
 	var resourceNames []string
 	var err error
 
 	switch d.lang {
 	case GoLang:
-		resourceNames, err = turbineGo.GetResourceNames(ctx, d.logger, d.path, d.appName)
+		resources, err = turbineGo.GetResources(ctx, d.logger, d.path, d.appName)
 	case JavaScript:
 		resourceNames, err = turbineJS.GetResourceNames(ctx, d.logger, d.path, d.appName)
 	case Python:
@@ -560,6 +563,19 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 
 	if err != nil {
 		return fmt.Errorf("unable to read resource definition from app: %s", err.Error())
+	}
+
+	if d.lang == GoLang && len(resources) == 0 {
+		return errors.New("no resources defined in your Turbine app")
+	}
+
+	if err := d.validateCollections(ctx, resources); err != nil {
+		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
+		return err
+	}
+
+	for _, r := range resources {
+		resourceNames = append(resourceNames, r["Name"].(string))
 	}
 
 	if len(resourceNames) == 0 {
@@ -643,7 +659,42 @@ func (d *Deploy) validateGitConfig(ctx context.Context) error {
 		return err
 	}
 
-	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+	// TODO: Add feature branch flag here
+	if os.Getenv("WITH_BRANCH_DEPLOY") == "" {
+		return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+	}
+
+	return nil
+}
+
+func (d *Deploy) validateCollections(ctx context.Context, resources []turbineGo.Resource) error {
+	if d.appName == d.configAppName {
+		return nil
+	}
+
+	configApp, err := d.client.GetApplication(ctx, d.configAppName)
+	if err != nil {
+		return err
+	}
+
+	var destName, destCollection string
+	for _, r := range configApp.Resources {
+		if r.Collection.Destination.String == "true" {
+			destName = r.Name.String
+			destCollection = r.Collection.Name.String
+			break
+		}
+	}
+
+	for _, r := range resources {
+		if r["Destination"] == true && r["Name"] == destName && r["Collection"] == destCollection {
+			return fmt.Errorf("Branch app %q is using the same resource (%s) and collection (%s) as main app (%s)",
+				d.appName, destName, destCollection, d.configAppName,
+			)
+		}
+	}
+
+	return nil
 }
 
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
@@ -663,8 +714,23 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) prepareAppName() string {
-	return d.configAppName
+func (d *Deploy) prepareAppName(ctx context.Context) string {
+	if turbineCLI.GitMainBranch(d.gitBranch) {
+		return d.configAppName
+	}
+
+	reg := regexp.MustCompile("[^A-Za-z0-9]+")
+	sanitizedBranch := reg.ReplaceAllString(d.gitBranch, "-")
+	appName := fmt.Sprintf("%s-%s", d.configAppName, sanitizedBranch)
+	d.logger.Infof(
+		ctx,
+		"\t%s Feature branch (%s) detected, setting app name to %s...",
+		d.logger.SuccessfulCheck(),
+		d.gitBranch,
+		d.appName,
+	)
+
+	return appName
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
