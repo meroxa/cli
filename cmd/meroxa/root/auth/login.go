@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/skratchdot/open-golang/open"
 
@@ -101,7 +102,7 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audienc
 	l.logger.Infof(ctx, color.CyanString(authorizationURL))
 
 	// start a web server to listen on a callback URL
-	server := &http.Server{Addr: redirectURL}
+	server := &http.Server{Addr: redirectURL, ReadHeaderTimeout: time.Minute}
 
 	// define a handler that will get the authorization code, call the token endpoint, and close the HTTP server
 	http.HandleFunc("/oauth/callback", func(w http.ResponseWriter, r *http.Request) {
