@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"os"
 	"os/exec"
 	"regexp"
@@ -63,10 +64,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha str
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return errors.New(string(output))
-	}
+	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
 	return nil
 }
 

@@ -61,14 +61,9 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha str
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
-	output, err := cmd.CombinedOutput()
-	fmt.Printf("JS: %v\n", string(output))
-	if err != nil {
-		return errors.New(string(output))
-	}
 
-	//_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
-	return nil
+	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	return err
 }
 
 // GetResourceNames asks turbine for a list of resources used by the given app.

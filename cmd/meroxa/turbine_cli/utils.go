@@ -339,16 +339,15 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 		if err != nil {
 			errMsg = err.Error()
 		}
-		errLog = stdOutMsg
 		if stdErrMsg != "" {
-			errLog += stdErrMsg
+			errLog = stdErrMsg
 		} else if errMsg != "" {
 			errLog = errMsg
 		}
+		if stdOutMsg != "" {
+			l.Info(ctx, "\n"+stdOutMsg+"\n")
+		}
 		return "", errors.New(errLog)
-	}
-	if stdOutMsg != "" {
-		l.Info(ctx, stdOutMsg)
 	}
 	return stdOutMsg, nil
 }
