@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"os"
 	"os/exec"
 	"regexp"
@@ -12,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
 )
 
@@ -65,7 +65,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha str
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
 	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
-	return nil
+	return err
 }
 
 // CleanUpApp removes any temporary artifacts in the temp directory.
