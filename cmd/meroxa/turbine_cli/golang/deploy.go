@@ -14,27 +14,27 @@ import (
 )
 
 // RunDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName string) (string, error) {
+func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName, gitSha string) error {
 	var cmd *exec.Cmd
 
 	if imageName != "" {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName) // nolint:gosec
+		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName, "--gitsha", gitSha) // nolint:gosec
 	} else {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy") // nolint:gosec
+		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--gitsha", gitSha) // nolint:gosec
 	}
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
-		return "", err
+		return err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", errors.New(string(output))
+		return errors.New(string(output))
 	}
-	return string(output), nil
+	return nil
 }
 
 // GetResourceNames asks turbine for a list of resources used by the given app.

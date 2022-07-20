@@ -565,8 +565,6 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20220711165903-c09da3162930 h1:K2XpGYdkvI3J03JX7+9f2U3QspZgMr+tUgg2phkwLJI=
 github.com/meroxa/meroxa-go v0.0.0-20220711165903-c09da3162930/go.mod h1:qczCsZeXwn2R+JeEVjPkgtIMGROQ1Si8ox+OC2nfOYg=
-github.com/meroxa/turbine-go v0.0.0-20220719211648-f41fc5838e5c h1:ch0YIFGA2M/a3Dfi5I8W26U/3FhVX3DHeVMSWZTlY2s=
-github.com/meroxa/turbine-go v0.0.0-20220719211648-f41fc5838e5c/go.mod h1:QU0UuV93loxTy8iO7xTGD9ATwyY21Yk1ac0jxBZ05eA=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=

@@ -13,7 +13,6 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -182,18 +181,6 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 	return os.Chdir(pwd)
 }
 
-// GetPipelineUUID parses the deploy output when it was successful to determine the pipeline UUID to create.
-func GetPipelineUUID(output string) (string, error) {
-	// Example output:
-	// 2022/03/16 13:21:36 pipeline created: "turbine-pipeline-simple" ("049760a8-a3d2-44d9-b326-0614c09a3f3e").
-	re := regexp.MustCompile(`pipeline:."turbine-pipeline-[a-z0-9-_]+".(\([^)]*\))`)
-	matches := re.FindStringSubmatch(output)
-	if len(matches) < 2 { //nolint:gomnd
-		return "", fmt.Errorf("pipeline UUID not found")
-	}
-	return strings.Trim(matches[1], "()\""), nil
-}
-
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
 func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 	l.Info(ctx, "Validating branch...")
@@ -347,21 +334,30 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	err := cmd.Run()
 	stdOutMsg := stdout.String()
 	stdErrMsg := stderr.String()
+	/*
+		fmt.Printf("stdout: %v\n", stdOutMsg)
+		fmt.Printf("stderr: %v\n", stderr)
+		if err != nil {
+			fmt.Printf("err: %v\n", err.Error())
+		}
+
+	*/
+
 	if err != nil || stdErrMsg != "" {
+		fmt.Printf("\n\ninside... this is definitely an error")
 		var errMsg, errLog string
 		if err != nil {
 			errMsg = err.Error()
 		}
-		errLog = stdOutMsg
 		if stdErrMsg != "" {
-			errLog += stdErrMsg
+			errLog = stdErrMsg
 		} else if errMsg != "" {
 			errLog = errMsg
 		}
+		if stdOutMsg != "" {
+			l.Info(ctx, "\n"+stdOutMsg+"\n")
+		}
 		return "", errors.New(errLog)
-	}
-	if stdOutMsg != "" {
-		l.Info(ctx, stdOutMsg)
 	}
 	return stdOutMsg, nil
 }

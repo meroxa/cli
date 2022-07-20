@@ -28,7 +28,7 @@ require (
 	github.com/briandowns/spinner v1.18.1
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220719211648-f41fc5838e5c
+	github.com/meroxa/turbine-go v0.0.0-20220720222241-fb02bcb83a88
 	github.com/stretchr/testify v1.7.4
 	github.com/volatiletech/null/v8 v8.1.2
 )
@@ -97,3 +97,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/meroxa/turbine-go => ../turbine-go
