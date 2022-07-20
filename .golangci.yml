@@ -61,15 +61,12 @@ linters:
     - funlen
     - gochecknoinits
     - goconst
-    - gocritic
     - gocyclo
     - godot
     - gofmt
     - goimports
     - gomnd
     - goprintffuncname
-    - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
@@ -79,13 +76,10 @@ linters:
     - nolintlint
     - revive
     - rowserrcheck
-    - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
     - unparam
-    - unused
     - varcheck
     - whitespace
 
