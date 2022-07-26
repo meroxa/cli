@@ -433,7 +433,7 @@ func getTurbineJSBinary(params []string) []string {
 	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
 	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js@%s", turbineJSVersion)
 	if shouldUseLocalTurbineJS == isTrue {
-		turbineJSBinary = "turbine"
+		turbineJSBinary = "turbine-js"
 	}
 	args := []string{"npx", "--yes", turbineJSBinary}
 	args = append(args, params...)
