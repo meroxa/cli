@@ -13,6 +13,7 @@ func Build(ctx context.Context, l log.Logger, path string) error {
 	// TODO: Handle the requirement of https://github.com/meroxa/turbine-js.git being installed
 	// cd into the path first
 	cmd := turbinecli.RunTurbineJS("test", path)
-	_, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	stdOut, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	l.Info(ctx, stdOut)
 	return err
 }

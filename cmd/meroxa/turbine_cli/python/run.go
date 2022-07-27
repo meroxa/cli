@@ -10,6 +10,7 @@ import (
 
 func Run(ctx context.Context, l log.Logger, path string) error {
 	cmd := exec.Command("turbine-py", "run", path)
-	_, err := turbineCLI.RunCmdWithErrorDetection(ctx, cmd, l)
+	stdOut, err := turbineCLI.RunCmdWithErrorDetection(ctx, cmd, l)
+	l.Info(ctx, stdOut)
 	return err
 }

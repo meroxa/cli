@@ -334,17 +334,8 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 	err := cmd.Run()
 	stdOutMsg := stdout.String()
 	stdErrMsg := stderr.String()
-	/*
-		fmt.Printf("stdout: %v\n", stdOutMsg)
-		fmt.Printf("stderr: %v\n", stderr)
-		if err != nil {
-			fmt.Printf("err: %v\n", err.Error())
-		}
-
-	*/
 
 	if err != nil || stdErrMsg != "" {
-		fmt.Printf("\n\ninside... this is definitely an error")
 		var errMsg, errLog string
 		if err != nil {
 			errMsg = err.Error()
