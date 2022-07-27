@@ -22,7 +22,7 @@ func TestGetTurbineJSBinary(t *testing.T) {
 		{
 			name:    "MEROXA_USE_LOCAL_TURBINE_JS is true",
 			envVar:  "true",
-			wantCmd: "turbine",
+			wantCmd: "turbine-js",
 		},
 		{
 			name:    "MEROXA_USE_LOCAL_TURBINE_JS is false",
