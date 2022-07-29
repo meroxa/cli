@@ -20,7 +20,7 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-const turbineJSVersion = "0.5.0"
+const turbineJSVersion = "1.0.0"
 
 type AppConfig struct {
 	Name        string            `json:"name"`
@@ -381,7 +381,7 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	tarWriter := tar.NewWriter(zipWriter)
 
 	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
-		if fi.IsDir() && ((fi.Name() == ".git") || (fi.Name() == "fixtures")) {
+		if fi.IsDir() && ((fi.Name() == ".git") || (fi.Name() == "fixtures") || (fi.Name() == "node_modules")) {
 			return filepath.SkipDir
 		}
 		header, err := tar.FileInfoHeader(fi, file)
@@ -435,9 +435,9 @@ func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
 
 func getTurbineJSBinary(params []string) []string {
 	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
-	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js@%s", turbineJSVersion)
+	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion)
 	if shouldUseLocalTurbineJS == isTrue {
-		turbineJSBinary = "turbine-js"
+		turbineJSBinary = "turbine-js-cli"
 	}
 	args := []string{"npx", "--yes", turbineJSBinary}
 	args = append(args, params...)

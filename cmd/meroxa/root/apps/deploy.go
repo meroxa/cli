@@ -194,9 +194,17 @@ func (d *Deploy) Logger(logger log.Logger) {
 func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	var err error
 
-	if d.lang == GoLang {
+	if d.lang == GoLang || d.lang == JavaScript {
 		d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", appPath))
-		err = turbine.CreateDockerfile("", appPath)
+
+		if d.lang == GoLang {
+			err = turbine.CreateDockerfile("", appPath)
+		}
+
+		if d.lang == JavaScript {
+			err = turbineJS.CreateDockerfile(ctx, d.logger, appPath)
+		}
+
 		if err != nil {
 			return err
 		}
@@ -217,7 +225,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 
 	var buf bytes.Buffer
 
-	if d.lang == JavaScript || d.lang == Python {
+	if d.lang == Python {
 		appPath = d.tempPath
 	}
 
@@ -401,8 +409,6 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 	switch d.lang {
 	case GoLang:
 		err = turbineGo.BuildBinary(ctx, d.logger, d.path, d.appName, true)
-	case JavaScript:
-		d.tempPath, err = turbineJS.BuildApp(d.path)
 	case Python:
 		// Dockerfile will already exist
 		d.tempPath, err = turbinePY.BuildApp(d.path)
