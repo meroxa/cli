@@ -19,7 +19,7 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-const turbineJSVersion = "0.2.1"
+const turbineJSVersion = "0.3.1"
 
 type AppConfig struct {
 	Name        string            `json:"name"`
