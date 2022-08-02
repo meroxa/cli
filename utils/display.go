@@ -939,13 +939,14 @@ func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*Extended
 		if !found {
 			panic("internal error")
 		}
-		where := "source"
-		dest, _ := strconv.ParseBool(r.Collection.Destination)
-		if dest {
-			where = "destination"
+
+		if r.Collection.Source.String != "" {
+			subTable += fmt.Sprintf("%s (source: %v)\n", r.Name.String, r.Collection.Source)
+		}
+		if r.Collection.Destination.String != "" {
+			subTable += fmt.Sprintf("%s (destination: %v)\n", r.Name.String, r.Collection.Destination)
 		}
 
-		subTable += fmt.Sprintf("%s (%v)\n", r.Name.String, where)
 		subTable += fmt.Sprintf("%s:\n%s\n", "Trace", c.Connector.Trace)
 		subTable += fmt.Sprintf("%s:\n%s\n", "Logs", c.Logs)
 	}
