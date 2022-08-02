@@ -9,15 +9,6 @@ import (
 
 const functionsBasePath = "/v1/functions"
 
-type FunctionState string
-
-// Enum values for FunctionState
-const (
-	FunctionStatePending FunctionState = "pending"
-	FunctionStateRunning FunctionState = "running"
-	FunctionStateError   FunctionState = "error"
-)
-
 type Function struct {
 	UUID         string             `json:"uuid"`
 	Name         string             `json:"name"`
@@ -33,8 +24,8 @@ type Function struct {
 }
 
 type FunctionStatus struct {
-	State   FunctionState `json:"state"`
-	Details string        `json:"details"`
+	State   string `json:"state"`
+	Details string `json:"details"`
 }
 
 type CreateFunctionInput struct {

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 type ApplicationState string
@@ -16,6 +18,17 @@ const (
 )
 
 const applicationsBasePath = "/v1/applications"
+
+type ResourceCollection struct {
+	Name        null.String `json:"name,omitempty"`
+	Source      null.String `json:"source,omitempty"`
+	Destination null.String `json:"destination,omitempty"`
+}
+
+type ApplicationResource struct {
+	EntityIdentifier
+	Collection ResourceCollection `json:"collection,omitempty"`
+}
 
 // Application represents the Meroxa Application type within the Meroxa API
 type Application struct {
@@ -44,17 +57,6 @@ type CreateApplicationInput struct {
 type ApplicationStatus struct {
 	State   ApplicationState `json:"state"`
 	Details string           `json:"details,omitempty"`
-}
-
-type ResourceCollectionView struct {
-	Name        string `json:"name,omitempty"`
-	Source      string `json:"source,omitempty"`
-	Destination string `json:"destination,omitempty"`
-}
-
-type ApplicationResource struct {
-	EntityIdentifier
-	Collection ResourceCollectionView `json:"collection,omitempty"`
 }
 
 func (c *client) CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
