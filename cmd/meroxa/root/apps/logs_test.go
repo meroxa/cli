@@ -26,6 +26,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/volatiletech/null/v8"
@@ -102,7 +104,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 		{Name: null.StringFrom("conn1")},
 		{Name: null.StringFrom("conn2")},
 	}
-	connectors := []*utils.ExtendedConnector{
+	connectors := []*display.AppExtendedConnector{
 		{Connector: &meroxa.Connector{
 			Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
 			Logs: log},
@@ -140,7 +142,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.AppLogsTable(a.Resources, connectors, functions)
+	wantLeveledOutput := display.AppLogsTable(a.Resources, connectors, functions)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))

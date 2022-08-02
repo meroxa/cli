@@ -20,7 +20,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/cli/utils/display"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -64,7 +64,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.EnvironmentTable(environment))
+	d.logger.Info(ctx, display.EnvironmentTable(environment))
 	d.logger.JSON(ctx, environment)
 
 	return nil

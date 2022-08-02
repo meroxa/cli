@@ -24,6 +24,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/meroxa-go/pkg/mock"
 
 	"github.com/golang/mock/gomock"
@@ -87,7 +89,7 @@ func TestDescribeConnectorExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ConnectorTable(&c)
+	wantLeveledOutput := display.ConnectorTable(&c)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

@@ -24,6 +24,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/volatiletech/null/v8"
 
 	"github.com/golang/mock/gomock"
@@ -128,7 +130,7 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.AppTable(&a, resources, connectors, functions)
+	wantLeveledOutput := display.AppTable(&a, resources, connectors, functions)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

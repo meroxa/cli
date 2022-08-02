@@ -24,6 +24,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -82,7 +84,7 @@ func TestDescribePipelineExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.PipelineTable(&p)
+	wantLeveledOutput := display.PipelineTable(&p)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

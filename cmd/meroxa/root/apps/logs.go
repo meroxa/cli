@@ -22,9 +22,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -77,7 +78,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 		return err
 	}
 
-	connectors := make([]*utils.ExtendedConnector, 0)
+	connectors := make([]*display.AppExtendedConnector, 0)
 	functions := make([]*meroxa.Function, 0)
 
 	resources := app.Resources
@@ -98,7 +99,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 			return err
 		}
 
-		connectors = append(connectors, &utils.ExtendedConnector{Connector: connector, Logs: buf.String()})
+		connectors = append(connectors, &display.AppExtendedConnector{Connector: connector, Logs: buf.String()})
 	}
 	for _, ff := range app.Functions {
 		function, err := l.client.GetFunction(ctx, ff.Name.String)
@@ -120,7 +121,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 		function.Logs = buf.String()
 		functions = append(functions, function)
 	}
-	output := utils.AppLogsTable(resources, connectors, functions)
+	output := display.AppLogsTable(resources, connectors, functions)
 
 	l.logger.Info(ctx, output)
 	l.logger.JSON(ctx, app)

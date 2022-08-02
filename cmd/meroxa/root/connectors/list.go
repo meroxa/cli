@@ -19,9 +19,10 @@ package connectors
 import (
 	"context"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -86,7 +87,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, connectors)
-	l.logger.Info(ctx, utils.ConnectorsTable(connectors, l.hideHeaders))
+	l.logger.Info(ctx, display.ConnectorsTable(connectors, l.hideHeaders))
 
 	return nil
 }
