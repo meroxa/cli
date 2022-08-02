@@ -157,6 +157,7 @@ func TestEmptyTables(t *testing.T) {
 		t.Errorf("Output for pipelines should be blank")
 	}
 }
+
 func TestResourceTypesTable(t *testing.T) {
 	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
 

@@ -87,7 +87,6 @@ func (l *Logs) Execute(ctx context.Context) error {
 			return err
 		}
 
-		// Include logs
 		resp, err := l.client.GetConnectorLogs(ctx, connector.Name)
 		if err != nil {
 			return err
@@ -107,7 +106,6 @@ func (l *Logs) Execute(ctx context.Context) error {
 			return err
 		}
 
-		// Include logs
 		resp, err := l.client.GetFunctionLogs(ctx, ff.Name.String)
 		if err != nil {
 			return err
@@ -120,7 +118,6 @@ func (l *Logs) Execute(ctx context.Context) error {
 		}
 
 		function.Logs = buf.String()
-
 		functions = append(functions, function)
 	}
 	output := utils.AppLogsTable(resources, connectors, functions)

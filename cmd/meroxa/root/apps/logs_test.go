@@ -80,11 +80,22 @@ func TestApplicationLogsExecution(t *testing.T) {
 
 	a := utils.GenerateApplication("")
 	a.Name = appName
+
 	a.Resources = []meroxa.ApplicationResource{
-		{meroxa.EntityIdentifier{Name: null.StringFrom("res1")}, //nolint:govet
-			meroxa.ResourceCollectionView{Name: "res1", Source: "true"}},
-		{meroxa.EntityIdentifier{Name: null.StringFrom("res2")}, //nolint:govet
-			meroxa.ResourceCollectionView{Name: "res1", Destination: "true"}},
+		{
+			EntityIdentifier: meroxa.EntityIdentifier{Name: null.StringFrom("res1")},
+			Collection: meroxa.ResourceCollection{
+				Name:   null.StringFrom("res1"),
+				Source: null.StringFrom("source"),
+			},
+		},
+		{
+			EntityIdentifier: meroxa.EntityIdentifier{Name: null.StringFrom("res2")},
+			Collection: meroxa.ResourceCollection{
+				Name:        null.StringFrom("res2"),
+				Destination: null.StringFrom("destination"),
+			},
+		},
 	}
 
 	a.Connectors = []meroxa.EntityIdentifier{
@@ -101,7 +112,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	functions := []*meroxa.Function{
-		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: meroxa.FunctionStateRunning}, Logs: log},
+		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: "running"}, Logs: log},
 	}
 	a.Functions = []meroxa.EntityIdentifier{
 		{Name: null.StringFrom("fun1")},
