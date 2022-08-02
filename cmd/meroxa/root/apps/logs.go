@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 Meroxa Inc
+Copyright © 2022 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -65,8 +65,9 @@ func (l *Logs) Usage() string {
 
 func (l *Logs) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "View relevant logs to the state of the given Turbine Data Application",
-		Beta:  true,
+		Short:   "View relevant logs to the state of the given Turbine Data Application",
+		Example: "meroxa apps logs my-turbine-application",
+		Beta:    true,
 	}
 }
 

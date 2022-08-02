@@ -6,6 +6,12 @@ View relevant logs to the state of the given Turbine Data Application (Beta)
 meroxa apps logs [NAMEorUUID] [flags]
 ```
 
+### Examples
+
+```
+meroxa apps logs my-turbine-application
+```
+
 ### Options
 
 ```
