@@ -95,9 +95,9 @@ func AppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors 
 }
 
 func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*AppExtendedConnector, functions []*meroxa.Function) string {
-	subTable := "\tResources:\n"
-
 	var r meroxa.ApplicationResource
+	var subTable string
+
 	for _, c := range connectors {
 		found := false
 		for _, resource := range resources {
@@ -111,21 +111,29 @@ func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*AppExten
 			panic("internal error")
 		}
 
-		if r.Collection.Source.String != "" {
-			subTable += fmt.Sprintf("%s (source: %v)\n", r.Name.String, r.Collection.Source)
-		}
-		if r.Collection.Destination.String != "" {
-			subTable += fmt.Sprintf("%s (destination: %v)\n", r.Name.String, r.Collection.Destination)
+		// Only show information if there are logs or a trace available
+		if c.Logs != "" || c.Connector.Trace != "" {
+			if r.Collection.Source.String != "" {
+				subTable += fmt.Sprintf("\n%s (source)", r.Name.String)
+			}
+			if r.Collection.Destination.String != "" {
+				subTable += fmt.Sprintf("\n%s (destination)", r.Name.String)
+			}
 		}
 
-		subTable += fmt.Sprintf("%s:\n%s\n", "Trace", c.Connector.Trace)
-		subTable += fmt.Sprintf("%s:\n%s\n", "Logs", c.Logs)
+		if c.Logs != "" {
+			subTable += fmt.Sprintf("\n\t%s\n", c.Logs)
+		}
+
+		if c.Connector.Trace != "" {
+			subTable += fmt.Sprintf("\n\t%s\n", c.Connector.Trace)
+		}
 	}
 
-	subTable += "\tFunctions:\n"
-
 	for _, f := range functions {
-		subTable += fmt.Sprintf("%s Logs:\n%s\n", f.Name, f.Logs)
+		if f.Logs != "" {
+			subTable += fmt.Sprintf("\n%s (function)\n\t%s\n", r.Name.String, f.Logs)
+		}
 	}
 
 	return subTable
