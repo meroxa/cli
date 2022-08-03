@@ -190,7 +190,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	var err error
 
 	if d.lang == GoLang {
-		err = turbine.CreateDockerfile(appPath)
+		err = turbine.CreateDockerfile("", appPath)
 		if err != nil {
 			return err
 		}

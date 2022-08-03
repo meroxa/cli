@@ -1,14 +1,15 @@
-SHELL=/bin/bash -o pipefail
+.PHONY: build install proto test lint gomod
 
-.PHONY: build
+SHELL                = /bin/bash -o pipefail
+GO_TEST_FLAGS        = -timeout 5m
+GO_TEST_EXTRA_FLAGS ?=
+
 build:
 	go build -mod=vendor .
 
-.PHONY: install
 install:
 	go get -d ./...
 
-.PHONY: proto
 proto:
 	docker run \
 		--rm \
@@ -21,14 +22,13 @@ proto:
 		--lint \
 		-o .
 
-.PHONY: test
 test:
-	go test `go list ./... | grep -v init` -timeout 5m ./...
+	go test `go list ./... | grep -v 'turbine-go\/init'` \
+		$(GO_TEST_FLAGS) $(GO_TEST_EXTRA_FLAGS) \
+		./...
 
-.PHONY: gomod
 gomod:
 	go mod vendor && go mod tidy
 
-.PHONY: lint
 lint:
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
