@@ -20,9 +20,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -63,7 +64,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.EndpointsTable([]meroxa.Endpoint{*endpoint}, false))
+	d.logger.Info(ctx, display.EndpointsTable([]meroxa.Endpoint{*endpoint}, false))
 	d.logger.JSON(ctx, endpoint)
 
 	return nil

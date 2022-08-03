@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 Meroxa Inc
+Copyright © 2022 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/meroxa/cli/utils/display"
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
@@ -83,7 +85,7 @@ func TestDescribeBuildsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.BuildTable(&a)
+	wantLeveledOutput := display.BuildTable(&a)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

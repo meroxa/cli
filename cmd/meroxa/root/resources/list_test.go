@@ -23,6 +23,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 
 	"github.com/golang/mock/gomock"
@@ -96,7 +98,7 @@ func TestListResourcesExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ResourcesTable(resources, false)
+	wantLeveledOutput := display.ResourcesTable(resources, false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -158,7 +160,7 @@ func TestListResourceTypesExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.ResourceTypesTable(types, false)
+	wantLeveledOutput := display.ResourceTypesTable(types, false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

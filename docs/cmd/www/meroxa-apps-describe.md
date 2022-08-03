@@ -16,8 +16,7 @@ meroxa apps describe [NAMEorUUID] [flags]
 ### Options
 
 ```
-      --extended   whether to show additional details about the Turbine Data Application
-  -h, --help       help for describe
+  -h, --help   help for describe
 ```
 
 ### Options inherited from parent commands

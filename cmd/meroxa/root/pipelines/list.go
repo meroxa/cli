@@ -19,9 +19,10 @@ package pipelines
 import (
 	"context"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -67,7 +68,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, pipelines)
-	l.logger.Info(ctx, utils.PipelinesTable(pipelines, l.hideHeaders))
+	l.logger.Info(ctx, display.PipelinesTable(pipelines, l.hideHeaders))
 
 	return nil
 }

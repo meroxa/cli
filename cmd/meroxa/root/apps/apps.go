@@ -60,6 +60,7 @@ func (*Apps) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&List{}),
+		builder.BuildCobraCommand(&Logs{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&Run{}),
 	}

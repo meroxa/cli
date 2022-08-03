@@ -21,6 +21,8 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -86,7 +88,7 @@ func TestDescribeEnvironmentExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.EnvironmentTable(&e)
+	wantLeveledOutput := display.EnvironmentTable(&e)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -134,7 +136,7 @@ func TestDescribeEnvironmentExecutionBadEnv(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := utils.EnvironmentTable(&e)
+	wantLeveledOutput := display.EnvironmentTable(&e)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

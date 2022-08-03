@@ -19,9 +19,10 @@ package resources
 import (
 	"context"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -87,7 +88,7 @@ func (l *List) Execute(ctx context.Context) error {
 		}
 
 		l.logger.JSON(ctx, rTypes)
-		l.logger.Info(ctx, utils.ResourceTypesTable(rTypes, l.hideHeaders))
+		l.logger.Info(ctx, display.ResourceTypesTable(rTypes, l.hideHeaders))
 
 		return nil
 	}
@@ -98,7 +99,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, resources)
-	l.logger.Info(ctx, utils.ResourcesTable(resources, l.hideHeaders))
+	l.logger.Info(ctx, display.ResourcesTable(resources, l.hideHeaders))
 
 	return nil
 }

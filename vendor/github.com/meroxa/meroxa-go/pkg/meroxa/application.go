@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 type ApplicationState string
@@ -17,20 +19,31 @@ const (
 
 const applicationsBasePath = "/v1/applications"
 
+type ResourceCollection struct {
+	Name        null.String `json:"name,omitempty"`
+	Source      null.String `json:"source,omitempty"`
+	Destination null.String `json:"destination,omitempty"`
+}
+
+type ApplicationResource struct {
+	EntityIdentifier
+	Collection ResourceCollection `json:"collection,omitempty"`
+}
+
 // Application represents the Meroxa Application type within the Meroxa API
 type Application struct {
-	UUID       string             `json:"uuid"`
-	Name       string             `json:"name"`
-	Language   string             `json:"language"`
-	GitSha     string             `json:"git_sha"`
-	Status     ApplicationStatus  `json:"status,omitempty"`
-	Pipeline   EntityIdentifier   `json:"pipeline,omitempty"`
-	Connectors []EntityIdentifier `json:"connectors,omitempty"`
-	Functions  []EntityIdentifier `json:"functions,omitempty"`
-	Resources  []EntityIdentifier `json:"resources,omitempty"`
-	CreatedAt  time.Time          `json:"created_at"`
-	UpdatedAt  time.Time          `json:"updated_at"`
-	DeletedAt  time.Time          `json:"deleted_at,omitempty"`
+	UUID       string                `json:"uuid"`
+	Name       string                `json:"name"`
+	Language   string                `json:"language"`
+	GitSha     string                `json:"git_sha"`
+	Status     ApplicationStatus     `json:"status,omitempty"`
+	Pipeline   EntityIdentifier      `json:"pipeline,omitempty"`
+	Connectors []EntityIdentifier    `json:"connectors,omitempty"`
+	Functions  []EntityIdentifier    `json:"functions,omitempty"`
+	Resources  []ApplicationResource `json:"resources,omitempty"`
+	CreatedAt  time.Time             `json:"created_at"`
+	UpdatedAt  time.Time             `json:"updated_at"`
+	DeletedAt  time.Time             `json:"deleted_at,omitempty"`
 }
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API

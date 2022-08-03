@@ -31,6 +31,7 @@ Manage Turbine Data Applications (Beta)
 * [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Turbine Data Application (Beta)
 * [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Turbine Data Application (Beta)
 * [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Turbine Data Applications (Beta)
+* [meroxa apps logs](/cli/cmd/meroxa-apps-logs/)	 - View relevant logs to the state of the given Turbine Data Application (Beta)
 * [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Removes a Turbine Data Application (Beta)
 * [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Turbine Data Application locally (Beta)
 

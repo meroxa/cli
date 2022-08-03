@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 Meroxa Inc
+Copyright © 2022 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/meroxa/cli/utils/display"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -64,7 +65,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.Info(ctx, utils.BuildTable(build))
+	d.logger.Info(ctx, display.BuildTable(build))
 	d.logger.JSON(ctx, build)
 
 	return nil
