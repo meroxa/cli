@@ -190,10 +190,12 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	var err error
 
 	if d.lang == GoLang {
+		d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", appPath))
 		err = turbine.CreateDockerfile("", appPath)
 		if err != nil {
 			return err
 		}
+		d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
 	}
 
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
@@ -209,6 +211,8 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Creating %q to upload to our build service...", dFile))
+
 	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
 	defer func(fileToWrite *os.File) {
 		err = fileToWrite.Close()
@@ -223,13 +227,16 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	if _, err = io.Copy(fileToWrite, &buf); err != nil {
 		return err
 	}
+	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created", dFile), log.Successful)
 
 	if d.lang == GoLang {
+		d.logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
 		// We clean up Dockerfile as last step
 		err = os.Remove(filepath.Join(appPath, "Dockerfile"))
 		if err != nil {
 			return err
 		}
+		d.logger.StopSpinnerWithStatus("Dockerfile removed", log.Successful)
 	}
 
 	err = d.uploadFile(ctx, dFile, url)
@@ -289,7 +296,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 		defer res.Body.Close()
 	}
 
-	d.logger.StopSpinnerWithStatus("Source uploaded!", log.Successful)
+	d.logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
 	return nil
 }
 
@@ -302,7 +309,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
 	}
-	d.logger.StopSpinnerWithStatus("Platform source fetched!", log.Successful)
+	d.logger.StopSpinnerWithStatus("Platform source fetched", log.Successful)
 
 	err = d.uploadSource(ctx, appPath, s.PutUrl)
 	if err != nil {
@@ -332,7 +339,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 			d.logger.StopSpinnerWithStatus(msg, log.Failed)
 			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built Process image! (%q)", build.Uuid), log.Successful)
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built process image (%q)", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
@@ -392,7 +399,7 @@ func (d *Deploy) buildApp(ctx context.Context) error {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return err
 	}
-	d.logger.StopSpinnerWithStatus("Application built!", log.Successful)
+	d.logger.StopSpinnerWithStatus("Application built", log.Successful)
 	return nil
 }
 
@@ -470,7 +477,7 @@ func (d *Deploy) validate(ctx context.Context) error {
 		return err
 	}
 
-	d.lang, err = turbineCLI.GetLangFromAppJSON(d.path)
+	d.lang, err = turbineCLI.GetLangFromAppJSON(ctx, d.logger, d.path)
 	if err != nil {
 		return err
 	}
@@ -480,7 +487,7 @@ func (d *Deploy) validate(ctx context.Context) error {
 		return err
 	}
 
-	d.appName, err = turbineCLI.GetAppNameFromAppJSON(d.path)
+	d.appName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path)
 	if err != nil {
 		return err
 	}
@@ -608,6 +615,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
+	d.logger.Info(ctx, "Validating your app.json...")
 	err := d.validate(ctx)
 	if err != nil {
 		return err
