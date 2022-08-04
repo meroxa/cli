@@ -11,7 +11,7 @@ Update your Meroxa CLI configuration file with a specific key=value
 
 ### Synopsis
 
-This command will let you update your Meroxa configuration file to customize your CLI experience.You can check the presence of this file by running `meroxa config describe`, or even provide your own using `--config my-other-cfg-file`A key with a format such as MyKey will be converted automatically to as MY_KEY.
+This command will let you update your Meroxa configuration file to customize your CLI experience. You can check the presence of this file by running `meroxa config describe`, or even provide your own using `--config my-other-cfg-file`. A key with a format such as `MyKey` will be converted automatically to as `MY_KEY`.
 
 ```
 meroxa config set [flags]
