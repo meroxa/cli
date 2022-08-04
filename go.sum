@@ -568,8 +568,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20220802095537-beb01d916646 h1:HG42GPLNMo8dwkiRaqU9WtAQbxn1gcWMGl4RnqQRIso=
 github.com/meroxa/meroxa-go v0.0.0-20220802095537-beb01d916646/go.mod h1:qczCsZeXwn2R+JeEVjPkgtIMGROQ1Si8ox+OC2nfOYg=
-github.com/meroxa/turbine-go v0.0.0-20220803210127-935f4f25f881 h1:GqWTFekToXFFUMjMQKHV9fpQuJ1ldbwBWegkN9DLMlQ=
-github.com/meroxa/turbine-go v0.0.0-20220803210127-935f4f25f881/go.mod h1:x6qIhTUBt8961KrUUioSTd1sCsRKMBvZ3LSS2BDUhJo=
+github.com/meroxa/turbine-go v0.0.0-20220804204154-1000570566df h1:l1diM+WQs1ABdBAtubBy+No7DPLp+BwChu7hao4nEeE=
+github.com/meroxa/turbine-go v0.0.0-20220804204154-1000570566df/go.mod h1:x6qIhTUBt8961KrUUioSTd1sCsRKMBvZ3LSS2BDUhJo=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
