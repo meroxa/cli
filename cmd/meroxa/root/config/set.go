@@ -55,10 +55,10 @@ func (s *Set) Docs() builder.Docs {
 			"meroxa config set DISABLE_UPDATE_NOTIFICATION=true\n" +
 			"meroxa config set OneKey=true AnotherKey=false\n" +
 			"meroxa config set ApiUrl=https://staging.meroxa.com",
-		Long: "This command will let you update your Meroxa configuration file to customize your CLI experience." +
+		Long: "This command will let you update your Meroxa configuration file to customize your CLI experience. " +
 			"You can check the presence of this file by running `meroxa config describe`, " +
-			"or even provide your own using `--config my-other-cfg-file`" +
-			"A key with a format such as MyKey will be converted automatically to as MY_KEY.",
+			"or even provide your own using `--config my-other-cfg-file`. " +
+			"A key with a format such as `MyKey` will be converted automatically to as `MY_KEY`.",
 	}
 }
 
