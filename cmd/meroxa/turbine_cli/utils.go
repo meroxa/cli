@@ -206,7 +206,7 @@ func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 		l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
 		return fmt.Errorf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName)
 	}
-	l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch!", branchName), log.Successful)
+	l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
 	err = os.Chdir(pwd)
 	if err != nil {
 		return err

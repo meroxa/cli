@@ -211,7 +211,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		return err
 	}
 
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Creating %q to upload to our build service...", dFile))
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Creating %q in %q to upload to our build service...", appPath, dFile))
 
 	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
 	defer func(fileToWrite *os.File) {
@@ -227,7 +227,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	if _, err = io.Copy(fileToWrite, &buf); err != nil {
 		return err
 	}
-	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created", dFile), log.Successful)
+	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, appPath), log.Successful)
 
 	if d.lang == GoLang {
 		d.logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
@@ -245,13 +245,21 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	}
 
 	if d.lang == Python {
-		output, err := turbinePY.CleanUpApp(appPath)
+		var output string
+		output, err = turbinePY.CleanUpApp(appPath)
 		if err != nil {
 			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
 		}
 	}
 	// remove .tar.gz file
-	return os.Remove(dFile)
+	d.logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
+	err = os.Remove(dFile)
+	if err != nil {
+		d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		return err
+	}
+	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q removed", dFile), log.Successful)
+	return nil
 }
 
 func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
@@ -339,7 +347,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 			d.logger.StopSpinnerWithStatus(msg, log.Failed)
 			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
 		case "complete":
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built process image (%q)", build.Uuid), log.Successful)
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built process image (%q)\n", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
 		time.Sleep(pollDuration)
@@ -368,7 +376,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha string) error 
 		d.logger.StopSpinnerWithStatus("Deployment failed to create Application\n\n", log.Failed)
 		return err
 	}
-	d.logger.StopSpinnerWithStatus("Deploy complete!", log.Successful)
+	d.logger.StopSpinnerWithStatus("Deploy complete", log.Successful)
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.UUID)
 	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
@@ -426,7 +434,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	// If no need to build, return empty imageName which won't be utilized by the deploy process anyways
 	if !needsToBuild {
-		d.logger.StopSpinnerWithStatus("No need to create process image...", log.Successful)
+		d.logger.StopSpinnerWithStatus("No need to create process image...\n", log.Successful)
 		return "", nil
 	}
 
@@ -525,7 +533,7 @@ func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames
 }
 
 func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
-	resourceCheckMessage := fmt.Sprintf("Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
+	resourceCheckMessage := fmt.Sprintf(" Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
 
 	d.logger.StartSpinner("\t", resourceCheckMessage)
 
@@ -563,7 +571,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 }
 
 func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
-	d.logger.Infof(ctx, "Preparing application %q (%s) for deployment...", d.appName, d.lang)
+	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
 
 	// After this point, CLI will package it up and will build it
 	err := d.buildApp(ctx)
