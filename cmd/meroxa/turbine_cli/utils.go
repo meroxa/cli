@@ -46,12 +46,12 @@ func GetPath(flag string) (string, error) {
 }
 
 // GetLang will return language defined either by `--lang` or the one defined by user in the app.json.
-func GetLang(flag, pwd string) (string, error) {
+func GetLang(ctx context.Context, l log.Logger, flag, pwd string) (string, error) {
 	if flag != "" {
 		return flag, nil
 	}
 
-	lang, err := GetLangFromAppJSON(pwd)
+	lang, err := GetLangFromAppJSON(ctx, l, pwd)
 	if err != nil {
 		return "", err
 	} else if lang == "" {
@@ -61,28 +61,34 @@ func GetLang(flag, pwd string) (string, error) {
 }
 
 // GetLangFromAppJSON returns specified language in users' app.json.
-func GetLangFromAppJSON(pwd string) (string, error) {
+func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
+	l.StartSpinner("\t", "Determining application language from app.json...")
 	appConfig, err := readConfigFile(pwd)
 	if err != nil {
 		return "", err
 	}
 
 	if appConfig.Language == "" {
-		return "", fmt.Errorf("`language` should be specified in your app.json")
+		l.StopSpinnerWithStatus("`language` should be specified in your app.json", log.Failed)
+		return "", fmt.Errorf("add key `language` to your app.json")
 	}
+	l.StopSpinnerWithStatus(fmt.Sprintf("Checked your language is %q", appConfig.Language), log.Successful)
 	return appConfig.Language, nil
 }
 
 // GetAppNameFromAppJSON returns specified app name in users' app.json.
-func GetAppNameFromAppJSON(pwd string) (string, error) {
+func GetAppNameFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
+	l.StartSpinner("\t", "Reading application name from app.json...")
 	appConfig, err := readConfigFile(pwd)
 	if err != nil {
 		return "", err
 	}
 
 	if appConfig.Name == "" {
-		return "", fmt.Errorf("`name` should be specified in your app.json")
+		l.StopSpinnerWithStatus("`name` should be specified in your app.json", log.Failed)
+		return "", fmt.Errorf("add `name` to your app.json")
 	}
+	l.StopSpinnerWithStatus(fmt.Sprintf("Checked your application name is %q", appConfig.Name), log.Successful)
 	return appConfig.Name, nil
 }
 
@@ -183,7 +189,7 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
 func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
-	l.Info(ctx, "Validating branch...")
+	l.StartSpinner("", "Validating branch...")
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
@@ -197,9 +203,10 @@ func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 	}
 	branchName := strings.TrimSpace(string(output))
 	if branchName != "main" && branchName != "master" {
-		return fmt.Errorf("deployment allowed only from 'main' or 'master' branch, not %s", branchName)
+		l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
+		return fmt.Errorf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName)
 	}
-	l.Infof(ctx, "\t%s Deployment allowed from %s branch!", l.SuccessfulCheck(), branchName)
+	l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
 	err = os.Chdir(pwd)
 	if err != nil {
 		return err
@@ -432,5 +439,5 @@ func getTurbineJSBinary(params []string) []string {
 }
 
 func executeTurbineJSCommand(params []string) *exec.Cmd {
-	return exec.Command(params[0], params[1:]...) // nolint:gosec
+	return exec.Command(params[0], params[1:]...) //nolint:gosec
 }

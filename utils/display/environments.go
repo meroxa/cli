@@ -43,7 +43,7 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 	return ""
 }
 
-// nolint:funlen
+//nolint:funlen
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
 

@@ -151,7 +151,7 @@ func (ld *LocalDeploy) pushImage(l log.Logger, imageName string) error {
 		return err
 	}
 	authConfig := ld.getAuthConfig()
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120) // nolint:gomnd
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120) //nolint:gomnd
 	defer cancel()
 
 	l.Infof(ctx, "pushing image %q to container registry", imageName)

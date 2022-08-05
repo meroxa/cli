@@ -75,7 +75,7 @@ func (r *Run) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	lang, err := turbineCLI.GetLang(r.flags.Lang, r.path)
+	lang, err := turbineCLI.GetLang(ctx, r.logger, r.flags.Lang, r.path)
 	if err != nil {
 		return err
 	}

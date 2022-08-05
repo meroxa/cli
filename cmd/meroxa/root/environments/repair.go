@@ -73,7 +73,7 @@ func (r *Repair) ParseArgs(args []string) error {
 }
 
 func (r *Repair) Execute(ctx context.Context) error {
-	environment, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) // nolint:lll
+	environment, err := r.client.PerformActionOnEnvironment(ctx, r.args.NameOrUUID, &meroxa.RepairEnvironmentInput{Action: meroxa.EnvironmentActionRepair}) //nolint:lll
 	if err != nil {
 		return err
 	}

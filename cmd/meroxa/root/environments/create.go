@@ -54,7 +54,7 @@ type Create struct {
 		Type     string   `long:"type" usage:"environment type, when not specified"`
 		Provider string   `long:"provider" usage:"environment cloud provider to use"`
 		Region   string   `long:"region" usage:"environment region"`
-		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)"` // nolint:lll
+		Config   []string `short:"c" long:"config" usage:"environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)"` //nolint:lll
 	}
 
 	envCfg map[string]interface{}

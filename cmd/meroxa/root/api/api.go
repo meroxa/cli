@@ -77,14 +77,14 @@ func (a *API) Logger(logger log.Logger) {
 }
 
 func (a *API) ParseArgs(args []string) error {
-	if len(args) < 2 { // nolint:gomnd
+	if len(args) < 2 { //nolint:gomnd
 		return errors.New("requires METHOD and PATH")
 	}
 
 	a.args.Method = strings.ToUpper(args[0]) // so either a method such as `get` or `GET` works
 	a.args.Path = args[1]
 
-	if len(args) > 2 { // nolint:gomnd
+	if len(args) > 2 { //nolint:gomnd
 		a.args.Body = args[2]
 	}
 

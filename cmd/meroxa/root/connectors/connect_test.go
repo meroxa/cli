@@ -63,7 +63,7 @@ func TestConnectFlags(t *testing.T) {
 	}
 }
 
-// nolint:funlen
+//nolint:funlen
 func TestConnectExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
