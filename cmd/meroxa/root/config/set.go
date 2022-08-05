@@ -93,7 +93,7 @@ func (s *Set) normalizeKey(key string) string {
 func (s *Set) validateAndAssignKeyValue(kv string) error {
 	nkv := strings.Split(kv, "=")
 
-	if len(nkv) != 2 { // nolint:gomnd
+	if len(nkv) != 2 { //nolint:gomnd
 		return fmt.Errorf("a key=value needs to contain at least and only one `=` sign")
 	}
 

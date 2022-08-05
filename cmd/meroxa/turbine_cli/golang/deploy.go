@@ -18,9 +18,9 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 	var cmd *exec.Cmd
 
 	if imageName != "" {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName, "--gitsha", gitSha) // nolint:gosec
+		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName, "--gitsha", gitSha) //nolint:gosec
 	} else {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--gitsha", gitSha) // nolint:gosec
+		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--gitsha", gitSha) //nolint:gosec
 	}
 
 	accessToken, refreshToken, err := global.GetUserToken()
@@ -41,7 +41,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
 	var names []string
 
-	cmd := exec.Command(appPath+"/"+appName, "--listresources") // nolint:gosec
+	cmd := exec.Command(appPath+"/"+appName, "--listresources") //nolint:gosec
 
 	output, err := cmd.CombinedOutput()
 	stringifiedOutput := string(output)
@@ -62,7 +62,7 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
 // this is currently based on the number of functions.
 func NeedsToBuild(appPath, appName string) (bool, error) {
-	cmd := exec.Command(appPath+"/"+appName, "--listfunctions") // nolint:gosec
+	cmd := exec.Command(appPath+"/"+appName, "--listfunctions") //nolint:gosec
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {

@@ -42,7 +42,7 @@ func userInfoStale() bool {
 	}
 
 	duration := time.Now().UTC().Sub(updatedAt)
-	return duration.Hours() > 24 // nolint:gomnd
+	return duration.Hours() > 24 //nolint:gomnd
 }
 
 func GetCLIUserInfo() (actor, actorUUID string, err error) {
@@ -64,7 +64,7 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 
 	if noUserInfo(actor, actorUUID) || userInfoStale() {
 		// call api to fetch
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) // nolint:gomnd
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint:gomnd
 		defer cancel()
 
 		m, err := NewClient()

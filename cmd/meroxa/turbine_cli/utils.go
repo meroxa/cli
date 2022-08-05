@@ -439,5 +439,5 @@ func getTurbineJSBinary(params []string) []string {
 }
 
 func executeTurbineJSCommand(params []string) *exec.Cmd {
-	return exec.Command(params[0], params[1:]...) // nolint:gosec
+	return exec.Command(params[0], params[1:]...) //nolint:gosec
 }

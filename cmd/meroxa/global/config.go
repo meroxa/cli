@@ -73,7 +73,7 @@ func readConfig() (*viper.Viper, error) {
 		configDir = filepath.Join(configDir, "meroxa")
 
 		// create subdirectory if it doesn't exist, otherwise viper will complain
-		err = os.MkdirAll(configDir, 0755) // nolint:gomnd
+		err = os.MkdirAll(configDir, 0755) //nolint:gomnd
 		if err != nil {
 			return nil, fmt.Errorf("could not create meroxa config directory: %w", err)
 		}

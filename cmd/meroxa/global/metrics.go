@@ -186,5 +186,5 @@ func publishEvent(event cased.AuditEvent) {
 
 	// The process will wait 30 seconds to publish all events to Cased before
 	// exiting the process.
-	cased.Flush(30 * time.Second) // nolint:gomnd
+	cased.Flush(30 * time.Second) //nolint:gomnd
 }

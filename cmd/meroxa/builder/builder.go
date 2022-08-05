@@ -539,7 +539,7 @@ func buildCommandWithExecute(cmd *cobra.Command, c Command) {
 	}
 }
 
-// nolint:funlen,gocyclo // this function has a big switch statement, can't get around that
+//nolint:funlen,gocyclo // this function has a big switch statement, can't get around that
 func buildCommandWithFlags(cmd *cobra.Command, c Command) {
 	v, ok := c.(CommandWithFlags)
 	if !ok {
