@@ -3,7 +3,7 @@
 
 .SH NAME
 .PP
-meroxa\-environments\-update \- Update an environment
+meroxa-environments-update - Update an environment
 
 
 .SH SYNOPSIS
@@ -18,37 +18,37 @@ Update an environment
 
 .SH OPTIONS
 .PP
-\fB\-c\fP, \fB\-\-config\fP=[]
-	updated environment configuration based on type and provider (e.g.: \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_access\_secret=my\_access\_secret)
+\fB-c\fP, \fB--config\fP=[]
+	updated environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)
 
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for update
 
 .PP
-\fB\-\-name\fP=""
+\fB--name\fP=""
 	updated environment name, when specified
 
 .PP
-\fB\-y\fP, \fB\-\-yes\fP[=false]
+\fB-y\fP, \fB--yes\fP[=false]
 	skip confirmation prompt
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 
@@ -58,7 +58,7 @@ Update an environment
 
 .nf
 
-meroxa env update my\-env \-\-name new\-name \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_access\_secret=my\_access\_secret"
+meroxa env update my-env --name new-name --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret"
 
 
 .fi
@@ -67,4 +67,4 @@ meroxa env update my\-env \-\-name new\-name \-\-config aws\_access\_key\_id=my\
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-environments(1)\fP
+\fBmeroxa-environments(1)\fP

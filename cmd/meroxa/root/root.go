@@ -43,6 +43,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/whoami"
 
 	"github.com/spf13/cobra"
+	"github.com/withfig/autocomplete-tools/integrations/cobra"
 )
 
 func Run() {
@@ -78,7 +79,8 @@ meroxa resources list --types
 	global.RegisterGlobalFlags(cmd)
 
 	// Subcommands
-	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
+	cmd.AddCommand(CompletionCmd()) // To generate shell autocompletion
+	cmd.AddCommand(cobracompletefig.CreateCompletionSpecCommand())
 
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))

@@ -3,12 +3,12 @@
 
 .SH NAME
 .PP
-meroxa\-resources\-create \- Add a resource to your Meroxa resource catalog
+meroxa-resources-create - Add a resource to your Meroxa resource catalog
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa resources create [NAME] \-\-type TYPE \-\-url URL [flags]\fP
+\fBmeroxa resources create [NAME] --type TYPE --url URL [flags]\fP
 
 
 .SH DESCRIPTION
@@ -18,73 +18,73 @@ Use the create command to add resources to your Meroxa resource catalog.
 
 .SH OPTIONS
 .PP
-\fB\-\-ca\-cert\fP=""
+\fB--ca-cert\fP=""
 	trusted certificates for verifying resource
 
 .PP
-\fB\-\-client\-cert\fP=""
+\fB--client-cert\fP=""
 	client certificate for authenticating to the resource
 
 .PP
-\fB\-\-client\-key\fP=""
+\fB--client-key\fP=""
 	client private key for authenticating to the resource
 
 .PP
-\fB\-\-env\fP=""
+\fB--env\fP=""
 	environment (name or UUID) where resource will be created
 
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for create
 
 .PP
-\fB\-m\fP, \fB\-\-metadata\fP=""
+\fB-m\fP, \fB--metadata\fP=""
 	resource metadata
 
 .PP
-\fB\-\-password\fP=""
+\fB--password\fP=""
 	password
 
 .PP
-\fB\-\-ssh\-private\-key\fP=""
+\fB--ssh-private-key\fP=""
 	SSH tunneling private key
 
 .PP
-\fB\-\-ssh\-url\fP=""
+\fB--ssh-url\fP=""
 	SSH tunneling address
 
 .PP
-\fB\-\-ssl\fP[=false]
+\fB--ssl\fP[=false]
 	use SSL
 
 .PP
-\fB\-\-type\fP=""
+\fB--type\fP=""
 	resource type (required)
 
 .PP
-\fB\-u\fP, \fB\-\-url\fP=""
+\fB-u\fP, \fB--url\fP=""
 	resource url (required)
 
 .PP
-\fB\-\-username\fP=""
+\fB--username\fP=""
 	username
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 
@@ -94,10 +94,10 @@ Use the create command to add resources to your Meroxa resource catalog.
 
 .nf
 
-meroxa resources create store \-\-type postgres \-u $DATABASE\_URL \-\-metadata '{"logical\_replication":"true"}'
-meroxa resources create datalake \-\-type s3 \-u "s3://$AWS\_ACCESS\_KEY\_ID:$AWS\_ACCESS\_KEY\_SECRET@us\-east\-1/meroxa\-demos"
-meroxa resources create warehouse \-\-type redshift \-u $REDSHIFT\_URL
-meroxa resources create slack \-\-type url \-u $WEBHOOK\_URL
+meroxa resources create store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":"true"}'
+meroxa resources create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
+meroxa resources create warehouse --type redshift -u $REDSHIFT_URL
+meroxa resources create slack --type url -u $WEBHOOK_URL
 
 
 .fi
@@ -106,4 +106,4 @@ meroxa resources create slack \-\-type url \-u $WEBHOOK\_URL
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-resources(1)\fP
+\fBmeroxa-resources(1)\fP

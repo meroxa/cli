@@ -3,7 +3,7 @@
 
 .SH NAME
 .PP
-meroxa\-apps\-deploy \- Deploy a Turbine Data Application (Beta)
+meroxa-apps-deploy - Deploy a Turbine Data Application (Beta)
 
 
 .SH SYNOPSIS
@@ -13,35 +13,35 @@ meroxa\-apps\-deploy \- Deploy a Turbine Data Application (Beta)
 
 .SH DESCRIPTION
 .PP
-This command will deploy the application specified in '\-\-path'
+This command will deploy the application specified in '--path'
 (or current working directory if not specified) to our Meroxa Platform.
 If deployment was successful, you should expect an application you'll be able to fully manage
 
 
 .SH OPTIONS
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for deploy
 
 .PP
-\fB\-\-path\fP=""
+\fB--path\fP=""
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 
@@ -51,7 +51,7 @@ If deployment was successful, you should expect an application you'll be able to
 
 .nf
 meroxa apps deploy # assumes you run it from the app directory
-meroxa apps deploy \-\-path ./my\-app
+meroxa apps deploy --path ./my-app
 
 
 .fi
@@ -60,4 +60,4 @@ meroxa apps deploy \-\-path ./my\-app
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-apps(1)\fP
+\fBmeroxa-apps(1)\fP
