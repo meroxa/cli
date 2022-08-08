@@ -2,6 +2,7 @@ package turbinego
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -44,19 +45,38 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 	cmd := exec.Command(appPath+"/"+appName, "--listresources") //nolint:gosec
 
 	output, err := cmd.CombinedOutput()
-	stringifiedOutput := string(output)
 	if err != nil {
-		return names, errors.New(stringifiedOutput)
+		return names, errors.New(string(output))
 	}
 
-	r := regexp.MustCompile(`\[(.+?)\]`)
+	var parsed []map[string]interface{}
+	if err := json.Unmarshal(output, &parsed); err != nil {
+		// fall back if not json
+		return getResourceNamesFromString(string(output)), nil
+	}
 
-	sliceString := r.FindStringSubmatch(stringifiedOutput)
+	for i := range parsed {
+		kv := parsed[i]
+		if _, ok := kv["Name"]; ok {
+			names = append(names, kv["Name"].(string))
+		}
+	}
+
+	return names, nil
+}
+
+// getResourceNamesFromString provides backward compatibility with turbine-go
+// legacy resource listing format.
+func getResourceNamesFromString(s string) []string {
+	var names []string
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+	sliceString := r.FindStringSubmatch(s)
 	if len(sliceString) > 0 {
 		names = strings.Fields(sliceString[1])
 	}
 
-	return names, nil
+	return names
 }
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
