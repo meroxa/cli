@@ -1,0 +1,28 @@
+name: 'Publish Meroxa Fig autocomplete spec'
+on:
+  push:
+    tags:
+      - 'v*'
+      - '!v*.*.*-nightly.*'
+  workflow_dispatch:
+
+jobs:
+  push-to-fig-autocomplete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+      - name: Generate the spec
+        run: |
+          make fig
+      - name: Create Autocomplete PR
+        uses: withfig/publish-to-fig-autocomplete@v1
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          autocomplete-spec-name: meroxa
+          spec-path: spec
+          integration: cobra
+          repo-org: meroxa
+          repo-name: cli
+          use-minor-base: true
+  ## Other jobs not related to the spec update

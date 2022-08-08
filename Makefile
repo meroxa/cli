@@ -31,6 +31,10 @@ ifeq ($(REBUILD_DOCS), "true")
 	go run gen-docs/main.go
 endif
 
+.PHONY: fig
+fig:
+	meroxa genFigSpec
+
 .PHONY: lint
 lint:
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
