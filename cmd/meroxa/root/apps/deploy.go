@@ -195,6 +195,16 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		if err != nil {
 			return err
 		}
+		defer func() {
+			d.logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
+			// We clean up Dockerfile as last step
+			err = os.Remove(filepath.Join(appPath, "Dockerfile"))
+			if err != nil {
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf("Unable to remove Dockerfile: %v", err), log.Failed)
+			} else {
+				d.logger.StopSpinnerWithStatus("Dockerfile removed", log.Successful)
+			}
+		}()
 		d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
 	}
 
@@ -225,6 +235,19 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		removeErr := os.Remove(dFile)
 		if removeErr != nil {
 			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		} else {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf(" Removed %q", dFile), log.Successful)
+		}
+
+		if d.lang == Python {
+			d.logger.StartSpinner("\t", fmt.Sprintf(" Removing artifacts from building the Python Application at %s...", appPath))
+			var output string
+			output, err = turbinePY.CleanUpApp(appPath)
+			if err != nil {
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf(" Failed to clean up artifacts at %s: %v %s", appPath, err, output), log.Failed)
+			} else {
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf(" Removed %q", dFile), log.Successful)
+			}
 		}
 	}(fileToWrite)
 	if err != nil {
@@ -235,29 +258,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	}
 	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, appPath), log.Successful)
 
-	if d.lang == GoLang {
-		d.logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
-		// We clean up Dockerfile as last step
-		err = os.Remove(filepath.Join(appPath, "Dockerfile"))
-		if err != nil {
-			return err
-		}
-		d.logger.StopSpinnerWithStatus("Dockerfile removed", log.Successful)
-	}
-
-	err = d.uploadFile(ctx, dFile, url)
-	if err != nil {
-		return err
-	}
-
-	if d.lang == Python {
-		var output string
-		output, err = turbinePY.CleanUpApp(appPath)
-		if err != nil {
-			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
-		}
-	}
-	return nil
+	return d.uploadFile(ctx, dFile, url)
 }
 
 func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
