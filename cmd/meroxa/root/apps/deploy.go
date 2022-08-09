@@ -219,8 +219,14 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		if err != nil {
 			panic(err.Error())
 		}
-	}(fileToWrite)
 
+		// remove .tar.gz file
+		d.logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
+		removeErr := os.Remove(dFile)
+		if removeErr != nil {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		}
+	}(fileToWrite)
 	if err != nil {
 		return err
 	}
@@ -251,14 +257,6 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
 		}
 	}
-	// remove .tar.gz file
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
-	err = os.Remove(dFile)
-	if err != nil {
-		d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
-		return err
-	}
-	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q removed", dFile), log.Successful)
 	return nil
 }
 
