@@ -266,7 +266,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 
 	fh, err := os.Open(filePath)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
 		return err
 	}
 	defer func(fh *os.File) {
@@ -275,13 +275,13 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
 		return err
 	}
 
 	fi, err := fh.Stat()
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
 		return err
 	}
 
@@ -295,7 +295,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to send PUT request", log.Failed)
 		return err
 	}
 
