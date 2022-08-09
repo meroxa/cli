@@ -92,7 +92,6 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 	var parsed []map[string]interface{}
 	if err := json.Unmarshal(output, &parsed); err != nil {
 		// fall back if not json
-		l.Info(ctx, string(output))
 		return getResourceNamesFromString(string(output)), nil
 	}
 
@@ -101,7 +100,6 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 		if _, ok := kv["name"]; ok {
 			names = append(names, kv["name"].(string))
 		}
-
 	}
 	return names, nil
 }
