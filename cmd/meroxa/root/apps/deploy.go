@@ -364,7 +364,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha string) error 
 	case JavaScript:
 		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
 	case Python:
-		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
+		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
 	}
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
