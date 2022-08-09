@@ -236,7 +236,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		if removeErr != nil {
 			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
 		} else {
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf(" Removed %q", dFile), log.Successful)
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
 		}
 
 		if d.lang == Python {
@@ -244,9 +244,9 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 			var output string
 			output, err = turbinePY.CleanUpApp(appPath)
 			if err != nil {
-				d.logger.StopSpinnerWithStatus(fmt.Sprintf(" Failed to clean up artifacts at %s: %v %s", appPath, err, output), log.Failed)
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Failed to clean up artifacts at %s: %v %s", appPath, err, output), log.Failed)
 			} else {
-				d.logger.StopSpinnerWithStatus(fmt.Sprintf(" Removed %q", dFile), log.Successful)
+				d.logger.StopSpinnerWithStatus("Removed artifacts from building", log.Successful)
 			}
 		}
 	}(fileToWrite)
