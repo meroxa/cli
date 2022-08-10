@@ -112,6 +112,10 @@ func TestGitInit(t *testing.T) {
 
 func TestGoInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		t.Fatal("GOPATH is not defined")
+	}
+
 	tests := []struct {
 		desc                 string
 		path                 string
