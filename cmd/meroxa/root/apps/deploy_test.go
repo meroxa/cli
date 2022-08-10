@@ -97,11 +97,9 @@ func TestValidateSpecVersionDeployment(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.desc, func(t *testing.T) {
-			ctx := context.Background()
-
 			d := &Deploy{}
 			d.flags.Spec = tc.version
-			got := d.validateSpecVersionDeployment(ctx)
+			got := d.validateSpecVersionDeployment()
 
 			if got != nil && tc.err.Error() != got.Error() {
 				t.Fatalf("expected %v, got %v", tc.err, got)

@@ -601,7 +601,7 @@ func (d *Deploy) rmBinary() {
 
 // validateSpecVersionDeployment checks, when --spec is specified, whether the version has a valid format
 // accepted formats are: semver or "latest".
-func (d *Deploy) validateSpecVersionDeployment(ctx context.Context) error {
+func (d *Deploy) validateSpecVersionDeployment() error {
 	switch d.flags.Spec {
 	case "":
 		return nil
@@ -659,7 +659,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = d.validateSpecVersionDeployment(ctx)
+	err = d.validateSpecVersionDeployment()
 	if err != nil {
 		return err
 	}
