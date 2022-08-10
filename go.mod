@@ -26,6 +26,7 @@ require (
 
 require (
 	github.com/briandowns/spinner v1.18.1
+	github.com/coreos/go-semver v0.3.0
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-go v0.0.0-20220805164010-1a9d67a2378f
@@ -38,6 +39,7 @@ require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Microsoft/hcsshim v0.9.4 // indirect
+	github.com/caarlos0/env/v6 v6.9.3 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.5.13 // indirect
@@ -64,6 +66,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/moby/sys/mount v0.3.0 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
+	github.com/oklog/run v1.1.1-0.20200508094559-c7096881717e // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.3 // indirect

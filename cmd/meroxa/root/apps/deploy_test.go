@@ -30,6 +30,7 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "path", required: false},
 		{name: "docker-hub-username", required: false, hidden: true},
 		{name: "docker-hub-access-token", required: false, hidden: true},
+		{name: "spec", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})
@@ -55,6 +56,44 @@ func TestDeployAppFlags(t *testing.T) {
 				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
 			}
 		}
+	}
+}
+
+func TestValidateSpecVersionDeployment(t *testing.T) {
+	tests := []struct {
+		desc    string
+		version string
+		err     error
+	}{
+		{
+			desc:    "no spec is specified",
+			version: "",
+			err:     nil,
+		},
+		{
+			desc:    "spec is \"latest\"",
+			version: "latest",
+			err:     nil,
+		},
+		{
+			desc:    "spec is an invalid version",
+			version: "foo",
+			err:     errors.New("invalid spec version: foo is not in dotted-tri format. You must specify a valid format or use \"latest\""),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			ctx := context.Background()
+
+			d := &Deploy{}
+			d.flags.Spec = tc.version
+			got := d.validateSpecVersionDeployment(ctx)
+
+			if got != nil && tc.err.Error() != got.Error() {
+				t.Fatalf("expected %v, got %v", tc.err, got)
+			}
+		})
 	}
 }
 

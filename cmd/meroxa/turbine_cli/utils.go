@@ -156,7 +156,6 @@ func writeConfigFile(appPath string, cfg AppConfig) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
-	l.Info(ctx, "Checking for uncommitted changes...")
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
