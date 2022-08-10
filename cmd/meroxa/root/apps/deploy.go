@@ -21,15 +21,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/coreos/go-semver/semver"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-
 	"strings"
 	"time"
 
+	"github.com/coreos/go-semver/semver"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"

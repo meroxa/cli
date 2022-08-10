@@ -62,9 +62,10 @@ func GetLang(ctx context.Context, l log.Logger, flag, pwd string) (string, error
 
 // GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", "Determining application language from app.json...")
+	l.StartSpinner("\t", " Determining application language from app.json...")
 	appConfig, err := readConfigFile(pwd)
 	if err != nil {
+		l.StopSpinnerWithStatus("Something went wrong reading your app.json", log.Failed)
 		return "", err
 	}
 
