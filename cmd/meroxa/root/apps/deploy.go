@@ -357,17 +357,17 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	}
 }
 
-func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha string) error {
+func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) error {
 	var err error
 
 	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
 	switch d.lang {
 	case GoLang:
-		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
+		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	case JavaScript:
-		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
+		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha, specVersion)
 	case Python:
-		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
+		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha, specVersion)
 	}
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
@@ -565,7 +565,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) initDeployment(ctx context.Context) error {
+func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
 
 	// After this point, CLI will package it up and will build it
@@ -671,7 +671,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = d.initDeployment(ctx)
+	err = d.prepareDeployment(ctx)
 	defer d.rmBinary()
 	if err != nil {
 		return err
@@ -682,5 +682,5 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	return d.deployApp(ctx, d.fnName, gitSha)
+	return d.deployApp(ctx, d.fnName, gitSha, d.specVersion)
 }

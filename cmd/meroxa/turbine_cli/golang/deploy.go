@@ -15,14 +15,20 @@ import (
 )
 
 // RunDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName, gitSha string) error {
+func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName, gitSha, specVersion string) error {
 	var cmd *exec.Cmd
 
-	if imageName != "" {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--imagename", imageName, "--gitsha", gitSha) //nolint:gosec
-	} else {
-		cmd = exec.Command(appPath+"/"+appName, "--deploy", "--gitsha", gitSha) //nolint:gosec
+	args := []string{"--deploy", "--gitsha", gitSha}
+
+	if specVersion != "" {
+		args = append(args, "--spec", specVersion)
 	}
+
+	if imageName != "" {
+		args = append(args, "--imagename", imageName)
+	}
+
+	cmd = exec.Command(appPath+"/"+appName, args...) //nolint:gosec
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
