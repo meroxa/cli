@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go/build"
 	"io"
 	"os"
 	"os/exec"
@@ -237,11 +238,15 @@ func GetGitSha(appPath string) (string, error) {
 	return string(output), nil
 }
 
-func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
+func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
 	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
 		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
 	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		goPath = build.Default.GOPATH
+		l.Infof(ctx, "using default GOPATH: %s", goPath)
+	}
 	if goPath == "" {
 		l.StopSpinnerWithStatus("$GOPATH not set up; "+skipLog, log.Warning)
 		return nil
