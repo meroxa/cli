@@ -141,7 +141,7 @@ type RepairEnvironmentInput struct {
 
 // ListEnvironments returns an array of Environments (scoped to the calling user)
 func (c *client) ListEnvironments(ctx context.Context) ([]*Environment, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, environmentsBasePath, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, environmentsBasePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func (c *client) ListEnvironments(ctx context.Context) ([]*Environment, error) {
 
 // CreateEnvironment creates a new Environment based on a CreateEnvironmentInput
 func (c *client) CreateEnvironment(ctx context.Context, input *CreateEnvironmentInput) (*Environment, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, environmentsBasePath, input, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, environmentsBasePath, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func (c *client) CreateEnvironment(ctx context.Context, input *CreateEnvironment
 
 func (c *client) GetEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func (c *client) GetEnvironment(ctx context.Context, nameOrUUID string) (*Enviro
 
 func (c *client) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +222,7 @@ func (c *client) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Env
 
 func (c *client) UpdateEnvironment(ctx context.Context, nameOrUUID string, input *UpdateEnvironmentInput) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s", environmentsBasePath, nameOrUUID)
-	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,7 @@ func (c *client) UpdateEnvironment(ctx context.Context, nameOrUUID string, input
 
 func (c *client) PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *RepairEnvironmentInput) (*Environment, error) {
 	path := fmt.Sprintf("%s/%s/%s", environmentsBasePath, nameOrUUID, "actions")
-	resp, err := c.MakeRequest(ctx, http.MethodPost, path, input, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}

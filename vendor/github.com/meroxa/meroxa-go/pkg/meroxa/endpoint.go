@@ -33,7 +33,7 @@ type Endpoint struct {
 }
 
 func (c *client) CreateEndpoint(ctx context.Context, input *CreateEndpointInput) error {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, endpointBasePath, input, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, endpointBasePath, input, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (c *client) CreateEndpoint(ctx context.Context, input *CreateEndpointInput)
 
 func (c *client) GetEndpoint(ctx context.Context, name string) (*Endpoint, error) {
 	path := fmt.Sprintf("%s/%s", endpointBasePath, name)
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (c *client) GetEndpoint(ctx context.Context, name string) (*Endpoint, error
 
 func (c *client) DeleteEndpoint(ctx context.Context, name string) error {
 	path := fmt.Sprintf("%s/%s", endpointBasePath, name)
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (c *client) DeleteEndpoint(ctx context.Context, name string) error {
 }
 
 func (c *client) ListEndpoints(ctx context.Context) ([]Endpoint, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, endpointBasePath, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, endpointBasePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
