@@ -632,18 +632,18 @@ func (mr *MockClientMockRecorder) ListTransforms(ctx interface{}) *gomock.Call {
 }
 
 // MakeRequest mocks base method.
-func (m *MockClient) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values) (*http.Response, error) {
+func (m *MockClient) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MakeRequest", ctx, method, path, body, params)
+	ret := m.ctrl.Call(m, "MakeRequest", ctx, method, path, body, params, headers)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // MakeRequest indicates an expected call of MakeRequest.
-func (mr *MockClientMockRecorder) MakeRequest(ctx, method, path, body, params interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) MakeRequest(ctx, method, path, body, params, headers interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeRequest", reflect.TypeOf((*MockClient)(nil).MakeRequest), ctx, method, path, body, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeRequest", reflect.TypeOf((*MockClient)(nil).MakeRequest), ctx, method, path, body, params, headers)
 }
 
 // PerformActionOnEnvironment mocks base method.

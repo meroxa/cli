@@ -27,7 +27,7 @@ const (
 func (c *client) ListResourceTypes(ctx context.Context) ([]string, error) {
 	path := fmt.Sprintf("/v1/resource-types")
 
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
