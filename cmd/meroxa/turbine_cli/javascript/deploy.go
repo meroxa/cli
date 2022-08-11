@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
+	"encoding/json"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	"github.com/meroxa/cli/log"
@@ -52,8 +52,8 @@ func BuildApp(path string) (string, error) {
 	return match[1], err
 }
 
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha string) error {
-	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path, gitSha)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha string) error {
+	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path, appName, gitSha)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -75,16 +75,30 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 	if err != nil {
 		return names, errors.New(string(output))
 	}
-	r := regexp.MustCompile("\nturbine-response: (.*)\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return names, fmt.Errorf("unable to verify resource availability for Meroxa Application at %s; %s", appPath, string(output))
+
+	var parsed []map[string]interface{}
+	if err := json.Unmarshal(output, &parsed); err != nil {
+		return getResourceNamesFromString(string(output)), nil
 	}
-	text := match[1]
-	names = strings.Split(text, ",")
-	for i, name := range names {
-		names[i] = strings.TrimSpace(name)
+
+	for i := range parsed {
+		kv := parsed[i]
+		if _, ok := kv["name"]; ok {
+			names = append(names, kv["name"].(string))
+		}
 	}
 
 	return names, nil
+}
+
+func getResourceNamesFromString(s string) []string {
+	var names []string
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+	sliceString := r.FindStringSubmatch(s)
+	if len(sliceString) > 0 {
+		names = strings.Fields(sliceString[1])
+	}
+
+	return names
 }
