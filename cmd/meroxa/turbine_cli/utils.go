@@ -239,13 +239,13 @@ func GetGitSha(appPath string) (string, error) {
 }
 
 func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
+	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
 		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
 	goPath := os.Getenv("GOPATH")
 	if goPath == "" {
 		goPath = build.Default.GOPATH
 	}
-	l.StartSpinner("\t", "Running golang module initializing...")
 	if goPath == "" {
 		l.StopSpinnerWithStatus("$GOPATH not set up; "+skipLog, log.Warning)
 		return nil
