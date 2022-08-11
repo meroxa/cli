@@ -245,7 +245,6 @@ func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor 
 	goPath := os.Getenv("GOPATH")
 	if goPath == "" {
 		goPath = build.Default.GOPATH
-		l.Infof(ctx, "using default GOPATH: %s", goPath)
 	}
 	if goPath == "" {
 		l.StopSpinnerWithStatus("$GOPATH not set up; "+skipLog, log.Warning)
@@ -291,7 +290,12 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
 		return err
 	}
-	l.StopSpinnerWithStatus("go mod init succeeded!", log.Successful)
+	successLog := "go mod init succeeded"
+	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		successLog += fmt.Sprintf(" (while assuming GOPATH is %s)", build.Default.GOPATH)
+	}
+	l.StopSpinnerWithStatus(successLog+"!", log.Successful)
 	l.StartSpinner("\t", "Getting latest turbine-go and turbine-go/running dependencies...")
 	cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go")
 	output, err = cmd.CombinedOutput()
