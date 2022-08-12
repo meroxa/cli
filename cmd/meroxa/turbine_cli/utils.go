@@ -33,6 +33,12 @@ type AppConfig struct {
 var prefetched *AppConfig
 var isTrue = "true"
 
+type ApplicationResource struct {
+	Name        string `json:"name"`
+	Source      bool   `json:"source"`
+	Destination bool   `json:"destination"`
+}
+
 func GetPath(flag string) (string, error) {
 	if flag == "" {
 		flag = "."

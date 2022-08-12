@@ -89,7 +89,7 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 		return names, errors.New(string(output))
 	}
 
-	var parsed []map[string]interface{}
+	var parsed []turbinecli.ApplicationResource
 	if err := json.Unmarshal(output, &parsed); err != nil {
 		// fall back if not json
 		return getResourceNamesFromString(string(output)), nil
@@ -97,8 +97,8 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 
 	for i := range parsed {
 		kv := parsed[i]
-		if _, ok := kv["name"]; ok {
-			names = append(names, kv["name"].(string))
+		if kv.Name != "" {
+			names = append(names, kv.Name)
 		}
 	}
 	return names, nil
