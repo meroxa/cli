@@ -135,7 +135,7 @@ func (i *Init) Execute(ctx context.Context) error {
 			return err
 		}
 		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
-		err = turbineCLI.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
+		err = turbineCLI.GoInit(ctx, i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
 	case "js", JavaScript, NodeJs:
 		err = turbinejs.Init(ctx, i.logger, name, i.path)
 	case "py", Python3, Python:
