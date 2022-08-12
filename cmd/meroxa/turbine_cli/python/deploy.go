@@ -57,7 +57,7 @@ func NeedsToBuild(path string) (bool, error) {
 // RunDeployApp creates Application entities.
 func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha string) error {
 	cmd := exec.Command("turbine-py", "clideploy", path, imageName, appName, gitSha)
-  
+
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
 		return err
