@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coreos/go-semver/semver"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
@@ -61,6 +62,7 @@ type Deploy struct {
 		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
 		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
 		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
+		Spec                 string `long:"spec" description:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 	}
 
 	client      deployApplicationClient
@@ -72,6 +74,7 @@ type Deploy struct {
 	localDeploy turbineCLI.LocalDeploy
 	fnName      string
 	tempPath    string // find something more elegant to this
+	specVersion string
 }
 
 var (
@@ -195,6 +198,16 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		if err != nil {
 			return err
 		}
+		defer func() {
+			d.logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
+			// We clean up Dockerfile as last step
+			err = os.Remove(filepath.Join(appPath, "Dockerfile"))
+			if err != nil {
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf("Unable to remove Dockerfile: %v", err), log.Failed)
+			} else {
+				d.logger.StopSpinnerWithStatus("Dockerfile removed", log.Successful)
+			}
+		}()
 		d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
 	}
 
@@ -219,8 +232,27 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 		if err != nil {
 			panic(err.Error())
 		}
-	}(fileToWrite)
 
+		// remove .tar.gz file
+		d.logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
+		removeErr := os.Remove(dFile)
+		if removeErr != nil {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		} else {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
+		}
+
+		if d.lang == Python {
+			d.logger.StartSpinner("\t", fmt.Sprintf(" Removing artifacts from building the Python Application at %s...", appPath))
+			var output string
+			output, err = turbinePY.CleanUpApp(appPath)
+			if err != nil {
+				d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Failed to clean up artifacts at %s: %v %s", appPath, err, output), log.Failed)
+			} else {
+				d.logger.StopSpinnerWithStatus("Removed artifacts from building", log.Successful)
+			}
+		}
+	}(fileToWrite)
 	if err != nil {
 		return err
 	}
@@ -229,37 +261,7 @@ func (d *Deploy) uploadSource(ctx context.Context, appPath, url string) error {
 	}
 	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, appPath), log.Successful)
 
-	if d.lang == GoLang {
-		d.logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
-		// We clean up Dockerfile as last step
-		err = os.Remove(filepath.Join(appPath, "Dockerfile"))
-		if err != nil {
-			return err
-		}
-		d.logger.StopSpinnerWithStatus("Dockerfile removed", log.Successful)
-	}
-
-	err = d.uploadFile(ctx, dFile, url)
-	if err != nil {
-		return err
-	}
-
-	if d.lang == Python {
-		var output string
-		output, err = turbinePY.CleanUpApp(appPath)
-		if err != nil {
-			fmt.Printf("warning: failed to clean up app at %s: %v %s\n", appPath, err, output)
-		}
-	}
-	// remove .tar.gz file
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
-	err = os.Remove(dFile)
-	if err != nil {
-		d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
-		return err
-	}
-	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q removed", dFile), log.Successful)
-	return nil
+	return d.uploadFile(ctx, dFile, url)
 }
 
 func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
@@ -267,7 +269,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 
 	fh, err := os.Open(filePath)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
 		return err
 	}
 	defer func(fh *os.File) {
@@ -276,13 +278,13 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 
 	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
 		return err
 	}
 
 	fi, err := fh.Stat()
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
 		return err
 	}
 
@@ -296,7 +298,7 @@ func (d *Deploy) uploadFile(ctx context.Context, filePath, url string) error {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		d.logger.StopSpinnerWithStatus("\t Failed to send PUT request", log.Failed)
 		return err
 	}
 
@@ -354,15 +356,15 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	}
 }
 
-func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha string) error {
+func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) error {
 	var err error
 
 	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
 	switch d.lang {
 	case GoLang:
-		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
+		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	case JavaScript:
-		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
+		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha, specVersion)
 	case Python:
 		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
 	}
@@ -473,7 +475,8 @@ func (d *Deploy) validateLanguage() error {
 	return nil
 }
 
-func (d *Deploy) validate(ctx context.Context) error {
+func (d *Deploy) validateAppJSON(ctx context.Context) error {
+	d.logger.Info(ctx, "Validating your app.json...")
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
 	err := d.validateLocalDeploymentConfig()
 	if err != nil {
@@ -496,16 +499,7 @@ func (d *Deploy) validate(ctx context.Context) error {
 	}
 
 	d.appName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path)
-	if err != nil {
-		return err
-	}
-
-	err = turbineCLI.GitChecks(ctx, d.logger, d.path)
-	if err != nil {
-		return err
-	}
-
-	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+	return err
 }
 
 func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames []string) string {
@@ -570,7 +564,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
+func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
 
 	// After this point, CLI will package it up and will build it
@@ -579,7 +573,7 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 		return err
 	}
 
-	// check that resources exist and are ready
+	// check if resources exist and are ready
 	err = d.checkResourceAvailability(ctx)
 	if err != nil {
 		return err
@@ -605,6 +599,38 @@ func (d *Deploy) rmBinary() {
 	}
 }
 
+// validateSpecVersionDeployment checks, when --spec is specified, whether the version has a valid format
+// accepted formats are: semver or "latest".
+func (d *Deploy) validateSpecVersionDeployment() error {
+	switch d.flags.Spec {
+	case "":
+		return nil
+	case "latest":
+		d.specVersion = d.flags.Spec
+		return nil
+	}
+
+	// check if the version has a valid format
+	version, err := semver.NewVersion(d.flags.Spec)
+	if err != nil {
+		return fmt.Errorf("invalid spec version: %v. You must specify a valid format or use \"latest\"", err)
+	}
+
+	d.specVersion = version.String()
+	return nil
+}
+
+// validateConfig will validate wether there are uncommitted changes or it's deploying from an accepted branch.
+func (d *Deploy) validateGitConfig(ctx context.Context) error {
+	d.logger.Info(ctx, "Checking for uncommitted changes...")
+	err := turbineCLI.GitChecks(ctx, d.logger, d.path)
+	if err != nil {
+		return err
+	}
+
+	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+}
+
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
 // or whether it's in a non-running state.
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
@@ -623,8 +649,17 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
-	d.logger.Info(ctx, "Validating your app.json...")
-	err := d.validate(ctx)
+	err := d.validateAppJSON(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = d.validateGitConfig(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = d.validateSpecVersionDeployment()
 	if err != nil {
 		return err
 	}
@@ -635,7 +670,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = d.prepareAppForDeployment(ctx)
+	err = d.prepareDeployment(ctx)
 	defer d.rmBinary()
 	if err != nil {
 		return err
@@ -646,5 +681,5 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	return d.deployApp(ctx, d.fnName, gitSha)
+	return d.deployApp(ctx, d.fnName, gitSha, d.specVersion)
 }

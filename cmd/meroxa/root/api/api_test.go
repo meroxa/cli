@@ -118,6 +118,7 @@ func TestAPIExecution(t *testing.T) {
 			a.args.Path,
 			"",
 			nil,
+			nil,
 		).
 		Return(httpResponse, nil)
 

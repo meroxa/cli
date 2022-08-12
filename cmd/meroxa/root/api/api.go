@@ -41,7 +41,7 @@ var (
 )
 
 type apiClient interface {
-	MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values) (*http.Response, error)
+	MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error)
 }
 
 type API struct {
@@ -92,7 +92,7 @@ func (a *API) ParseArgs(args []string) error {
 }
 
 func (a *API) Execute(ctx context.Context) error {
-	resp, err := a.client.MakeRequest(ctx, a.args.Method, a.args.Path, a.args.Body, nil)
+	resp, err := a.client.MakeRequest(ctx, a.args.Method, a.args.Path, a.args.Body, nil, nil)
 	if err != nil {
 		return err
 	}

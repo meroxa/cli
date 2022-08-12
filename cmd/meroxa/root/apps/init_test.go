@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go/build"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -110,8 +110,16 @@ func TestGitInit(t *testing.T) {
 	os.RemoveAll(testDir)
 }
 
+//nolint:funlen
 func TestGoInit(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		gopath = build.Default.GOPATH
+	}
+	if gopath == "" {
+		t.Fatal("GOPATH is not defined")
+	}
+
 	tests := []struct {
 		desc                 string
 		path                 string
