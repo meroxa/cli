@@ -364,7 +364,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 	case GoLang:
 		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	case JavaScript:
-		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha, specVersion)
+		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
 	case Python:
 		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
 	}

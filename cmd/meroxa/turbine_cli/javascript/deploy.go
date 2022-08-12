@@ -2,6 +2,7 @@ package turbinejs
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -52,14 +53,8 @@ func BuildApp(path string) (string, error) {
 	return match[1], err
 }
 
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha, specVersion string) error {
-	params := []string{"clideploy", imageName, path, gitSha}
-
-	if specVersion != "" {
-		params = append(params, specVersion)
-	}
-
-	cmd := turbinecli.RunTurbineJS(params...)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha string) error {
+	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path, appName, gitSha)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -81,16 +76,30 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 	if err != nil {
 		return names, errors.New(string(output))
 	}
-	r := regexp.MustCompile("\nturbine-response: (.*)\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return names, fmt.Errorf("unable to verify resource availability for Meroxa Application at %s; %s", appPath, string(output))
+
+	var parsed []turbinecli.ApplicationResource
+	if err := json.Unmarshal(output, &parsed); err != nil {
+		return getResourceNamesFromString(string(output)), nil
 	}
-	text := match[1]
-	names = strings.Split(text, ",")
-	for i, name := range names {
-		names[i] = strings.TrimSpace(name)
+
+	for i := range parsed {
+		kv := parsed[i]
+		if kv.Name != "" {
+			names = append(names, kv.Name)
+		}
 	}
 
 	return names, nil
+}
+
+func getResourceNamesFromString(s string) []string {
+	var names []string
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+	sliceString := r.FindStringSubmatch(s)
+	if len(sliceString) > 0 {
+		names = strings.Fields(sliceString[1])
+	}
+
+	return names
 }
