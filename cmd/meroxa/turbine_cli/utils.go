@@ -63,9 +63,10 @@ func GetLang(ctx context.Context, l log.Logger, flag, pwd string) (string, error
 
 // GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", "Determining application language from app.json...")
+	l.StartSpinner("\t", " Determining application language from app.json...")
 	appConfig, err := readConfigFile(pwd)
 	if err != nil {
+		l.StopSpinnerWithStatus("Something went wrong reading your app.json", log.Failed)
 		return "", err
 	}
 
@@ -157,7 +158,6 @@ func writeConfigFile(appPath string, cfg AppConfig) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
-	l.Info(ctx, "Checking for uncommitted changes...")
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {

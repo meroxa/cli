@@ -28,6 +28,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coreos/go-semver/semver"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
@@ -61,6 +62,7 @@ type Deploy struct {
 		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
 		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
 		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
+		Spec                 string `long:"spec" description:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 	}
 
 	client      deployApplicationClient
@@ -72,6 +74,7 @@ type Deploy struct {
 	localDeploy turbineCLI.LocalDeploy
 	fnName      string
 	tempPath    string // find something more elegant to this
+	specVersion string
 }
 
 var (
@@ -353,17 +356,17 @@ func (d *Deploy) getPlatformImage(ctx context.Context, appPath string) (string, 
 	}
 }
 
-func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha string) error {
+func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) error {
 	var err error
 
 	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
 	switch d.lang {
 	case GoLang:
-		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
+		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	case JavaScript:
-		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
+		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha, specVersion)
 	case Python:
-		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha)
+		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, gitSha, specVersion)
 	}
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
@@ -472,7 +475,8 @@ func (d *Deploy) validateLanguage() error {
 	return nil
 }
 
-func (d *Deploy) validate(ctx context.Context) error {
+func (d *Deploy) validateAppJSON(ctx context.Context) error {
+	d.logger.Info(ctx, "Validating your app.json...")
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
 	err := d.validateLocalDeploymentConfig()
 	if err != nil {
@@ -495,16 +499,7 @@ func (d *Deploy) validate(ctx context.Context) error {
 	}
 
 	d.appName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path)
-	if err != nil {
-		return err
-	}
-
-	err = turbineCLI.GitChecks(ctx, d.logger, d.path)
-	if err != nil {
-		return err
-	}
-
-	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+	return err
 }
 
 func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames []string) string {
@@ -569,7 +564,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
+func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
 
 	// After this point, CLI will package it up and will build it
@@ -578,7 +573,7 @@ func (d *Deploy) prepareAppForDeployment(ctx context.Context) error {
 		return err
 	}
 
-	// check that resources exist and are ready
+	// check if resources exist and are ready
 	err = d.checkResourceAvailability(ctx)
 	if err != nil {
 		return err
@@ -604,6 +599,38 @@ func (d *Deploy) rmBinary() {
 	}
 }
 
+// validateSpecVersionDeployment checks, when --spec is specified, whether the version has a valid format
+// accepted formats are: semver or "latest".
+func (d *Deploy) validateSpecVersionDeployment() error {
+	switch d.flags.Spec {
+	case "":
+		return nil
+	case "latest":
+		d.specVersion = d.flags.Spec
+		return nil
+	}
+
+	// check if the version has a valid format
+	version, err := semver.NewVersion(d.flags.Spec)
+	if err != nil {
+		return fmt.Errorf("invalid spec version: %v. You must specify a valid format or use \"latest\"", err)
+	}
+
+	d.specVersion = version.String()
+	return nil
+}
+
+// validateConfig will validate wether there are uncommitted changes or it's deploying from an accepted branch.
+func (d *Deploy) validateGitConfig(ctx context.Context) error {
+	d.logger.Info(ctx, "Checking for uncommitted changes...")
+	err := turbineCLI.GitChecks(ctx, d.logger, d.path)
+	if err != nil {
+		return err
+	}
+
+	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+}
+
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
 // or whether it's in a non-running state.
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
@@ -622,8 +649,17 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
-	d.logger.Info(ctx, "Validating your app.json...")
-	err := d.validate(ctx)
+	err := d.validateAppJSON(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = d.validateGitConfig(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = d.validateSpecVersionDeployment()
 	if err != nil {
 		return err
 	}
@@ -634,7 +670,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = d.prepareAppForDeployment(ctx)
+	err = d.prepareDeployment(ctx)
 	defer d.rmBinary()
 	if err != nil {
 		return err
@@ -645,5 +681,5 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	return d.deployApp(ctx, d.fnName, gitSha)
+	return d.deployApp(ctx, d.fnName, gitSha, d.specVersion)
 }

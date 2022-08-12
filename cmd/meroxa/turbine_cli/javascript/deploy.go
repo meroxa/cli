@@ -52,8 +52,14 @@ func BuildApp(path string) (string, error) {
 	return match[1], err
 }
 
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha string) error {
-	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path, gitSha)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha, specVersion string) error {
+	params := []string{"clideploy", imageName, path, gitSha}
+
+	if specVersion != "" {
+		params = append(params, specVersion)
+	}
+
+	cmd := turbinecli.RunTurbineJS(params...)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
