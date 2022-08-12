@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go/build"
 	"io"
 	"os"
 	"os/exec"
@@ -32,6 +33,12 @@ type AppConfig struct {
 
 var prefetched *AppConfig
 var isTrue = "true"
+
+type ApplicationResource struct {
+	Name        string `json:"name"`
+	Source      bool   `json:"source"`
+	Destination bool   `json:"destination"`
+}
 
 func GetPath(flag string) (string, error) {
 	if flag == "" {
@@ -62,9 +69,10 @@ func GetLang(ctx context.Context, l log.Logger, flag, pwd string) (string, error
 
 // GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", "Determining application language from app.json...")
+	l.StartSpinner("\t", " Determining application language from app.json...")
 	appConfig, err := readConfigFile(pwd)
 	if err != nil {
+		l.StopSpinnerWithStatus("Something went wrong reading your app.json", log.Failed)
 		return "", err
 	}
 
@@ -156,7 +164,6 @@ func writeConfigFile(appPath string, cfg AppConfig) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
-	l.Info(ctx, "Checking for uncommitted changes...")
 	// temporarily switching to the app's directory
 	pwd, err := switchToAppDirectory(appPath)
 	if err != nil {
@@ -237,11 +244,14 @@ func GetGitSha(appPath string) (string, error) {
 	return string(output), nil
 }
 
-func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
+func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
 	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
 		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
 	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		goPath = build.Default.GOPATH
+	}
 	if goPath == "" {
 		l.StopSpinnerWithStatus("$GOPATH not set up; "+skipLog, log.Warning)
 		return nil
@@ -286,7 +296,12 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
 		return err
 	}
-	l.StopSpinnerWithStatus("go mod init succeeded!", log.Successful)
+	successLog := "go mod init succeeded"
+	goPath := os.Getenv("GOPATH")
+	if goPath == "" {
+		successLog += fmt.Sprintf(" (while assuming GOPATH is %s)", build.Default.GOPATH)
+	}
+	l.StopSpinnerWithStatus(successLog+"!", log.Successful)
 	l.StartSpinner("\t", "Getting latest turbine-go and turbine-go/running dependencies...")
 	cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go")
 	output, err = cmd.CombinedOutput()
