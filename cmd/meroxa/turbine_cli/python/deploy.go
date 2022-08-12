@@ -2,6 +2,7 @@ package turbinepy
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -54,14 +55,8 @@ func NeedsToBuild(path string) (bool, error) {
 }
 
 // RunDeployApp creates Application entities.
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, gitSha, specVersion string) error {
-	args := []string{"clideploy", path, imageName, gitSha}
-
-	if specVersion != "" {
-		args = append(args, specVersion)
-	}
-
-	cmd := exec.Command("turbine-py", args...)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha string) error {
+	cmd := exec.Command("turbine-py", "clideploy", path, imageName, appName, gitSha)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -93,16 +88,32 @@ func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string
 	if err != nil {
 		return names, errors.New(string(output))
 	}
-	r := regexp.MustCompile("^turbine-response: \\[(.*)\\]\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return names, fmt.Errorf("unable to verify resource availability for Meroxa Application at %s; %s", appPath, string(output))
+
+	var parsed []turbinecli.ApplicationResource
+	if err := json.Unmarshal(output, &parsed); err != nil {
+		// fall back if not json
+		return getResourceNamesFromString(string(output)), nil
 	}
-	text := match[1]
-	names = strings.Split(text, ",")
-	for i, name := range names {
-		name = strings.TrimSpace(name)
-		names[i] = strings.Trim(name, "'")
+
+	for i := range parsed {
+		kv := parsed[i]
+		if kv.Name != "" {
+			names = append(names, kv.Name)
+		}
 	}
 	return names, nil
+}
+
+// getResourceNamesFromString provides backward compatibility with turbine-go
+// legacy resource listing format.
+func getResourceNamesFromString(s string) []string {
+	var names []string
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+	sliceString := r.FindStringSubmatch(s)
+	if len(sliceString) > 0 {
+		names = strings.Fields(sliceString[1])
+	}
+
+	return names
 }
