@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 
 	"github.com/meroxa/cli/log"
 )
@@ -34,4 +35,19 @@ func Run(ctx context.Context, appPath string, l log.Logger) error {
 	}
 	l.Info(ctx, string(output))
 	return nil
+}
+
+// RunCleanup removes any dangling binaries.
+func RunCleanup(path, appName string) {
+	localBinary := filepath.Join(path, appName)
+	err := os.Remove(localBinary)
+	if err != nil {
+		fmt.Printf("warning: failed to clean up %s\n", localBinary)
+	}
+
+	crossCompiledBinary := localBinary + ".cross"
+	err = os.Remove(crossCompiledBinary)
+	if err != nil {
+		fmt.Printf("warning: failed to clean up %s\n", crossCompiledBinary)
+	}
 }

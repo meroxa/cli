@@ -10,12 +10,12 @@ import (
 	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
 func NeedsToBuild(path string) (bool, error) {
-	cmd := turbinecli.RunTurbineJS("hasfunctions", path)
+	cmd := RunTurbineJS("hasfunctions", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err := fmt.Errorf(
@@ -38,7 +38,7 @@ func NeedsToBuild(path string) (bool, error) {
 }
 
 func CreateDockerfile(ctx context.Context, l log.Logger, path string) error {
-	cmd := turbinecli.RunTurbineJS("clibuild", path)
+	cmd := RunTurbineJS("clibuild", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("unable to create Dockerfile at %s; %s", path, string(output))
@@ -54,7 +54,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, g
 		params = append(params, specVersion)
 	}
 
-	cmd := turbinecli.RunTurbineJS(params...)
+	cmd := RunTurbineJS(params...)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -63,15 +63,15 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, g
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	_, err = turbine.RunCmdWithErrorDetection(ctx, cmd, l)
 	return err
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
-func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbinecli.ApplicationResource, error) {
-	var resources []turbinecli.ApplicationResource
+func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbine.ApplicationResource, error) {
+	var resources []turbine.ApplicationResource
 
-	cmd := turbinecli.RunTurbineJS("listresources", appPath)
+	cmd := RunTurbineJS("listresources", appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return resources, errors.New(string(output))
@@ -79,7 +79,7 @@ func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([
 
 	if err := json.Unmarshal(output, &resources); err != nil {
 		// fall back if not json
-		return turbinecli.GetResourceNamesFromString(string(output)), nil
+		return turbine.GetResourceNamesFromString(string(output)), nil
 	}
 
 	return resources, nil

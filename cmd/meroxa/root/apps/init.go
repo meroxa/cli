@@ -9,11 +9,12 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
-	turbinejs "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
-	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine"
+	utils "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbinejs "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	"github.com/meroxa/cli/log"
-	turbine "github.com/meroxa/turbine-go/init"
+	turbinego "github.com/meroxa/turbine-go/init"
 )
 
 type Init struct {
@@ -129,13 +130,13 @@ func (i *Init) Execute(ctx context.Context) error {
 	i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
 	switch lang {
 	case "go", GoLang:
-		err = turbine.Init(name, i.path)
+		err = turbinego.Init(name, i.path)
 		if err != nil {
 			i.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return err
 		}
 		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
-		err = turbineCLI.GoInit(ctx, i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
+		err = utils.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
 	case "js", JavaScript, NodeJs:
 		err = turbinejs.Init(ctx, i.logger, name, i.path)
 	case "py", Python3, Python:

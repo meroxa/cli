@@ -21,17 +21,15 @@ import (
 	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
-	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	"github.com/meroxa/cli/log"
 )
 
 type Run struct {
 	flags struct {
-		// `--lang` is not required unless language is not specified via app.json
-		Lang string `long:"lang" short:"l" usage:"language to use (go | js)"`
 		Path string `long:"path" usage:"path of application to run"`
 	}
 
@@ -75,14 +73,20 @@ func (r *Run) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	lang, err := turbineCLI.GetLang(ctx, r.logger, r.flags.Lang, r.path)
+	lang, err := turbineCLI.GetLangFromAppJSON(ctx, r.logger, r.path)
+	if err != nil {
+		return err
+	}
+	appName, err := turbineCLI.GetAppNameFromAppJSON(ctx, r.logger, r.path)
 	if err != nil {
 		return err
 	}
 
 	switch lang {
 	case GoLang:
-		return turbineGo.Run(ctx, r.path, r.logger)
+		err = turbineGo.Run(ctx, r.path, r.logger)
+		turbineGo.RunCleanup(r.path, appName)
+		return err
 	case "js", JavaScript, NodeJs:
 		return turbineJS.Build(ctx, r.logger, r.path)
 	case "py", Python3, Python:

@@ -1,4 +1,4 @@
-package turbinecli
+package turbine
 
 import (
 	"archive/tar"
@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go/build"
 	"io"
 	"os"
 	"os/exec"
@@ -17,11 +16,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 )
-
-const turbineJSVersion = "1.0.0"
 
 type AppConfig struct {
 	Name        string            `json:"name"`
@@ -33,7 +29,6 @@ type AppConfig struct {
 }
 
 var prefetched *AppConfig
-var isTrue = "true"
 
 type ApplicationResource struct {
 	Name        string `json:"name"`
@@ -74,25 +69,10 @@ func GetPath(flag string) (string, error) {
 	return flag, nil
 }
 
-// GetLang will return language defined either by `--lang` or the one defined by user in the app.json.
-func GetLang(ctx context.Context, l log.Logger, flag, pwd string) (string, error) {
-	if flag != "" {
-		return flag, nil
-	}
-
-	lang, err := GetLangFromAppJSON(ctx, l, pwd)
-	if err != nil {
-		return "", err
-	} else if lang == "" {
-		return "", fmt.Errorf("flag --lang is required unless lang is specified in your app.json")
-	}
-	return lang, nil
-}
-
 // GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
 	l.StartSpinner("\t", " Determining application language from app.json...")
-	appConfig, err := readConfigFile(pwd)
+	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
 		l.StopSpinnerWithStatus("Something went wrong reading your app.json", log.Failed)
 		return "", err
@@ -108,8 +88,8 @@ func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, 
 
 // GetAppNameFromAppJSON returns specified app name in users' app.json.
 func GetAppNameFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", "Reading application name from app.json...")
-	appConfig, err := readConfigFile(pwd)
+	l.StartSpinner("\t", " Reading application name from app.json...")
+	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
 		return "", err
 	}
@@ -124,37 +104,37 @@ func GetAppNameFromAppJSON(ctx context.Context, l log.Logger, pwd string) (strin
 
 // SetModuleInitInAppJSON returns whether to run mod init.
 func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
-	appConfig, err := readConfigFile(pwd)
+	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
 		return err
 	}
-	appConfig.ModuleInit = isTrue
+	appConfig.ModuleInit = "true"
 	if skipInit {
 		appConfig.ModuleInit = "false"
 	}
-	err = writeConfigFile(pwd, appConfig) // will never be programmatically read again, but a marker of what turbine did
+	err = WriteConfigFile(pwd, appConfig)
 	return err
 }
 
 // SetVendorInAppJSON returns whether to vendor modules.
 func SetVendorInAppJSON(pwd string, vendor bool) error {
-	appConfig, err := readConfigFile(pwd)
+	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
 		return err
 	}
 	appConfig.Vendor = "false"
 	if vendor {
-		appConfig.Vendor = isTrue
+		appConfig.Vendor = "true"
 	}
-	err = writeConfigFile(pwd, appConfig) // will never be programmatically read again, but a marker of what turbine did
+	err = WriteConfigFile(pwd, appConfig)
 	return err
 }
 
-// readConfigFile will read the content of an app.json based on path.
-func readConfigFile(appPath string) (AppConfig, error) {
+// ReadConfigFile will read the content of an app.json based on path.
+func ReadConfigFile(appPath string) (AppConfig, error) {
 	var appConfig AppConfig
 
-	if prefetched == nil {
+	if prefetched == nil || os.Getenv("UNIT_TEST") != "" {
 		appConfigPath := path.Join(appPath, "app.json")
 		appConfigBytes, err := os.ReadFile(appConfigPath)
 		if err != nil {
@@ -170,7 +150,7 @@ func readConfigFile(appPath string) (AppConfig, error) {
 	return *prefetched, nil
 }
 
-func writeConfigFile(appPath string, cfg AppConfig) error {
+func WriteConfigFile(appPath string, cfg AppConfig) error {
 	appConfigPath := path.Join(appPath, "app.json")
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
@@ -209,7 +189,7 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
 func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
-	l.StartSpinner("", "Validating branch...")
+	l.StartSpinner("", " Validating branch...")
 	branchName, err := GetGitBranch(appPath)
 	if err != nil {
 		return err
@@ -256,104 +236,8 @@ func GetGitBranch(appPath string) (string, error) {
 	return strings.TrimSpace(string(output)), nil
 }
 
-func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
-	l.StartSpinner("\t", "Running golang module initializing...")
-	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
-		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
-
-	goPath := os.Getenv("GOPATH")
-	if goPath == "" {
-		goPath = build.Default.GOPATH
-	}
-	if goPath == "" {
-		l.StopSpinnerWithStatus("$GOPATH not set up; "+skipLog, log.Warning)
-		return nil
-	}
-	i := strings.Index(appPath, goPath+"/src")
-	if i == -1 || i != 0 {
-		l.StopSpinnerWithStatus(fmt.Sprintf("%s is not under $GOPATH/src; %s", appPath, skipLog), log.Warning)
-		return nil
-	}
-
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
-	if err != nil {
-		l.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-
-	// initialize the user's module
-	err = SetModuleInitInAppJSON(appPath, skipInit)
-	if err != nil {
-		l.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-
-	err = modulesInit(l, appPath, skipInit, vendor)
-	if err != nil {
-		l.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-
-	return os.Chdir(pwd)
-}
-
-func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
-	if skipInit {
-		return nil
-	}
-
-	cmd := exec.Command("go", "mod", "init")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-		return err
-	}
-	successLog := "go mod init succeeded"
-	goPath := os.Getenv("GOPATH")
-	if goPath == "" {
-		successLog += fmt.Sprintf(" (while assuming GOPATH is %s)", build.Default.GOPATH)
-	}
-	l.StopSpinnerWithStatus(successLog+"!", log.Successful)
-	l.StartSpinner("\t", "Getting latest turbine-go and turbine-go/running dependencies...")
-	cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go")
-	output, err = cmd.CombinedOutput()
-	if err != nil {
-		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-		return err
-	}
-	cmd = exec.Command("go", "get", "github.com/meroxa/turbine-go/runner")
-	output, err = cmd.CombinedOutput()
-	if err != nil {
-		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-		return err
-	}
-	l.StopSpinnerWithStatus("Downloaded latest turbine-go and turbine-go/running dependencies successfully!", log.Successful)
-
-	// download dependencies
-	err = SetVendorInAppJSON(appPath, vendor)
-	if err != nil {
-		return err
-	}
-	depsLog := "Downloading dependencies"
-	cmd = exec.Command("go", "mod", "download")
-	if vendor {
-		depsLog += " to vendor"
-		cmd = exec.Command("go", "mod", "vendor")
-	}
-	depsLog += "..."
-	l.StartSpinner("\t", depsLog)
-	output, err = cmd.CombinedOutput()
-	if err != nil {
-		l.StopSpinnerWithStatus(fmt.Sprintf("\t%s", string(output)), log.Failed)
-		return err
-	}
-	l.StopSpinnerWithStatus("Downloaded all other dependencies successfully!", log.Successful)
-	return nil
-}
-
-// switchToAppDirectory switches temporarily to the application's directory.
-func switchToAppDirectory(appPath string) (string, error) {
+// SwitchToAppDirectory switches temporarily to the application's directory.
+func SwitchToAppDirectory(appPath string) (string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
 		return pwd, err
@@ -394,7 +278,7 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	appDir := filepath.Base(src)
 
 	// Change to parent's app directory
-	pwd, err := switchToAppDirectory(filepath.Dir(src))
+	pwd, err := SwitchToAppDirectory(filepath.Dir(src))
 	if err != nil {
 		return err
 	}
@@ -448,26 +332,6 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	}
 
 	return os.Chdir(pwd)
-}
-
-func RunTurbineJS(params ...string) (cmd *exec.Cmd) {
-	args := getTurbineJSBinary(params)
-	return executeTurbineJSCommand(args)
-}
-
-func getTurbineJSBinary(params []string) []string {
-	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
-	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion)
-	if shouldUseLocalTurbineJS == isTrue {
-		turbineJSBinary = "turbine-js-cli"
-	}
-	args := []string{"npx", "--yes", turbineJSBinary}
-	args = append(args, params...)
-	return args
-}
-
-func executeTurbineJSCommand(params []string) *exec.Cmd {
-	return exec.Command(params[0], params[1:]...) //nolint:gosec
 }
 
 func shouldSkipDir(fi os.FileInfo) bool {

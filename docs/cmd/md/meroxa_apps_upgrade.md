@@ -1,28 +1,22 @@
-## meroxa apps run
+## meroxa apps upgrade
 
-Execute a Turbine Data Application locally (Beta)
-
-### Synopsis
-
-meroxa apps run will build your app locally to then run it locally in --path.
+Upgrade a Turbine Data Application (Beta)
 
 ```
-meroxa apps run [flags]
+meroxa apps upgrade [APP_NAME] [--path pwd] [flags]
 ```
 
 ### Examples
 
 ```
-meroxa apps run 			# assumes you run it from the app directory
-meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
-
+meroxa apps upgrade my-app --path ~/code
 ```
 
 ### Options
 
 ```
-  -h, --help          help for run
-      --path string   path of application to run
+  -h, --help          help for upgrade
+      --path string   path where application exists (current directory as default)
 ```
 
 ### Options inherited from parent commands

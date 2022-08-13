@@ -14,7 +14,6 @@ func TestRunAppFlags(t *testing.T) {
 		shorthand string
 		hidden    bool
 	}{
-		{name: "lang", shorthand: "l"},
 		{name: "path", required: false},
 	}
 

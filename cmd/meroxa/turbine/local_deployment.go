@@ -1,4 +1,4 @@
-package turbinecli
+package turbine
 
 import (
 	"context"
@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/docker/docker/pkg/archive"
-	turbine "github.com/meroxa/turbine-go/deploy"
-
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/archive"
+
 	"github.com/meroxa/cli/log"
+	turbine "github.com/meroxa/turbine-go/deploy"
 )
 
 type LocalDeploy struct {

@@ -26,16 +26,17 @@ type SpinnerLogger interface {
 }
 
 func NewSpinnerLogger(out io.Writer) SpinnerLogger {
-	return &spinnerLogger{l: log.New(out, "", 0)}
+	return &spinnerLogger{l: log.New(out, "", 0), out: out}
 }
 
 type spinnerLogger struct {
-	l *log.Logger
-	s *spinner.Spinner
+	l   *log.Logger
+	s   *spinner.Spinner
+	out io.Writer
 }
 
 func (l *spinnerLogger) StartSpinner(prefix, suffix string) {
-	l.s = spinner.New(spinner.CharSets[14], 100*time.Millisecond) //nolint:gomnd
+	l.s = spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithWriter(l.out)) //nolint:gomnd
 	l.s.Prefix = prefix
 	l.s.Suffix = suffix
 	l.s.Start()

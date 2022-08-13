@@ -3,23 +3,27 @@
 
 .SH NAME
 .PP
-meroxa\-apps \- Manage Turbine Data Applications (Beta)
+meroxa\-apps\-upgrade \- Upgrade a Turbine Data Application (Beta)
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps [flags]\fP
+\fBmeroxa apps upgrade [APP\_NAME] [\-\-path pwd] [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Manage Turbine Data Applications (Beta)
+Upgrade a Turbine Data Application (Beta)
 
 
 .SH OPTIONS
 .PP
 \fB\-h\fP, \fB\-\-help\fP[=false]
-	help for apps
+	help for upgrade
+
+.PP
+\fB\-\-path\fP=""
+	path where application exists (current directory as default)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -40,6 +44,17 @@ Manage Turbine Data Applications (Beta)
 	set the duration of the client timeout in seconds
 
 
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+meroxa apps upgrade my\-app \-\-path \~/code
+
+.fi
+.RE
+
+
 .SH SEE ALSO
 .PP
-\fBmeroxa(1)\fP, \fBmeroxa\-apps\-deploy(1)\fP, \fBmeroxa\-apps\-describe(1)\fP, \fBmeroxa\-apps\-init(1)\fP, \fBmeroxa\-apps\-list(1)\fP, \fBmeroxa\-apps\-logs(1)\fP, \fBmeroxa\-apps\-remove(1)\fP, \fBmeroxa\-apps\-run(1)\fP, \fBmeroxa\-apps\-upgrade(1)\fP
+\fBmeroxa\-apps(1)\fP
