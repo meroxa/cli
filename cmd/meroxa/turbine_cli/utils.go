@@ -164,13 +164,8 @@ func writeConfigFile(appPath string, cfg AppConfig) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
-	if err != nil {
-		return err
-	}
-
 	cmd := exec.Command("git", "status", "--porcelain=v2")
+	cmd.Dir = appPath
 	output, err := cmd.Output()
 	if err != nil {
 		return err
@@ -184,14 +179,10 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 			return err
 		}
 		l.Error(ctx, string(output))
-		err = os.Chdir(pwd)
-		if err != nil {
-			return err
-		}
 		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
 	}
 	l.Infof(ctx, "\t%s No uncommitted changes!", l.SuccessfulCheck())
-	return os.Chdir(pwd)
+	return nil
 }
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
@@ -222,20 +213,10 @@ func GitMainBranch(branch string) bool {
 
 // GetGitSha will return the latest gitSha that will be used to create an application.
 func GetGitSha(appPath string) (string, error) {
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
-	if err != nil {
-		return "", err
-	}
-
 	// Gets latest git sha
 	cmd := exec.Command("git", "rev-parse", "HEAD")
+	cmd.Dir = appPath
 	output, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-
-	err = os.Chdir(pwd)
 	if err != nil {
 		return "", err
 	}
