@@ -499,7 +499,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		return err
 	}
 
-	if err := d.validateLanguage(); err != nil {
+	if err = d.validateLanguage(); err != nil {
 		return err
 	}
 
