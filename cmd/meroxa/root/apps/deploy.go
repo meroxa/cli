@@ -507,7 +507,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		return err
 	}
 
-	if d.appName, err = d.prepareAppName(ctx); err != nil {
+	if d.appName, err = d.prepareAppName(); err != nil {
 		return err
 	}
 
@@ -660,7 +660,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) prepareAppName(ctx context.Context) (string, error) {
+func (d *Deploy) prepareAppName() (string, error) {
 	return d.configAppName, nil
 }
 
