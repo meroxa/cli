@@ -506,10 +506,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	if d.configAppName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path); err != nil {
 		return err
 	}
-
-	if d.appName, err = d.prepareAppName(); err != nil {
-		return err
-	}
+	d.appName = d.prepareAppName()
 
 	return nil
 }
@@ -660,8 +657,8 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) prepareAppName() (string, error) {
-	return d.configAppName, nil
+func (d *Deploy) prepareAppName() string {
+	return d.configAppName
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
