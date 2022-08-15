@@ -1,10 +1,11 @@
-SHELL=/bin/bash -o pipefail
-GIT_COMMIT:=$(shell git rev-parse --short HEAD)
-LDFLAGS:=-X main.GitCommit=${GIT_COMMIT}
-GIT_UNTRACKED=$(shell git diff-index --quiet HEAD -- || echo "(updated)")
-LDFLAGS+=-X main.GitUntracked=${GIT_UNTRACKED}
-GIT_TAG=$(shell git describe)
-LDFLAGS+=-X main.GitLatestTag=${GIT_TAG}
+SHELL           = /bin/bash -o pipefail
+GIT_COMMIT     := $(shell git rev-parse --short HEAD)
+LDFLAGS        := -X main.GitCommit=${GIT_COMMIT}
+GIT_UNTRACKED   = $(shell git diff-index --quiet HEAD -- || echo "(updated)")
+LDFLAGS        += -X main.GitUntracked=${GIT_UNTRACKED}
+GIT_TAG         = $(shell git describe)
+LDFLAGS        += -X main.GitLatestTag=${GIT_TAG}
+REBUILD_DOCS    ?= true
 
 .PHONY: build
 build: docs
@@ -24,9 +25,11 @@ test:
 
 .PHONY: docs
 docs:
+ifeq ($(REBUILD_DOCS), "true")
 	rm -rf docs/cmd && mkdir -p docs/cmd/{md,www}
 	rm -rf etc && mkdir -p etc/man/man1 && mkdir -p etc/completion
 	go run gen-docs/main.go
+endif
 
 .PHONY: lint
 lint:

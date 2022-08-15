@@ -34,12 +34,6 @@ type AppConfig struct {
 var prefetched *AppConfig
 var isTrue = "true"
 
-type ApplicationResource struct {
-	Name        string `json:"name"`
-	Source      bool   `json:"source"`
-	Destination bool   `json:"destination"`
-}
-
 func GetPath(flag string) (string, error) {
 	if flag == "" {
 		flag = "."
@@ -197,28 +191,27 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
 func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 	l.StartSpinner("", "Validating branch...")
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
+	branchName, err := GetGitBranch(appPath)
 	if err != nil {
 		return err
 	}
 
-	cmd := exec.Command("git", "branch", "--show-current")
-	output, err := cmd.Output()
-	if err != nil {
-		return err
+	if GitMainBranch(branchName) {
+		l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
+		return nil
 	}
-	branchName := strings.TrimSpace(string(output))
-	if branchName != "main" && branchName != "master" {
-		l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
-		return fmt.Errorf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName)
+
+	l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
+	return fmt.Errorf(`deployment allowed only from "main" or "master" branch, not %q`, branchName)
+}
+
+func GitMainBranch(branch string) bool {
+	switch branch {
+	case "main", "master":
+		return true
 	}
-	l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
-	err = os.Chdir(pwd)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return false
 }
 
 // GetGitSha will return the latest gitSha that will be used to create an application.
@@ -244,10 +237,21 @@ func GetGitSha(appPath string) (string, error) {
 	return string(output), nil
 }
 
+func GetGitBranch(appPath string) (string, error) {
+	cmd := exec.Command("git", "branch", "--show-current")
+	cmd.Dir = appPath
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(output)), nil
+}
+
 func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
 	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
 		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
+
 	goPath := os.Getenv("GOPATH")
 	if goPath == "" {
 		goPath = build.Default.GOPATH
