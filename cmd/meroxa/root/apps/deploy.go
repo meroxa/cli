@@ -65,16 +65,18 @@ type Deploy struct {
 		Spec                 string `long:"spec" description:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 	}
 
-	client      deployApplicationClient
-	config      config.Config
-	logger      log.Logger
-	appName     string
-	path        string
-	lang        string
-	localDeploy turbineCLI.LocalDeploy
-	fnName      string
-	tempPath    string // find something more elegant to this
-	specVersion string
+	client        deployApplicationClient
+	config        config.Config
+	logger        log.Logger
+	configAppName string
+	appName       string
+	gitBranch     string
+	path          string
+	lang          string
+	localDeploy   turbineCLI.LocalDeploy
+	fnName        string
+	tempPath      string // find something more elegant to this
+	specVersion   string
 }
 
 var (
@@ -476,30 +478,37 @@ func (d *Deploy) validateLanguage() error {
 }
 
 func (d *Deploy) validateAppJSON(ctx context.Context) error {
+	var err error
+
 	d.logger.Info(ctx, "Validating your app.json...")
+
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
-	err := d.validateLocalDeploymentConfig()
-	if err != nil {
+	if err = d.validateLocalDeploymentConfig(); err != nil {
 		return err
 	}
 
-	d.path, err = turbineCLI.GetPath(d.flags.Path)
-	if err != nil {
+	if d.path, err = turbineCLI.GetPath(d.flags.Path); err != nil {
 		return err
 	}
 
-	d.lang, err = turbineCLI.GetLangFromAppJSON(ctx, d.logger, d.path)
-	if err != nil {
+	if d.lang, err = turbineCLI.GetLangFromAppJSON(ctx, d.logger, d.path); err != nil {
 		return err
 	}
 
-	err = d.validateLanguage()
-	if err != nil {
+	if d.gitBranch, err = turbineCLI.GetGitBranch(d.path); err != nil {
 		return err
 	}
 
-	d.appName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path)
-	return err
+	if err = d.validateLanguage(); err != nil {
+		return err
+	}
+
+	if d.configAppName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path); err != nil {
+		return err
+	}
+	d.appName = d.prepareAppName()
+
+	return nil
 }
 
 func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames []string) string {
@@ -648,33 +657,33 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
+func (d *Deploy) prepareAppName() string {
+	return d.configAppName
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
-	err := d.validateAppJSON(ctx)
-	if err != nil {
+	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
 
-	err = d.validateGitConfig(ctx)
-	if err != nil {
+	if err := d.validateGitConfig(ctx); err != nil {
 		return err
 	}
 
-	err = d.validateSpecVersionDeployment()
-	if err != nil {
+	if err := d.validateSpecVersionDeployment(); err != nil {
 		return err
 	}
 
 	// ⚠️ This is only until we re-deploy applications applying only the changes made
-	err = d.tearDownExistingResources(ctx)
-	if err != nil {
+	if err := d.tearDownExistingResources(ctx); err != nil {
 		return err
 	}
 
-	err = d.prepareDeployment(ctx)
-	defer d.rmBinary()
-	if err != nil {
+	if err := d.prepareDeployment(ctx); err != nil {
+		d.rmBinary()
 		return err
 	}
+	defer d.rmBinary()
 
 	gitSha, err := turbineCLI.GetGitSha(d.path)
 	if err != nil {

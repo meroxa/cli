@@ -164,13 +164,8 @@ func writeConfigFile(appPath string, cfg AppConfig) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
-	if err != nil {
-		return err
-	}
-
 	cmd := exec.Command("git", "status", "--porcelain=v2")
+	cmd.Dir = appPath
 	output, err := cmd.Output()
 	if err != nil {
 		return err
@@ -184,59 +179,44 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 			return err
 		}
 		l.Error(ctx, string(output))
-		err = os.Chdir(pwd)
-		if err != nil {
-			return err
-		}
 		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
 	}
 	l.Infof(ctx, "\t%s No uncommitted changes!", l.SuccessfulCheck())
-	return os.Chdir(pwd)
+	return nil
 }
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
 func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
 	l.StartSpinner("", "Validating branch...")
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
+	branchName, err := GetGitBranch(appPath)
 	if err != nil {
 		return err
 	}
 
-	cmd := exec.Command("git", "branch", "--show-current")
-	output, err := cmd.Output()
-	if err != nil {
-		return err
+	if GitMainBranch(branchName) {
+		l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
+		return nil
 	}
-	branchName := strings.TrimSpace(string(output))
-	if branchName != "main" && branchName != "master" {
-		l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
-		return fmt.Errorf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName)
+
+	l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
+	return fmt.Errorf(`deployment allowed only from "main" or "master" branch, not %q`, branchName)
+}
+
+func GitMainBranch(branch string) bool {
+	switch branch {
+	case "main", "master":
+		return true
 	}
-	l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
-	err = os.Chdir(pwd)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return false
 }
 
 // GetGitSha will return the latest gitSha that will be used to create an application.
 func GetGitSha(appPath string) (string, error) {
-	// temporarily switching to the app's directory
-	pwd, err := switchToAppDirectory(appPath)
-	if err != nil {
-		return "", err
-	}
-
 	// Gets latest git sha
 	cmd := exec.Command("git", "rev-parse", "HEAD")
+	cmd.Dir = appPath
 	output, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-
-	err = os.Chdir(pwd)
 	if err != nil {
 		return "", err
 	}
@@ -244,10 +224,21 @@ func GetGitSha(appPath string) (string, error) {
 	return string(output), nil
 }
 
+func GetGitBranch(appPath string) (string, error) {
+	cmd := exec.Command("git", "branch", "--show-current")
+	cmd.Dir = appPath
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(output)), nil
+}
+
 func GoInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
 	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
 		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
+
 	goPath := os.Getenv("GOPATH")
 	if goPath == "" {
 		goPath = build.Default.GOPATH
