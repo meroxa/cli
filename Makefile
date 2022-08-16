@@ -5,7 +5,7 @@ GIT_UNTRACKED   = $(shell git diff-index --quiet HEAD -- || echo "(updated)")
 LDFLAGS        += -X main.GitUntracked=${GIT_UNTRACKED}
 GIT_TAG         = $(shell git describe)
 LDFLAGS        += -X main.GitLatestTag=${GIT_TAG}
-REBUILD_DOCS    ?= true
+REBUILD_DOCS    ?= "true"
 
 .PHONY: build
 build: docs
