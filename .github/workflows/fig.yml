@@ -1,5 +1,10 @@
-name: 'Publish Meroxa Fig autocomplete spec'
+name: 'Fig Autocomplete Spec'
 on:
+  # testing 
+  pull_request:
+    branches:
+      - master
+      - main
   push:
     tags:
       - 'v*'
@@ -7,8 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-spec:
-    name: 'Build Meroxa Spec'
+  publish-spec:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
@@ -20,14 +24,11 @@ jobs:
     - name: Run make fig
       run: |
        make fig
-    - name: Create Autocomplete PR
+    - name: Create Autocomplete PR ## Create the autocomplete PR using this action
       uses: withfig/publish-to-fig-autocomplete@v1
       with:
         token: ${{ secrets.MEROXA_MACHINE }}
         autocomplete-spec-name: meroxa
         spec-path: spec
         integration: cobra
-        repo-org: meroxa
-        repo-name: cli
-        use-minor-base: true
-  ## Other jobs not related to the spec update
+        
