@@ -381,7 +381,7 @@ func CreateTarAndZipFile(src string, buf io.Writer) error {
 	tarWriter := tar.NewWriter(zipWriter)
 
 	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
-		if fi.IsDir() && ((fi.Name() == ".git") || (fi.Name() == "fixtures") || (fi.Name() == "node_modules")) {
+		if shouldSkipDir(fi) {
 			return filepath.SkipDir
 		}
 		header, err := tar.FileInfoHeader(fi, file)
@@ -446,4 +446,17 @@ func getTurbineJSBinary(params []string) []string {
 
 func executeTurbineJSCommand(params []string) *exec.Cmd {
 	return exec.Command(params[0], params[1:]...) //nolint:gosec
+}
+
+func shouldSkipDir(fi os.FileInfo) bool {
+	if !fi.IsDir() {
+		return false
+	}
+
+	switch fi.Name() {
+	case ".git", "fixtures", "node_modules":
+		return true
+	}
+
+	return false
 }
