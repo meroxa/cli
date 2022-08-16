@@ -30,5 +30,7 @@ jobs:
         token: ${{ secrets.MEROXA_MACHINE }}
         autocomplete-spec-name: meroxa
         spec-path: spec
+        repo-org: meroxa
+        repo-name: cli-autocomplete
         integration: cobra
-        
+    
