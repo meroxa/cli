@@ -7,17 +7,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/meroxa/cli/config"
-
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/golang/mock/gomock"
-	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/mock"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	"github.com/meroxa/cli/config"
+	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/meroxa-go/pkg/mock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeployAppFlags(t *testing.T) {
@@ -369,19 +367,33 @@ func TestTearDownExistingResourcesWithAppNotFound(t *testing.T) {
 func TestGetResourceCheckErrorMessage(t *testing.T) {
 	testCases := []struct {
 		name                 string
-		resourceNames        []string
+		resources            []turbineCLI.ApplicationResource
 		resourceState        string
 		expectedErrorMessage string
 	}{
 		{
-			name:                 "getResourceCheckErrorMessage returns an empty response if all resources are found and available",
-			resourceNames:        []string{"nozzle", "engine"},
+			name: "getResourceCheckErrorMessage returns an empty response if all resources are found and available",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name: "nozzle",
+				},
+				{
+					Name: "engine",
+				},
+			},
 			resourceState:        "ready",
 			expectedErrorMessage: "",
 		},
 		{
-			name:                 "getResourceCheckErrorMessage returns an error response if resources are unavailable",
-			resourceNames:        []string{"nozzle", "engine"},
+			name: "getResourceCheckErrorMessage returns an error response if resources are unavailable",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name: "nozzle",
+				},
+				{
+					Name: "engine",
+				},
+			},
 			resourceState:        "",
 			expectedErrorMessage: "resource \"nozzle\" is not ready and usable; resource \"engine\" is not ready and usable",
 		},
@@ -415,7 +427,7 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 				GetResourceByNameOrID(ctx, secondResource.Name).
 				Return(&secondResource, nil)
 
-			result := d.getResourceCheckErrorMessage(ctx, tc.resourceNames)
+			result := d.getResourceCheckErrorMessage(ctx, tc.resources)
 			assert.Equal(t, tc.expectedErrorMessage, result)
 		})
 	}

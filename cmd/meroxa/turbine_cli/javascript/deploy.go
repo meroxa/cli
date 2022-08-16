@@ -8,7 +8,6 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
@@ -68,39 +67,20 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, g
 	return err
 }
 
-// GetResourceNames asks turbine for a list of resources used by the given app.
-func GetResourceNames(ctx context.Context, l log.Logger, appPath, appName string) ([]string, error) {
-	var names []string
+// GetResources asks turbine for a list of resources used by the given app.
+func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbinecli.ApplicationResource, error) {
+	var resources []turbinecli.ApplicationResource
 
 	cmd := turbinecli.RunTurbineJS("listresources", appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return names, errors.New(string(output))
+		return resources, errors.New(string(output))
 	}
 
-	var parsed []turbinecli.ApplicationResource
-	if err := json.Unmarshal(output, &parsed); err != nil {
-		return getResourceNamesFromString(string(output)), nil
+	if err := json.Unmarshal(output, &resources); err != nil {
+		// fall back if not json
+		return turbinecli.GetResourceNamesFromString(string(output)), nil
 	}
 
-	for i := range parsed {
-		kv := parsed[i]
-		if kv.Name != "" {
-			names = append(names, kv.Name)
-		}
-	}
-
-	return names, nil
-}
-
-func getResourceNamesFromString(s string) []string {
-	var names []string
-
-	r := regexp.MustCompile(`\[(.+?)\]`)
-	sliceString := r.FindStringSubmatch(s)
-	if len(sliceString) > 0 {
-		names = strings.Fields(sliceString[1])
-	}
-
-	return names
+	return resources, nil
 }
