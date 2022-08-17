@@ -62,10 +62,10 @@ type deployApplicationClient interface {
 
 type Deploy struct {
 	flags struct {
-		Path                 string `long:"path" description:"path to the app directory (default is local directory)"`
-		DockerHubUserName    string `long:"docker-hub-username" description:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
-		DockerHubAccessToken string `long:"docker-hub-access-token" description:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
-		Spec                 string `long:"spec" description:"Deployment specification version to use to build and deploy the app" hidden:"true"`
+		Path                 string `long:"path" usage:"path to the app directory (default is local directory)"`
+		DockerHubUserName    string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
+		DockerHubAccessToken string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
+		Spec                 string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 	}
 
 	client        deployApplicationClient
