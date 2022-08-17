@@ -686,10 +686,14 @@ func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI
 		errMessage   string
 	)
 	for _, r := range resources {
-		if r.Source {
+		if r.Source && r.Destination {
+			errMessage = fmt.Sprintf(
+				"%s\n\tApplication resource cannot be used as both a source and destination.",
+				errMessage,
+			)
+		} else if r.Source {
 			sources = append(sources, r)
-		}
-		if r.Destination {
+		} else if r.Destination {
 			pair := newResourceCollectionPair(r)
 			if destinations[pair] {
 				errMessage = fmt.Sprintf(

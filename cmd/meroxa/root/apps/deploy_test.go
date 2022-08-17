@@ -16,6 +16,7 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 	"github.com/stretchr/testify/assert"
+	"github.com/volatiletech/null/v8"
 )
 
 func TestDeployAppFlags(t *testing.T) {
@@ -429,6 +430,181 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 
 			result := d.getResourceCheckErrorMessage(ctx, tc.resources)
 			assert.Equal(t, tc.expectedErrorMessage, result)
+		})
+	}
+}
+
+func TestValidateCollections(t *testing.T) {
+	testCases := []struct {
+		name      string
+		resources []turbineCLI.ApplicationResource
+		err       string
+	}{
+		{
+			name: "Different source and destination resources reference different collections",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:       "source",
+					Source:     true,
+					Collection: "sequences",
+				},
+				{
+					Name:        "destination",
+					Destination: true,
+					Collection:  "test-destination",
+				},
+			},
+		},
+		{
+			name: "Different source and destination resources reference same collection",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:       "source",
+					Source:     true,
+					Collection: "sequences",
+				},
+				{
+					Name:        "destination",
+					Destination: true,
+					Collection:  "sequences",
+				},
+			},
+		},
+		{
+			name: "Multiple destination resources",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:       "source",
+					Source:     true,
+					Collection: "sequences",
+				},
+				{
+					Name:        "destination",
+					Destination: true,
+					Collection:  "sequences",
+				},
+				{
+					Name:        "alt-destination",
+					Destination: true,
+					Collection:  "sequences",
+				},
+			},
+		},
+		{
+			name: "Same source and destination resources reference same collection",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:       "pg",
+					Source:     true,
+					Collection: "sequences",
+				},
+				{
+					Name:        "pg",
+					Destination: true,
+					Collection:  "sequences",
+				},
+			},
+			err: "Application resource \"pg\" with collection \"sequences\" cannot be used as a destination. It is also the source.",
+		},
+		{
+			name: "One resource is both source and destination",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:        "source",
+					Source:      true,
+					Destination: true,
+					Collection:  "sequences",
+				},
+			},
+			err: "Application resource cannot be used as both a source and destination.",
+		},
+		{
+			name: "Destination resource used in another app",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:       "source",
+					Source:     true,
+					Collection: "sequences",
+				},
+				{
+					Name:        "pg",
+					Destination: true,
+					Collection:  "anonymous",
+				},
+			},
+			err: "Application resource \"pg\" with collection \"anonymous\" cannot be used as a destination. It is also being used as a destination by another application \"application-name\"",
+		},
+		{
+			name: "Two same destination resources",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name:       "source",
+					Source:     true,
+					Collection: "sequences",
+				},
+				{
+					Name:        "pg",
+					Destination: true,
+					Collection:  "test-destination",
+				},
+				{
+					Name:        "pg",
+					Destination: true,
+					Collection:  "test-destination",
+				},
+			},
+			err: "Application resource \"pg\" with collection \"test-destination\" cannot be used as a destination more than once.",
+		},
+	}
+
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	d := &Deploy{
+		client: client,
+		logger: logger,
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			apps := []*meroxa.Application{
+				{
+					Name: "application-name",
+					Resources: []meroxa.ApplicationResource{
+						{
+							EntityIdentifier: meroxa.EntityIdentifier{
+								Name: null.StringFrom("pg"),
+							},
+							Collection: meroxa.ResourceCollection{
+								Name:        null.StringFrom("anonymous"),
+								Destination: null.StringFrom("true"),
+							},
+						},
+						{
+							EntityIdentifier: meroxa.EntityIdentifier{
+								Name: null.StringFrom("source"),
+							},
+							Collection: meroxa.ResourceCollection{
+								Name:   null.StringFrom("sequences"),
+								Source: null.StringFrom("true"),
+							},
+						},
+					},
+				},
+			}
+			client.
+				EXPECT().
+				ListApplications(ctx).
+				Return(apps, nil)
+
+			err := d.validateCollections(ctx, tc.resources)
+			if tc.err == "" {
+				assert.NoError(t, err)
+			} else {
+				assert.Contains(t, err.Error(), tc.err)
+			}
 		})
 	}
 }
