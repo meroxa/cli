@@ -15,8 +15,6 @@ jobs:
   publish-spec:
     runs-on: ubuntu-latest
     steps:
-    - name: Debugging with tmate
-      uses: mxschmitt/action-tmate@v3.11
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
@@ -31,7 +29,7 @@ jobs:
       with:
         token: ${{ secrets.MEROXA_MACHINE }}
         autocomplete-spec-name: meroxa
-        spec-path: spec
+        spec-path: cli/spec
         repo-org: meroxa
         repo-name: cli-autocomplete
         integration: cobra
