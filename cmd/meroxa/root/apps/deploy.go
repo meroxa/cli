@@ -667,59 +667,101 @@ func hasFeatureFlag(flags []string, f string) bool {
 	return false
 }
 
+type resourceCollectionPair struct {
+	collectionName string
+	resourceName   string
+}
+
+func newResourceCollectionPair(r turbineCLI.ApplicationResource) resourceCollectionPair {
+	return resourceCollectionPair{
+		collectionName: r.Collection,
+		resourceName:   r.Name,
+	}
+}
+
 func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI.ApplicationResource) error {
 	var (
-		source      turbineCLI.ApplicationResource
-		destination turbineCLI.ApplicationResource
+		sources      []turbineCLI.ApplicationResource
+		destinations = map[resourceCollectionPair]bool{}
+		errMessage   string
 	)
-
 	for _, r := range resources {
 		if r.Source {
-			source = r
-		} else if r.Destination {
-			destination = r
+			sources = append(sources, r)
+		}
+		if r.Destination {
+			pair := newResourceCollectionPair(r)
+			if destinations[pair] {
+				errMessage = fmt.Sprintf(
+					"%s\n\tApplication resource %q with collection %q cannot be used as a destination more than once.",
+					errMessage,
+					r.Name,
+					r.Collection,
+				)
+			} else {
+				destinations[pair] = true
+			}
 		}
 	}
 
-	// ensure source (resource, collection) doesn't equal destination
-	if source.Name == destination.Name &&
-		source.Collection == destination.Collection {
-		return fmt.Errorf(
-			`⚠️  App %q is using the same resource %q and collection %q for both source and destination.
-	Ensure app is using a unique destination before redeploying again`,
-			d.appName, source.Name, source.Collection,
-		)
-	}
-
-	if err := d.validateDestinationCollectionUnique(ctx, destination); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// validateDestinationCollectionUnique ensures destination (resource, collection) is unique for account.
-func (d *Deploy) validateDestinationCollectionUnique(ctx context.Context, destination turbineCLI.ApplicationResource) error {
 	apps, err := d.client.ListApplications(ctx)
 	if err != nil {
 		return err
 	}
 
+	errMessage =
+		errMessage +
+			d.validateNoCollectionLoops(sources, destinations) +
+			d.validateDestinationCollectionUnique(apps, destinations)
+
+	if errMessage != "" {
+		return fmt.Errorf(
+			"⚠️%s\n%s",
+			errMessage,
+			"Please modify your Turbine data application code. Then run `meroxa app deploy` again.")
+	}
+
+	return nil
+}
+
+// validateNoCollectionLoops ensures source (resource, collection) doesn't equal any destination (resource, collection)
+func (d *Deploy) validateNoCollectionLoops(sources []turbineCLI.ApplicationResource, destinations map[resourceCollectionPair]bool) string {
+	var errMessage string
+	for _, source := range sources {
+		if ok := destinations[newResourceCollectionPair(source)]; ok {
+			errMessage = fmt.Sprintf(
+				"%s\n\tApplication resource %q with collection %q cannot be used as a destination. It is also the source.",
+				errMessage,
+				source.Name,
+				source.Collection)
+		}
+	}
+
+	return errMessage
+}
+
+// validateDestinationCollectionUnique ensures destination (resource, collection) is unique for account.
+func (d *Deploy) validateDestinationCollectionUnique(apps []*meroxa.Application, destinations map[resourceCollectionPair]bool) string {
+	var errMessage string
 	for _, app := range apps {
 		for _, r := range app.Resources {
 			if r.Collection.Destination.String == "true" &&
-				r.Name.String == destination.Name &&
-				r.Collection.Name.String == destination.Collection {
-				return fmt.Errorf(
-					`⚠️  App %q is using the same destination resource %q and collection %q as another app %q.
-	Ensure app is using a unique destination before redeploying again`,
-					d.appName, destination.Name, destination.Collection, app.Name,
+				destinations[resourceCollectionPair{
+					collectionName: r.Collection.Name.String,
+					resourceName:   r.Name.String,
+				}] {
+				errMessage = fmt.Sprintf(
+					"%s\n\tApplication resource %q with collection %q cannot be used as a destination. It is also being used as a destination by another application %q.",
+					errMessage,
+					r.Name.String,
+					r.Collection.Name.String,
+					app.Name,
 				)
 			}
 		}
 	}
 
-	return nil
+	return errMessage
 }
 
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
