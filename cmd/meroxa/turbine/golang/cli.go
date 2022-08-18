@@ -6,9 +6,10 @@ import (
 )
 
 type turbineGoCLI struct {
-	logger log.Logger
+	logger  log.Logger
+	appPath string
 }
 
-func New(l log.Logger) turbine.CLI {
-	return &turbineGoCLI{logger: l}
+func New(l log.Logger, appPath string) turbine.CLI {
+	return &turbineGoCLI{logger: l, appPath: appPath}
 }

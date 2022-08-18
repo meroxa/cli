@@ -21,20 +21,21 @@ import (
 	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbinePy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	"github.com/meroxa/cli/log"
 )
 
 type Run struct {
+	path       string
+	logger     log.Logger
+	turbineCLI turbine.CLI
+
 	flags struct {
 		Path string `long:"path" usage:"path of application to run"`
 	}
-
-	path   string
-	logger log.Logger
 }
 
 var (
@@ -69,28 +70,37 @@ func (r *Run) Flags() []builder.Flag {
 
 func (r *Run) Execute(ctx context.Context) error {
 	var err error
-	r.path, err = turbineCLI.GetPath(r.flags.Path)
+	r.path, err = turbine.GetPath(r.flags.Path)
 	if err != nil {
 		return err
 	}
-	lang, err := turbineCLI.GetLangFromAppJSON(ctx, r.logger, r.path)
+	lang, err := turbine.GetLangFromAppJSON(ctx, r.logger, r.path)
 	if err != nil {
 		return err
 	}
-	appName, err := turbineCLI.GetAppNameFromAppJSON(ctx, r.logger, r.path)
+	appName, err := turbine.GetAppNameFromAppJSON(ctx, r.logger, r.path)
 	if err != nil {
 		return err
 	}
 
 	switch lang {
-	case GoLang:
-		err = turbineGo.Run(ctx, r.path, r.logger)
+	case "go", GoLang:
+		if r.turbineCLI == nil {
+			r.turbineCLI = turbineGo.New(r.logger, r.path)
+		}
+		err = r.turbineCLI.Run(ctx)
 		turbineGo.RunCleanup(r.path, appName)
 		return err
 	case "js", JavaScript, NodeJs:
-		return turbineJS.Build(ctx, r.logger, r.path)
+		if r.turbineCLI == nil {
+			r.turbineCLI = turbineJS.New(r.logger, r.path)
+		}
+		return r.turbineCLI.Run(ctx)
 	case "py", Python3, Python:
-		return turbinepy.Run(ctx, r.logger, r.path)
+		if r.turbineCLI == nil {
+			r.turbineCLI = turbinePy.New(r.logger, r.path)
+		}
+		return r.turbineCLI.Run(ctx)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}

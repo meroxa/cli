@@ -3,15 +3,12 @@ package apps
 import (
 	"context"
 	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/root/nop"
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -56,96 +53,46 @@ func TestUpgradeAppFlags(t *testing.T) {
 func TestUpgradeExecute(t *testing.T) {
 	tests := []struct {
 		desc   string
-		path   string
 		lang   string
 		vendor bool
 		err    error
 	}{
 		{
-			desc:   "Golang upgrade without vendor",
-			path:   "/tmp",
-			lang:   GoLang,
+			desc:   "Successful upgrade without vendor",
 			vendor: false,
 			err:    nil,
 		},
 		{
-			desc:   "Golang upgrade with path and vendor",
-			path:   "/tmp",
-			lang:   GoLang,
+			desc:   "Successful upgrade with vendor",
 			vendor: true,
 			err:    nil,
 		},
 		{
-			desc:   "Golang upgrade with path and vendor and error",
-			path:   "/tmp",
+			desc:   "Unsuccessful upgrade",
 			lang:   GoLang,
 			vendor: true,
 			err:    fmt.Errorf("not good"),
-		},
-		{
-			desc: "Javascript with path",
-			path: "/tmp",
-			lang: JavaScript,
-			err:  nil,
-		},
-		{
-			desc: "Python with path",
-			path: "/tmp",
-			lang: Python,
-			err:  nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			_ = os.Setenv("UNIT_TEST", "true")
-			defer func() {
-				_ = os.Unsetenv("UNIT_TEST")
-			}()
 			mockCtrl := gomock.NewController(t)
 
 			u := &Upgrade{}
 			u.Logger(log.NewTestLogger())
-			path, err := turbinecli.GetPath(tt.path)
-			processError(t, err, tt.err)
-			u.flags.Path = path
+			u.flags.Path = "/does/not/matter"
 			u.run = &nop.Nop{}
 
 			mock := mockturbinecli.NewMockCLI(mockCtrl)
 			if tt.err == nil {
-				mock.EXPECT().Upgrade(path, tt.vendor)
+				mock.EXPECT().Upgrade(tt.vendor)
 			} else {
-				mock.EXPECT().Upgrade(path, tt.vendor).Return(tt.err)
+				mock.EXPECT().Upgrade(tt.vendor).Return(tt.err)
 			}
 			u.turbineCLI = mock
 
-			switch tt.lang {
-			case GoLang:
-				config := turbinecli.AppConfig{Language: GoLang}
-				config.Vendor = "false"
-				if tt.vendor {
-					config.Vendor = "true"
-				}
-				err = turbinecli.WriteConfigFile(path, config)
-				processError(t, err, tt.err)
-				defer func() {
-					_ = os.Remove(filepath.Join(path, "app.json"))
-				}()
-			case JavaScript:
-				_ = turbinecli.WriteConfigFile(path, turbinecli.AppConfig{Language: JavaScript})
-				defer func() {
-					_ = os.Remove(filepath.Join(path, "app.json"))
-				}()
-			case Python:
-				_ = turbinecli.WriteConfigFile(path, turbinecli.AppConfig{Language: Python})
-				defer func() {
-					_ = os.Remove(filepath.Join(path, "app.json"))
-				}()
-			default:
-				t.Fatalf("unprocessable language: %s", tt.lang)
-			}
-
-			err = u.Execute(context.Background())
+			err := u.Execute(context.Background())
 			processError(t, err, tt.err)
 			if err == nil && tt.err != nil {
 				t.Fatalf("did not find expected error: %s", tt.err.Error())

@@ -1,5 +1,10 @@
 package turbine
 
+import (
+	"context"
+)
+
 type CLI interface {
-	Upgrade(appPath string, vendor bool) error
+	Upgrade(vendor bool) error
+	Run(ctx context.Context) error
 }

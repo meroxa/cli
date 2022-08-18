@@ -41,4 +41,4 @@ lint:
 
 .PHONY: mock
 mock:
-	mockgen -source cmd/meroxa/turbine_cli/interface.go -package mock > cmd/meroxa/turbine_cli/mock/cli.go
+	mockgen -source cmd/meroxa/turbine/interface.go -package mock > cmd/meroxa/turbine/mock/cli.go

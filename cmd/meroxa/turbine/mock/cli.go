@@ -5,6 +5,7 @@
 package mock
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -33,16 +34,30 @@ func (m *MockCLI) EXPECT() *MockCLIMockRecorder {
 	return m.recorder
 }
 
-// Upgrade mocks base method.
-func (m *MockCLI) Upgrade(appPath string, vendor bool) error {
+// Run mocks base method.
+func (m *MockCLI) Run(ctx context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upgrade", appPath, vendor)
+	ret := m.ctrl.Call(m, "Run", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Run indicates an expected call of Run.
+func (mr *MockCLIMockRecorder) Run(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockCLI)(nil).Run), ctx)
+}
+
+// Upgrade mocks base method.
+func (m *MockCLI) Upgrade(vendor bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upgrade", vendor)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Upgrade indicates an expected call of Upgrade.
-func (mr *MockCLIMockRecorder) Upgrade(appPath, vendor interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) Upgrade(vendor interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), appPath, vendor)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), vendor)
 }

@@ -8,14 +8,14 @@ import (
 )
 
 // Upgrade fetches the latest Meroxa dependencies.
-func (t *turbineJsCLI) Upgrade(appPath string, vendor bool) error {
-	cmd := exec.Command("grep", "turbine-js-framework", "package.json")
-	cmd.Dir = appPath
+func (t *turbineJsCLI) Upgrade(vendor bool) error {
+	cmd := exec.Command("grep", "turbine-js", "package.json")
+	cmd.Dir = t.appPath
 	err := cmd.Wait()
 	if err != nil {
 		t.logger.StartSpinner("\t", " Adding @meroxa/turbine-js-framework requirement...")
 		cmd = exec.Command("npm", "install", "@meroxa/turbine-js-framework", "--save")
-		cmd.Dir = appPath
+		cmd.Dir = t.appPath
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.logger.StopSpinnerWithStatus("Failed to install @meroxa/turbine-js-framework", log.Failed)
@@ -23,14 +23,14 @@ func (t *turbineJsCLI) Upgrade(appPath string, vendor bool) error {
 		}
 
 		cmd = exec.Command("npm", "uninstall", "@meroxa/turbine-js", "--save")
-		cmd.Dir = appPath
+		cmd.Dir = t.appPath
 		err = cmd.Run()
 		if err != nil {
 			t.logger.StopSpinnerWithStatus("Failed to uninstall @meroxa/turbine-js. Moving on...", log.Failed)
 		}
 
 		cmd = exec.Command("npm", "update")
-		cmd.Dir = appPath
+		cmd.Dir = t.appPath
 		out, err = cmd.CombinedOutput()
 		if err != nil {
 			t.logger.StopSpinnerWithStatus("Failed to run npm update", log.Failed)
@@ -40,7 +40,7 @@ func (t *turbineJsCLI) Upgrade(appPath string, vendor bool) error {
 	} else {
 		t.logger.StartSpinner("\t", " Upgrading @meroxa/turbine-js-framework...")
 		cmd = exec.Command("npm", "upgrade", "@meroxa/turbine-js-framework")
-		cmd.Dir = appPath
+		cmd.Dir = t.appPath
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.logger.StopSpinnerWithStatus("Failed to upgrade @meroxa/turbine-js-framework", log.Failed)

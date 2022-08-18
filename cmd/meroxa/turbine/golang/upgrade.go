@@ -10,8 +10,8 @@ import (
 )
 
 // Upgrade fetches the latest Meroxa dependencies.
-func (t *turbineGoCLI) Upgrade(appPath string, vendor bool) error {
-	pwd, err := utils.SwitchToAppDirectory(appPath)
+func (t *turbineGoCLI) Upgrade(vendor bool) error {
+	pwd, err := utils.SwitchToAppDirectory(t.appPath)
 	if err != nil {
 		return err
 	}

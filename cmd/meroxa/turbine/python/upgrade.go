@@ -10,19 +10,19 @@ import (
 const turbinePYVersion = "1.1.0"
 
 // Upgrade fetches the latest Meroxa dependencies.
-func (t *turbinePyCLI) Upgrade(appPath string, vendor bool) error {
+func (t *turbinePyCLI) Upgrade(vendor bool) error {
 	cmd := exec.Command("grep", "turbine-py==", "requirements.txt")
-	cmd.Dir = appPath
+	cmd.Dir = t.appPath
 	err := cmd.Run()
 	if err != nil {
 		t.logger.StartSpinner("\t", " Tidying up requirements.txt...")
 		cmd = exec.Command("bash", "-c", "sed -i 's+meroxa-py++g' requirements.txt")
-		cmd.Dir = appPath
+		cmd.Dir = t.appPath
 		err1 := cmd.Run()
 
 		replace := fmt.Sprintf("'s+turbine-py+turbine-py==%s+g'", turbinePYVersion)
 		cmd = exec.Command("bash", "-c", "sed -i "+replace+" requirements.txt")
-		cmd.Dir = appPath
+		cmd.Dir = t.appPath
 		err2 := cmd.Run()
 		if err1 == nil && err2 == nil {
 			t.logger.StopSpinnerWithStatus("Tidied up requirements.txt successfully!", log.Successful)
@@ -33,7 +33,7 @@ func (t *turbinePyCLI) Upgrade(appPath string, vendor bool) error {
 
 	t.logger.StartSpinner("\t", " Updating Python dependencies...")
 	cmd = exec.Command("pip", "install", "turbine-py", "-U")
-	cmd.Dir = appPath
+	cmd.Dir = t.appPath
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.logger.StopSpinnerWithStatus("\t", log.Failed)

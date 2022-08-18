@@ -87,19 +87,19 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	switch lang {
 	case "go", GoLang:
 		if u.turbineCLI == nil {
-			u.turbineCLI = turbineGo.New(u.logger)
+			u.turbineCLI = turbineGo.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(u.path, vendor)
+		err = u.turbineCLI.Upgrade(vendor)
 	case "js", JavaScript, NodeJs:
 		if u.turbineCLI == nil {
-			u.turbineCLI = turbineJS.New(u.logger)
+			u.turbineCLI = turbineJS.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(u.path, vendor)
+		err = u.turbineCLI.Upgrade(vendor)
 	case "py", Python3, Python:
 		if u.turbineCLI == nil {
-			u.turbineCLI = turbinePY.New(u.logger)
+			u.turbineCLI = turbinePY.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(u.path, vendor)
+		err = u.turbineCLI.Upgrade(vendor)
 	default:
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 	}
