@@ -803,7 +803,7 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 		"\t%s Feature branch (%s) detected, setting app name to %s...",
 		d.logger.SuccessfulCheck(),
 		d.gitBranch,
-		d.appName,
+		appName,
 	)
 
 	return appName
