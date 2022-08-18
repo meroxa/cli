@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -38,6 +39,27 @@ type ApplicationResource struct {
 	Name        string `json:"name"`
 	Source      bool   `json:"source"`
 	Destination bool   `json:"destination"`
+	Collection  string `json:"collection"`
+}
+
+// getResourceNamesFromString provides backward compatibility with turbine-go
+// legacy resource listing format.
+func GetResourceNamesFromString(s string) []ApplicationResource {
+	resources := make([]ApplicationResource, 0)
+
+	r := regexp.MustCompile(`\[(.+?)\]`)
+	sliceString := r.FindStringSubmatch(s)
+	if len(sliceString) == 0 {
+		return resources
+	}
+
+	for _, n := range strings.Fields(sliceString[1]) {
+		resources = append(resources, ApplicationResource{
+			Name: n,
+		})
+	}
+
+	return resources
 }
 
 func GetPath(flag string) (string, error) {

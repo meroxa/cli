@@ -25,11 +25,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
 	"github.com/coreos/go-semver/semver"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
@@ -44,6 +46,7 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 	pollDuration            = 2 * time.Second
+	featureFlagBranchDeploy = "feature-branch-deploy"
 )
 
 type deployApplicationClient interface {
@@ -452,6 +455,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	d.localDeploy.TempPath = d.tempPath
 	d.localDeploy.Lang = d.lang
+	d.localDeploy.AppName = d.appName
 	if d.localDeploy.Enabled {
 		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName, d.lang)
 		if err != nil {
@@ -512,22 +516,22 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	if d.configAppName, err = turbineCLI.GetAppNameFromAppJSON(ctx, d.logger, d.path); err != nil {
 		return err
 	}
-	d.appName = d.prepareAppName()
+	d.appName = d.prepareAppName(ctx)
 
 	return nil
 }
 
-func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames []string) string {
+func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resources []turbineCLI.ApplicationResource) string {
 	var errStr string
-	for _, name := range resourceNames {
-		resource, err := d.client.GetResourceByNameOrID(ctx, name)
+	for _, r := range resources {
+		resource, err := d.client.GetResourceByNameOrID(ctx, r.Name)
 		if err != nil {
 			if errStr != "" {
 				errStr += "; "
 			}
 
 			if strings.Contains(err.Error(), "could not find") {
-				errStr += fmt.Sprintf("could not find resource %q", name)
+				errStr += fmt.Sprintf("could not find resource %q", r.Name)
 			} else {
 				errStr += err.Error()
 			}
@@ -535,7 +539,7 @@ func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resourceNames
 			if errStr != "" {
 				errStr += "; "
 			}
-			errStr += fmt.Sprintf("resource %q is not ready and usable", resource.Name)
+			errStr += fmt.Sprintf("resource %q is not ready and usable", r.Name)
 		}
 	}
 	return errStr
@@ -546,36 +550,41 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 
 	d.logger.StartSpinner("\t", resourceCheckMessage)
 
-	var resourceNames []string
+	var resources []turbineCLI.ApplicationResource
 	var err error
 
 	switch d.lang {
 	case GoLang:
-		resourceNames, err = turbineGo.GetResourceNames(ctx, d.logger, d.path, d.appName)
+		resources, err = turbineGo.GetResources(ctx, d.logger, d.path, d.appName)
 	case JavaScript:
-		resourceNames, err = turbineJS.GetResourceNames(ctx, d.logger, d.path, d.appName)
+		resources, err = turbineJS.GetResources(ctx, d.logger, d.path, d.appName)
 	case Python:
-		resourceNames, err = turbinePY.GetResourceNames(ctx, d.logger, d.path, d.appName)
+		resources, err = turbinePY.GetResources(ctx, d.logger, d.path, d.appName)
 	}
 
 	if err != nil {
 		return fmt.Errorf("unable to read resource definition from app: %s", err.Error())
 	}
 
-	if len(resourceNames) == 0 {
+	if len(resources) == 0 {
 		return errors.New("no resources defined in your Turbine app")
 	}
 
-	errStr := d.getResourceCheckErrorMessage(ctx, resourceNames)
-
-	if errStr != "" {
+	if errStr := d.getResourceCheckErrorMessage(ctx, resources); errStr != "" {
 		errStr += ";\n\n ⚠️  Run 'meroxa resources list' to verify that the resource names " +
 			"defined in your Turbine app are identical to the resources you have created on the Meroxa Platform before deploying again"
 		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
 		return fmt.Errorf("%s", errStr)
 	}
 
-	d.logger.StopSpinnerWithStatus("Can access to your Turbine resources", log.Successful)
+	if hasFeatureFlag(featureFlagBranchDeploy) {
+		if err := d.validateCollections(ctx, resources); err != nil {
+			d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
+			return err
+		}
+	}
+
+	d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
 	return nil
 }
 
@@ -643,7 +652,125 @@ func (d *Deploy) validateGitConfig(ctx context.Context) error {
 		return err
 	}
 
-	return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+	if !hasFeatureFlag(featureFlagBranchDeploy) {
+		return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
+	}
+
+	return nil
+}
+
+func hasFeatureFlag(f string) bool {
+	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
+
+	for _, v := range userFeatureFlags {
+		if v == f {
+			return true
+		}
+	}
+
+	return false
+}
+
+type resourceCollectionPair struct {
+	collectionName string
+	resourceName   string
+}
+
+func newResourceCollectionPair(r turbineCLI.ApplicationResource) resourceCollectionPair {
+	return resourceCollectionPair{
+		collectionName: r.Collection,
+		resourceName:   r.Name,
+	}
+}
+
+func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI.ApplicationResource) error {
+	var (
+		sources      []turbineCLI.ApplicationResource
+		destinations = map[resourceCollectionPair]bool{}
+		errMessage   string
+	)
+	for _, r := range resources {
+		if r.Source && r.Destination {
+			errMessage = fmt.Sprintf(
+				"%s\n\tApplication resource cannot be used as both a source and destination.",
+				errMessage,
+			)
+		} else if r.Source {
+			sources = append(sources, r)
+		} else if r.Destination {
+			pair := newResourceCollectionPair(r)
+			if destinations[pair] {
+				errMessage = fmt.Sprintf(
+					"%s\n\tApplication resource %q with collection %q cannot be used as a destination more than once.",
+					errMessage,
+					r.Name,
+					r.Collection,
+				)
+			} else {
+				destinations[pair] = true
+			}
+		}
+	}
+
+	apps, err := d.client.ListApplications(ctx)
+	if err != nil {
+		return err
+	}
+
+	errMessage =
+		errMessage +
+			d.validateNoCollectionLoops(sources, destinations) +
+			d.validateDestinationCollectionUnique(apps, destinations)
+
+	if errMessage != "" {
+		return fmt.Errorf(
+			"⚠️%s\n%s",
+			errMessage,
+			"Please modify your Turbine data application code. Then run `meroxa app deploy` again.")
+	}
+
+	return nil
+}
+
+// validateNoCollectionLoops ensures source (resource, collection) doesn't equal any destination (resource, collection).
+func (d *Deploy) validateNoCollectionLoops(sources []turbineCLI.ApplicationResource, destinations map[resourceCollectionPair]bool) string {
+	var errMessage string
+	for _, source := range sources {
+		if ok := destinations[newResourceCollectionPair(source)]; ok {
+			errMessage = fmt.Sprintf(
+				"%s\n\tApplication resource %q with collection %q cannot be used as a destination. It is also the source.",
+				errMessage,
+				source.Name,
+				source.Collection)
+		}
+	}
+
+	return errMessage
+}
+
+// validateDestinationCollectionUnique ensures destination (resource, collection) is unique for account.
+func (d *Deploy) validateDestinationCollectionUnique(apps []*meroxa.Application, destinations map[resourceCollectionPair]bool) string {
+	var errMessage string
+	for _, app := range apps {
+		for _, r := range app.Resources {
+			if r.Collection.Destination.String == "true" &&
+				destinations[resourceCollectionPair{
+					collectionName: r.Collection.Name.String,
+					resourceName:   r.Name.String,
+				}] {
+				errMessage = fmt.Sprintf(
+					"%s\n\tApplication resource %q with collection %q cannot be used as a destination."+
+						"It is also being used as a destination by another application %q.",
+					errMessage,
+					r.Name.String,
+					r.Collection.Name.String,
+					app.Name,
+				)
+			}
+		}
+	}
+
+	return errMessage
 }
 
 // tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
@@ -663,8 +790,23 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) prepareAppName() string {
-	return d.configAppName
+func (d *Deploy) prepareAppName(ctx context.Context) string {
+	if turbineCLI.GitMainBranch(d.gitBranch) {
+		return d.configAppName
+	}
+
+	reg := regexp.MustCompile("[^A-Za-z0-9]+")
+	sanitizedBranch := reg.ReplaceAllString(d.gitBranch, "-")
+	appName := fmt.Sprintf("%s-%s", d.configAppName, sanitizedBranch)
+	d.logger.Infof(
+		ctx,
+		"\t%s Feature branch (%s) detected, setting app name to %s...",
+		d.logger.SuccessfulCheck(),
+		d.gitBranch,
+		d.appName,
+	)
+
+	return appName
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
