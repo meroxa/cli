@@ -46,6 +46,7 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 	pollDuration            = 2 * time.Second
+	featureFlagBranchDeploy = "feature-branch-deploy"
 )
 
 type deployApplicationClient interface {
@@ -576,9 +577,11 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		return fmt.Errorf("%s", errStr)
 	}
 
-	if err := d.validateCollections(ctx, resources); err != nil {
-		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
-		return err
+	if hasFeatureFlag(featureFlagBranchDeploy) {
+		if err := d.validateCollections(ctx, resources); err != nil {
+			d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
+			return err
+		}
 	}
 
 	d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
@@ -649,16 +652,17 @@ func (d *Deploy) validateGitConfig(ctx context.Context) error {
 		return err
 	}
 
-	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
-	if !hasFeatureFlag(userFeatureFlags, "feature-branch-deploy") {
+	if !hasFeatureFlag(featureFlagBranchDeploy) {
 		return turbineCLI.ValidateBranch(ctx, d.logger, d.path)
 	}
 
 	return nil
 }
 
-func hasFeatureFlag(flags []string, f string) bool {
-	for _, v := range flags {
+func hasFeatureFlag(f string) bool {
+	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
+
+	for _, v := range userFeatureFlags {
 		if v == f {
 			return true
 		}
@@ -728,7 +732,7 @@ func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI
 	return nil
 }
 
-// validateNoCollectionLoops ensures source (resource, collection) doesn't equal any destination (resource, collection)
+// validateNoCollectionLoops ensures source (resource, collection) doesn't equal any destination (resource, collection).
 func (d *Deploy) validateNoCollectionLoops(sources []turbineCLI.ApplicationResource, destinations map[resourceCollectionPair]bool) string {
 	var errMessage string
 	for _, source := range sources {
@@ -755,7 +759,8 @@ func (d *Deploy) validateDestinationCollectionUnique(apps []*meroxa.Application,
 					resourceName:   r.Name.String,
 				}] {
 				errMessage = fmt.Sprintf(
-					"%s\n\tApplication resource %q with collection %q cannot be used as a destination. It is also being used as a destination by another application %q.",
+					"%s\n\tApplication resource %q with collection %q cannot be used as a destination."+
+						"It is also being used as a destination by another application %q.",
 					errMessage,
 					r.Name.String,
 					r.Collection.Name.String,

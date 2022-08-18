@@ -434,6 +434,7 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 	}
 }
 
+//nolint:funlen // this is a test function, splitting it would duplicate code
 func TestValidateCollections(t *testing.T) {
 	testCases := []struct {
 		name      string
@@ -532,7 +533,8 @@ func TestValidateCollections(t *testing.T) {
 					Collection:  "anonymous",
 				},
 			},
-			err: "Application resource \"pg\" with collection \"anonymous\" cannot be used as a destination. It is also being used as a destination by another application \"application-name\"",
+			err: "Application resource \"pg\" with collection \"anonymous\" cannot be used as a destination." +
+				"It is also being used as a destination by another application \"application-name\"",
 		},
 		{
 			name: "Two same destination resources",
@@ -554,6 +556,20 @@ func TestValidateCollections(t *testing.T) {
 				},
 			},
 			err: "Application resource \"pg\" with collection \"test-destination\" cannot be used as a destination more than once.",
+		},
+		{
+			name: "Ignore resources without collection info",
+			resources: []turbineCLI.ApplicationResource{
+				{
+					Name: "source",
+				},
+				{
+					Name: "pg",
+				},
+				{
+					Name: "pg",
+				},
+			},
 		},
 	}
 
