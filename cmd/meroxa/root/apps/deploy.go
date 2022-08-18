@@ -374,9 +374,9 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 	case GoLang:
 		err = turbineGo.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	case JavaScript:
-		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
+		err = turbineJS.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	case Python:
-		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha)
+		err = turbinePY.RunDeployApp(ctx, d.logger, d.path, imageName, d.appName, gitSha, specVersion)
 	}
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
