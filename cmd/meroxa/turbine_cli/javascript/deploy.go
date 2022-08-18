@@ -48,8 +48,14 @@ func CreateDockerfile(ctx context.Context, l log.Logger, path string) error {
 	return err
 }
 
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha string) error {
-	cmd := turbinecli.RunTurbineJS("clideploy", imageName, path, appName, gitSha)
+func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha, specVersion string) error {
+	params := []string{"clideploy", imageName, path, appName, gitSha}
+
+	if specVersion != "" {
+		params = append(params, specVersion)
+	}
+
+	cmd := turbinecli.RunTurbineJS(params...)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
