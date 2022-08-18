@@ -87,7 +87,7 @@ git tag is pushed to the repo.
 
 With every release, a new Homebrew formula will be automatically updated on [meroxa/homebrew-taps](https://github.com/meroxa/homebrew-taps).
 
-When releasing newer version of our Meroxa CLI, a new [Meroxa spec](https://github.com/withfig/autocomplete/blob/master/src/meroxa.ts) for [Fig](https://fig.io/) will be automatically generated in [meroxa/cli-autocomplete](https://github.com/meroxa/cli-autocomplete) via [this GitHub action](/.github/workflows/fig.yml).
+When releasing a newer version of our Meroxa CLI, a new [Meroxa spec](https://github.com/withfig/autocomplete/blob/master/src/meroxa.ts) for [Fig](https://fig.io/) will be automatically generated in [meroxa/cli-autocomplete](https://github.com/meroxa/cli-autocomplete) via [this GitHub action](/.github/workflows/fig.yml).
 
 Once a new pull-request is opened in [meroxa/cli-autocomplete](https://github.com/meroxa/cli-autocomplete), you'll need to submit a request to main's [withfig/autocomplete's](https://github.com/meroxa/cli-autocomplete) repository.
 
