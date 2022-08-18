@@ -32,6 +32,12 @@ These are also updated when running `make build`. In the event you need to build
 $ export REBUILD_DOCS="false"
 ```
 
+To generate manually a Meroxa spec for Fig, you could simply run:
+
+```shell
+$ make fig
+```
+
 ## Contributing
 
 For a complete guide to contributing to the Meroxa CLI, see the [Contribution Guide](CONTRIBUTING.md).
@@ -80,6 +86,10 @@ git tag is pushed to the repo.
 * Push - `git push origin vX.X.X`
 
 With every release, a new Homebrew formula will be automatically updated on [meroxa/homebrew-taps](https://github.com/meroxa/homebrew-taps).
+
+When releasing newer version of our Meroxa CLI, a new [Meroxa spec](https://github.com/withfig/autocomplete/blob/master/src/meroxa.ts) for [Fig](https://fig.io/) will be automatically generated in [meroxa/cli-autocomplete](https://github.com/meroxa/cli-autocomplete) via [this GitHub action](/.github/workflows/fig.yml).
+
+Once a new pull-request is opened in [meroxa/cli-autocomplete](https://github.com/meroxa/cli-autocomplete), you'll need to submit a request to main's [withfig/autocomplete's](https://github.com/meroxa/cli-autocomplete) repository.
 
 ## Linting
 
