@@ -18,7 +18,7 @@ require (
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
-	github.com/spf13/cobra v1.3.0
+	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.0
 	golang.org/x/oauth2 v0.0.0-20220630143837-2104d58473e0
@@ -32,7 +32,7 @@ require (
 	github.com/meroxa/turbine-go v0.0.0-20220808165302-ff929376e177
 	github.com/stretchr/testify v1.7.4
 	github.com/volatiletech/null/v8 v8.1.2
-	github.com/withfig/autocomplete-tools/integrations/cobra v0.0.0-20220808122103-bd0d683dd142
+	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.5.13 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dewski/jsonpath v0.0.0-20210103075638-af6da8f1a897 // indirect
 	github.com/docker/distribution v2.8.0+incompatible // indirect
@@ -57,7 +57,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/juju/ansiterm v0.0.0-20180109212912-720a0952cc2a // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/lunixbochs/vtclean v0.0.0-20180621232353-2d01aacdc34a // indirect
@@ -99,5 +99,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/withfig/autocomplete-tools/integrations/cobra => ../../raulb/autocomplete-tools/integrations/cobra
