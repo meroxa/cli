@@ -33,7 +33,6 @@ endif
 
 .PHONY: fig
 fig:
-	rm -rf spec && mkdir -p spec
 	go run gen-spec/main.go
 
 .PHONY: lint
