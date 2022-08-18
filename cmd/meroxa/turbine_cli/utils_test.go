@@ -17,22 +17,22 @@ func TestGetTurbineJSBinary(t *testing.T) {
 		{
 			name:    "MEROXA_USE_LOCAL_TURBINE_JS is unset",
 			envVar:  "",
-			wantCmd: fmt.Sprintf("@meroxa/turbine-js@%s", turbineJSVersion),
+			wantCmd: fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion),
 		},
 		{
 			name:    "MEROXA_USE_LOCAL_TURBINE_JS is true",
 			envVar:  "true",
-			wantCmd: "turbine-js",
+			wantCmd: "turbine-js-cli",
 		},
 		{
 			name:    "MEROXA_USE_LOCAL_TURBINE_JS is false",
 			envVar:  "false",
-			wantCmd: fmt.Sprintf("@meroxa/turbine-js@%s", turbineJSVersion),
+			wantCmd: fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion),
 		},
 		{
 			name:    "MEROXA_USE_LOCAL_TURBINE_JS is set to a value that is neither true nor false",
 			envVar:  "jam",
-			wantCmd: fmt.Sprintf("@meroxa/turbine-js@%s", turbineJSVersion),
+			wantCmd: fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion),
 		},
 	}
 

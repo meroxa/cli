@@ -38,19 +38,14 @@ func NeedsToBuild(path string) (bool, error) {
 	return strconv.ParseBool(match[1])
 }
 
-func BuildApp(path string) (string, error) {
+func CreateDockerfile(ctx context.Context, l log.Logger, path string) error {
 	cmd := turbinecli.RunTurbineJS("clibuild", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
+		return fmt.Errorf("unable to create Dockerfile at %s; %s", path, string(output))
 	}
 
-	r := regexp.MustCompile("\nturbine-response: (.*)\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return "", fmt.Errorf("unable to build Meroxa Application at %s; %s", path, string(output))
-	}
-	return match[1], err
+	return err
 }
 
 func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha string) error {
