@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
-	fig "github.com/withfig/autocomplete-tools/integrations/cobra"
-	
 	"github.com/meroxa/cli/cmd/meroxa/root"
+
+	fig "github.com/withfig/autocomplete-tools/integrations/cobra"
 )
 
 func main() {
