@@ -22,10 +22,9 @@ func (t *turbineJsCLI) Upgrade(appPath string, vendor bool) error {
 			return fmt.Errorf(string(out))
 		}
 
-		t.logger.StartSpinner("\t", " Removing @meroxa/turbine-js requirement...")
 		cmd = exec.Command("npm", "uninstall", "@meroxa/turbine-js", "--save")
 		cmd.Dir = appPath
-		out, err = cmd.CombinedOutput()
+		err = cmd.Run()
 		if err != nil {
 			t.logger.StopSpinnerWithStatus("Failed to uninstall @meroxa/turbine-js. Moving on...", log.Failed)
 		}
