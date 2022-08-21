@@ -63,5 +63,6 @@ func (*Apps) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Logs{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&Run{}),
+		builder.BuildCobraCommand(&Upgrade{}),
 	}
 }

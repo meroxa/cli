@@ -9,7 +9,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -368,13 +368,13 @@ func TestTearDownExistingResourcesWithAppNotFound(t *testing.T) {
 func TestGetResourceCheckErrorMessage(t *testing.T) {
 	testCases := []struct {
 		name                 string
-		resources            []turbineCLI.ApplicationResource
+		resources            []turbine.ApplicationResource
 		resourceState        string
 		expectedErrorMessage string
 	}{
 		{
 			name: "getResourceCheckErrorMessage returns an empty response if all resources are found and available",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name: "nozzle",
 				},
@@ -387,7 +387,7 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 		},
 		{
 			name: "getResourceCheckErrorMessage returns an error response if resources are unavailable",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name: "nozzle",
 				},
@@ -438,12 +438,12 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 func TestValidateCollections(t *testing.T) {
 	testCases := []struct {
 		name      string
-		resources []turbineCLI.ApplicationResource
+		resources []turbine.ApplicationResource
 		err       string
 	}{
 		{
 			name: "Different source and destination resources reference different collections",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:       "source",
 					Source:     true,
@@ -458,7 +458,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "Different source and destination resources reference same collection",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:       "source",
 					Source:     true,
@@ -473,7 +473,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "Multiple destination resources",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:       "source",
 					Source:     true,
@@ -493,7 +493,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "Same source and destination resources reference same collection",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:       "pg",
 					Source:     true,
@@ -509,7 +509,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "One resource is both source and destination",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:        "source",
 					Source:      true,
@@ -521,7 +521,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "Destination resource used in another app",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:       "source",
 					Source:     true,
@@ -538,7 +538,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "Two same destination resources",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name:       "source",
 					Source:     true,
@@ -559,7 +559,7 @@ func TestValidateCollections(t *testing.T) {
 		},
 		{
 			name: "Ignore resources without collection info",
-			resources: []turbineCLI.ApplicationResource{
+			resources: []turbine.ApplicationResource{
 				{
 					Name: "source",
 				},

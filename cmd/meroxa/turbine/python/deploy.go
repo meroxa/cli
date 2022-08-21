@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
@@ -71,7 +71,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, g
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	_, err = turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	_, err = turbine.RunCmdWithErrorDetection(ctx, cmd, l)
 	return err
 }
 
@@ -86,8 +86,8 @@ func CleanUpApp(path string) (string, error) {
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
-func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbinecli.ApplicationResource, error) {
-	var resources []turbinecli.ApplicationResource
+func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbine.ApplicationResource, error) {
+	var resources []turbine.ApplicationResource
 
 	cmd := exec.Command("turbine-py", "listResources", appPath)
 	output, err := cmd.CombinedOutput()
@@ -97,7 +97,7 @@ func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([
 
 	if err := json.Unmarshal(output, &resources); err != nil {
 		// fall back if not json
-		return turbinecli.GetResourceNamesFromString(string(output)), nil
+		return turbine.GetResourceNamesFromString(string(output)), nil
 	}
 
 	return resources, nil

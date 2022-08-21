@@ -3,8 +3,7 @@ package turbinejs
 import (
 	"context"
 
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
-
+	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
@@ -12,8 +11,8 @@ import (
 func Build(ctx context.Context, l log.Logger, path string) error {
 	// TODO: Handle the requirement of https://github.com/meroxa/turbine-js.git being installed
 	// cd into the path first
-	cmd := turbinecli.RunTurbineJS("test", path)
-	stdOut, err := turbinecli.RunCmdWithErrorDetection(ctx, cmd, l)
+	cmd := RunTurbineJS("test", path)
+	stdOut, err := utils.RunCmdWithErrorDetection(ctx, cmd, l)
 	l.Info(ctx, stdOut)
 	return err
 }

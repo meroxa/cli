@@ -11,7 +11,7 @@ import (
 	"regexp"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	turbinecli "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
@@ -48,8 +48,8 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 	return nil
 }
 
-func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbinecli.ApplicationResource, error) {
-	var resources []turbinecli.ApplicationResource
+func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbine.ApplicationResource, error) {
+	var resources []turbine.ApplicationResource
 
 	cmd := exec.Command(path.Join(appPath, appName), "--listresources") //nolint:gosec
 	output, err := cmd.CombinedOutput()
@@ -59,7 +59,7 @@ func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([
 
 	if err := json.Unmarshal(output, &resources); err != nil {
 		// fall back if not json
-		return turbinecli.GetResourceNamesFromString(string(output)), nil
+		return turbine.GetResourceNamesFromString(string(output)), nil
 	}
 
 	return resources, nil

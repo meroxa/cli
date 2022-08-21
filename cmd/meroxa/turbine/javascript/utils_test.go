@@ -1,4 +1,4 @@
-package turbinecli
+package turbinejs
 
 import (
 	"fmt"

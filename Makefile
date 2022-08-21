@@ -34,3 +34,7 @@ endif
 .PHONY: lint
 lint:
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
+
+.PHONY: mock
+mock:
+	mockgen -source cmd/meroxa/turbine_cli/interface.go -package mock > cmd/meroxa/turbine_cli/mock/cli.go

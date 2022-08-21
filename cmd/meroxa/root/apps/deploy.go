@@ -32,10 +32,10 @@ import (
 	"github.com/coreos/go-semver/semver"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine_cli"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine_cli/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine_cli/javascript"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine_cli/python"
+	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -609,17 +609,7 @@ func (d *Deploy) prepareDeployment(ctx context.Context) error {
 
 func (d *Deploy) rmBinary() {
 	if d.lang == GoLang {
-		localBinary := filepath.Join(d.path, d.appName)
-		err := os.Remove(localBinary)
-		if err != nil {
-			fmt.Printf("warning: failed to clean up %s\n", localBinary)
-		}
-
-		crossCompiledBinary := filepath.Join(d.path, d.appName) + ".cross"
-		err = os.Remove(crossCompiledBinary)
-		if err != nil {
-			fmt.Printf("warning: failed to clean up %s\n", crossCompiledBinary)
-		}
+		turbineGo.RunCleanup(d.path, d.appName)
 	}
 }
 
