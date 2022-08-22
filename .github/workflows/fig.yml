@@ -1,0 +1,31 @@
+name: 'Fig Autocomplete Spec'
+on:
+  push:
+    tags:
+      - 'v*'
+      - '!v*.*.*-nightly.*'
+  workflow_dispatch:
+
+jobs:
+  publish-spec:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ^1.18
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3  
+    - name: Run make fig
+      run: |
+       make fig
+    - name: Create Autocomplete PR ## Create the autocomplete PR using this action
+      uses: withfig/push-to-fig-autocomplete-action@v1
+      with:
+        token: ${{ secrets.MEROXA_MACHINE }}
+        autocomplete-spec-name: meroxa
+        spec-path: spec/meroxa.ts
+        repo-org: meroxa
+        repo-name: cli-autocomplete
+        integration: cobra
+        use-minor-base: true

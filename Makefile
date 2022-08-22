@@ -24,12 +24,16 @@ test:
 	go test -v ${GO_TEST_FLAGS} -count=1 -timeout 5m ./...
 
 .PHONY: docs
-docs:
 ifeq ($(REBUILD_DOCS), "true")
+docs:
 	rm -rf docs/cmd && mkdir -p docs/cmd/{md,www}
 	rm -rf etc && mkdir -p etc/man/man1 && mkdir -p etc/completion
 	go run gen-docs/main.go
 endif
+
+.PHONY: fig
+fig:
+	go run gen-spec/main.go
 
 .PHONY: lint
 lint:

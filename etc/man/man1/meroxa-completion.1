@@ -3,7 +3,7 @@
 
 .SH NAME
 .PP
-meroxa\-completion \- Generate completion script
+meroxa-completion - Generate completion script
 
 
 .SH SYNOPSIS
@@ -25,19 +25,19 @@ $ source <(meroxa completion bash)
 
 # To load completions for each session, execute once:
 Linux:
-  $ meroxa completion bash > /etc/bash\_completion.d/meroxa
+  $ meroxa completion bash > /etc/bash_completion.d/meroxa
 MacOS:
-  $ meroxa completion bash > /usr/local/etc/bash\_completion.d/meroxa
+  $ meroxa completion bash > /usr/local/etc/bash_completion.d/meroxa
 
 Zsh:
 
 # If shell completion is not already enabled in your environment you will need
 # to enable it.  You can execute the following once:
 
-$ echo "autoload \-U compinit; compinit" >> \~/.zshrc
+$ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
 # To load completions for each session, execute once:
-$ meroxa completion zsh > "${fpath[1]}/\_meroxa"
+$ meroxa completion zsh > "${fpath[1]}/_meroxa"
 
 # You will need to start a new shell for this setup to take effect.
 
@@ -46,7 +46,7 @@ Fish:
 $ meroxa completion fish | source
 
 # To load completions for each session, execute once:
-$ meroxa completion fish > \~/.config/fish/completions/meroxa.fish
+$ meroxa completion fish > ~/.config/fish/completions/meroxa.fish
 
 .fi
 .RE
@@ -54,25 +54,25 @@ $ meroxa completion fish > \~/.config/fish/completions/meroxa.fish
 
 .SH OPTIONS
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for completion
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 

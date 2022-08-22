@@ -3,7 +3,7 @@
 
 .SH NAME
 .PP
-meroxa\-config\-set \- Update your Meroxa CLI configuration file with a specific key=value
+meroxa-config-set - Update your Meroxa CLI configuration file with a specific key=value
 
 
 .SH SYNOPSIS
@@ -13,30 +13,30 @@ meroxa\-config\-set \- Update your Meroxa CLI configuration file with a specific
 
 .SH DESCRIPTION
 .PP
-This command will let you update your Meroxa configuration file to customize your CLI experience. You can check the presence of this file by running \fB\fCmeroxa config describe\fR, or even provide your own using \fB\fC\-\-config my\-other\-cfg\-file\fR\&. A key with a format such as \fB\fCMyKey\fR will be converted automatically to as \fB\fCMY\_KEY\fR\&.
+This command will let you update your Meroxa configuration file to customize your CLI experience. You can check the presence of this file by running \fB\fCmeroxa config describe\fR, or even provide your own using \fB\fC--config my-other-cfg-file\fR\&. A key with a format such as \fB\fCMyKey\fR will be converted automatically to as \fB\fCMY_KEY\fR\&.
 
 
 .SH OPTIONS
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for set
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 
@@ -46,7 +46,7 @@ This command will let you update your Meroxa configuration file to customize you
 
 .nf
 meroxa config set DisableUpdateNotification=true
-meroxa config set DISABLE\_UPDATE\_NOTIFICATION=true
+meroxa config set DISABLE_UPDATE_NOTIFICATION=true
 meroxa config set OneKey=true AnotherKey=false
 meroxa config set ApiUrl=https://staging.meroxa.com
 
@@ -56,4 +56,4 @@ meroxa config set ApiUrl=https://staging.meroxa.com
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-config(1)\fP
+\fBmeroxa-config(1)\fP

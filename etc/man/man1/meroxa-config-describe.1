@@ -3,7 +3,7 @@
 
 .SH NAME
 .PP
-meroxa\-config\-describe \- Show Meroxa CLI configuration details
+meroxa-config-describe - Show Meroxa CLI configuration details
 
 
 .SH SYNOPSIS
@@ -13,30 +13,30 @@ meroxa\-config\-describe \- Show Meroxa CLI configuration details
 
 .SH DESCRIPTION
 .PP
-This command will return the content of your configuration file where you could find your \fB\fCaccess\_token\fR and then \fB\fCrefresh\_token\fR for your \fB\fCmeroxa login\fR\&. They're stored in the home directory on your machine. On Unix, including MacOS, it's stored in \fB\fC$HOME\fR, and on Windows is stored in \fB\fC%USERPROFILE%\fR\&.
+This command will return the content of your configuration file where you could find your \fB\fCaccess_token\fR and then \fB\fCrefresh_token\fR for your \fB\fCmeroxa login\fR\&. They're stored in the home directory on your machine. On Unix, including MacOS, it's stored in \fB\fC$HOME\fR, and on Windows is stored in \fB\fC%USERPROFILE%\fR\&.
 
 
 .SH OPTIONS
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for describe
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 
@@ -46,12 +46,12 @@ This command will return the content of your configuration file where you could 
 
 .nf
 $ meroxa config describe
-Using meroxa config located in "/Users/my\-name/Library/Application Support/meroxa/config.env
+Using meroxa config located in "/Users/my-name/Library/Application Support/meroxa/config.env
 
-access\_token: c0f928b...c337a0d
+access_token: c0f928b...c337a0d
 actor: user@email.com
-actor\_uuid: c0f928ba\-d40e\-40c5\-a7fa\-cf281c337a0d
-refresh\_token: c337a0d...c0f928b
+actor_uuid: c0f928ba-d40e-40c5-a7fa-cf281c337a0d
+refresh_token: c337a0d...c0f928b
 
 
 .fi
@@ -60,4 +60,4 @@ refresh\_token: c337a0d...c0f928b
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-config(1)\fP
+\fBmeroxa-config(1)\fP

@@ -3,7 +3,7 @@
 
 .SH NAME
 .PP
-meroxa\-environments\-create \- Create an environment
+meroxa-environments-create - Create an environment
 
 
 .SH SYNOPSIS
@@ -18,45 +18,45 @@ Create an environment
 
 .SH OPTIONS
 .PP
-\fB\-c\fP, \fB\-\-config\fP=[]
-	environment configuration based on type and provider (e.g.: \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_secret\_access\_key=my\_access\_secret)
+\fB-c\fP, \fB--config\fP=[]
+	environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)
 
 .PP
-\fB\-h\fP, \fB\-\-help\fP[=false]
+\fB-h\fP, \fB--help\fP[=false]
 	help for create
 
 .PP
-\fB\-\-provider\fP=""
+\fB--provider\fP=""
 	environment cloud provider to use
 
 .PP
-\fB\-\-region\fP=""
+\fB--region\fP=""
 	environment region
 
 .PP
-\fB\-\-type\fP=""
+\fB--type\fP=""
 	environment type, when not specified
 
 .PP
-\fB\-y\fP, \fB\-\-yes\fP[=false]
+\fB-y\fP, \fB--yes\fP[=false]
 	skip confirmation prompt
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
-\fB\-\-cli\-config\-file\fP=""
+\fB--cli-config-file\fP=""
 	meroxa configuration file
 
 .PP
-\fB\-\-debug\fP[=false]
+\fB--debug\fP[=false]
 	display any debugging information
 
 .PP
-\fB\-\-json\fP[=false]
+\fB--json\fP[=false]
 	output json
 
 .PP
-\fB\-\-timeout\fP=10s
+\fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
 
 
@@ -66,7 +66,7 @@ Create an environment
 
 .nf
 
-meroxa env create my\-env \-\-type self\_hosted \-\-provider aws \-\-region us\-east\-1 \-\-config aws\_access\_key\_id=my\_access\_key \-\-config aws\_secret\_access\_key=my\_access\_secret
+meroxa env create my-env --type self_hosted --provider aws --region us-east-1 --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret
 
 
 .fi
@@ -75,4 +75,4 @@ meroxa env create my\-env \-\-type self\_hosted \-\-provider aws \-\-region us\-
 
 .SH SEE ALSO
 .PP
-\fBmeroxa\-environments(1)\fP
+\fBmeroxa-environments(1)\fP

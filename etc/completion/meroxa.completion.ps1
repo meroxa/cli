@@ -33,7 +33,7 @@ Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock {
     if ($Command.Length -gt $CursorPosition) {
         $Command=$Command.Substring(0,$CursorPosition)
     }
-	__meroxa_debug "Truncated command: $Command"
+    __meroxa_debug "Truncated command: $Command"
 
     $ShellCompDirectiveError=1
     $ShellCompDirectiveNoSpace=2
@@ -41,9 +41,10 @@ Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock {
     $ShellCompDirectiveFilterFileExt=8
     $ShellCompDirectiveFilterDirs=16
 
-	# Prepare the command to request completions for the program.
+    # Prepare the command to request completions for the program.
     # Split the command at the first space to separate the program and arguments.
     $Program,$Arguments = $Command.Split(" ",2)
+
     $RequestComp="$Program __completeNoDesc $Arguments"
     __meroxa_debug "RequestComp: $RequestComp"
 
@@ -73,10 +74,12 @@ Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock {
     }
 
     __meroxa_debug "Calling $RequestComp"
+    # First disable ActiveHelp which is not supported for Powershell
+    $env:MEROXA_ACTIVE_HELP=0
+
     #call the command store the output in $out and redirect stderr and stdout to null
     # $Out is an array contains each line per element
     Invoke-Expression -OutVariable out "$RequestComp" 2>&1 | Out-Null
-
 
     # get directive from last line
     [int]$Directive = $Out[-1].TrimStart(':')
@@ -216,7 +219,7 @@ Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock {
             Default {
                 # Like MenuComplete but we don't want to add a space here because
                 # the user need to press space anyway to get the completion.
-                # Description will not be shown because thats not possible with TabCompleteNext
+                # Description will not be shown because that's not possible with TabCompleteNext
                 [System.Management.Automation.CompletionResult]::new($($comp.Name | __meroxa_escapeStringWithSpecialChars), "$($comp.Name)", 'ParameterValue', "$($comp.Description)")
             }
         }

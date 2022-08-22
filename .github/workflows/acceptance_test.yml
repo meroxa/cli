@@ -1,5 +1,4 @@
-name: Acceptance Test
-
+name: Acceptance Tests
 # Run this workflow every time a new PR wants to merge to master/main
 on:
   pull_request:

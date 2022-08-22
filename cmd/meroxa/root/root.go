@@ -78,7 +78,7 @@ meroxa resources list --types
 	global.RegisterGlobalFlags(cmd)
 
 	// Subcommands
-	cmd.AddCommand(CompletionCmd()) // Coming from Cobra
+	cmd.AddCommand(CompletionCmd()) // To generate shell autocompletion
 
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
