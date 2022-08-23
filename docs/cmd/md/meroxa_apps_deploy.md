@@ -25,7 +25,7 @@ meroxa apps deploy --path ./my-app
 
 ```
   -h, --help          help for deploy
-      --path string   path to the app directory (default is local directory)
+      --path string   Path to the app directory (default is local directory)
 ```
 
 ### Options inherited from parent commands

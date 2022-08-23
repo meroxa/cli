@@ -62,10 +62,11 @@ type deployApplicationClient interface {
 
 type Deploy struct {
 	flags struct {
-		Path                 string `long:"path" usage:"path to the app directory (default is local directory)"`
+		Path                 string `long:"path" usage:"Path to the app directory (default is local directory)"`
 		DockerHubUserName    string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
 		DockerHubAccessToken string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
 		Spec                 string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
+		SkipUniqueCollection bool   `long:"skip-unique-collection" usage:"Skips unique destination collection validation" hidden:"true"`
 	}
 
 	client        deployApplicationClient
@@ -677,7 +678,9 @@ func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI
 	var (
 		sources      []turbineCLI.ApplicationResource
 		destinations = map[resourceCollectionPair]bool{}
-		errMessage   string
+
+		errMessage             string
+		additionalErrorMessage string
 	)
 	for _, r := range resources {
 		if r.Source && r.Destination {
@@ -707,16 +710,23 @@ func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI
 		return err
 	}
 
-	errMessage =
-		errMessage +
-			d.validateNoCollectionLoops(sources, destinations) +
-			d.validateDestinationCollectionUnique(apps, destinations)
+	errMessage += d.validateNoCollectionLoops(sources, destinations)
+	if !d.flags.SkipUniqueCollection {
+		uniquenessMessage := d.validateDestinationCollectionUnique(apps, destinations)
+		if uniquenessMessage != "" {
+			additionalErrorMessage +=
+				"To skip unique destination collection validation, run `meroxa app deploy --skip-unique-collection`."
+		}
+		errMessage += uniquenessMessage
+	}
 
 	if errMessage != "" {
 		return fmt.Errorf(
-			"⚠️%s\n%s",
+			"⚠️%s\n%s %s",
 			errMessage,
-			"Please modify your Turbine data application code. Then run `meroxa app deploy` again.")
+			"Please modify your Turbine data application code. Then run `meroxa app deploy` again.",
+			additionalErrorMessage,
+		)
 	}
 
 	return nil
@@ -749,7 +759,7 @@ func (d *Deploy) validateDestinationCollectionUnique(apps []*meroxa.Application,
 					resourceName:   r.Name.String,
 				}] {
 				errMessage = fmt.Sprintf(
-					"%s\n\tApplication resource %q with collection %q cannot be used as a destination."+
+					"%s\n\tApplication resource %q with collection %q cannot be used as a destination. "+
 						"It is also being used as a destination by another application %q.",
 					errMessage,
 					r.Name.String,
