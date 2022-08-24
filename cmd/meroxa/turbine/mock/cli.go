@@ -34,6 +34,34 @@ func (m *MockCLI) EXPECT() *MockCLIMockRecorder {
 	return m.recorder
 }
 
+// GitInit mocks base method.
+func (m *MockCLI) GitInit(ctx context.Context, appPath string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GitInit", ctx, appPath)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// GitInit indicates an expected call of GitInit.
+func (mr *MockCLIMockRecorder) GitInit(ctx, appPath interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitInit", reflect.TypeOf((*MockCLI)(nil).GitInit), ctx, appPath)
+}
+
+// Init mocks base method.
+func (m *MockCLI) Init(ctx context.Context, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Init", ctx, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Init indicates an expected call of Init.
+func (mr *MockCLIMockRecorder) Init(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockCLI)(nil).Init), ctx, name)
+}
+
 // Run mocks base method.
 func (m *MockCLI) Run(ctx context.Context) error {
 	m.ctrl.T.Helper()
