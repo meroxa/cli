@@ -29,7 +29,9 @@ import (
 )
 
 type Run struct {
-	path       string
+	path   string
+	config *turbine.AppConfig
+
 	logger     log.Logger
 	turbineCLI turbine.CLI
 
@@ -70,26 +72,26 @@ func (r *Run) Flags() []builder.Flag {
 
 func (r *Run) Execute(ctx context.Context) error {
 	var err error
-	r.path, err = turbine.GetPath(r.flags.Path)
-	if err != nil {
-		return err
-	}
-	lang, err := turbine.GetLangFromAppJSON(ctx, r.logger, r.path)
-	if err != nil {
-		return err
-	}
-	appName, err := turbine.GetAppNameFromAppJSON(ctx, r.logger, r.path)
-	if err != nil {
-		return err
+	if r.config == nil {
+		r.path, err = turbine.GetPath(r.flags.Path)
+		if err != nil {
+			return err
+		}
+		var config turbine.AppConfig
+		config, err = turbine.ReadConfigFile(r.path)
+		r.config = &config
+		if err != nil {
+			return err
+		}
 	}
 
-	switch lang {
+	switch lang := r.config.Language; lang {
 	case "go", GoLang:
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbineGo.New(r.logger, r.path)
 		}
 		err = r.turbineCLI.Run(ctx)
-		turbineGo.RunCleanup(r.path, appName)
+		turbineGo.RunCleanup(r.path, r.config.Name)
 		return err
 	case "js", JavaScript, NodeJs:
 		if r.turbineCLI == nil {

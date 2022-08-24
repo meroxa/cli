@@ -8,7 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/root/nop"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -52,16 +52,34 @@ func TestRunAppFlags(t *testing.T) {
 
 func TestRunExecute(t *testing.T) {
 	tests := []struct {
-		desc string
-		err  error
+		desc   string
+		config turbine.AppConfig
+		err    error
 	}{
 		{
-			desc: "Execute run successfully",
-			err:  nil,
+			desc: "Execute Javascript run successfully",
+			config: turbine.AppConfig{
+				Name:     "js-test",
+				Language: JavaScript,
+				Vendor:   "false",
+			},
+			err: nil,
 		},
 		{
-			desc: "Execute Run with an error",
-			err:  fmt.Errorf("not good"),
+			desc: "Execute Golang run successfully",
+			config: turbine.AppConfig{
+				Name:     "go-test",
+				Language: GoLang,
+			},
+			err: nil,
+		},
+		{
+			desc: "Execute Python Run with an error",
+			config: turbine.AppConfig{
+				Name:     "py-test",
+				Language: Python,
+			},
+			err: fmt.Errorf("not good"),
 		},
 	}
 
@@ -70,10 +88,9 @@ func TestRunExecute(t *testing.T) {
 			ctx := context.Background()
 			mockCtrl := gomock.NewController(t)
 
-			u := &Upgrade{}
+			u := &Run{}
 			u.Logger(log.NewTestLogger())
-			u.flags.Path = "/does/not/matter"
-			u.run = &nop.Nop{}
+			u.config = &tt.config
 
 			mock := mockturbinecli.NewMockCLI(mockCtrl)
 			if tt.err == nil {
