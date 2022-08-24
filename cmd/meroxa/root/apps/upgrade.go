@@ -34,6 +34,7 @@ type Upgrade struct {
 	turbineCLI turbine.CLI
 	run        builder.CommandWithExecute
 	path       string
+	config     *turbine.AppConfig
 
 	flags struct {
 		Path string `long:"path" usage:"path where application exists (current directory as default)"`
@@ -69,21 +70,26 @@ func (u *Upgrade) Flags() []builder.Flag {
 
 func (u *Upgrade) Execute(ctx context.Context) error {
 	var err error
-	u.path, err = turbine.GetPath(u.flags.Path)
-	if err != nil {
-		return err
+	if u.config == nil {
+		u.logger.StartSpinner("\t", fmt.Sprintf(" Fetching details of application in %q...", u.path))
+		u.path, err = turbine.GetPath(u.flags.Path)
+		if err != nil {
+			u.logger.StopSpinnerWithStatus("\t", log.Failed)
+			return err
+		}
+
+		var config turbine.AppConfig
+		config, err = turbine.ReadConfigFile(u.path)
+		u.config = &config
+		if err != nil {
+			u.logger.StopSpinnerWithStatus("\t", log.Failed)
+			return err
+		}
+		u.logger.StopSpinnerWithStatus(fmt.Sprintf("Determined the details of the %q Application", u.config.Name), log.Successful)
 	}
 
-	u.logger.StartSpinner("\t", fmt.Sprintf(" Fetching details of application in %q...", u.path))
-	config, err := turbine.ReadConfigFile(u.path)
-	if err != nil {
-		u.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-	u.logger.StopSpinnerWithStatus(fmt.Sprintf("Determined the details of the %q Application", config.Name), log.Successful)
-
-	lang := config.Language
-	vendor, _ := strconv.ParseBool(config.Vendor)
+	lang := u.config.Language
+	vendor, _ := strconv.ParseBool(u.config.Vendor)
 	switch lang {
 	case "go", GoLang:
 		if u.turbineCLI == nil {
@@ -127,6 +133,6 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	u.logger.StopSpinnerWithStatus("Tested upgrades locally successfully!", log.Successful)
 
 	u.logger.Infof(ctx, "Your Turbine Application %s has been upgraded successfully!"+
-		" To finish, add and commit the upgrades.", config.Name)
+		" To finish, add and commit the upgrades.", u.config.Name)
 	return nil
 }

@@ -3,12 +3,14 @@ package apps
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/root/nop"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -53,25 +55,35 @@ func TestUpgradeAppFlags(t *testing.T) {
 func TestUpgradeExecute(t *testing.T) {
 	tests := []struct {
 		desc   string
-		lang   string
-		vendor bool
+		config turbine.AppConfig
 		err    error
 	}{
 		{
-			desc:   "Successful upgrade without vendor",
-			vendor: false,
-			err:    nil,
+			desc: "Successful Javascript upgrade without vendor",
+			config: turbine.AppConfig{
+				Name:     "",
+				Language: JavaScript,
+				Vendor:   "false",
+			},
+			err: nil,
 		},
 		{
-			desc:   "Successful upgrade with vendor",
-			vendor: true,
-			err:    nil,
+			desc: "Successful Golang upgrade with vendor",
+			config: turbine.AppConfig{
+				Name:     "",
+				Language: GoLang,
+				Vendor:   "true",
+			},
+			err: nil,
 		},
 		{
-			desc:   "Unsuccessful upgrade",
-			lang:   GoLang,
-			vendor: true,
-			err:    fmt.Errorf("not good"),
+			desc: "Unsuccessful Python upgrade",
+			config: turbine.AppConfig{
+				Name:     "",
+				Language: Python,
+				Vendor:   "false",
+			},
+			err: fmt.Errorf("not good"),
 		},
 	}
 
@@ -81,14 +93,15 @@ func TestUpgradeExecute(t *testing.T) {
 
 			u := &Upgrade{}
 			u.Logger(log.NewTestLogger())
-			u.flags.Path = "/does/not/matter"
+			u.config = &tt.config
 			u.run = &nop.Nop{}
+			vendor, _ := strconv.ParseBool(tt.config.Vendor)
 
 			mock := mockturbinecli.NewMockCLI(mockCtrl)
 			if tt.err == nil {
-				mock.EXPECT().Upgrade(tt.vendor)
+				mock.EXPECT().Upgrade(vendor)
 			} else {
-				mock.EXPECT().Upgrade(tt.vendor).Return(tt.err)
+				mock.EXPECT().Upgrade(vendor).Return(tt.err)
 			}
 			u.turbineCLI = mock
 
