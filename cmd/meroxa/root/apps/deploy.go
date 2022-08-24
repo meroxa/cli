@@ -29,7 +29,6 @@ import (
 	"github.com/coreos/go-semver/semver"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
@@ -43,7 +42,6 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 	pollDuration            = 2 * time.Second
-	featureFlagBranchDeploy = "feature-branch-deploy"
 )
 
 type deployApplicationClient interface {
@@ -63,7 +61,7 @@ type Deploy struct {
 		DockerHubUserName        string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
 		DockerHubAccessToken     string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
 		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
-		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations" hidden:"true"` //nolint:lll
+		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
 	}
 
 	client        deployApplicationClient
@@ -406,7 +404,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		return fmt.Errorf("%s", errStr)
 	}
 
-	if hasFeatureFlag(featureFlagBranchDeploy) && !d.flags.SkipCollectionValidation {
+	if !d.flags.SkipCollectionValidation {
 		if err := d.validateCollections(ctx, resources); err != nil {
 			d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
 			return err
@@ -459,28 +457,7 @@ func (d *Deploy) validateSpecVersionDeployment() error {
 
 // validateConfig will validate uncommitted changes and git branch.
 func (d *Deploy) validateGitConfig(ctx context.Context) error {
-	err := d.turbineCLI.GitChecks(ctx)
-	if err != nil {
-		return err
-	}
-
-	if !hasFeatureFlag(featureFlagBranchDeploy) {
-		return turbine.ValidateBranch(ctx, d.logger, d.gitBranch)
-	}
-
-	return nil
-}
-
-func hasFeatureFlag(f string) bool {
-	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
-
-	for _, v := range userFeatureFlags {
-		if v == f {
-			return true
-		}
-	}
-
-	return false
+	return d.turbineCLI.GitChecks(ctx)
 }
 
 type resourceCollectionPair struct {
