@@ -6,9 +6,10 @@ import (
 )
 
 type turbineJsCLI struct {
-	logger log.Logger
+	logger  log.Logger
+	appPath string
 }
 
-func New(l log.Logger) turbine.CLI {
-	return &turbineJsCLI{logger: l}
+func New(l log.Logger, appPath string) turbine.CLI {
+	return &turbineJsCLI{logger: l, appPath: appPath}
 }

@@ -6,9 +6,10 @@ import (
 )
 
 type turbinePyCLI struct {
-	logger log.Logger
+	logger  log.Logger
+	appPath string
 }
 
-func New(l log.Logger) turbine.CLI {
-	return &turbinePyCLI{logger: l}
+func New(l log.Logger, appPath string) turbine.CLI {
+	return &turbinePyCLI{logger: l, appPath: appPath}
 }
