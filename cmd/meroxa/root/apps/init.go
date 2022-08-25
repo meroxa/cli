@@ -4,22 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os/exec"
 	"regexp"
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	turbineCLI "github.com/meroxa/cli/cmd/meroxa/turbine"
-	utils "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbinejs "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinepy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	"github.com/meroxa/cli/log"
-	turbinego "github.com/meroxa/turbine-go/init"
 )
 
 type Init struct {
-	logger log.Logger
-	path   string
+	logger     log.Logger
+	turbineCLI turbine.CLI
+	path       string
 
 	args struct {
 		appName string
@@ -76,24 +75,6 @@ func (i *Init) ParseArgs(args []string) error {
 	return nil
 }
 
-func (i *Init) GitInit(ctx context.Context, path string) error {
-	if path == "" {
-		return errors.New("path is required")
-	}
-
-	cmd := exec.Command("git", "config", "--global", "init.defaultBranch", "main")
-	cmd.Path = path
-	_ = cmd.Run()
-
-	cmd = exec.Command("git", "init", path)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		i.logger.Error(ctx, string(output))
-		return err
-	}
-	return nil
-}
-
 func validateAppName(name string) (string, error) {
 	var err error
 
@@ -122,7 +103,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		return err
 	}
 
-	i.path, err = turbineCLI.GetPath(i.flags.Path)
+	i.path, err = turbine.GetPath(i.flags.Path)
 	if err != nil {
 		return err
 	}
@@ -130,17 +111,26 @@ func (i *Init) Execute(ctx context.Context) error {
 	i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
 	switch lang {
 	case "go", GoLang:
-		err = turbinego.Init(name, i.path)
+		if i.turbineCLI == nil {
+			i.turbineCLI = turbineGo.New(i.logger, i.path)
+		}
+		err = i.turbineCLI.Init(ctx, name)
 		if err != nil {
 			i.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return err
 		}
 		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
-		err = utils.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
+		err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
 	case "js", JavaScript, NodeJs:
-		err = turbinejs.Init(ctx, i.logger, name, i.path)
+		if i.turbineCLI == nil {
+			i.turbineCLI = turbineJS.New(i.logger, i.path)
+		}
+		err = i.turbineCLI.Init(ctx, name)
 	case "py", Python3, Python:
-		err = turbinepy.Init(ctx, i.logger, name, i.path)
+		if i.turbineCLI == nil {
+			i.turbineCLI = turbinePY.New(i.logger, i.path)
+		}
+		err = i.turbineCLI.Init(ctx, name)
 	default:
 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
@@ -154,7 +144,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
 	}
 	i.logger.StartSpinner("\t", "Running git initialization...")
-	err = i.GitInit(ctx, i.path+"/"+name)
+	err = i.turbineCLI.GitInit(ctx, i.path+"/"+name)
 	if err != nil {
 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return err

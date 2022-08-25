@@ -9,8 +9,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 )
@@ -76,42 +79,8 @@ func TestInitAppFlags(t *testing.T) {
 	}
 }
 
-func TestGitInit(t *testing.T) {
-	testDir := os.TempDir() + "/tests" + uuid.New().String()
-
-	tests := []struct {
-		path string
-		err  error
-	}{
-		{path: "", err: errors.New("path is required")},
-		{path: testDir, err: nil},
-	}
-
-	for _, tt := range tests {
-		cc := &Init{}
-		cc.Logger(log.NewTestLogger())
-
-		err := cc.GitInit(context.Background(), tt.path)
-		if err != nil {
-			if tt.err == nil {
-				t.Fatalf("unexpected error \"%s\"", err)
-			} else if tt.err.Error() != err.Error() {
-				t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
-			}
-		}
-
-		if tt.err == nil {
-			if _, err := os.Stat(testDir + "/.git"); os.IsNotExist(err) {
-				t.Fatalf("expected directory \"%s\" to be created", testDir)
-			}
-		}
-	}
-
-	os.RemoveAll(testDir)
-}
-
 //nolint:funlen
-func TestGoInit(t *testing.T) {
+func TestGoInitExecute(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
 		gopath = build.Default.GOPATH
@@ -211,6 +180,73 @@ func TestGoInit(t *testing.T) {
 				}
 			}
 			os.RemoveAll(tt.path)
+		})
+	}
+}
+
+func TestJavascriptAndPythonInitExecute(t *testing.T) {
+	tests := []struct {
+		desc     string
+		path     string
+		language string
+		name     string
+		err      error
+	}{
+		{
+			desc:     "Successful Javascript init",
+			path:     "/does/not/matter",
+			language: JavaScript,
+			name:     "js-init",
+			err:      nil,
+		},
+		{
+			desc:     "Unsuccessful Javascript init",
+			path:     "/does/not/matter",
+			language: JavaScript,
+			name:     "js-init",
+			err:      fmt.Errorf("not good"),
+		},
+		{
+			desc:     "Successful Python init",
+			path:     "/does/not/matter",
+			language: Python,
+			name:     "py-init",
+			err:      nil,
+		},
+		{
+			desc:     "Unsuccessful Python init",
+			path:     "/does/not/matter",
+			language: Python,
+			name:     "py-init",
+			err:      fmt.Errorf("not good"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			ctx := context.Background()
+			mockCtrl := gomock.NewController(t)
+
+			i := &Init{}
+			i.Logger(log.NewTestLogger())
+			i.flags.Path = tt.path
+			i.args.appName = tt.name
+			i.flags.Lang = tt.language
+
+			mock := mockturbinecli.NewMockCLI(mockCtrl)
+			if tt.err == nil {
+				mock.EXPECT().Init(ctx, tt.name)
+				mock.EXPECT().GitInit(ctx, tt.path+"/"+tt.name)
+			} else {
+				mock.EXPECT().Init(ctx, tt.name).Return(tt.err)
+			}
+			i.turbineCLI = mock
+
+			err := i.Execute(ctx)
+			processError(t, err, tt.err)
+			if err == nil && tt.err != nil {
+				t.Fatalf("did not find expected error: %s", tt.err.Error())
+			}
 		})
 	}
 }

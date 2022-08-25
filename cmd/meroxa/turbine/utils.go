@@ -164,6 +164,23 @@ func WriteConfigFile(appPath string, cfg AppConfig) error {
 	return nil
 }
 
+func GitInit(ctx context.Context, appPath string) error {
+	if appPath == "" {
+		return errors.New("path is required")
+	}
+
+	cmd := exec.Command("git", "config", "--global", "init.defaultBranch", "main")
+	cmd.Path = appPath
+	_ = cmd.Run()
+
+	cmd = exec.Command("git", "init", appPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf(string(output))
+	}
+	return nil
+}
+
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 	cmd := exec.Command("git", "status", "--porcelain=v2")
