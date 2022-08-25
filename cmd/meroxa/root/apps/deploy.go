@@ -62,11 +62,11 @@ type deployApplicationClient interface {
 
 type Deploy struct {
 	flags struct {
-		Path                 string `long:"path" usage:"Path to the app directory (default is local directory)"`
-		DockerHubUserName    string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
-		DockerHubAccessToken string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
-		Spec                 string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
-		SkipUniqueCollection bool   `long:"skip-unique-collection" usage:"Skips unique destination collection validation" hidden:"true"`
+		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
+		DockerHubUserName        string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
+		DockerHubAccessToken     string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
+		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
+		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations" hidden:"true"` //nolint:lll
 	}
 
 	client        deployApplicationClient
@@ -578,7 +578,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		return fmt.Errorf("%s", errStr)
 	}
 
-	if hasFeatureFlag(featureFlagBranchDeploy) {
+	if hasFeatureFlag(featureFlagBranchDeploy) && !d.flags.SkipCollectionValidation {
 		if err := d.validateCollections(ctx, resources); err != nil {
 			d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
 			return err
@@ -679,8 +679,7 @@ func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI
 		sources      []turbineCLI.ApplicationResource
 		destinations = map[resourceCollectionPair]bool{}
 
-		errMessage             string
-		additionalErrorMessage string
+		errMessage string
 	)
 	for _, r := range resources {
 		if r.Source && r.Destination {
@@ -710,22 +709,15 @@ func (d *Deploy) validateCollections(ctx context.Context, resources []turbineCLI
 		return err
 	}
 
-	errMessage += d.validateNoCollectionLoops(sources, destinations)
-	if !d.flags.SkipUniqueCollection {
-		uniquenessMessage := d.validateDestinationCollectionUnique(apps, destinations)
-		if uniquenessMessage != "" {
-			additionalErrorMessage +=
-				"To skip unique destination collection validation, run `meroxa app deploy --skip-unique-collection`."
-		}
-		errMessage += uniquenessMessage
-	}
+	errMessage += d.validateNoCollectionLoops(sources, destinations) +
+		d.validateDestinationCollectionUnique(apps, destinations)
 
 	if errMessage != "" {
 		return fmt.Errorf(
 			"⚠️%s\n%s %s",
 			errMessage,
 			"Please modify your Turbine data application code. Then run `meroxa app deploy` again.",
-			additionalErrorMessage,
+			"To skip collection validation, run `meroxa app deploy --skip-collection-validation`.",
 		)
 	}
 

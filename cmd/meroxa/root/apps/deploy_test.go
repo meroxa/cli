@@ -30,7 +30,7 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "docker-hub-username", required: false, hidden: true},
 		{name: "docker-hub-access-token", required: false, hidden: true},
 		{name: "spec", required: false, hidden: true},
-		{name: "skip-unique-collection", required: false, hidden: true},
+		{name: "skip-collection-validation", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})
@@ -438,10 +438,9 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 //nolint:funlen // this is a test function, splitting it would duplicate code
 func TestValidateCollections(t *testing.T) {
 	testCases := []struct {
-		name               string
-		resources          []turbine.ApplicationResource
-		skipUniquenessFlag bool
-		err                string
+		name      string
+		resources []turbine.ApplicationResource
+		err       string
 	}{
 		{
 			name: "Different source and destination resources reference different collections",
@@ -508,7 +507,8 @@ func TestValidateCollections(t *testing.T) {
 				},
 			},
 			err: "⚠️\n\tApplication resource \"pg\" with collection \"sequences\" cannot be used as a destination. It is also the source." +
-				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. ",
+				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. " +
+				"To skip collection validation, run `meroxa app deploy --skip-collection-validation`.",
 		},
 		{
 			name: "One resource is both source and destination",
@@ -521,7 +521,8 @@ func TestValidateCollections(t *testing.T) {
 				},
 			},
 			err: "⚠️\n\tApplication resource cannot be used as both a source and destination." +
-				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. ",
+				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. " +
+				"To skip collection validation, run `meroxa app deploy --skip-collection-validation`.",
 		},
 		{
 			name: "Destination resource used in another app",
@@ -540,7 +541,7 @@ func TestValidateCollections(t *testing.T) {
 			err: "⚠️\n\tApplication resource \"pg\" with collection \"anonymous\" cannot be used as a destination. " +
 				"It is also being used as a destination by another application \"application-name\"." +
 				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. " +
-				"To skip unique destination collection validation, run `meroxa app deploy --skip-unique-collection`.",
+				"To skip collection validation, run `meroxa app deploy --skip-collection-validation`.",
 		},
 		{
 			name: "Two same destination resources",
@@ -562,7 +563,8 @@ func TestValidateCollections(t *testing.T) {
 				},
 			},
 			err: "⚠️\n\tApplication resource \"pg\" with collection \"test-destination\" cannot be used as a destination more than once." +
-				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. ",
+				"\nPlease modify your Turbine data application code. Then run `meroxa app deploy` again. " +
+				"To skip collection validation, run `meroxa app deploy --skip-collection-validation`.",
 		},
 		{
 			name: "Ignore resources without collection info",
@@ -577,22 +579,6 @@ func TestValidateCollections(t *testing.T) {
 					Name: "pg",
 				},
 			},
-		},
-		{
-			name: "Destination resource used in another app",
-			resources: []turbine.ApplicationResource{
-				{
-					Name:       "source",
-					Source:     true,
-					Collection: "sequences",
-				},
-				{
-					Name:        "pg",
-					Destination: true,
-					Collection:  "anonymous",
-				},
-			},
-			skipUniquenessFlag: true,
 		},
 	}
 
@@ -638,7 +624,6 @@ func TestValidateCollections(t *testing.T) {
 				ListApplications(ctx).
 				Return(apps, nil)
 
-			d.flags.SkipUniqueCollection = tc.skipUniquenessFlag
 			err := d.validateCollections(ctx, tc.resources)
 			if tc.err == "" {
 				assert.NoError(t, err)
