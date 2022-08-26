@@ -84,11 +84,33 @@ func (c *Create) Docs() builder.Docs {
 
 		// TODO: Provide example with `--env` once it's not behind a feature flag
 		Example: `
-meroxa resources create store --type postgres -u $DATABASE_URL --metadata '{"logical_replication":"true"}'
-meroxa resources create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
-meroxa resources create warehouse --type redshift -u $REDSHIFT_URL
-meroxa resources create slack --type url -u $WEBHOOK_URL
-`,
+$ meroxa resources create store --type postgres -u "$DATABASE_URL" --metadata '{"logical_replication":"true"}'
+$ meroxa resources create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
+$ meroxa resources create warehouse --type redshift -u "$REDSHIFT_URL"
+$ meroxa resources create slack --type url -u "$WEBHOOK_URL"
+$ meroxa resource create mysqldb \
+    --type mysql \
+    --url "mysql://$MYSQL_USER:$MYSQL_PASS@$MYSQL_URL:$MYSQL_PORT/$MYSQL_DB"
+
+$ meroxa resource create mongo \
+    --type mongodb \
+    -u "mongodb://$MONGO_USER:$MONGO_PASS@$MONGO_URL:$MONGO_PORT"
+
+$ meroxa resource create elasticsearch \
+    --type elasticsearch \
+    -u "https://$ES_USER:$ES_PASS@$ES_URL:$ES_PORT" \
+    --metadata '{"index.prefix": "$ES_INDEX","incrementing.field.name": "$ES_INCREMENTING_FIELD"}'
+
+$ meroxa resource create mybigquery \
+    --type bigquery \
+    -u "bigquery://$GCP_PROJECT_ID/$GCP_DATASET_NAME" \
+    --client-key "$(cat $GCP_SERVICE_ACCOUNT_JSON_FILE)"
+
+$ meroxa resource create snowflake \
+    --type snowflakedb \
+    -u "snowflake://$SNOWFLAKE_URL/meroxa_db/stream_data" \
+    --username meroxa_user \
+    --password $SNOWFLAKE_PRIVATE_KEY`,
 	}
 }
 
