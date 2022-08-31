@@ -24,8 +24,7 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 		return err
 	}
 
-	cmd := exec.Command("./" + appName) //nolint:gosec
-	cmd.Path = t.appPath
+	cmd := exec.Command(t.appPath + "/" + appName) //nolint:gosec
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.logger.Error(ctx, string(output))
