@@ -96,7 +96,7 @@ func validateAppName(name string) (string, error) {
 
 func (i *Init) Execute(ctx context.Context) error {
 	name := i.args.appName
-	lang := i.flags.Lang
+	lang := strings.ToLower(i.flags.Lang)
 
 	name, err := validateAppName(name)
 	if err != nil {
