@@ -86,19 +86,19 @@ func (r *Run) Execute(ctx context.Context) error {
 	}
 
 	switch lang := r.config.Language; lang {
-	case "go", GoLang:
+	case "go", turbine.GoLang:
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbineGo.New(r.logger, r.path)
 		}
 		err = r.turbineCLI.Run(ctx)
-		turbineGo.RunCleanup(r.path, r.config.Name)
+		turbineGo.RunCleanup(ctx, r.logger, r.path, r.config.Name)
 		return err
-	case "js", JavaScript, NodeJs:
+	case "js", turbine.JavaScript, turbine.NodeJs:
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbineJS.New(r.logger, r.path)
 		}
 		return r.turbineCLI.Run(ctx)
-	case "py", Python3, Python:
+	case "py", turbine.Python3, turbine.Python:
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbinePy.New(r.logger, r.path)
 		}

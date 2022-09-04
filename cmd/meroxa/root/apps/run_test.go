@@ -60,7 +60,7 @@ func TestRunExecute(t *testing.T) {
 			desc: "Execute Javascript run successfully",
 			config: turbine.AppConfig{
 				Name:     "js-test",
-				Language: JavaScript,
+				Language: turbine.JavaScript,
 				Vendor:   "false",
 			},
 			err: nil,
@@ -69,7 +69,7 @@ func TestRunExecute(t *testing.T) {
 			desc: "Execute Golang run successfully",
 			config: turbine.AppConfig{
 				Name:     "go-test",
-				Language: GoLang,
+				Language: turbine.GoLang,
 			},
 			err: nil,
 		},
@@ -77,7 +77,7 @@ func TestRunExecute(t *testing.T) {
 			desc: "Execute Python Run with an error",
 			config: turbine.AppConfig{
 				Name:     "py-test",
-				Language: Python,
+				Language: turbine.Python,
 			},
 			err: fmt.Errorf("not good"),
 		},

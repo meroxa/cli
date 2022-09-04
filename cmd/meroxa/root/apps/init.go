@@ -110,7 +110,7 @@ func (i *Init) Execute(ctx context.Context) error {
 
 	i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
 	switch lang {
-	case "go", GoLang:
+	case "go", turbine.GoLang:
 		if i.turbineCLI == nil {
 			i.turbineCLI = turbineGo.New(i.logger, i.path)
 		}
@@ -121,12 +121,12 @@ func (i *Init) Execute(ctx context.Context) error {
 		}
 		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
 		err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor)
-	case "js", JavaScript, NodeJs:
+	case "js", turbine.JavaScript, turbine.NodeJs:
 		if i.turbineCLI == nil {
 			i.turbineCLI = turbineJS.New(i.logger, i.path)
 		}
 		err = i.turbineCLI.Init(ctx, name)
-	case "py", Python3, Python:
+	case "py", turbine.Python3, turbine.Python:
 		if i.turbineCLI == nil {
 			i.turbineCLI = turbinePY.New(i.logger, i.path)
 		}
@@ -140,7 +140,7 @@ func (i *Init) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if lang != "go" && lang != GoLang {
+	if lang != "go" && lang != turbine.GoLang {
 		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
 	}
 	i.logger.StartSpinner("\t", "Running git initialization...")

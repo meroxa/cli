@@ -71,8 +71,8 @@ func (u *Upgrade) Flags() []builder.Flag {
 func (u *Upgrade) Execute(ctx context.Context) error {
 	var err error
 	if u.config == nil {
-		u.logger.StartSpinner("\t", fmt.Sprintf(" Fetching details of application in %q...", u.path))
 		u.path, err = turbine.GetPath(u.flags.Path)
+		u.logger.StartSpinner("\t", fmt.Sprintf(" Fetching details of application in %q...", u.path))
 		if err != nil {
 			u.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return err
@@ -91,17 +91,17 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	lang := u.config.Language
 	vendor, _ := strconv.ParseBool(u.config.Vendor)
 	switch lang {
-	case "go", GoLang:
+	case "go", turbine.GoLang:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbineGo.New(u.logger, u.path)
 		}
 		err = u.turbineCLI.Upgrade(vendor)
-	case "js", JavaScript, NodeJs:
+	case "js", turbine.JavaScript, turbine.NodeJs:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbineJS.New(u.logger, u.path)
 		}
 		err = u.turbineCLI.Upgrade(vendor)
-	case "py", Python3, Python:
+	case "py", turbine.Python3, turbine.Python:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbinePY.New(u.logger, u.path)
 		}

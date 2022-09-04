@@ -8,23 +8,23 @@ import (
 	"path/filepath"
 
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/log"
 )
 
 // Run will build a go binary and will run it.
 func (t *turbineGoCLI) Run(ctx context.Context) error {
-	// grab current location to use it as project name
 	appName, err := utils.GetAppNameFromAppJSON(ctx, t.logger, t.appPath)
 	if err != nil {
 		return err
 	}
 
 	// building is a requirement prior to running for go apps
-	err = BuildBinary(ctx, t.logger, t.appPath, appName, false)
+	_, err = t.Build(ctx, appName, false)
 	if err != nil {
 		return err
 	}
 
-	cmd := exec.Command(t.appPath + "/" + appName) //nolint:gosec
+	cmd := exec.CommandContext(ctx, t.appPath+"/"+appName) //nolint:gosec
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		t.logger.Error(ctx, string(output))
@@ -35,16 +35,16 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 }
 
 // RunCleanup removes any dangling binaries.
-func RunCleanup(appPath, appName string) {
+func RunCleanup(ctx context.Context, l log.Logger, appPath, appName string) {
 	localBinary := filepath.Join(appPath, appName)
 	err := os.Remove(localBinary)
 	if err != nil {
-		fmt.Printf("warning: failed to clean up %s\n", localBinary)
+		l.Warnf(ctx, "warning: failed to clean up %s\n", localBinary)
 	}
 
 	crossCompiledBinary := localBinary + ".cross"
 	err = os.Remove(crossCompiledBinary)
 	if err != nil {
-		fmt.Printf("warning: failed to clean up %s\n", crossCompiledBinary)
+		l.Warnf(ctx, "warning: failed to clean up %s\n", crossCompiledBinary)
 	}
 }
