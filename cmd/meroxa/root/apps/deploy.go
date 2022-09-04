@@ -239,19 +239,16 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 }
 
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) error {
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Deploying application %q...", d.appName))
+	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
 	err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("Deployment failed\n\n", log.Failed)
 		return err
 	}
 
 	app, err := d.client.GetApplication(ctx, d.appName)
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("Deployment failed to create Application\n\n", log.Failed)
 		return err
 	}
-	d.logger.StopSpinnerWithStatus("Deploy complete", log.Successful)
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.UUID)
 	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
@@ -337,13 +334,19 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	}
 
 	if d.appConfig == nil {
+		d.lang, err = turbine.GetLangFromAppJSON(ctx, d.logger, d.path)
+		if err != nil {
+			return err
+		}
+		d.configAppName, err = turbine.GetAppNameFromAppJSON(ctx, d.logger, d.path)
+		if err != nil {
+			return err
+		}
 		config, err = turbine.ReadConfigFile(d.path)
 		d.appConfig = &config
 		if err != nil {
 			return err
 		}
-		d.lang = config.Language
-		d.configAppName = config.Name
 
 		if d.gitBranch, err = turbine.GetGitBranch(d.path); err != nil {
 			return err
@@ -415,6 +418,8 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 }
 
 func (d *Deploy) prepareDeployment(ctx context.Context) error {
+	d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
+
 	// After this point, CLI will package it up and will build it
 	err := d.buildApp(ctx)
 	if err != nil {
