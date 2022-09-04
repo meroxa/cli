@@ -40,7 +40,7 @@ func (t *turbineGoCLI) buildForCrossCompile(ctx context.Context, appName string)
 		t.logger.StopSpinnerWithStatus(string(stdout), log.Failed)
 		return fmt.Errorf("cross compile failed")
 	}
-	t.logger.StopSpinnerWithStatus("Successfully built the Golang binary!", log.Successful)
+	t.logger.StopSpinnerWithStatus("Successfully built the Golang binary", log.Successful)
 	return nil
 }
 
