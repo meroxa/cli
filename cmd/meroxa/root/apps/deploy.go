@@ -326,6 +326,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	var err error
 	var config turbine.AppConfig
 
+	d.logger.Info(ctx, "Validating your app.json...")
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
 	if err = d.validateLocalDeploymentConfig(); err != nil {
 		return err
@@ -343,11 +344,11 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		}
 		d.lang = config.Language
 		d.configAppName = config.Name
-		d.appName = d.prepareAppName(ctx)
 
 		if d.gitBranch, err = turbine.GetGitBranch(d.path); err != nil {
 			return err
 		}
+		d.appName = d.prepareAppName(ctx)
 	}
 
 	if err = d.validateLanguage(); err != nil {
