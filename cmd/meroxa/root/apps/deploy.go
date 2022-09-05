@@ -253,7 +253,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.UUID)
 	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
 		d.logger.SuccessfulCheck(), app.Name, dashboardURL)
-	d.logger.StopSpinner(output)
+	d.logger.Info(ctx, output)
 	d.logger.JSON(ctx, app)
 	return nil
 }
