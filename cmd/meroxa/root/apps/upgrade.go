@@ -17,6 +17,7 @@ limitations under the License.
 package apps
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strconv"
@@ -114,9 +115,13 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	}
 
 	u.logger.StartSpinner("\t", " Testing upgrades locally...")
+	runOutput := ""
+	buf := bytes.NewBufferString(runOutput)
 	if u.run == nil {
+		spinner := log.NewSpinnerLogger(buf)
+		leveled := log.NewLeveledLogger(buf, log.Error)
 		u.run = &Run{
-			logger: log.NewWithDevNull(),
+			logger: log.New(leveled, nil, spinner),
 			flags: struct {
 				Path string `long:"path" usage:"path of application to run"`
 			}{
@@ -126,6 +131,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	}
 	err = u.run.Execute(ctx)
 	if err != nil {
+		u.logger.Error(ctx, buf.String())
 		u.logger.StopSpinnerWithStatus("Upgrades were not entirely successful."+
 			" Fix any issues before adding and committing all upgrades.", log.Failed)
 		return err
