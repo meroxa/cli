@@ -50,13 +50,13 @@ var (
 )
 
 func (*Upgrade) Usage() string {
-	return "upgrade [APP_NAME] [--path pwd]"
+	return "upgrade [--path pwd]"
 }
 
 func (*Upgrade) Docs() builder.Docs {
 	return builder.Docs{
 		Short:   "Upgrade a Turbine Data Application",
-		Example: `meroxa apps upgrade my-app --path ~/code`,
+		Example: `meroxa apps upgrade --path ~/code`,
 		Beta:    true,
 	}
 }

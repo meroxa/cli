@@ -3,13 +3,13 @@
 Upgrade a Turbine Data Application (Beta)
 
 ```
-meroxa apps upgrade [APP_NAME] [--path pwd] [flags]
+meroxa apps upgrade [--path pwd] [flags]
 ```
 
 ### Examples
 
 ```
-meroxa apps upgrade my-app --path ~/code
+meroxa apps upgrade --path ~/code
 ```
 
 ### Options
