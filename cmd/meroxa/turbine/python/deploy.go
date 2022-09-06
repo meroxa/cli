@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"regexp"
 	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -25,20 +24,24 @@ func (t *turbinePyCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 			string(output))
 		return false, err
 	}
-	r := regexp.MustCompile("^turbine-response: (true|false)\n")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
+
+	isNeeded, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err != nil {
 		err := fmt.Errorf(
 			"unable to determine if the Meroxa Application at %s has a Process; %s",
 			t.appPath,
 			string(output))
 		return false, err
 	}
-	return strconv.ParseBool(match[1])
+	return strconv.ParseBool(isNeeded)
 }
 
 // Deploy creates Application entities.
-func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) error {
+func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) (string, error) {
+	var (
+		output         string
+		deploymentSpec string
+	)
 	args := []string{"clideploy", t.appPath, imageName, appName, gitSha}
 
 	if specVersion != "" {
@@ -49,13 +52,18 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
-		return err
+		return deploymentSpec, err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	_, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
-	return err
+	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+	if specVersion != "" {
+		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
+		err = fmt.Errorf(
+			"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+	}
+	return deploymentSpec, err
 }
 
 // GetResources asks turbine for a list of resources used by the given app.

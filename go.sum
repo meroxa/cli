@@ -539,8 +539,6 @@ github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lL
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
-github.com/meroxa/meroxa-go v0.0.0-20220912230249-20686297f457 h1:+ZwU/WVSFwfoZish4Siiv1/6oObE5zffKl1cocU19/I=
-github.com/meroxa/meroxa-go v0.0.0-20220912230249-20686297f457/go.mod h1:qczCsZeXwn2R+JeEVjPkgtIMGROQ1Si8ox+OC2nfOYg=
 github.com/meroxa/turbine-go v0.0.0-20220916102051-afeafade0815 h1:LK1pZvQ1cVFZCePSPqypS/EbszzoxqkSaW6L1qbaMX0=
 github.com/meroxa/turbine-go v0.0.0-20220916102051-afeafade0815/go.mod h1:kjatgrAl5+fvXEnNO3GL5CImR+Yuiyd2iTCD+ceM+C4=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=

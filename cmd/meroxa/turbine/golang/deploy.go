@@ -15,7 +15,8 @@ import (
 )
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha string, specVersion string) error {
+func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha string, specVersion string) (string, error) {
+	deploymentSpec := ""
 	args := []string{
 		"--deploy",
 		"--appname",
@@ -35,16 +36,22 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha st
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
-		return err
+		return deploymentSpec, err
 	}
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return errors.New(string(output))
+		return deploymentSpec, errors.New(string(output))
 	}
-	return nil
+
+	if specVersion != "" {
+		deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
+		err = fmt.Errorf(
+			"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+	}
+	return deploymentSpec, err
 }
 
 func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
