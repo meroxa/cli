@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -195,28 +196,28 @@ func TestJavascriptAndPythonInitExecute(t *testing.T) {
 		{
 			desc:     "Successful Javascript init",
 			path:     "/does/not/matter",
-			language: JavaScript,
+			language: turbine.JavaScript,
 			name:     "js-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Javascript init",
 			path:     "/does/not/matter",
-			language: JavaScript,
+			language: turbine.JavaScript,
 			name:     "js-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Python init",
 			path:     "/does/not/matter",
-			language: Python,
+			language: turbine.Python,
 			name:     "py-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Python init",
 			path:     "/does/not/matter",
-			language: Python,
+			language: turbine.Python,
 			name:     "py-init",
 			err:      fmt.Errorf("not good"),
 		},

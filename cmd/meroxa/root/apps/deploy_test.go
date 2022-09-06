@@ -8,15 +8,19 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/volatiletech/null/v8"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
-	"github.com/stretchr/testify/assert"
-	"github.com/volatiletech/null/v8"
 )
 
 func TestDeployAppFlags(t *testing.T) {
@@ -630,6 +634,341 @@ func TestValidateCollections(t *testing.T) {
 			} else {
 				assert.Equal(t, err.Error(), tc.err)
 			}
+		})
+	}
+}
+
+func TestValidateLanguage(t *testing.T) {
+	tests := []struct {
+		description string
+		languages   []string
+		errFormat   string
+	}{
+		{
+			description: "Successfully validate golang",
+			languages:   []string{"go", "golang"},
+		},
+		{
+			description: "Successfully validate javascript",
+			languages:   []string{"js", "javascript", "nodejs"},
+		},
+		{
+			description: "Successfully validate python",
+			languages:   []string{"py", "python", "python3"},
+		},
+		{
+			description: "Reject unsupported languages",
+			languages:   []string{"cobol", "crystal", "g@rbAg3"},
+			errFormat:   "language %q not supported. Currently, we support \"javascript\", \"golang\", and \"python\"",
+		},
+	}
+
+	test := &Deploy{}
+
+	for _, tc := range tests {
+		t.Run(tc.description, func(t *testing.T) {
+			for _, lang := range tc.languages {
+				test.lang = lang
+				err := test.validateLanguage()
+
+				if err != nil {
+					require.NotEmptyf(t, tc.errFormat, fmt.Sprintf("test failed for %q", lang))
+					require.Equal(t, fmt.Errorf(tc.errFormat, lang), err)
+				} else {
+					require.Emptyf(t, tc.errFormat, "got an unexpected error for input "+lang)
+				}
+			}
+		})
+	}
+}
+
+func TestDeployApp(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	logger := log.NewTestLogger()
+	appName := "my-app"
+	imageName := "doc.ker:latest"
+	gitSha := "aa:bb:cc:dd"
+	specVersion := "latest"
+	err := fmt.Errorf("nope")
+
+	tests := []struct {
+		description    string
+		meroxaClient   func() meroxa.Client
+		mockTurbineCLI func() turbine.CLI
+		err            error
+	}{
+		{
+			description: "Successfully deploy app",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					GetApplication(ctx, appName).
+					Return(&meroxa.Application{}, nil)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					Deploy(ctx, imageName, appName, gitSha, specVersion).
+					Return(nil)
+				return mockTurbineCLI
+			},
+			err: nil,
+		},
+		{
+			description: "Fail to deploy",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					Deploy(ctx, imageName, appName, gitSha, specVersion).
+					Return(err)
+				return mockTurbineCLI
+			},
+			err: err,
+		},
+		{
+			description: "Fail to get app",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					GetApplication(ctx, appName).
+					Return(&meroxa.Application{}, err)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					Deploy(ctx, imageName, appName, gitSha, specVersion).
+					Return(nil)
+				return mockTurbineCLI
+			},
+			err: err,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.description, func(t *testing.T) {
+			d := &Deploy{
+				client:     tc.meroxaClient(),
+				turbineCLI: tc.mockTurbineCLI(),
+				logger:     logger,
+				appName:    appName,
+			}
+
+			err := d.deployApp(ctx, imageName, gitSha, specVersion)
+			if err != nil {
+				require.NotEmpty(t, tc.err)
+				require.Equal(t, tc.err, err)
+			} else {
+				require.Empty(t, tc.err)
+			}
+		})
+	}
+}
+
+//nolint:funlen // this is a test function, splitting it would duplicate code
+func TestGetPlatformImage(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	logger := log.NewTestLogger()
+	buildUUID := uuid.NewString()
+	sourcePutURL := "http://foo.bar"
+	sourceGetURL := "http://foo.bar"
+	appName := "my-app"
+	tempPath := "/tmp"
+	err := fmt.Errorf("nope")
+
+	tests := []struct {
+		description    string
+		meroxaClient   func() meroxa.Client
+		mockTurbineCLI func() turbine.CLI
+		err            error
+	}{
+		{
+			description: "Successfully build image",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					CreateSource(ctx).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+
+				client.EXPECT().
+					CreateBuild(ctx, &meroxa.CreateBuildInput{SourceBlob: meroxa.SourceBlob{Url: sourceGetURL}}).
+					Return(&meroxa.Build{Uuid: buildUUID}, nil)
+
+				client.EXPECT().
+					GetBuild(ctx, buildUUID).
+					Return(&meroxa.Build{Uuid: buildUUID, Status: meroxa.BuildStatus{State: "complete"}}, nil)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					UploadSource(ctx, appName, tempPath, sourcePutURL).
+					Return(nil)
+				return mockTurbineCLI
+			},
+			err: nil,
+		},
+		{
+			description: "Fail to create source",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					CreateSource(ctx).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, err)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				return mockTurbineCLI
+			},
+			err: err,
+		},
+		{
+			description: "Fail to upload source",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					CreateSource(ctx).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					UploadSource(ctx, appName, tempPath, sourcePutURL).
+					Return(err)
+				return mockTurbineCLI
+			},
+			err: err,
+		},
+		{
+			description: "Fail to create build",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					CreateSource(ctx).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+
+				client.EXPECT().
+					CreateBuild(ctx, &meroxa.CreateBuildInput{SourceBlob: meroxa.SourceBlob{Url: sourceGetURL}}).
+					Return(&meroxa.Build{Uuid: buildUUID}, err)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					UploadSource(ctx, appName, tempPath, sourcePutURL).
+					Return(nil)
+				return mockTurbineCLI
+			},
+			err: err,
+		},
+		{
+			description: "Fail to build",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					CreateSource(ctx).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+
+				client.EXPECT().
+					CreateBuild(ctx, &meroxa.CreateBuildInput{SourceBlob: meroxa.SourceBlob{Url: sourceGetURL}}).
+					Return(&meroxa.Build{Uuid: buildUUID}, nil)
+
+				client.EXPECT().
+					GetBuild(ctx, buildUUID).
+					Return(&meroxa.Build{Uuid: buildUUID, Status: meroxa.BuildStatus{State: "error"}}, nil)
+				return client
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					UploadSource(ctx, appName, tempPath, sourcePutURL).
+					Return(nil)
+				return mockTurbineCLI
+			},
+			err: fmt.Errorf("build with uuid %q errored", buildUUID),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.description, func(t *testing.T) {
+			d := &Deploy{
+				client:     tc.meroxaClient(),
+				turbineCLI: tc.mockTurbineCLI(),
+				logger:     logger,
+				appName:    appName,
+				tempPath:   tempPath,
+			}
+
+			_, err := d.getPlatformImage(ctx)
+			if err != nil {
+				require.NotEmpty(t, tc.err)
+				require.Equal(t, tc.err, err)
+			} else {
+				require.Empty(t, tc.err)
+			}
+		})
+	}
+}
+
+func TestPrepareAppName(t *testing.T) {
+	ctx := context.Background()
+	appName := "my-app"
+	logger := log.NewTestLogger()
+
+	tests := []struct {
+		description string
+		branchName  string
+		resultName  string
+	}{
+		{
+			description: "Prepare app name for main",
+			branchName:  "main",
+			resultName:  appName,
+		},
+		{
+			description: "Prepare app name for master",
+			branchName:  "master",
+			resultName:  appName,
+		},
+		{
+			description: "Prepare app name for feature branch without characters to replace",
+			branchName:  "my-feature-branch",
+			resultName:  "my-app-my-feature-branch",
+		},
+		{
+			description: "Prepare app name for feature branch with characters to replace",
+			branchName:  "My.Feature\\Branch@01[",
+			resultName:  "my-app-my-feature-branch-01-",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.description, func(t *testing.T) {
+			d := &Deploy{
+				gitBranch:     tc.branchName,
+				configAppName: appName,
+				logger:        logger,
+			}
+
+			result := d.prepareAppName(ctx)
+			fmt.Printf("result: %s\n", result)
+			require.Equal(t, tc.resultName, result)
 		})
 	}
 }

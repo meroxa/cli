@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	turbine "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
 // MockCLI is a mock of CLI interface.
@@ -34,18 +35,103 @@ func (m *MockCLI) EXPECT() *MockCLIMockRecorder {
 	return m.recorder
 }
 
-// GitInit mocks base method.
-func (m *MockCLI) GitInit(ctx context.Context, appPath string) error {
+// Build mocks base method.
+func (m *MockCLI) Build(ctx context.Context, appName string, platform bool) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GitInit", ctx, appPath)
+	ret := m.ctrl.Call(m, "Build", ctx, appName, platform)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Build indicates an expected call of Build.
+func (mr *MockCLIMockRecorder) Build(ctx, appName, platform interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockCLI)(nil).Build), ctx, appName, platform)
+}
+
+// CleanUpBinaries mocks base method.
+func (m *MockCLI) CleanUpBinaries(ctx context.Context, appName string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "CleanUpBinaries", ctx, appName)
+}
+
+// CleanUpBinaries indicates an expected call of CleanUpBinaries.
+func (mr *MockCLIMockRecorder) CleanUpBinaries(ctx, appName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CleanUpBinaries", reflect.TypeOf((*MockCLI)(nil).CleanUpBinaries), ctx, appName)
+}
+
+// Deploy mocks base method.
+func (m *MockCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Deploy", ctx, imageName, appName, gitSha, specVersion)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Deploy indicates an expected call of Deploy.
+func (mr *MockCLIMockRecorder) Deploy(ctx, imageName, appName, gitSha, specVersion interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deploy", reflect.TypeOf((*MockCLI)(nil).Deploy), ctx, imageName, appName, gitSha, specVersion)
+}
+
+// GetGitSha mocks base method.
+func (m *MockCLI) GetGitSha(ctx context.Context) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGitSha", ctx)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGitSha indicates an expected call of GetGitSha.
+func (mr *MockCLIMockRecorder) GetGitSha(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGitSha", reflect.TypeOf((*MockCLI)(nil).GetGitSha), ctx)
+}
+
+// GetResources mocks base method.
+func (m *MockCLI) GetResources(ctx context.Context, appName string) ([]turbine.ApplicationResource, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetResources", ctx, appName)
+	ret0, _ := ret[0].([]turbine.ApplicationResource)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetResources indicates an expected call of GetResources.
+func (mr *MockCLIMockRecorder) GetResources(ctx, appName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResources", reflect.TypeOf((*MockCLI)(nil).GetResources), ctx, appName)
+}
+
+// GitChecks mocks base method.
+func (m *MockCLI) GitChecks(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GitChecks", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// GitChecks indicates an expected call of GitChecks.
+func (mr *MockCLIMockRecorder) GitChecks(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitChecks", reflect.TypeOf((*MockCLI)(nil).GitChecks), ctx)
+}
+
+// GitInit mocks base method.
+func (m *MockCLI) GitInit(ctx context.Context, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GitInit", ctx, name)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // GitInit indicates an expected call of GitInit.
-func (mr *MockCLIMockRecorder) GitInit(ctx, appPath interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GitInit(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitInit", reflect.TypeOf((*MockCLI)(nil).GitInit), ctx, appPath)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitInit", reflect.TypeOf((*MockCLI)(nil).GitInit), ctx, name)
 }
 
 // Init mocks base method.
@@ -60,6 +146,21 @@ func (m *MockCLI) Init(ctx context.Context, name string) error {
 func (mr *MockCLIMockRecorder) Init(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockCLI)(nil).Init), ctx, name)
+}
+
+// NeedsToBuild mocks base method.
+func (m *MockCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "NeedsToBuild", ctx, appName)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// NeedsToBuild indicates an expected call of NeedsToBuild.
+func (mr *MockCLIMockRecorder) NeedsToBuild(ctx, appName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NeedsToBuild", reflect.TypeOf((*MockCLI)(nil).NeedsToBuild), ctx, appName)
 }
 
 // Run mocks base method.
@@ -88,4 +189,18 @@ func (m *MockCLI) Upgrade(vendor bool) error {
 func (mr *MockCLIMockRecorder) Upgrade(vendor interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), vendor)
+}
+
+// UploadSource mocks base method.
+func (m *MockCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UploadSource", ctx, appName, tempPath, url)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UploadSource indicates an expected call of UploadSource.
+func (mr *MockCLIMockRecorder) UploadSource(ctx, appName, tempPath, url interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UploadSource", reflect.TypeOf((*MockCLI)(nil).UploadSource), ctx, appName, tempPath, url)
 }

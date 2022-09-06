@@ -11,12 +11,11 @@ import (
 	"regexp"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	"github.com/meroxa/cli/log"
+	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
-// RunDeployApp runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName, gitSha string, specVersion string) error {
+// Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
+func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha string, specVersion string) error {
 	args := []string{
 		"--deploy",
 		"--appname",
@@ -32,7 +31,7 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 	if imageName != "" {
 		args = append(args, "--imagename", imageName)
 	}
-	cmd := exec.Command(path.Join(appPath, appName), args...) //nolint:gosec
+	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), args...) //nolint:gosec
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
@@ -48,10 +47,10 @@ func RunDeployApp(ctx context.Context, l log.Logger, appPath, imageName, appName
 	return nil
 }
 
-func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbine.ApplicationResource, error) {
-	var resources []turbine.ApplicationResource
+func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
+	var resources []utils.ApplicationResource
 
-	cmd := exec.Command(path.Join(appPath, appName), "--listresources") //nolint:gosec
+	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), "--listresources") //nolint:gosec
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return resources, errors.New(string(output))
@@ -59,7 +58,7 @@ func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([
 
 	if err := json.Unmarshal(output, &resources); err != nil {
 		// fall back if not json
-		return turbine.GetResourceNamesFromString(string(output)), nil
+		return utils.GetResourceNamesFromString(string(output)), nil
 	}
 
 	return resources, nil
@@ -67,8 +66,8 @@ func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
 // this is currently based on the number of functions.
-func NeedsToBuild(appPath, appName string) (bool, error) {
-	cmd := exec.Command(path.Join(appPath, appName), "--listfunctions") //nolint:gosec
+func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
+	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), "--listfunctions") //nolint:gosec
 
 	accessToken, refreshToken, err := global.GetUserToken()
 	if err != nil {
@@ -89,4 +88,16 @@ func NeedsToBuild(appPath, appName string) (bool, error) {
 	hasFunctions := len(re.FindAllString(string(output), -1)) > 0
 
 	return hasFunctions, nil
+}
+
+func (t *turbineGoCLI) GetGitSha(ctx context.Context) (string, error) {
+	return utils.GetGitSha(t.appPath)
+}
+
+func (t *turbineGoCLI) GitChecks(ctx context.Context) error {
+	return utils.GitChecks(ctx, t.logger, t.appPath)
+}
+
+func (t *turbineGoCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
+	return utils.UploadSource(ctx, t.logger, utils.GoLang, t.appPath, appName, url)
 }

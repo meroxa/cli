@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -16,7 +17,20 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
+	turbineGo "github.com/meroxa/turbine-go/deploy"
+)
+
+const (
+	GoLang     = "golang"
+	JavaScript = "javascript"
+	NodeJs     = "nodejs"
+	Python     = "python"
+	Python3    = "python3"
+
+	turbineJSVersion = "1.0.0"
+	isTrue           = "true"
 )
 
 type AppConfig struct {
@@ -183,6 +197,7 @@ func GitInit(ctx context.Context, appPath string) error {
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
 func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
+	l.Info(ctx, "Checking for uncommitted changes...")
 	cmd := exec.Command("git", "status", "--porcelain=v2")
 	cmd.Dir = appPath
 	output, err := cmd.Output()
@@ -205,12 +220,8 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 }
 
 // ValidateBranch validates the deployment is being performed from one of the allowed branches.
-func ValidateBranch(ctx context.Context, l log.Logger, appPath string) error {
+func ValidateBranch(ctx context.Context, l log.Logger, branchName string) error {
 	l.StartSpinner("", " Validating branch...")
-	branchName, err := GetGitBranch(appPath)
-	if err != nil {
-		return err
-	}
 
 	if GitMainBranch(branchName) {
 		l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
@@ -290,7 +301,7 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 }
 
 // CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
-func CreateTarAndZipFile(src string, buf io.Writer) error {
+func createTarAndZipFile(src string, buf io.Writer) error {
 	// Grab the directory we care about (app's directory)
 	appDir := filepath.Base(src)
 
@@ -362,4 +373,169 @@ func shouldSkipDir(fi os.FileInfo) bool {
 	}
 
 	return false
+}
+
+func UploadSource(ctx context.Context, logger log.Logger, language, appPath, appName, url string) error {
+	var err error
+
+	if language == GoLang || language == JavaScript {
+		logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", appPath))
+
+		if language == GoLang {
+			err = turbineGo.CreateDockerfile(appName, appPath)
+		}
+
+		if language == JavaScript {
+			err = createJavascriptDockerfile(ctx, appPath)
+		}
+
+		if err != nil {
+			return err
+		}
+		defer func() {
+			logger.StartSpinner("\t", fmt.Sprintf("Removing Dockerfile created for your application in %s...", appPath))
+			// We clean up Dockerfile as last step
+			err = os.Remove(filepath.Join(appPath, "Dockerfile"))
+			if err != nil {
+				logger.StopSpinnerWithStatus(fmt.Sprintf("Unable to remove Dockerfile: %v", err), log.Failed)
+			} else {
+				logger.StopSpinnerWithStatus("Dockerfile removed", log.Successful)
+			}
+		}()
+		logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
+	}
+
+	dFile := fmt.Sprintf("turbine-%s.tar.gz", appName)
+
+	var buf bytes.Buffer
+	err = createTarAndZipFile(appPath, &buf)
+	if err != nil {
+		return err
+	}
+
+	logger.StartSpinner("\t", fmt.Sprintf(" Creating %q in %q to upload to our build service...", appPath, dFile))
+
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
+	defer func(fileToWrite *os.File) {
+		err = fileToWrite.Close()
+		if err != nil {
+			panic(err.Error())
+		}
+
+		// remove .tar.gz file
+		logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
+		removeErr := os.Remove(dFile)
+		if removeErr != nil {
+			logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		} else {
+			logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
+		}
+
+		if language == Python {
+			cleanUpPythonTempBuildLocation(ctx, logger, appPath)
+		}
+	}(fileToWrite)
+	if err != nil {
+		return err
+	}
+	if _, err = io.Copy(fileToWrite, &buf); err != nil {
+		return err
+	}
+	logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, appPath), log.Successful)
+
+	return uploadFile(ctx, logger, dFile, url)
+}
+
+func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) error {
+	logger.StartSpinner("\t", " Uploading source...")
+
+	fh, err := os.Open(filePath)
+	if err != nil {
+		logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
+		return err
+	}
+	defer func(fh *os.File) {
+		fh.Close()
+	}(fh)
+
+	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
+	if err != nil {
+		logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
+		return err
+	}
+
+	fi, err := fh.Stat()
+	if err != nil {
+		logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
+		return err
+	}
+
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Content-Type", "multipart/form-data")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Connection", "keep-alive")
+
+	req.ContentLength = fi.Size()
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		logger.StopSpinnerWithStatus("\t Failed to send PUT request", log.Failed)
+		return err
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+
+	logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
+	return nil
+}
+
+func RunTurbineJS(ctx context.Context, params ...string) (cmd *exec.Cmd) {
+	args := getTurbineJSBinary(params)
+	return executeTurbineJSCommand(ctx, args)
+}
+
+func getTurbineJSBinary(params []string) []string {
+	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
+	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion)
+	if shouldUseLocalTurbineJS == isTrue {
+		turbineJSBinary = "turbine-js-cli"
+	}
+	args := []string{"npx", "--yes", turbineJSBinary}
+	args = append(args, params...)
+	return args
+}
+
+func executeTurbineJSCommand(ctx context.Context, params []string) *exec.Cmd {
+	return exec.CommandContext(ctx, params[0], params[1:]...) //nolint:gosec
+}
+
+func createJavascriptDockerfile(ctx context.Context, appPath string) error {
+	cmd := RunTurbineJS(ctx, "clibuild", appPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("unable to create Dockerfile at %s; %s", appPath, string(output))
+	}
+
+	return err
+}
+
+// cleanUpPythonTempBuildLocation removes any artifacts in the temporary directory.
+func cleanUpPythonTempBuildLocation(ctx context.Context, logger log.Logger, appPath string) {
+	logger.StartSpinner("\t", fmt.Sprintf(" Removing artifacts from building the Python Application at %s...", appPath))
+
+	cmd := exec.CommandContext(ctx, "turbine-py", "cliclean", appPath)
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		logger.StopSpinnerWithStatus(fmt.Sprintf("\t Failed to clean up artifacts at %s: %v %s", appPath, err, output), log.Failed)
+	} else {
+		logger.StopSpinnerWithStatus("Removed artifacts from building", log.Successful)
+	}
+
+	if err != nil {
+		fmt.Printf("unable to clean up Meroxa Application at %s; %s", appPath, string(output))
+	}
 }

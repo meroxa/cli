@@ -10,12 +10,11 @@ import (
 	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	"github.com/meroxa/cli/log"
+	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
-func NeedsToBuild(path string) (bool, error) {
-	cmd := RunTurbineJS("hasfunctions", path)
+func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, path string) (bool, error) {
+	cmd := utils.RunTurbineJS(ctx, "hasfunctions", path)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err := fmt.Errorf(
@@ -37,24 +36,14 @@ func NeedsToBuild(path string) (bool, error) {
 	return strconv.ParseBool(match[1])
 }
 
-func CreateDockerfile(ctx context.Context, l log.Logger, path string) error {
-	cmd := RunTurbineJS("clibuild", path)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("unable to create Dockerfile at %s; %s", path, string(output))
-	}
-
-	return err
-}
-
-func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, gitSha, specVersion string) error {
-	params := []string{"clideploy", imageName, path, appName, gitSha}
+func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) error {
+	params := []string{"clideploy", imageName, t.appPath, appName, gitSha}
 
 	if specVersion != "" {
 		params = append(params, specVersion)
 	}
 
-	cmd := RunTurbineJS(params...)
+	cmd := utils.RunTurbineJS(ctx, params...)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -63,15 +52,15 @@ func RunDeployApp(ctx context.Context, l log.Logger, path, imageName, appName, g
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
-	_, err = turbine.RunCmdWithErrorDetection(ctx, cmd, l)
+	_, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
 	return err
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
-func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([]turbine.ApplicationResource, error) {
-	var resources []turbine.ApplicationResource
+func (t *turbineJsCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
+	var resources []utils.ApplicationResource
 
-	cmd := RunTurbineJS("listresources", appPath)
+	cmd := utils.RunTurbineJS(ctx, "listresources", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return resources, errors.New(string(output))
@@ -79,8 +68,20 @@ func GetResources(ctx context.Context, l log.Logger, appPath, appName string) ([
 
 	if err := json.Unmarshal(output, &resources); err != nil {
 		// fall back if not json
-		return turbine.GetResourceNamesFromString(string(output)), nil
+		return utils.GetResourceNamesFromString(string(output)), nil
 	}
 
 	return resources, nil
+}
+
+func (t *turbineJsCLI) GetGitSha(ctx context.Context) (string, error) {
+	return utils.GetGitSha(t.appPath)
+}
+
+func (t *turbineJsCLI) GitChecks(ctx context.Context) error {
+	return utils.GitChecks(ctx, t.logger, t.appPath)
+}
+
+func (t *turbineJsCLI) UploadSource(ctx context.Context, appName, appPath, url string) error {
+	return utils.UploadSource(ctx, t.logger, utils.JavaScript, t.appPath, appName, url)
 }

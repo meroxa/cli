@@ -9,6 +9,7 @@ func NewTestLogger() *TestLogger {
 	return &TestLogger{
 		leveledBuf: &leveledBuf,
 		jsonBuf:    &jsonBuf,
+		spinnerBuf: &spinnerBuf,
 		Logger: New(
 			NewLeveledLogger(&leveledBuf, Debug),
 			NewJSONLogger(&jsonBuf),

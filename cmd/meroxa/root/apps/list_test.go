@@ -23,10 +23,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/meroxa/cli/utils/display"
-
 	"github.com/golang/mock/gomock"
+
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
@@ -40,7 +41,7 @@ func TestListAppsExecution(t *testing.T) {
 	aa := &meroxa.Application{
 		Name:     "my-app",
 		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
-		Language: GoLang,
+		Language: turbine.GoLang,
 		Status:   meroxa.ApplicationStatus{State: meroxa.ApplicationStateRunning},
 	}
 

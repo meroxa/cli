@@ -62,7 +62,7 @@ func TestUpgradeExecute(t *testing.T) {
 			desc: "Successful Javascript upgrade without vendor",
 			config: turbine.AppConfig{
 				Name:     "",
-				Language: JavaScript,
+				Language: turbine.JavaScript,
 				Vendor:   "false",
 			},
 			err: nil,
@@ -71,7 +71,7 @@ func TestUpgradeExecute(t *testing.T) {
 			desc: "Successful Golang upgrade with vendor",
 			config: turbine.AppConfig{
 				Name:     "",
-				Language: GoLang,
+				Language: turbine.GoLang,
 				Vendor:   "true",
 			},
 			err: nil,
@@ -80,7 +80,7 @@ func TestUpgradeExecute(t *testing.T) {
 			desc: "Unsuccessful Python upgrade",
 			config: turbine.AppConfig{
 				Name:     "",
-				Language: Python,
+				Language: turbine.Python,
 				Vendor:   "false",
 			},
 			err: fmt.Errorf("not good"),
