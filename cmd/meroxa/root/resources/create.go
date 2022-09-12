@@ -110,7 +110,11 @@ $ meroxa resource create snowflake \
     --type snowflakedb \
     -u "snowflake://$SNOWFLAKE_URL/meroxa_db/stream_data" \
     --username meroxa_user \
-    --password $SNOWFLAKE_PRIVATE_KEY`,
+    --password $SNOWFLAKE_PRIVATE_KEY
+
+$ meroxa resource create confluentcloud \
+    --type confluentcloud \
+    -url "kafka+sasl+ssl://$CONFLUENT_USER:$CONFLUENT_PASSWORD@$CONFLUENT_HOST:$CONFLUENT_PORT/?sasl_mechanism=plain"`,
 	}
 }
 
