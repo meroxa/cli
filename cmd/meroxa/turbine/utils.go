@@ -219,19 +219,6 @@ func GitChecks(ctx context.Context, l log.Logger, appPath string) error {
 	return nil
 }
 
-// ValidateBranch validates the deployment is being performed from one of the allowed branches.
-func ValidateBranch(ctx context.Context, l log.Logger, branchName string) error {
-	l.StartSpinner("", " Validating branch...")
-
-	if GitMainBranch(branchName) {
-		l.StopSpinnerWithStatus(fmt.Sprintf("Deployment allowed from %q branch", branchName), log.Successful)
-		return nil
-	}
-
-	l.StopSpinnerWithStatus(fmt.Sprintf("deployment allowed only from \"main\" or \"master\" branch, not %q", branchName), log.Failed)
-	return fmt.Errorf(`deployment allowed only from "main" or "master" branch, not %q`, branchName)
-}
-
 func GitMainBranch(branch string) bool {
 	switch branch {
 	case "main", "master":
