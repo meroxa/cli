@@ -89,19 +89,31 @@ func TestDescribeApplicationExecution(t *testing.T) {
 				Destination: null.StringFrom("destination"),
 			},
 		},
+		{
+			EntityIdentifier: meroxa.EntityIdentifier{
+				Name: null.StringFrom("res3"),
+			},
+			Collection: meroxa.ResourceCollection{
+				Name:        null.StringFrom("res3"),
+				Destination: null.StringFrom("destination"),
+			},
+		},
 	}
 	resources := []*meroxa.Resource{
 		{Name: "res1", UUID: "abc-def", Type: meroxa.ResourceTypePostgres},
 		{Name: "res2", UUID: "abc-def", Type: meroxa.ResourceTypeBigquery},
+		{Name: "res3", UUID: "abc-def", Type: meroxa.ResourceTypeConfluentCloud},
 	}
 
 	a.Connectors = []meroxa.EntityIdentifier{
 		{Name: null.StringFrom("conn1")},
 		{Name: null.StringFrom("conn2")},
+		{Name: null.StringFrom("conn3")},
 	}
 	connectors := []*meroxa.Connector{
 		{Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
 		{Name: "conn2", ResourceName: "res2", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
+		{Name: "conn3", ResourceName: "res3", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
 	}
 
 	functions := []*meroxa.Function{
@@ -114,8 +126,10 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
 	client.EXPECT().GetResourceByNameOrID(ctx, "res1").Return(resources[0], nil)
 	client.EXPECT().GetResourceByNameOrID(ctx, "res2").Return(resources[1], nil)
+	client.EXPECT().GetResourceByNameOrID(ctx, "res3").Return(resources[2], nil)
 	client.EXPECT().GetConnectorByNameOrID(ctx, "conn1").Return(connectors[0], nil)
 	client.EXPECT().GetConnectorByNameOrID(ctx, "conn2").Return(connectors[1], nil)
+	client.EXPECT().GetConnectorByNameOrID(ctx, "conn3").Return(connectors[2], nil)
 	client.EXPECT().GetFunction(ctx, "fun1").Return(functions[0], nil)
 
 	dc := &Describe{

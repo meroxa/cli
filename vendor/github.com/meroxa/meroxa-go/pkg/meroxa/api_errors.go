@@ -2,7 +2,6 @@ package meroxa
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -65,7 +64,7 @@ func parseErrorFromBody(resp *http.Response) (error, error) {
 	if err != nil {
 		// In cases we didn't receive a proper JSON response
 		if _, ok := err.(*json.SyntaxError); ok {
-			return nil, errors.New(fmt.Sprintf("%s %s", resp.Proto, resp.Status))
+			return nil, fmt.Errorf("%s %s", resp.Proto, resp.Status)
 		}
 
 		return nil, err

@@ -216,8 +216,7 @@ func (c *client) DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Env
 
 	var e *Environment
 	err = json.NewDecoder(resp.Body).Decode(&e)
-
-	return e, nil
+	return e, err
 }
 
 func (c *client) UpdateEnvironment(ctx context.Context, nameOrUUID string, input *UpdateEnvironmentInput) (*Environment, error) {
@@ -234,8 +233,7 @@ func (c *client) UpdateEnvironment(ctx context.Context, nameOrUUID string, input
 
 	var e *Environment
 	err = json.NewDecoder(resp.Body).Decode(&e)
-
-	return e, nil
+	return e, err
 }
 
 func (c *client) PerformActionOnEnvironment(ctx context.Context, nameOrUUID string, input *RepairEnvironmentInput) (*Environment, error) {
@@ -252,6 +250,5 @@ func (c *client) PerformActionOnEnvironment(ctx context.Context, nameOrUUID stri
 
 	var e *Environment
 	err = json.NewDecoder(resp.Body).Decode(&e)
-
-	return e, nil
+	return e, err
 }

@@ -3,29 +3,30 @@ package meroxa
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 type ResourceType string
 
 const (
-	ResourceTypePostgres      ResourceType = "postgres"
-	ResourceTypeMysql         ResourceType = "mysql"
-	ResourceTypeRedshift      ResourceType = "redshift"
-	ResourceTypeUrl           ResourceType = "url"
-	ResourceTypeS3            ResourceType = "s3"
-	ResourceTypeMongodb       ResourceType = "mongodb"
-	ResourceTypeElasticsearch ResourceType = "elasticsearch"
-	ResourceTypeSnowflake     ResourceType = "snowflakedb"
-	ResourceTypeBigquery      ResourceType = "bigquery"
-	ResourceTypeSqlserver     ResourceType = "sqlserver"
-	ResourceTypeCosmosdb      ResourceType = "cosmosdb"
+	ResourceTypePostgres       ResourceType = "postgres"
+	ResourceTypeMysql          ResourceType = "mysql"
+	ResourceTypeRedshift       ResourceType = "redshift"
+	ResourceTypeUrl            ResourceType = "url"
+	ResourceTypeS3             ResourceType = "s3"
+	ResourceTypeMongodb        ResourceType = "mongodb"
+	ResourceTypeElasticsearch  ResourceType = "elasticsearch"
+	ResourceTypeSnowflake      ResourceType = "snowflakedb"
+	ResourceTypeBigquery       ResourceType = "bigquery"
+	ResourceTypeSqlserver      ResourceType = "sqlserver"
+	ResourceTypeCosmosdb       ResourceType = "cosmosdb"
+	ResourceTypeKafka          ResourceType = "kafka"
+	ResourceTypeConfluentCloud ResourceType = "confluentcloud"
 )
 
 // ListResourceTypes returns the list of supported resources
 func (c *client) ListResourceTypes(ctx context.Context) ([]string, error) {
-	path := fmt.Sprintf("/v1/resource-types")
+	path := "/v1/resource-types"
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
 	if err != nil {

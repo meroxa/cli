@@ -45,7 +45,6 @@ func (e EntityIdentifier) GetNameOrUUID() (string, error) {
 type client struct {
 	baseURL   *url.URL
 	userAgent string
-	token     string
 
 	httpClient *http.Client
 }
