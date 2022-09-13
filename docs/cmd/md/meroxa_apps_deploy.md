@@ -24,8 +24,9 @@ meroxa apps deploy --path ./my-app
 ### Options
 
 ```
-  -h, --help          help for deploy
-      --path string   Path to the app directory (default is local directory)
+  -h, --help                         help for deploy
+      --path string                  Path to the app directory (default is local directory)
+      --skip-collection-validation   Skips unique destination collection and looping validations
 ```
 
 ### Options inherited from parent commands

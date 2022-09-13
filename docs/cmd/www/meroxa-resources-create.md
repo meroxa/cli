@@ -48,6 +48,14 @@ $ meroxa resource create snowflake \
     -u "snowflake://$SNOWFLAKE_URL/meroxa_db/stream_data" \
     --username meroxa_user \
     --password $SNOWFLAKE_PRIVATE_KEY
+
+$ meroxa resource create sourcedb \
+	--type kafka \
+	--url kafka+sasl+ssl://$KAFKA_USER:$KAFKA_PASS@<$BOOTSTRAP_SERVER>?sasl_mechanism=plain
+
+$ meroxa resource create sourcedb \
+	--type confluentcloud \
+	--url kafka+sasl+ssl://$API_KEY:$API_SECRET@<$BOOTSTRAP_SERVER>?sasl_mechanism=plain
 ```
 
 ### Options
