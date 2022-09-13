@@ -3,7 +3,6 @@ package meroxa
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -25,7 +24,7 @@ type Transform struct {
 
 // ListTransforms returns an array of Transforms (scoped to the calling user)
 func (c *client) ListTransforms(ctx context.Context) ([]*Transform, error) {
-	path := fmt.Sprintf("/v1/transforms")
+	path := "/v1/transforms"
 
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
 	if err != nil {

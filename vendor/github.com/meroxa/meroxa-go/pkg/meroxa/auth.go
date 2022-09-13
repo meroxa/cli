@@ -162,6 +162,8 @@ func (ts *tokenSource) retrieveToken(client *http.Client, conf *oauth2.Config, r
 		TokenType:   tokenRes.TokenType,
 	}
 	raw := make(map[string]interface{})
+
+	//nolint:errcheck
 	json.Unmarshal(body, &raw) // no error checks for optional fields
 	token = token.WithExtra(raw)
 
