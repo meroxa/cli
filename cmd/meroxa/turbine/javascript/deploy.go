@@ -13,13 +13,13 @@ import (
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
-func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, path string) (bool, error) {
-	cmd := utils.RunTurbineJS(ctx, "hasfunctions", path)
+func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
+	cmd := utils.RunTurbineJS(ctx, "hasfunctions", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err := fmt.Errorf(
 			"unable to determine if the Meroxa Application at %s has a Process; %s",
-			path,
+			t.appPath,
 			string(output))
 		return false, err
 	}
@@ -29,7 +29,7 @@ func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, path string) (bool, err
 	if match == nil || len(match) < 2 {
 		err := fmt.Errorf(
 			"unable to determine if the Meroxa Application at %s has a Process; %s",
-			path,
+			t.appPath,
 			string(output))
 		return false, err
 	}
