@@ -89,16 +89,25 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audienc
 	var CodeVerifier, _ = cv.CreateCodeVerifier()
 
 	// Create code_challenge with S256 method
-	codeChallenge := CodeVerifier.CodeChallengeS256()
+	// codeChallenge := CodeVerifier.CodeChallengeS256()
 
 	// construct the authorization URL (with Auth0 as the authorization provider)
+	// authorizationURL := fmt.Sprintf(
+	// 	"https://%s/authorize?audience=%s"+
+	// 		`&scope=openid%%20email%%20offline_access%%20user`+
+	// 		"&response_type=code&client_id=%s"+
+	// 		"&code_challenge=%s"+
+	// 		"&code_challenge_method=S256&redirect_uri=%s",
+	// 	authDomain, audience, clientID, codeChallenge, redirectURL)
+	// l.logger.Infof(ctx, color.CyanString(authorizationURL))
+
 	authorizationURL := fmt.Sprintf(
-		"https://%s/authorize?audience=%s"+
+		"http://localhost:8181/authdomain/authorize?audience=%s"+
 			`&scope=openid%%20email%%20offline_access%%20user`+
 			"&response_type=code&client_id=%s"+
 			"&code_challenge=%s"+
 			"&code_challenge_method=S256&redirect_uri=%s",
-		authDomain, audience, clientID, codeChallenge, redirectURL)
+		"audience", "clientID", "codeChallenge", redirectURL)
 	l.logger.Infof(ctx, color.CyanString(authorizationURL))
 
 	// start a web server to listen on a callback URL
@@ -208,7 +217,10 @@ func (l *Login) getAccessTokenAuth(
 ) (accessToken, refreshToken string, err error) {
 	// set the url and form-encoded data for the POST to the access token endpoint
 	// this URL should actually be taken from meroxa.OAuth2Endpoint
-	tokenURL := fmt.Sprintf("https://%s/oauth/token", global.GetMeroxaAuthDomain())
+
+	// tokenURL := fmt.Sprintf("https://%s/oauth/token", global.GetMeroxaAuthDomain())
+	tokenURL := "http://localhost:8181/authdomain/oauth/token"
+
 	data := fmt.Sprintf(
 		"grant_type=authorization_code&client_id=%s"+
 			"&code_verifier=%s"+
