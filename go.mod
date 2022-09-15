@@ -7,7 +7,7 @@ require (
 	github.com/cased/cased-go v1.0.4
 	github.com/fatih/color v1.13.0
 	github.com/golang/mock v1.6.0
-	github.com/google/go-cmp v0.5.8
+	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.7.3
 	github.com/manifoldco/promptui v0.8.0
