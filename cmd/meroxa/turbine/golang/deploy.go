@@ -48,8 +48,10 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha st
 
 	if specVersion != "" {
 		deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
-		err = fmt.Errorf(
-			"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+		if err != nil {
+			err = fmt.Errorf(
+				"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+		}
 	}
 	return deploymentSpec, err
 }

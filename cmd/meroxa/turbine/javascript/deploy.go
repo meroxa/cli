@@ -16,7 +16,7 @@ func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 	cmd := utils.RunTurbineJS(ctx, "hasfunctions", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		err := fmt.Errorf(
+		err = fmt.Errorf(
 			"unable to determine if the Meroxa Application at %s has a Process; %s",
 			t.appPath,
 			string(output))
@@ -55,10 +55,15 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
 
 	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+	if err != nil {
+		return deploymentSpec, err
+	}
 	if specVersion != "" {
 		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
-		err = fmt.Errorf(
-			"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+		if err != nil {
+			err = fmt.Errorf(
+				"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+		}
 	}
 	return deploymentSpec, err
 }

@@ -20,8 +20,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/volatiletech/null/v8"
 	"net/http"
 	"os"
 	"regexp"
@@ -29,8 +27,10 @@ import (
 	"time"
 
 	"github.com/coreos/go-semver/semver"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
@@ -653,7 +653,10 @@ func hasFeatureFlag(f string) bool {
 	return false
 }
 
+//nolint:gocyclo the specVersion conditionals are temporary
 func (d *Deploy) Execute(ctx context.Context) error {
+	var app *meroxa.Application
+
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
@@ -684,7 +687,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	var app *meroxa.Application
 	if d.specVersion == "" {
 		// ⚠️ This is only until we re-deploy applications applying only the changes made
 		if err = d.tearDownExistingResources(ctx); err != nil {
@@ -714,8 +716,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion)
-	if err != nil {
+	if err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
 		return err
 	}
 

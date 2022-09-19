@@ -529,7 +529,7 @@ func cleanUpPythonTempBuildLocation(ctx context.Context, logger log.Logger, appP
 
 func GetTurbineResponseFromOutput(output string) (string, error) {
 	r := regexp.MustCompile("^turbine-response: ([^\n]*)")
-	match := r.FindStringSubmatch(string(output))
+	match := r.FindStringSubmatch(output)
 	if match == nil || len(match) < 2 {
 		return "", fmt.Errorf("output is formatted unexpectedly")
 	}
