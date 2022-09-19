@@ -653,7 +653,7 @@ func hasFeatureFlag(f string) bool {
 	return false
 }
 
-//nolint:gocyclo the specVersion conditionals are temporary
+//nolint:gocyclo
 func (d *Deploy) Execute(ctx context.Context) error {
 	var app *meroxa.Application
 

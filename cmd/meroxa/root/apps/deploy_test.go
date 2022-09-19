@@ -691,6 +691,7 @@ func TestDeployApp(t *testing.T) {
 	imageName := "doc.ker:latest"
 	gitSha := "aa:bb:cc:dd"
 	specVersion := "latest"
+	spec := "{}"
 	err := fmt.Errorf("nope")
 
 	tests := []struct {
@@ -699,27 +700,23 @@ func TestDeployApp(t *testing.T) {
 		mockTurbineCLI func() turbine.CLI
 		err            error
 	}{
-		{
+		/*{
 			description: "Successfully deploy app",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
-
-				client.EXPECT().
-					GetApplication(ctx, appName).
-					Return(&meroxa.Application{}, nil)
 				return client
 			},
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, specVersion).
-					Return(nil)
+					Return(spec, nil)
 				return mockTurbineCLI
 			},
 			err: nil,
-		},
+		},*/
 		{
-			description: "Fail to deploy",
+			description: "Fail to call Turbine deploy",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				return client
@@ -728,26 +725,31 @@ func TestDeployApp(t *testing.T) {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, specVersion).
-					Return(err)
+					Return(spec, err)
 				return mockTurbineCLI
 			},
 			err: err,
 		},
 		{
-			description: "Fail to get app",
+			description: "Fail to create deployment",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetApplication(ctx, appName).
-					Return(&meroxa.Application{}, err)
+					CreateDeployment(ctx, &meroxa.CreateDeploymentInput{
+						Application: meroxa.EntityIdentifier{Name: null.StringFrom(appName)},
+						GitSha:      gitSha,
+						SpecVersion: null.StringFrom(specVersion),
+						Spec:        null.StringFrom(spec),
+					}).
+					Return(&meroxa.Deployment{}, err)
 				return client
 			},
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, specVersion).
-					Return(nil)
+					Return(spec, nil)
 				return mockTurbineCLI
 			},
 			err: err,
@@ -1061,9 +1063,9 @@ func TestWaitForDeployment(t *testing.T) {
 				appName: appName,
 			}
 			err := d.waitForDeployment(ctx)
-			require.Equal(t, err, tc.err)
+			require.Equal(t, err, tc.err, "errors are not equal")
 
-			require.Equal(t, logger.LeveledOutput(), strings.Join(outputLogs, "\n"))
+			require.Equal(t, logger.LeveledOutput(), strings.Join(outputLogs, "\n"), "logs are not equal")
 		})
 	}
 }
