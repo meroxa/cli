@@ -9,17 +9,19 @@ import (
 type ResourceType string
 
 const (
-	ResourceTypePostgres      ResourceType = "postgres"
-	ResourceTypeMysql         ResourceType = "mysql"
-	ResourceTypeRedshift      ResourceType = "redshift"
-	ResourceTypeUrl           ResourceType = "url"
-	ResourceTypeS3            ResourceType = "s3"
-	ResourceTypeMongodb       ResourceType = "mongodb"
-	ResourceTypeElasticsearch ResourceType = "elasticsearch"
-	ResourceTypeSnowflake     ResourceType = "snowflakedb"
-	ResourceTypeBigquery      ResourceType = "bigquery"
-	ResourceTypeSqlserver     ResourceType = "sqlserver"
-	ResourceTypeCosmosdb      ResourceType = "cosmosdb"
+	ResourceTypePostgres       ResourceType = "postgres"
+	ResourceTypeMysql          ResourceType = "mysql"
+	ResourceTypeRedshift       ResourceType = "redshift"
+	ResourceTypeUrl            ResourceType = "url"
+	ResourceTypeS3             ResourceType = "s3"
+	ResourceTypeMongodb        ResourceType = "mongodb"
+	ResourceTypeElasticsearch  ResourceType = "elasticsearch"
+	ResourceTypeSnowflake      ResourceType = "snowflakedb"
+	ResourceTypeBigquery       ResourceType = "bigquery"
+	ResourceTypeSqlserver      ResourceType = "sqlserver"
+	ResourceTypeCosmosdb       ResourceType = "cosmosdb"
+	ResourceTypeKafka          ResourceType = "kafka"
+	ResourceTypeConfluentCloud ResourceType = "confluentcloud"
 )
 
 // ListResourceTypes returns the list of supported resources
