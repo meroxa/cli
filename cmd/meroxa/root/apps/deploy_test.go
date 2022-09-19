@@ -976,6 +976,7 @@ func TestPrepareAppName(t *testing.T) {
 	}
 }
 
+//nolint:funlen
 func TestWaitForDeployment(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
