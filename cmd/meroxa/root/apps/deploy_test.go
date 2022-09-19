@@ -979,13 +979,13 @@ func TestPrepareAppName(t *testing.T) {
 func TestWaitForDeployment(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	logger := log.NewTestLogger()
 	appName := "unit-test"
 	outputLogs := []string{"just getting started", "going well", "nailed it"}
 
 	tests := []struct {
 		description  string
 		meroxaClient func() meroxa.Client
+		noLogs       bool
 		err          error
 	}{
 		{
@@ -1003,25 +1003,26 @@ func TestWaitForDeployment(t *testing.T) {
 			err: nil,
 		},
 		{
-			description: "Deployment immediately finished",
+			description: "Deployment finishes over time",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
-				client.EXPECT().
+				first := client.EXPECT().
 					GetLatestDeployment(ctx, appName).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
 						OutputLog: null.StringFrom(strings.Join(outputLogs[:1], "\n"))}, nil)
-				client.EXPECT().
+				second := client.EXPECT().
 					GetLatestDeployment(ctx, appName).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
 						OutputLog: null.StringFrom(strings.Join(outputLogs[:2], "\n"))}, nil)
-				client.EXPECT().
+				third := client.EXPECT().
 					GetLatestDeployment(ctx, appName).
 					Return(&meroxa.Deployment{
-						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
-						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil)
+						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeployed},
+						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil).AnyTimes()
+				gomock.InOrder(first, second, third)
 				return client
 			},
 			err: nil,
@@ -1038,12 +1039,12 @@ func TestWaitForDeployment(t *testing.T) {
 						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil)
 				return client
 			},
-			err: fmt.Errorf("failed to deploy Application %q", appName),
+			noLogs: false,
+			err:    fmt.Errorf("failed to deploy Application %q", appName),
 		},
 		{
 			description: "Failed to get latest deployment",
 			meroxaClient: func() meroxa.Client {
-				outputLogs = []string{}
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -1051,21 +1052,35 @@ func TestWaitForDeployment(t *testing.T) {
 					Return(&meroxa.Deployment{}, fmt.Errorf("not today"))
 				return client
 			},
-			err: fmt.Errorf("not today"),
+			noLogs: true,
+			err:    fmt.Errorf("not today"),
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.description, func(t *testing.T) {
+			logger := log.NewTestLogger()
 			d := &Deploy{
 				client:  tc.meroxaClient(),
 				logger:  logger,
 				appName: appName,
 			}
-			err := d.waitForDeployment(ctx)
-			require.Equal(t, err, tc.err, "errors are not equal")
 
-			require.Equal(t, logger.LeveledOutput(), strings.Join(outputLogs, "\n"), "logs are not equal")
+			err := d.waitForDeployment(ctx)
+			require.Equal(t, tc.err, err, "errors are not equal")
+
+			if err != nil {
+				var failureLogs string
+				if tc.noLogs {
+					failureLogs = ""
+				} else {
+					failureLogs = outputLogs[0] + "\n" + outputLogs[1] + "\n\tx " + outputLogs[2] + "\n"
+				}
+				require.Equal(t, failureLogs, logger.SpinnerOutput(), "logs are not equal")
+			} else {
+				successLogs := strings.Join(outputLogs, "\n") + "\n"
+				require.Equal(t, successLogs, logger.SpinnerOutput(), "logs are not equal")
+			}
 		})
 	}
 }
