@@ -689,6 +689,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
+	d.specVersion = d.flags.Spec
 	if d.specVersion == "" {
 		// ⚠️ This is only until we re-deploy applications applying only the changes made
 		if err = d.tearDownExistingResources(ctx); err != nil {
