@@ -30,7 +30,6 @@ import (
 	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
@@ -643,18 +642,6 @@ func (d *Deploy) waitForDeployment(ctx context.Context) error {
 	return fmt.Errorf("timed out; check `apps logs`")
 }
 
-func hasFeatureFlag(f string) bool {
-	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
-
-	for _, v := range userFeatureFlags {
-		if v == f {
-			return true
-		}
-	}
-
-	return false
-}
-
 //nolint:gocyclo
 func (d *Deploy) Execute(ctx context.Context) error {
 	var app *meroxa.Application
@@ -699,9 +686,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		// Intermediate Representation Workflow
 		if err = d.validateSpecVersionDeployment(); err != nil {
 			return err
-		}
-		if !hasFeatureFlag(featureFlagIntermediateRepresentation) {
-			return fmt.Errorf("user is not authorized for deploying with --spec")
 		}
 
 		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
