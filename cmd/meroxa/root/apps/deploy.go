@@ -43,8 +43,7 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 
-	pollDuration                          = 2 * time.Second
-	featureFlagIntermediateRepresentation = "intermediate-representation"
+	pollDuration = 2 * time.Second
 )
 
 type deployApplicationClient interface {
