@@ -43,7 +43,9 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 
-	pollDuration = 2 * time.Second
+	platformBuildPollDuration   = 2 * time.Second
+	durationToWaitForDeployment = 5 * time.Minute
+	intervalCheckForDeployment  = 500 * time.Millisecond
 )
 
 type deployApplicationClient interface {
@@ -236,7 +238,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built process image (%q)\n", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
-		time.Sleep(pollDuration)
+		time.Sleep(platformBuildPollDuration)
 	}
 }
 
@@ -609,10 +611,10 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 func (d *Deploy) waitForDeployment(ctx context.Context) error {
 	logs := []string{}
 
-	cctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	cctx, cancel := context.WithTimeout(ctx, durationToWaitForDeployment)
 	defer cancel()
 
-	t := time.NewTicker(500 * time.Millisecond)
+	t := time.NewTicker(intervalCheckForDeployment)
 	defer t.Stop()
 
 	for {
