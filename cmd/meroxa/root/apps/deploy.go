@@ -607,38 +607,48 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 }
 
 func (d *Deploy) waitForDeployment(ctx context.Context) error {
-	startTime := time.Now().UTC()
 	logs := []string{}
-	for time.Now().UTC().Sub(startTime) < 5*time.Minute {
-		var deployment *meroxa.Deployment
-		deployment, err := d.client.GetLatestDeployment(ctx, d.appName)
-		if err != nil {
-			return err
-		}
-		newLogs := strings.Split(deployment.OutputLog.String, "\n")
-		if len(newLogs) > len(logs) {
-			for i := len(logs); i < len(newLogs); i++ {
-				if len(logs) == 0 && i != 0 {
-					d.logger.StopSpinner(newLogs[i-1])
-				} else if len(logs) != 0 {
-					d.logger.StopSpinner(newLogs[i-1])
-				}
-				d.logger.StartSpinner("\t", newLogs[i])
+
+	cctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
+
+	t := time.NewTicker(500 * time.Millisecond)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-t.C:
+			var deployment *meroxa.Deployment
+			deployment, err := d.client.GetLatestDeployment(ctx, d.appName)
+			if err != nil {
+				return err
 			}
-			logs = newLogs
-		}
-		if deployment.Status.State == meroxa.DeploymentStateDeployed {
-			l := len(logs)
-			d.logger.StopSpinner(logs[l-1])
-			return nil
-		} else if deployment.Status.State == meroxa.DeploymentStateDeployingError ||
-			deployment.Status.State == meroxa.DeploymentStateRollingBackError {
-			l := len(logs)
-			d.logger.StopSpinnerWithStatus(logs[l-1], log.Failed)
-			return fmt.Errorf("failed to deploy Application %q", d.appName)
+			newLogs := strings.Split(deployment.OutputLog.String, "\n")
+			if len(newLogs) > len(logs) {
+				for i := len(logs); i < len(newLogs); i++ {
+					if len(logs) == 0 && i != 0 {
+						d.logger.StopSpinner(newLogs[i-1])
+					} else if len(logs) != 0 {
+						d.logger.StopSpinner(newLogs[i-1])
+					}
+					d.logger.StartSpinner("\t", newLogs[i])
+				}
+				logs = newLogs
+			}
+			if deployment.Status.State == meroxa.DeploymentStateDeployed {
+				l := len(logs)
+				d.logger.StopSpinner(logs[l-1])
+				return nil
+			} else if deployment.Status.State == meroxa.DeploymentStateDeployingError ||
+				deployment.Status.State == meroxa.DeploymentStateRollingBackError {
+				l := len(logs)
+				d.logger.StopSpinnerWithStatus(logs[l-1], log.Failed)
+				return fmt.Errorf("failed to deploy Application %q", d.appName)
+			}
+		case <-cctx.Done():
+			return cctx.Err()
 		}
 	}
-	return fmt.Errorf("timed out; check `apps logs`")
 }
 
 //nolint:gocyclo
