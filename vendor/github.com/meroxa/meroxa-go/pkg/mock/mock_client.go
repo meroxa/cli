@@ -52,6 +52,21 @@ func (mr *MockClientMockRecorder) CreateApplication(ctx, input interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApplication", reflect.TypeOf((*MockClient)(nil).CreateApplication), ctx, input)
 }
 
+// CreateApplicationV2 mocks base method.
+func (m *MockClient) CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateApplicationV2", ctx, input)
+	ret0, _ := ret[0].(*meroxa.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateApplicationV2 indicates an expected call of CreateApplicationV2.
+func (mr *MockClientMockRecorder) CreateApplicationV2(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApplicationV2", reflect.TypeOf((*MockClient)(nil).CreateApplicationV2), ctx, input)
+}
+
 // CreateBuild mocks base method.
 func (m *MockClient) CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error) {
 	m.ctrl.T.Helper()
@@ -80,6 +95,21 @@ func (m *MockClient) CreateConnector(ctx context.Context, input *meroxa.CreateCo
 func (mr *MockClientMockRecorder) CreateConnector(ctx, input interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateConnector", reflect.TypeOf((*MockClient)(nil).CreateConnector), ctx, input)
+}
+
+// CreateDeployment mocks base method.
+func (m *MockClient) CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateDeployment", ctx, input)
+	ret0, _ := ret[0].(*meroxa.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateDeployment indicates an expected call of CreateDeployment.
+func (mr *MockClientMockRecorder) CreateDeployment(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeployment", reflect.TypeOf((*MockClient)(nil).CreateDeployment), ctx, input)
 }
 
 // CreateEndpoint mocks base method.
@@ -419,6 +449,21 @@ func (m *MockClient) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*h
 func (mr *MockClientMockRecorder) GetFunctionLogs(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunctionLogs", reflect.TypeOf((*MockClient)(nil).GetFunctionLogs), ctx, nameOrUUID)
+}
+
+// GetLatestDeployment mocks base method.
+func (m *MockClient) GetLatestDeployment(ctx context.Context, appIdentifier string) (*meroxa.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLatestDeployment", ctx, appIdentifier)
+	ret0, _ := ret[0].(*meroxa.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLatestDeployment indicates an expected call of GetLatestDeployment.
+func (mr *MockClientMockRecorder) GetLatestDeployment(ctx, appIdentifier interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestDeployment", reflect.TypeOf((*MockClient)(nil).GetLatestDeployment), ctx, appIdentifier)
 }
 
 // GetPipeline mocks base method.

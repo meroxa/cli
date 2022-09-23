@@ -52,6 +52,7 @@ type client struct {
 // Client represents the interface to the Meroxa API
 type Client interface {
 	CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error)
+	CreateApplicationV2(ctx context.Context, input *CreateApplicationInput) (*Application, error)
 	DeleteApplication(ctx context.Context, name string) error
 	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 	GetApplication(ctx context.Context, name string) (*Application, error)
@@ -68,6 +69,9 @@ type Client interface {
 	ListConnectors(ctx context.Context) ([]*Connector, error)
 	UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error)
 	UpdateConnectorStatus(ctx context.Context, nameOrID string, state Action) (*Connector, error)
+
+	GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error)
+	CreateDeployment(ctx context.Context, input *CreateDeploymentInput) (*Deployment, error)
 
 	CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*Function, error)
@@ -121,9 +125,10 @@ type Client interface {
 // which takes care of authentication.
 //
 // Example creating an authenticated client:
-//  c, err := New(
-//      WithAuthentication(auth.DefaultConfig(), accessToken, refreshToken),
-//  )
+//
+//	c, err := New(
+//	    WithAuthentication(auth.DefaultConfig(), accessToken, refreshToken),
+//	)
 func New(options ...Option) (Client, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {

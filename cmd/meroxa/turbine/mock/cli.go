@@ -63,11 +63,12 @@ func (mr *MockCLIMockRecorder) CleanUpBinaries(ctx, appName interface{}) *gomock
 }
 
 // Deploy mocks base method.
-func (m *MockCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) error {
+func (m *MockCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Deploy", ctx, imageName, appName, gitSha, specVersion)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Deploy indicates an expected call of Deploy.

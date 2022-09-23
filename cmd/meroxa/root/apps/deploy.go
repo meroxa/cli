@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-semver/semver"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -41,12 +42,17 @@ import (
 const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
-	pollDuration            = 2 * time.Second
+
+	platformBuildPollDuration   = 2 * time.Second
+	durationToWaitForDeployment = 5 * time.Minute
+	intervalCheckForDeployment  = 500 * time.Millisecond
 )
 
 type deployApplicationClient interface {
-	CreateApplication(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
+	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
+	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	GetLatestDeployment(ctx context.Context, appName string) (*meroxa.Deployment, error)
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
@@ -232,28 +238,30 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built process image (%q)\n", build.Uuid), log.Successful)
 			return build.Image, nil
 		}
-		time.Sleep(pollDuration)
+		time.Sleep(platformBuildPollDuration)
 	}
 }
 
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) error {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
-	err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
+	deploymentSpec, err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
 	if err != nil {
 		return err
 	}
-
-	app, err := d.client.GetApplication(ctx, d.appName)
-	if err != nil {
-		return err
+	if specVersion != "" {
+		input := &meroxa.CreateDeploymentInput{
+			Application: meroxa.EntityIdentifier{Name: null.StringFrom(d.appName)},
+			GitSha:      gitSha,
+			SpecVersion: null.StringFrom(specVersion),
+			Spec:        null.StringFrom(deploymentSpec),
+		}
+		_, err = d.client.CreateDeployment(ctx, input)
 	}
+	return err
+}
 
-	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.UUID)
-	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
-		d.logger.SuccessfulCheck(), app.Name, dashboardURL)
-	d.logger.Info(ctx, output)
-	d.logger.JSON(ctx, app)
-	return nil
+func (d *Deploy) checkPreIRApplication(ctx context.Context) (*meroxa.Application, error) {
+	return d.client.GetApplication(ctx, d.appName)
 }
 
 // buildApp will call any specifics to the turbine library to prepare a directory that's ready
@@ -600,7 +608,55 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 	return appName
 }
 
+func (d *Deploy) waitForDeployment(ctx context.Context) error {
+	logs := []string{}
+
+	cctx, cancel := context.WithTimeout(ctx, durationToWaitForDeployment)
+	defer cancel()
+
+	t := time.NewTicker(intervalCheckForDeployment)
+	defer t.Stop()
+
+	for {
+		select {
+		case <-t.C:
+			var deployment *meroxa.Deployment
+			deployment, err := d.client.GetLatestDeployment(ctx, d.appName)
+			if err != nil {
+				return err
+			}
+			newLogs := strings.Split(deployment.OutputLog.String, "\n")
+			if len(newLogs) > len(logs) {
+				for i := len(logs); i < len(newLogs); i++ {
+					if len(logs) == 0 && i != 0 {
+						d.logger.StopSpinner(newLogs[i-1])
+					} else if len(logs) != 0 {
+						d.logger.StopSpinner(newLogs[i-1])
+					}
+					d.logger.StartSpinner("\t", newLogs[i])
+				}
+				logs = newLogs
+			}
+			if deployment.Status.State == meroxa.DeploymentStateDeployed {
+				l := len(logs)
+				d.logger.StopSpinner(logs[l-1])
+				return nil
+			} else if deployment.Status.State == meroxa.DeploymentStateDeployingError ||
+				deployment.Status.State == meroxa.DeploymentStateRollingBackError {
+				l := len(logs)
+				d.logger.StopSpinnerWithStatus(logs[l-1], log.Failed)
+				return fmt.Errorf("failed to deploy Application %q", d.appName)
+			}
+		case <-cctx.Done():
+			return cctx.Err()
+		}
+	}
+}
+
+//nolint:gocyclo
 func (d *Deploy) Execute(ctx context.Context) error {
+	var app *meroxa.Application
+
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
@@ -626,25 +682,55 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if err := d.validateSpecVersionDeployment(); err != nil {
-		return err
-	}
-
-	// ⚠️ This is only until we re-deploy applications applying only the changes made
-	if err := d.tearDownExistingResources(ctx); err != nil {
-		return err
-	}
-
-	err := d.prepareDeployment(ctx)
-	defer d.turbineCLI.CleanUpBinaries(ctx, d.appName)
-	if err != nil {
-		return err
-	}
-
 	gitSha, err := d.turbineCLI.GetGitSha(ctx)
 	if err != nil {
 		return err
 	}
 
-	return d.deployApp(ctx, d.fnName, gitSha, d.specVersion)
+	d.specVersion = d.flags.Spec
+	if d.specVersion == "" {
+		// ⚠️ This is only until we re-deploy applications applying only the changes made
+		if err = d.tearDownExistingResources(ctx); err != nil {
+			return err
+		}
+	} else {
+		// Intermediate Representation Workflow
+		if err = d.validateSpecVersionDeployment(); err != nil {
+			return err
+		}
+
+		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
+			Name:     d.appName,
+			Language: d.lang,
+			GitSha:   null.StringFrom(gitSha)})
+		if err != nil && !strings.Contains(err.Error(), "already exists") {
+			return err
+		}
+	}
+
+	err = d.prepareDeployment(ctx)
+	defer d.turbineCLI.CleanUpBinaries(ctx, d.appName)
+	if err != nil {
+		return err
+	}
+
+	if err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
+		return err
+	}
+
+	if d.specVersion == "" {
+		app, err = d.checkPreIRApplication(ctx)
+	} else {
+		err = d.waitForDeployment(ctx)
+	}
+	if err != nil {
+		return err
+	}
+
+	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", d.appName)
+	output := fmt.Sprintf("\t%s Application %q successfully created!\n\n  ✨ To visualize your application visit %s",
+		d.logger.SuccessfulCheck(), d.appName, dashboardURL)
+	d.logger.Info(ctx, output)
+	d.logger.JSON(ctx, app)
+	return nil
 }

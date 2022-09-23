@@ -7,7 +7,7 @@ import (
 type CLI interface {
 	Build(ctx context.Context, appName string, platform bool) (string, error)
 	CleanUpBinaries(ctx context.Context, appName string)
-	Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) error
+	Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) (string, error)
 	GetResources(ctx context.Context, appName string) ([]ApplicationResource, error)
 	GitInit(ctx context.Context, name string) error
 	GitChecks(ctx context.Context) error
