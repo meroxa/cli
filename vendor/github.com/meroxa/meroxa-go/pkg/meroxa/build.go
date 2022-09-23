@@ -10,8 +10,7 @@ import (
 const buildsBasePath = "/v1/builds"
 
 type CreateBuildInput struct {
-	SourceBlob  SourceBlob        `json:"source_blob"`
-	Environment *EntityIdentifier `json:"environment,omitempty"`
+	SourceBlob SourceBlob `json:"source_blob"`
 }
 
 type BuildStatus struct {
@@ -20,13 +19,12 @@ type BuildStatus struct {
 }
 
 type Build struct {
-	Uuid        string            `json:"uuid"`
-	Status      BuildStatus       `json:"status"`
-	CreatedAt   string            `json:"created_at"`
-	UpdatedAt   string            `json:"updated_at"`
-	SourceBlob  SourceBlob        `json:"source_blob"`
-	Image       string            `json:"image"`
-	Environment *EntityIdentifier `json:"environment,omitempty"`
+	Uuid       string      `json:"uuid"`
+	Status     BuildStatus `json:"status"`
+	CreatedAt  string      `json:"created_at"`
+	UpdatedAt  string      `json:"updated_at"`
+	SourceBlob SourceBlob  `json:"source_blob"`
+	Image      string      `json:"image"`
 }
 
 func (c *client) GetBuild(ctx context.Context, uuid string) (*Build, error) {

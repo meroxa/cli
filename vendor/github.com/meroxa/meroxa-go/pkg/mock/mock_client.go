@@ -37,18 +37,6 @@ func (m *Mockrequester) EXPECT() *MockrequesterMockRecorder {
 	return m.recorder
 }
 
-// AddHeader mocks base method.
-func (m *Mockrequester) AddHeader(key, value string) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "AddHeader", key, value)
-}
-
-// AddHeader indicates an expected call of AddHeader.
-func (mr *MockrequesterMockRecorder) AddHeader(key, value interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*Mockrequester)(nil).AddHeader), key, value)
-}
-
 // MakeRequest mocks base method.
 func (m *Mockrequester) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error) {
 	m.ctrl.T.Helper()
@@ -123,18 +111,6 @@ func NewMockClient(ctrl *gomock.Controller) *MockClient {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
-}
-
-// AddHeader mocks base method.
-func (m *MockClient) AddHeader(key, value string) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "AddHeader", key, value)
-}
-
-// AddHeader indicates an expected call of AddHeader.
-func (mr *MockClientMockRecorder) AddHeader(key, value interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*MockClient)(nil).AddHeader), key, value)
 }
 
 // CreateApplication mocks base method.
@@ -212,6 +188,20 @@ func (mr *MockClientMockRecorder) CreateDeployment(ctx, input interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDeployment", reflect.TypeOf((*MockClient)(nil).CreateDeployment), ctx, input)
 }
 
+// CreateEndpoint mocks base method.
+func (m *MockClient) CreateEndpoint(ctx context.Context, input *meroxa.CreateEndpointInput) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateEndpoint", ctx, input)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateEndpoint indicates an expected call of CreateEndpoint.
+func (mr *MockClientMockRecorder) CreateEndpoint(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEndpoint", reflect.TypeOf((*MockClient)(nil).CreateEndpoint), ctx, input)
+}
+
 // CreateEnvironment mocks base method.
 func (m *MockClient) CreateEnvironment(ctx context.Context, input *meroxa.CreateEnvironmentInput) (*meroxa.Environment, error) {
 	m.ctrl.T.Helper()
@@ -287,48 +277,33 @@ func (mr *MockClientMockRecorder) CreateSource(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSource", reflect.TypeOf((*MockClient)(nil).CreateSource), ctx)
 }
 
-// CreateSourceV2 mocks base method.
-func (m *MockClient) CreateSourceV2(ctx context.Context, input *meroxa.CreateSourceInputV2) (*meroxa.Source, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateSourceV2", ctx, input)
-	ret0, _ := ret[0].(*meroxa.Source)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateSourceV2 indicates an expected call of CreateSourceV2.
-func (mr *MockClientMockRecorder) CreateSourceV2(ctx, input interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSourceV2", reflect.TypeOf((*MockClient)(nil).CreateSourceV2), ctx, input)
-}
-
 // DeleteApplication mocks base method.
-func (m *MockClient) DeleteApplication(ctx context.Context, nameOrUUID string) error {
+func (m *MockClient) DeleteApplication(ctx context.Context, name string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteApplication", ctx, nameOrUUID)
+	ret := m.ctrl.Call(m, "DeleteApplication", ctx, name)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteApplication indicates an expected call of DeleteApplication.
-func (mr *MockClientMockRecorder) DeleteApplication(ctx, nameOrUUID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteApplication(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockClient)(nil).DeleteApplication), ctx, nameOrUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockClient)(nil).DeleteApplication), ctx, name)
 }
 
 // DeleteApplicationEntities mocks base method.
-func (m *MockClient) DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error) {
+func (m *MockClient) DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteApplicationEntities", ctx, nameOrUUID)
+	ret := m.ctrl.Call(m, "DeleteApplicationEntities", ctx, name)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteApplicationEntities indicates an expected call of DeleteApplicationEntities.
-func (mr *MockClientMockRecorder) DeleteApplicationEntities(ctx, nameOrUUID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteApplicationEntities(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplicationEntities", reflect.TypeOf((*MockClient)(nil).DeleteApplicationEntities), ctx, nameOrUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplicationEntities", reflect.TypeOf((*MockClient)(nil).DeleteApplicationEntities), ctx, name)
 }
 
 // DeleteConnector mocks base method.
@@ -343,6 +318,20 @@ func (m *MockClient) DeleteConnector(ctx context.Context, nameOrID string) error
 func (mr *MockClientMockRecorder) DeleteConnector(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteConnector", reflect.TypeOf((*MockClient)(nil).DeleteConnector), ctx, nameOrID)
+}
+
+// DeleteEndpoint mocks base method.
+func (m *MockClient) DeleteEndpoint(ctx context.Context, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteEndpoint", ctx, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteEndpoint indicates an expected call of DeleteEndpoint.
+func (mr *MockClientMockRecorder) DeleteEndpoint(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEndpoint", reflect.TypeOf((*MockClient)(nil).DeleteEndpoint), ctx, name)
 }
 
 // DeleteEnvironment mocks base method.
@@ -404,33 +393,18 @@ func (mr *MockClientMockRecorder) DeleteResource(ctx, nameOrID interface{}) *gom
 }
 
 // GetApplication mocks base method.
-func (m *MockClient) GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error) {
+func (m *MockClient) GetApplication(ctx context.Context, name string) (*meroxa.Application, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetApplication", ctx, nameOrUUID)
+	ret := m.ctrl.Call(m, "GetApplication", ctx, name)
 	ret0, _ := ret[0].(*meroxa.Application)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetApplication indicates an expected call of GetApplication.
-func (mr *MockClientMockRecorder) GetApplication(ctx, nameOrUUID interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetApplication(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, nameOrUUID)
-}
-
-// GetApplicationLogs mocks base method.
-func (m *MockClient) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetApplicationLogs", ctx, nameOrUUID)
-	ret0, _ := ret[0].(*meroxa.ApplicationLogs)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetApplicationLogs indicates an expected call of GetApplicationLogs.
-func (mr *MockClientMockRecorder) GetApplicationLogs(ctx, nameOrUUID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationLogs", reflect.TypeOf((*MockClient)(nil).GetApplicationLogs), ctx, nameOrUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, name)
 }
 
 // GetBuild mocks base method.
@@ -506,6 +480,21 @@ func (m *MockClient) GetDeployment(ctx context.Context, appIdentifier, depUUID s
 func (mr *MockClientMockRecorder) GetDeployment(ctx, appIdentifier, depUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeployment", reflect.TypeOf((*MockClient)(nil).GetDeployment), ctx, appIdentifier, depUUID)
+}
+
+// GetEndpoint mocks base method.
+func (m *MockClient) GetEndpoint(ctx context.Context, name string) (*meroxa.Endpoint, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetEndpoint", ctx, name)
+	ret0, _ := ret[0].(*meroxa.Endpoint)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetEndpoint indicates an expected call of GetEndpoint.
+func (mr *MockClientMockRecorder) GetEndpoint(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEndpoint", reflect.TypeOf((*MockClient)(nil).GetEndpoint), ctx, name)
 }
 
 // GetEnvironment mocks base method.
@@ -688,6 +677,21 @@ func (mr *MockClientMockRecorder) ListConnectors(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListConnectors", reflect.TypeOf((*MockClient)(nil).ListConnectors), ctx)
 }
 
+// ListEndpoints mocks base method.
+func (m *MockClient) ListEndpoints(ctx context.Context) ([]meroxa.Endpoint, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListEndpoints", ctx)
+	ret0, _ := ret[0].([]meroxa.Endpoint)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListEndpoints indicates an expected call of ListEndpoints.
+func (mr *MockClientMockRecorder) ListEndpoints(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEndpoints", reflect.TypeOf((*MockClient)(nil).ListEndpoints), ctx)
+}
+
 // ListEnvironments mocks base method.
 func (m *MockClient) ListEnvironments(ctx context.Context) ([]*meroxa.Environment, error) {
 	m.ctrl.T.Helper()
@@ -761,21 +765,6 @@ func (m *MockClient) ListResourceTypes(ctx context.Context) ([]string, error) {
 func (mr *MockClientMockRecorder) ListResourceTypes(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceTypes", reflect.TypeOf((*MockClient)(nil).ListResourceTypes), ctx)
-}
-
-// ListResourceTypesV2 mocks base method.
-func (m *MockClient) ListResourceTypesV2(ctx context.Context) ([]meroxa.ResourceType, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListResourceTypesV2", ctx)
-	ret0, _ := ret[0].([]meroxa.ResourceType)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListResourceTypesV2 indicates an expected call of ListResourceTypesV2.
-func (mr *MockClientMockRecorder) ListResourceTypesV2(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceTypesV2", reflect.TypeOf((*MockClient)(nil).ListResourceTypesV2), ctx)
 }
 
 // ListResources mocks base method.

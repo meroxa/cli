@@ -18,14 +18,14 @@ func (err *errResponse) Error() string {
 	msg := err.Message
 
 	if errCount := len(err.Details); errCount > 0 {
-		msg = fmt.Sprintf("%s. %d %s reported:%s",
+		msg = fmt.Sprintf("%s. %d %s occurred:%s",
 			msg,
 			errCount,
 			func() string {
 				if errCount > 1 {
-					return "details"
+					return "problems"
 				}
-				return "detail"
+				return "problem"
 			}(),
 			mapToString(err.Details),
 		)

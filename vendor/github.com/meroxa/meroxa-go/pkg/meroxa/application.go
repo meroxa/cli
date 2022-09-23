@@ -6,40 +6,29 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/volatiletech/null/v8"
 )
 
 type ApplicationState string
 
 const (
-	ApplicationStateInitialized ApplicationState = "initialized"
-	ApplicationStateDeploying   ApplicationState = "deploying"
-	ApplicationStatePending     ApplicationState = "pending"
-	ApplicationStateRunning     ApplicationState = "running"
-	ApplicationStateDegraded    ApplicationState = "degraded"
-	ApplicationStateFailed      ApplicationState = "failed"
+	ApplicationStateRunning  ApplicationState = "running"
+	ApplicationStateDegraded ApplicationState = "degraded"
 )
 
-const applicationsBasePathV1 = "/v1/applications"
-const applicationsBasePathV2 = "/v2/applications"
+const applicationsBasePath = "/v1/applications"
+const v2applicationsBasePath = "/v2/applications"
 
 type ResourceCollection struct {
-	Name        string `json:"name,omitempty"`
-	Source      string `json:"source,omitempty"`
-	Destination string `json:"destination,omitempty"`
+	Name        null.String `json:"name,omitempty"`
+	Source      null.String `json:"source,omitempty"`
+	Destination null.String `json:"destination,omitempty"`
 }
 
 type ApplicationResource struct {
 	EntityIdentifier
-	ResourceType string             `json:"type,omitempty"`
-	Status       string             `json:"status,omitempty"`
-	Collection   ResourceCollection `json:"collection,omitempty"`
-}
-
-type EntityDetails struct {
-	EntityIdentifier
-	ResourceUUID string `json:"resource_uuid,omitempty"`
-	ResourceType string `json:"type,omitempty"`
-	Status       string `json:"status,omitempty"`
+	Collection ResourceCollection `json:"collection,omitempty"`
 }
 
 // Application represents the Meroxa Application type within the Meroxa API
@@ -49,10 +38,9 @@ type Application struct {
 	Language    string                `json:"language"`
 	GitSha      string                `json:"git_sha,omitempty"`
 	Status      ApplicationStatus     `json:"status,omitempty"`
-	Environment *EntityIdentifier     `json:"environment,omitempty"`
-	Pipeline    EntityDetails         `json:"pipeline,omitempty"`
-	Connectors  []EntityDetails       `json:"connectors,omitempty"`
-	Functions   []EntityDetails       `json:"functions,omitempty"`
+	Pipeline    EntityIdentifier      `json:"pipeline,omitempty"`
+	Connectors  []EntityIdentifier    `json:"connectors,omitempty"`
+	Functions   []EntityIdentifier    `json:"functions,omitempty"`
 	Resources   []ApplicationResource `json:"resources,omitempty"`
 	Deployments []EntityIdentifier    `json:"deployments,omitempty"`
 	CreatedAt   time.Time             `json:"created_at"`
@@ -60,19 +48,12 @@ type Application struct {
 	DeletedAt   time.Time             `json:"deleted_at,omitempty"`
 }
 
-type ApplicationLogs struct {
-	FunctionLogs   map[string]string `json:"functions"`
-	ConnectorLogs  map[string]string `json:"connectors"`
-	DeploymentLogs map[string]string `json:"latest_deployment"`
-}
-
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
 type CreateApplicationInput struct {
-	Name        string            `json:"name"`
-	Language    string            `json:"language"`
-	GitSha      string            `json:"git_sha,omitempty"`
-	Pipeline    EntityIdentifier  `json:"pipeline,omitempty"`
-	Environment *EntityIdentifier `json:"environment,omitempty"`
+	Name     string           `json:"name"`
+	Language string           `json:"language"`
+	GitSha   null.String      `json:"git_sha,omitempty"`
+	Pipeline EntityIdentifier `json:"pipeline,omitempty"`
 }
 
 type ApplicationStatus struct {
@@ -81,7 +62,7 @@ type ApplicationStatus struct {
 }
 
 func (c *client) CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePathV1, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePath, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +82,7 @@ func (c *client) CreateApplication(ctx context.Context, input *CreateApplication
 }
 
 func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePathV2, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, v2applicationsBasePath, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -118,8 +99,8 @@ func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicati
 	return a, nil
 }
 
-func (c *client) DeleteApplication(ctx context.Context, nameOrUUID string) error {
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
+func (c *client) DeleteApplication(ctx context.Context, name string) error {
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -129,15 +110,15 @@ func (c *client) DeleteApplication(ctx context.Context, nameOrUUID string) error
 
 // DeleteApplicationEntities does a bit more than DeleteApplication. Its main purpose is to remove underneath's app resources
 // even in the event the application didn't exist.
-func (c *client) DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error) {
-	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
+func (c *client) DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error) {
+	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
 	if err != nil {
 		return respAppDelete, err
 	}
 
 	// It is possible that an app failed to be created, but its resources still exist.
 	if respAppDelete.StatusCode == 404 {
-		respPipelineGet, err := c.GetPipelineByName(ctx, fmt.Sprintf("turbine-pipeline-%s", nameOrUUID))
+		respPipelineGet, err := c.GetPipelineByName(ctx, fmt.Sprintf("turbine-pipeline-%s", name))
 		// If pipeline doesn't exist either, returns as if the app didn't exist in the first place
 		if err != nil {
 			return nil, handleAPIErrors(respAppDelete)
@@ -183,8 +164,8 @@ func (c *client) DeleteApplicationEntities(ctx context.Context, nameOrUUID strin
 	return respAppDelete, handleAPIErrors(respAppDelete)
 }
 
-func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
+func (c *client) GetApplication(ctx context.Context, name string) (*Application, error) {
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -199,11 +180,12 @@ func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Applic
 	if err != nil {
 		return nil, err
 	}
+
 	return a, nil
 }
 
 func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePathV1, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -220,24 +202,4 @@ func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
 	}
 
 	return aa, nil
-}
-
-func (c *client) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/logs", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var l *ApplicationLogs
-	err = json.NewDecoder(resp.Body).Decode(&l)
-	if err != nil {
-		return nil, err
-	}
-
-	return l, nil
 }

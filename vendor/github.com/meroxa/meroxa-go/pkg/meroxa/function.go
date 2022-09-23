@@ -5,19 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 const functionsBasePath = "/v1/functions"
-
-type FunctionState string
-
-// Enum values for FunctionState
-const (
-	FunctionStatePending FunctionState = "pending"
-	FunctionStateRunning FunctionState = "running"
-	FunctionStateError   FunctionState = "error"
-)
 
 type Function struct {
 	UUID         string             `json:"uuid"`
@@ -31,13 +21,11 @@ type Function struct {
 	Status       FunctionStatus     `json:"status"`
 	Pipeline     PipelineIdentifier `json:"pipeline"`
 	Logs         string             `json:"logs"` // CLI includes what's returned by GetFunctionLogs
-	CreatedAt    time.Time          `json:"created_at"`
-	UpdatedAt    time.Time          `json:"updated_at"`
 }
 
 type FunctionStatus struct {
-	State   FunctionState `json:"state"`
-	Details string        `json:"details"`
+	State   string `json:"state"`
+	Details string `json:"details"`
 }
 
 type CreateFunctionInput struct {
