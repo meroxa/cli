@@ -18,6 +18,7 @@ package root
 
 import (
 	"context"
+	"github.com/meroxa/cli/cmd/meroxa/root/fixtures"
 	"os"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -96,6 +97,7 @@ meroxa resources list --types
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&pipelines.Pipelines{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&resources.Resources{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&fixtures.Fixtures{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&transforms.Transforms{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&version.Version{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&whoami.WhoAmI{}))

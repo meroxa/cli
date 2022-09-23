@@ -2,6 +2,8 @@ module github.com/meroxa/cli
 
 go 1.18
 
+replace github.com/meroxa/meroxa-go => ../meroxa-go
+
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 	github.com/cased/cased-go v1.0.4
@@ -13,7 +15,7 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20220912230249-20686297f457
+	github.com/meroxa/meroxa-go v0.0.0-20220921120616-852eb1b0e172
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect

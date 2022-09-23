@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -133,7 +132,7 @@ func (ts *tokenSource) retrieveToken(client *http.Client, conf *oauth2.Config, r
 		return nil, fmt.Errorf("oauth2: cannot fetch token: %v", err)
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if err != nil {
 		return nil, fmt.Errorf("oauth2: cannot fetch token: %v", err)
 	}

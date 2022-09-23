@@ -14,45 +14,24 @@ const (
 
 func (c *client) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", connectorLogsBasePath, nameOrID)
-
-	req, err := c.newRequest(ctx, http.MethodGet, path, nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	// Override content-type and accept headers to text/palin
-	req.Header.Add("Content-Type", textContentType)
-	req.Header.Add("Accept", textContentType)
-
-	return c.httpClient.Do(req)
+	return c.MakeRequest(ctx, http.MethodGet, path, nil, nil, http.Header{
+		"Content-Type": []string{textContentType},
+		"Accept":       []string{textContentType},
+	})
 }
 
 func (c *client) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", functionLogsBasePath, nameOrUUID)
-
-	req, err := c.newRequest(ctx, http.MethodGet, path, nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	// Override content-type and accept headers to text/plain
-	req.Header.Add("Content-Type", textContentType)
-	req.Header.Add("Accept", textContentType)
-
-	return c.httpClient.Do(req)
+	return c.MakeRequest(ctx, http.MethodGet, path, nil, nil, http.Header{
+		"Content-Type": []string{textContentType},
+		"Accept":       []string{textContentType},
+	})
 }
 
 func (c *client) GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", buildLogsBasePath, uuid)
-
-	req, err := c.newRequest(ctx, http.MethodGet, path, nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	// Override content-type and accept headers to text/plain
-	req.Header.Add("Content-Type", textContentType)
-	req.Header.Add("Accept", textContentType)
-
-	return c.httpClient.Do(req)
+	return c.MakeRequest(ctx, http.MethodGet, path, nil, nil, http.Header{
+		"Content-Type": []string{textContentType},
+		"Accept":       []string{textContentType},
+	})
 }
