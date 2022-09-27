@@ -23,6 +23,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 
+	"github.com/meroxa/cli/cmd/meroxa/root/account"
 	"github.com/meroxa/cli/cmd/meroxa/root/api"
 	"github.com/meroxa/cli/cmd/meroxa/root/apps"
 	"github.com/meroxa/cli/cmd/meroxa/root/auth"
@@ -80,6 +81,7 @@ meroxa resources list --types
 	// Subcommands
 	cmd.AddCommand(CompletionCmd()) // To generate shell autocompletion
 
+	cmd.AddCommand(builder.BuildCobraCommand(&account.Account{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&api.API{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&apps.Apps{}))
