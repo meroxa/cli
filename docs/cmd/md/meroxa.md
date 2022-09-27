@@ -25,6 +25,7 @@ meroxa resources list --types
 
 ### SEE ALSO
 
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
 * [meroxa api](meroxa_api.md)	 - Invoke Meroxa API
 * [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
