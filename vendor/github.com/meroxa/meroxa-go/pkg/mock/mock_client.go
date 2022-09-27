@@ -14,6 +14,82 @@ import (
 	meroxa "github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
+// Mockrequester is a mock of requester interface.
+type Mockrequester struct {
+	ctrl     *gomock.Controller
+	recorder *MockrequesterMockRecorder
+}
+
+// MockrequesterMockRecorder is the mock recorder for Mockrequester.
+type MockrequesterMockRecorder struct {
+	mock *Mockrequester
+}
+
+// NewMockrequester creates a new mock instance.
+func NewMockrequester(ctrl *gomock.Controller) *Mockrequester {
+	mock := &Mockrequester{ctrl: ctrl}
+	mock.recorder = &MockrequesterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *Mockrequester) EXPECT() *MockrequesterMockRecorder {
+	return m.recorder
+}
+
+// MakeRequest mocks base method.
+func (m *Mockrequester) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MakeRequest", ctx, method, path, body, params, headers)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MakeRequest indicates an expected call of MakeRequest.
+func (mr *MockrequesterMockRecorder) MakeRequest(ctx, method, path, body, params, headers interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeRequest", reflect.TypeOf((*Mockrequester)(nil).MakeRequest), ctx, method, path, body, params, headers)
+}
+
+// Mockaccount is a mock of account interface.
+type Mockaccount struct {
+	ctrl     *gomock.Controller
+	recorder *MockaccountMockRecorder
+}
+
+// MockaccountMockRecorder is the mock recorder for Mockaccount.
+type MockaccountMockRecorder struct {
+	mock *Mockaccount
+}
+
+// NewMockaccount creates a new mock instance.
+func NewMockaccount(ctrl *gomock.Controller) *Mockaccount {
+	mock := &Mockaccount{ctrl: ctrl}
+	mock.recorder = &MockaccountMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *Mockaccount) EXPECT() *MockaccountMockRecorder {
+	return m.recorder
+}
+
+// ListAccounts mocks base method.
+func (m *Mockaccount) ListAccounts(ctx context.Context) ([]*meroxa.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAccounts", ctx)
+	ret0, _ := ret[0].([]*meroxa.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListAccounts indicates an expected call of ListAccounts.
+func (mr *MockaccountMockRecorder) ListAccounts(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*Mockaccount)(nil).ListAccounts), ctx)
+}
+
 // MockClient is a mock of Client interface.
 type MockClient struct {
 	ctrl     *gomock.Controller
@@ -524,6 +600,21 @@ func (m *MockClient) GetUser(ctx context.Context) (*meroxa.User, error) {
 func (mr *MockClientMockRecorder) GetUser(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockClient)(nil).GetUser), ctx)
+}
+
+// ListAccounts mocks base method.
+func (m *MockClient) ListAccounts(ctx context.Context) ([]*meroxa.Account, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAccounts", ctx)
+	ret0, _ := ret[0].([]*meroxa.Account)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListAccounts indicates an expected call of ListAccounts.
+func (mr *MockClientMockRecorder) ListAccounts(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*MockClient)(nil).ListAccounts), ctx)
 }
 
 // ListApplications mocks base method.
