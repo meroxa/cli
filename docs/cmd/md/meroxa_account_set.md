@@ -1,11 +1,15 @@
-## meroxa account
+## meroxa account set
 
-Manage Meroxa Accounts (Beta)
+Set current active account connector
+
+```
+meroxa account set [flags]
+```
 
 ### Options
 
 ```
-  -h, --help   help for account
+  -h, --help   help for set
 ```
 
 ### Options inherited from parent commands
@@ -19,7 +23,5 @@ Manage Meroxa Accounts (Beta)
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa account list](meroxa_account_list.md)	 - List Turbine Data Applications (Beta)
-* [meroxa account set](meroxa_account_set.md)	 - Set current active account connector
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
 

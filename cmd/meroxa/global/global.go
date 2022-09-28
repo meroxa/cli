@@ -50,11 +50,11 @@ const (
 	RefreshTokenEnv              = "REFRESH_TOKEN"
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
+	UserAccountUUID              = "USER_ACCOUNT_UUID"
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().BoolVar(&flagJSON, "json", false, "output json")
-
 	cmd.PersistentFlags().StringVar(&flagCLIConfigFile, "cli-config-file", "", "meroxa configuration file")
 	cmd.PersistentFlags().StringVar(&flagAPIURL, "api-url", "", "API url")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")

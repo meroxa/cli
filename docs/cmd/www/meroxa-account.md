@@ -28,4 +28,5 @@ Manage Meroxa Accounts (Beta)
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 * [meroxa account list](/cli/cmd/meroxa-account-list/)	 - List Turbine Data Applications (Beta)
+* [meroxa account set](/cli/cmd/meroxa-account-set/)	 - Set current active account connector
 
