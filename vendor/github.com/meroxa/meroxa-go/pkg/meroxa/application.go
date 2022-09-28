@@ -62,7 +62,7 @@ type ApplicationStatus struct {
 }
 
 func (c *client) CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePath, input, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePath, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (c *client) CreateApplication(ctx context.Context, input *CreateApplication
 }
 
 func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, v2applicationsBasePath, input, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, v2applicationsBasePath, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicati
 }
 
 func (c *client) DeleteApplication(ctx context.Context, name string) error {
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (c *client) DeleteApplication(ctx context.Context, name string) error {
 // DeleteApplicationEntities does a bit more than DeleteApplication. Its main purpose is to remove underneath's app resources
 // even in the event the application didn't exist.
 func (c *client) DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error) {
-	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, c.headers)
+	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
 	if err != nil {
 		return respAppDelete, err
 	}
@@ -165,7 +165,7 @@ func (c *client) DeleteApplicationEntities(ctx context.Context, name string) (*h
 }
 
 func (c *client) GetApplication(ctx context.Context, name string) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func (c *client) GetApplication(ctx context.Context, name string) (*Application,
 }
 
 func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePath, nil, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

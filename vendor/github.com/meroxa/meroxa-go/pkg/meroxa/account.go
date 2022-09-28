@@ -17,7 +17,7 @@ type Account struct {
 
 func (c *client) ListAccounts(ctx context.Context) ([]*Account, error) {
 	path := accountsPath
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -33,8 +33,4 @@ func (c *client) ListAccounts(ctx context.Context) ([]*Account, error) {
 		return nil, err
 	}
 	return accounts, nil
-}
-
-func (c *client) SetClientAccountHeader(accountUUID string) {
-	c.headers[meroxaAccountUUIDHeader] = []string{accountUUID}
 }
