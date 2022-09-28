@@ -80,7 +80,7 @@ func (c *client) CreateConnector(ctx context.Context, input *CreateConnectorInpu
 		input.Configuration = map[string]interface{}{"input": input.Input}
 	}
 	input.Metadata = map[string]interface{}{"mx:connectorType": string(input.Type)}
-	resp, err := c.MakeRequest(ctx, http.MethodPost, connectorsBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, connectorsBasePath, input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (c *client) UpdateConnectorStatus(ctx context.Context, nameOrID string, sta
 		State: state,
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, path, cr, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, cr, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func (c *client) UpdateConnectorStatus(ctx context.Context, nameOrID string, sta
 func (c *client) UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error) {
 	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,7 @@ func (c *client) UpdateConnector(ctx context.Context, nameOrID string, input *Up
 func (c *client) ListPipelineConnectors(ctx context.Context, pipelineNameOrID string) ([]*Connector, error) {
 	path := fmt.Sprintf("%s/%s/connectors", pipelinesBasePath, pipelineNameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -177,7 +177,7 @@ func (c *client) ListPipelineConnectors(ctx context.Context, pipelineNameOrID st
 
 // ListConnectors returns an array of Connectors (scoped to the calling user)
 func (c *client) ListConnectors(ctx context.Context) ([]*Connector, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, connectorsBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, connectorsBasePath, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func (c *client) ListConnectors(ctx context.Context) ([]*Connector, error) {
 func (c *client) GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*Connector, error) {
 	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +223,7 @@ func (c *client) GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*
 func (c *client) DeleteConnector(ctx context.Context, nameOrID string) error {
 	path := fmt.Sprintf("%s/%s", connectorsBasePath, nameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, c.headers)
 	if err != nil {
 		return err
 	}

@@ -18,7 +18,7 @@ type SourceBlob struct {
 }
 
 func (c *client) CreateSource(ctx context.Context) (*Source, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, sourcesBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, sourcesBasePath, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}

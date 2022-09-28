@@ -765,7 +765,7 @@ func TestDeployApp(t *testing.T) {
 				appName:    appName,
 			}
 
-			err := d.deployApp(ctx, imageName, gitSha, specVersion)
+			_, err := d.deployApp(ctx, imageName, gitSha, specVersion)
 			if err != nil {
 				require.NotEmpty(t, tc.err)
 				require.Equal(t, tc.err, err)
@@ -982,6 +982,7 @@ func TestWaitForDeployment(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	appName := "unit-test"
 	outputLogs := []string{"just getting started", "going well", "nailed it"}
+	uuid := "does=not-matter"
 
 	tests := []struct {
 		description  string
@@ -995,7 +996,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetLatestDeployment(ctx, appName).
+					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeployed},
 						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil)
@@ -1009,17 +1010,17 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				first := client.EXPECT().
-					GetLatestDeployment(ctx, appName).
+					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
 						OutputLog: null.StringFrom(strings.Join(outputLogs[:1], "\n"))}, nil)
 				second := client.EXPECT().
-					GetLatestDeployment(ctx, appName).
+					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
 						OutputLog: null.StringFrom(strings.Join(outputLogs[:2], "\n"))}, nil)
 				third := client.EXPECT().
-					GetLatestDeployment(ctx, appName).
+					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeployed},
 						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil).AnyTimes()
@@ -1034,7 +1035,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetLatestDeployment(ctx, appName).
+					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
 						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateRollingBackError},
 						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil)
@@ -1049,7 +1050,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetLatestDeployment(ctx, appName).
+					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{}, fmt.Errorf("not today"))
 				return client
 			},
@@ -1067,7 +1068,7 @@ func TestWaitForDeployment(t *testing.T) {
 				appName: appName,
 			}
 
-			err := d.waitForDeployment(ctx)
+			err := d.waitForDeployment(ctx, uuid)
 			require.Equal(t, tc.err, err, "errors are not equal")
 
 			if err != nil {
