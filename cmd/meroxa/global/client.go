@@ -73,27 +73,29 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 			return "", "", fmt.Errorf("meroxa: could not create Meroxa client: %v", err)
 		}
 
-		account, err := m.GetUser(ctx)
+		user, err := m.GetUser(ctx)
 
 		if err != nil {
 			return "", "", fmt.Errorf("meroxa: could not fetch Meroxa user: %v", err)
 		}
 
-		actor = account.Email
-		actorUUID = account.UUID
+		actor = user.Email
+		actorUUID = user.UUID
 
 		// write user information in config file
 		Config.Set(ActorEnv, actor)
 		Config.Set(ActorUUIDEnv, actorUUID)
 
 		// write existing feature flags enabled
-		Config.Set(UserFeatureFlagsEnv, strings.Join(account.Features, " "))
+		Config.Set(UserFeatureFlagsEnv, strings.Join(user.Features, " "))
 
 		// write when was the last time we updated user info
 		Config.Set(UserInfoUpdatedAtEnv, time.Now().UTC())
 
-		err = Config.WriteConfig()
+		// write account uuid
+		Config.Set(UserAccountUUID, nil) // TODO add account ID
 
+		err = Config.WriteConfig()
 		if err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 				err = Config.SafeWriteConfig()

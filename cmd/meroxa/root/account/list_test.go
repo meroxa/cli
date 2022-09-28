@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/spf13/viper"
 
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
@@ -51,6 +52,7 @@ func TestListAccountsExecution(t *testing.T) {
 
 	l := &List{
 		client: client,
+		config: viper.New(),
 		logger: logger,
 	}
 
@@ -61,7 +63,7 @@ func TestListAccountsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AccountsTable(accounts, false)
+	wantLeveledOutput := display.AccountsTable(accounts, "", false)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

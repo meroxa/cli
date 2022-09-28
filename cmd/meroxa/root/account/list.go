@@ -20,6 +20,8 @@ import (
 	"context"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -27,6 +29,7 @@ import (
 
 var (
 	_ builder.CommandWithDocs      = (*List)(nil)
+	_ builder.CommandWithConfig    = (*List)(nil)
 	_ builder.CommandWithClient    = (*List)(nil)
 	_ builder.CommandWithLogger    = (*List)(nil)
 	_ builder.CommandWithExecute   = (*List)(nil)
@@ -39,6 +42,7 @@ type listAccounts interface {
 }
 
 type List struct {
+	config      config.Config
 	client      listAccounts
 	logger      log.Logger
 	hideHeaders bool
@@ -46,6 +50,10 @@ type List struct {
 
 func (l *List) Usage() string {
 	return "list"
+}
+
+func (l *List) Config(cfg config.Config) {
+	l.config = cfg
 }
 
 func (l *List) Docs() builder.Docs {
@@ -67,7 +75,7 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 
 	l.logger.JSON(ctx, accounts)
-	l.logger.Info(ctx, display.AccountsTable(accounts, l.hideHeaders))
+	l.logger.Info(ctx, display.AccountsTable(accounts, l.config.GetString(global.UserAccountUUID), l.hideHeaders))
 
 	return nil
 }

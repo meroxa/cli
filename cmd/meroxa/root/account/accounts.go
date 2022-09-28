@@ -48,5 +48,6 @@ func (*Account) Docs() builder.Docs {
 func (*Account) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&List{}),
+		builder.BuildCobraCommand(&Set{}),
 	}
 }
