@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+const meroxaAccountUUIDHeader = "Meroxa-Account-UUID"
 const accountsPath = "/v1/accounts"
 
 type Account struct {
@@ -16,7 +17,7 @@ type Account struct {
 
 func (c *client) ListAccounts(ctx context.Context) ([]*Account, error) {
 	path := accountsPath
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -32,5 +33,8 @@ func (c *client) ListAccounts(ctx context.Context) ([]*Account, error) {
 		return nil, err
 	}
 	return accounts, nil
+}
 
+func (c *client) SetClientAccountHeader(accountUUID string) {
+	c.headers[meroxaAccountUUIDHeader] = []string{accountUUID}
 }

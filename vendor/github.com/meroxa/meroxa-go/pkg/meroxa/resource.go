@@ -95,7 +95,7 @@ func (c *client) CreateResource(ctx context.Context, input *CreateResourceInput)
 		return nil, err
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, ResourcesBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, ResourcesBasePath, input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (c *client) UpdateResource(ctx context.Context, nameOrID string, input *Upd
 		}
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID), input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID), input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func (c *client) performResourceAction(ctx context.Context, nameOrID string, act
 		Action: action,
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, path, body, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, body, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func (c *client) performResourceAction(ctx context.Context, nameOrID string, act
 
 // ListResources returns an array of Resources (scoped to the calling user)
 func (c *client) ListResources(ctx context.Context) ([]*Resource, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, ResourcesBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, ResourcesBasePath, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -205,7 +205,7 @@ func (c *client) ListResources(ctx context.Context) ([]*Resource, error) {
 func (c *client) GetResourceByNameOrID(ctx context.Context, nameOrID string) (*Resource, error) {
 	path := fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +228,7 @@ func (c *client) GetResourceByNameOrID(ctx context.Context, nameOrID string) (*R
 func (c *client) DeleteResource(ctx context.Context, nameOrID string) error {
 	path := fmt.Sprintf("%s/%s", ResourcesBasePath, nameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, c.headers)
 	if err != nil {
 		return err
 	}

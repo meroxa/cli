@@ -44,6 +44,7 @@ func (e EntityIdentifier) GetNameOrUUID() (string, error) {
 // client represents the Meroxa API Client
 type client struct {
 	requester
+	headers http.Header
 }
 
 type Requester struct {
@@ -58,6 +59,7 @@ type requester interface {
 
 type account interface {
 	ListAccounts(ctx context.Context) ([]*Account, error)
+	SetClientActiveAccount(accountUUID string)
 }
 
 // Client represents the interface to the Meroxa API
@@ -162,7 +164,10 @@ func New(options ...Option) (Client, error) {
 			return nil, err
 		}
 	}
-	c := &client{requester: r}
+	c := &client{
+		requester: r,
+		headers:   make(http.Header),
+	}
 	return c, nil
 }
 
