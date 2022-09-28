@@ -48,7 +48,7 @@ type UpdatePipelineInput struct {
 
 // CreatePipeline provisions a new Pipeline
 func (c *client) CreatePipeline(ctx context.Context, input *CreatePipelineInput) (*Pipeline, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, pipelinesBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, pipelinesBasePath, input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (c *client) CreatePipeline(ctx context.Context, input *CreatePipelineInput)
 func (c *client) UpdatePipeline(ctx context.Context, pipelineNameOrID string, input *UpdatePipelineInput) (*Pipeline, error) {
 	path := fmt.Sprintf("%s/%s", pipelinesBasePath, pipelineNameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPatch, path, input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (c *client) UpdatePipelineStatus(ctx context.Context, pipelineNameOrID stri
 		State: action,
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, path, cr, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, path, cr, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (c *client) UpdatePipelineStatus(ctx context.Context, pipelineNameOrID stri
 
 // ListPipelines returns an array of Pipelines (scoped to the calling user)
 func (c *client) ListPipelines(ctx context.Context) ([]*Pipeline, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, pipelinesBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, pipelinesBasePath, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func (c *client) GetPipelineByName(ctx context.Context, name string) (*Pipeline,
 		"name": {name},
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodGet, pipelinesBasePath, nil, params, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, pipelinesBasePath, nil, params, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +169,7 @@ func (c *client) GetPipelineByName(ctx context.Context, name string) (*Pipeline,
 // GetPipeline returns a Pipeline with the given id
 func (c *client) GetPipeline(ctx context.Context, pipelineID int) (*Pipeline, error) {
 	path := fmt.Sprintf("%s/%d", pipelinesBasePath, pipelineID)
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func (c *client) GetPipeline(ctx context.Context, pipelineID int) (*Pipeline, er
 func (c *client) DeletePipeline(ctx context.Context, nameOrID string) error {
 	path := fmt.Sprintf("%s/%s", pipelinesBasePath, nameOrID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, c.headers)
 	if err != nil {
 		return err
 	}

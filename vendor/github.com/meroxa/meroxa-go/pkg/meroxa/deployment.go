@@ -46,7 +46,25 @@ type CreateDeploymentInput struct {
 }
 
 func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/latest", applicationsBasePath, appIdentifier), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/latest", applicationsBasePath, appIdentifier), nil, nil, c.headers)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = handleAPIErrors(resp); err != nil {
+		return nil, err
+	}
+
+	var d *Deployment
+	if err = json.NewDecoder(resp.Body).Decode(&d); err != nil {
+		return nil, err
+	}
+
+	return d, nil
+}
+
+func (c *client) GetDeployment(ctx context.Context, appIdentifier string, depUUID string) (*Deployment, error) {
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/%s", applicationsBasePath, appIdentifier, depUUID), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +88,7 @@ func (c *client) CreateDeployment(ctx context.Context, input *CreateDeploymentIn
 		return nil, err
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/deployments", applicationsBasePath, appIdentifier), input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/deployments", applicationsBasePath, appIdentifier), input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}

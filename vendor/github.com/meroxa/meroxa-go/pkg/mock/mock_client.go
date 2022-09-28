@@ -90,6 +90,18 @@ func (mr *MockaccountMockRecorder) ListAccounts(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAccounts", reflect.TypeOf((*Mockaccount)(nil).ListAccounts), ctx)
 }
 
+// SetClientAccountHeader mocks base method.
+func (m *Mockaccount) SetClientAccountHeader(accountUUID string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetClientAccountHeader", accountUUID)
+}
+
+// SetClientAccountHeader indicates an expected call of SetClientAccountHeader.
+func (mr *MockaccountMockRecorder) SetClientAccountHeader(accountUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetClientAccountHeader", reflect.TypeOf((*Mockaccount)(nil).SetClientAccountHeader), accountUUID)
+}
+
 // MockClient is a mock of Client interface.
 type MockClient struct {
 	ctrl     *gomock.Controller
@@ -467,6 +479,21 @@ func (mr *MockClientMockRecorder) GetConnectorLogs(ctx, nameOrID interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorLogs", reflect.TypeOf((*MockClient)(nil).GetConnectorLogs), ctx, nameOrID)
 }
 
+// GetDeployment mocks base method.
+func (m *MockClient) GetDeployment(ctx context.Context, appIdentifier, depUUID string) (*meroxa.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDeployment", ctx, appIdentifier, depUUID)
+	ret0, _ := ret[0].(*meroxa.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDeployment indicates an expected call of GetDeployment.
+func (mr *MockClientMockRecorder) GetDeployment(ctx, appIdentifier, depUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeployment", reflect.TypeOf((*MockClient)(nil).GetDeployment), ctx, appIdentifier, depUUID)
+}
+
 // GetEndpoint mocks base method.
 func (m *MockClient) GetEndpoint(ctx context.Context, name string) (*meroxa.Endpoint, error) {
 	m.ctrl.T.Helper()
@@ -810,6 +837,18 @@ func (m *MockClient) RotateTunnelKeyForResource(ctx context.Context, nameOrID st
 func (mr *MockClientMockRecorder) RotateTunnelKeyForResource(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RotateTunnelKeyForResource", reflect.TypeOf((*MockClient)(nil).RotateTunnelKeyForResource), ctx, nameOrID)
+}
+
+// SetClientAccountHeader mocks base method.
+func (m *MockClient) SetClientAccountHeader(accountUUID string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetClientAccountHeader", accountUUID)
+}
+
+// SetClientAccountHeader indicates an expected call of SetClientAccountHeader.
+func (mr *MockClientMockRecorder) SetClientAccountHeader(accountUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetClientAccountHeader", reflect.TypeOf((*MockClient)(nil).SetClientAccountHeader), accountUUID)
 }
 
 // UpdateConnector mocks base method.

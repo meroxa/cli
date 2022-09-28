@@ -40,7 +40,7 @@ type CreateFunctionInput struct {
 }
 
 func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, functionsBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, functionsBasePath, input, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (c *client) CreateFunction(ctx context.Context, input *CreateFunctionInput)
 func (c *client) GetFunction(ctx context.Context, nameOrUUID string) (*Function, error) {
 	path := fmt.Sprintf("%s/%s", functionsBasePath, nameOrUUID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (c *client) GetFunction(ctx context.Context, nameOrUUID string) (*Function,
 }
 
 func (c *client) ListFunctions(ctx context.Context) ([]*Function, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, functionsBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, functionsBasePath, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (c *client) ListFunctions(ctx context.Context) ([]*Function, error) {
 func (c *client) DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error) {
 	path := fmt.Sprintf("%s/%s", functionsBasePath, nameOrUUID)
 
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, path, nil, nil, c.headers)
 	if err != nil {
 		return nil, err
 	}
