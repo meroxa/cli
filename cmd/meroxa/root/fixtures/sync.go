@@ -23,6 +23,8 @@ var (
 	_ builder.CommandWithExecute = (*Sync)(nil)
 )
 
+const FixtureFilePermissions = 0644
+
 type introspectResourceClient interface {
 	IntrospectResource(ctx context.Context, nameOrUUID string) (*meroxa.ResourceIntrospection, error)
 }
@@ -127,7 +129,6 @@ type Samples map[string][]string
 func filterCollections(collections []string, samples Samples) Samples {
 	filteredCollections := make(map[string][]string)
 	for _, c := range collections {
-
 		if sample, ok := samples[c]; ok {
 			filteredCollections[c] = sample
 		}
@@ -155,5 +156,5 @@ func writeFixtures(path string, samples Samples) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, jSamples, 0644)
+	return os.WriteFile(path, jSamples, FixtureFilePermissions)
 }
