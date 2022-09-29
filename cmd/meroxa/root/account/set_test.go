@@ -35,7 +35,7 @@ func TestSetAccountsExecution(t *testing.T) {
 		client: client,
 		config: cfg,
 		logger: logger,
-		args:   struct{ NameOrUUID string }{a.UUID},
+		args:   struct{ UUID string }{a.UUID},
 	}
 
 	err := s.Execute(ctx)
