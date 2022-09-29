@@ -41,6 +41,6 @@ func (*Fixtures) Aliases() []string {
 
 func (*Fixtures) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		builder.BuildCobraCommand(&Fetch{}),
+		builder.BuildCobraCommand(&Sync{}),
 	}
 }
