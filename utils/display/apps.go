@@ -94,7 +94,7 @@ func AppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors 
 	return output
 }
 
-func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*AppExtendedConnector, functions []*meroxa.Function) string {
+func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*AppExtendedConnector, functions []*meroxa.Function, deployment *meroxa.Deployment) string {
 	var r meroxa.ApplicationResource
 	var subTable string
 
@@ -132,8 +132,12 @@ func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*AppExten
 
 	for _, f := range functions {
 		if f.Logs != "" {
-			subTable += fmt.Sprintf("\n%s (function)\n\t%s\n", r.Name.String, f.Logs)
+			subTable += fmt.Sprintf("\n%s (function)\n\t%s\n", f.Name, f.Logs)
 		}
+	}
+
+	if deployment != nil && deployment.Status.Details.Valid {
+		subTable += fmt.Sprintf("\n%s (deployment)\n\t%s\n", deployment.UUID, deployment.Status.Details.String)
 	}
 
 	return subTable
