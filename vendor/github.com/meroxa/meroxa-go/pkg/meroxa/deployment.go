@@ -46,7 +46,7 @@ type CreateDeploymentInput struct {
 }
 
 func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/latest", applicationsBasePath, appIdentifier), nil, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/latest", applicationsBasePath, appIdentifier), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (c *client) CreateDeployment(ctx context.Context, input *CreateDeploymentIn
 		return nil, err
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/deployments", applicationsBasePath, appIdentifier), input, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/deployments", applicationsBasePath, appIdentifier), input, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ const (
 
 func (c *client) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", connectorLogsBasePath, nameOrID)
-	headers := c.headers.Clone()
+	headers := make(http.Header)
 	headers["Content-Type"] = []string{textContentType}
 	headers["Accept"] = []string{textContentType}
 	return c.MakeRequest(ctx, http.MethodGet, path, nil, nil, headers)
@@ -22,7 +22,7 @@ func (c *client) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.R
 
 func (c *client) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", functionLogsBasePath, nameOrUUID)
-	headers := c.headers.Clone()
+	headers := make(http.Header)
 	headers["Content-Type"] = []string{textContentType}
 	headers["Accept"] = []string{textContentType}
 	return c.MakeRequest(ctx, http.MethodGet, path, nil, nil, headers)
@@ -30,7 +30,7 @@ func (c *client) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.
 
 func (c *client) GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/logs", buildLogsBasePath, uuid)
-	headers := c.headers.Clone()
+	headers := make(http.Header)
 	headers["Content-Type"] = []string{textContentType}
 	headers["Accept"] = []string{textContentType}
 	return c.MakeRequest(ctx, http.MethodGet, path, nil, nil, headers)
