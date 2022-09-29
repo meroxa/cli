@@ -15,19 +15,19 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Fetch)(nil)
-	_ builder.CommandWithArgs    = (*Fetch)(nil)
-	_ builder.CommandWithFlags   = (*Fetch)(nil)
-	_ builder.CommandWithClient  = (*Fetch)(nil)
-	_ builder.CommandWithLogger  = (*Fetch)(nil)
-	_ builder.CommandWithExecute = (*Fetch)(nil)
+	_ builder.CommandWithDocs    = (*Sync)(nil)
+	_ builder.CommandWithArgs    = (*Sync)(nil)
+	_ builder.CommandWithFlags   = (*Sync)(nil)
+	_ builder.CommandWithClient  = (*Sync)(nil)
+	_ builder.CommandWithLogger  = (*Sync)(nil)
+	_ builder.CommandWithExecute = (*Sync)(nil)
 )
 
 type introspectResourceClient interface {
 	IntrospectResource(ctx context.Context, nameOrUUID string) (*meroxa.ResourceIntrospection, error)
 }
 
-type Fetch struct {
+type Sync struct {
 	client introspectResourceClient
 	logger log.Logger
 
@@ -41,23 +41,23 @@ type Fetch struct {
 	}
 }
 
-func (f *Fetch) Usage() string {
+func (f *Sync) Usage() string {
 	return "fetch [NAMEorUUID]"
 }
 
-func (f *Fetch) Docs() builder.Docs {
+func (f *Sync) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Fetch fixtures",
-		Long: "Fetch fixtures retrieves sample data records from the provided resource and makes them " +
+		Short: "Sync fixtures",
+		Long: "Sync fixtures retrieves sample data records from the provided resource and makes them " +
 			"available in the \"/fixtures\" sub-directory",
 	}
 }
 
-func (f *Fetch) Flags() []builder.Flag {
+func (f *Sync) Flags() []builder.Flag {
 	return builder.BuildFlags(&f.flags)
 }
 
-func (f *Fetch) Execute(ctx context.Context) error {
+func (f *Sync) Execute(ctx context.Context) error {
 	resourceName := f.args.NameOrUUID
 	f.logger.Infof(ctx, "Fetching fixtures for %s...", resourceName)
 	ri, err := f.client.IntrospectResource(ctx, resourceName)
@@ -105,15 +105,15 @@ func (f *Fetch) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (f *Fetch) Client(client meroxa.Client) {
+func (f *Sync) Client(client meroxa.Client) {
 	f.client = client
 }
 
-func (f *Fetch) Logger(logger log.Logger) {
+func (f *Sync) Logger(logger log.Logger) {
 	f.logger = logger
 }
 
-func (f *Fetch) ParseArgs(args []string) error {
+func (f *Sync) ParseArgs(args []string) error {
 	if len(args) < 1 {
 		return errors.New("requires function name")
 	}
