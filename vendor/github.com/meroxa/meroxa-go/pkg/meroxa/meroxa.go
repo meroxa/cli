@@ -10,8 +10,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/volatiletech/null/v8"
 )
 
 const (
@@ -20,23 +18,17 @@ const (
 	textContentType = "text/plain"
 )
 
-// EnvironmentIdentifier represents either value as a unique key for a Meroxa Environment
-type EnvironmentIdentifier struct {
+// EntityIdentifier represents one or both values for a Meroxa Entity
+type EntityIdentifier struct {
 	UUID string `json:"uuid,omitempty"`
 	Name string `json:"name,omitempty"`
 }
 
-// EntityIdentifier represents one or both values for a Meroxa Entity
-type EntityIdentifier struct {
-	UUID null.String `json:"uuid,omitempty"`
-	Name null.String `json:"name,omitempty"`
-}
-
 func (e EntityIdentifier) GetNameOrUUID() (string, error) {
-	if e.Name.Valid {
-		return e.Name.String, nil
-	} else if e.UUID.Valid {
-		return e.UUID.String, nil
+	if e.Name != "" {
+		return e.Name, nil
+	} else if e.UUID != "" {
+		return e.UUID, nil
 	}
 	return "", fmt.Errorf("identifier has neither name or UUID")
 }
@@ -55,6 +47,7 @@ type Requester struct {
 
 type requester interface {
 	MakeRequest(ctx context.Context, method string, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error)
+	AddHeader(key string, value string)
 }
 
 type account interface {
@@ -68,9 +61,10 @@ type Client interface {
 
 	CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error)
 	CreateApplicationV2(ctx context.Context, input *CreateApplicationInput) (*Application, error)
-	DeleteApplication(ctx context.Context, name string) error
-	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
-	GetApplication(ctx context.Context, name string) (*Application, error)
+	DeleteApplication(ctx context.Context, nameOrUUID string) error
+	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
+	GetApplication(ctx context.Context, nameOrUUID string) (*Application, error)
+	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error)
 	ListApplications(ctx context.Context) ([]*Application, error)
 
 	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
@@ -94,11 +88,6 @@ type Client interface {
 	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	ListFunctions(ctx context.Context) ([]*Function, error)
 	DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error)
-
-	CreateEndpoint(ctx context.Context, input *CreateEndpointInput) error
-	DeleteEndpoint(ctx context.Context, name string) error
-	GetEndpoint(ctx context.Context, name string) (*Endpoint, error)
-	ListEndpoints(ctx context.Context) ([]Endpoint, error)
 
 	CreateEnvironment(ctx context.Context, input *CreateEnvironmentInput) (*Environment, error)
 	DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error)
@@ -126,8 +115,10 @@ type Client interface {
 	IntrospectResource(ctx context.Context, nameOrID string) (*ResourceIntrospection, error)
 
 	ListResourceTypes(ctx context.Context) ([]string, error)
+	ListResourceTypesV2(ctx context.Context) ([]ResourceType, error)
 
 	CreateSource(ctx context.Context) (*Source, error)
+	CreateSourceV2(ctx context.Context, input *CreateSourceInputV2) (*Source, error)
 
 	ListTransforms(ctx context.Context) ([]*Transform, error)
 
@@ -170,6 +161,18 @@ func New(options ...Option) (Client, error) {
 	return c, nil
 }
 
+// AddHeader allows for setting a generic header to use for requests.
+func (c *client) AddHeader(key, value string) {
+	c.requester.AddHeader(key, value)
+}
+
+func (r *Requester) AddHeader(key, value string) {
+	if len(r.headers) == 0 {
+		r.headers = make(http.Header)
+	}
+	r.headers.Add(key, value)
+}
+
 func (r *Requester) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error) {
 	req, err := r.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
@@ -205,6 +208,9 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body in
 	}
 
 	// add global headers to request
+	if len(r.headers) > 0 {
+		req.Header = r.headers
+	}
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", r.userAgent)

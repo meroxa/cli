@@ -33,6 +33,7 @@ type Credentials struct {
 	ClientCert    string `json:"client_cert"`
 	ClientCertKey string `json:"client_cert_key"`
 	UseSSL        bool   `json:"ssl"`
+	Token         string `json:"token"`
 }
 
 // CreateResourceInput represents the input for a Meroxa Resource type we're creating within the Meroxa API
@@ -42,7 +43,7 @@ type CreateResourceInput struct {
 	Metadata    map[string]interface{}  `json:"metadata,omitempty"`
 	Name        string                  `json:"name,omitempty"`
 	SSHTunnel   *ResourceSSHTunnelInput `json:"ssh_tunnel,omitempty"`
-	Type        ResourceType            `json:"type"`
+	Type        ResourceTypeName        `json:"type"`
 	URL         string                  `json:"url"`
 }
 
@@ -65,7 +66,7 @@ type ResourceStatus struct {
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
 	UUID        string                 `json:"uuid"`
-	Type        ResourceType           `json:"type"`
+	Type        ResourceTypeName       `json:"type"`
 	Name        string                 `json:"name"`
 	URL         string                 `json:"url"`
 	Credentials *Credentials           `json:"credentials,omitempty"`
@@ -278,6 +279,9 @@ func (c *client) DeleteResource(ctx context.Context, nameOrID string) error {
 
 // Reassemble URL in order to properly encode username and password
 func encodeURLCreds(u string) (string, error) {
+	if u == "" {
+		return "", nil
+	}
 	s1 := strings.SplitAfter(u, "://")
 	scheme := s1[0] // pull out scheme
 	if len(s1) == 1 {

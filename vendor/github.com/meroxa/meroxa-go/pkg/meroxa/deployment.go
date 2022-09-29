@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/volatiletech/null/v8"
 )
 
 type DeploymentState string
@@ -22,31 +20,30 @@ const (
 
 type DeploymentStatus struct {
 	State   DeploymentState `json:"state"`
-	Details null.String     `json:"details,omitempty"`
+	Details string          `json:"details,omitempty"`
 }
 
 type Deployment struct {
-	UUID        string           `json:"uuid"`
-	GitSha      string           `json:"git_sha"`
-	Application EntityIdentifier `json:"application"`
-	OutputLog   null.String      `json:"output_log,omitempty"`
-	CreatedAt   time.Time        `json:"created_at"`
-	DeletedAt   time.Time        `json:"deleted_at,omitempty"`
-	Status      DeploymentStatus `json:"status"`
-	Spec        null.String      `json:"spec,omitempty"`
-	SpecVersion null.String      `json:"spec_version,omitempty"`
-	CreatedBy   string           `json:"created_by"`
+	UUID        string                 `json:"uuid"`
+	GitSha      string                 `json:"git_sha"`
+	Application EntityIdentifier       `json:"application"`
+	CreatedAt   time.Time              `json:"created_at"`
+	DeletedAt   time.Time              `json:"deleted_at,omitempty"`
+	Status      DeploymentStatus       `json:"status"`
+	Spec        map[string]interface{} `json:"spec,omitempty"`
+	SpecVersion string                 `json:"spec_version,omitempty"`
+	CreatedBy   string                 `json:"created_by"`
 }
 
 type CreateDeploymentInput struct {
-	GitSha      string           `json:"git_sha"`
-	Application EntityIdentifier `json:"application"`
-	Spec        null.String      `json:"spec,omitempty"`
-	SpecVersion null.String      `json:"spec_version,omitempty"`
+	GitSha      string                 `json:"git_sha"`
+	Application EntityIdentifier       `json:"application"`
+	Spec        map[string]interface{} `json:"spec,omitempty"`
+	SpecVersion string                 `json:"spec_version,omitempty"`
 }
 
 func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/latest", applicationsBasePath, appIdentifier), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/latest", applicationsBasePathV1, appIdentifier), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +61,7 @@ func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) 
 }
 
 func (c *client) GetDeployment(ctx context.Context, appIdentifier string, depUUID string) (*Deployment, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/%s", applicationsBasePath, appIdentifier, depUUID), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/%s", applicationsBasePathV1, appIdentifier, depUUID), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +85,7 @@ func (c *client) CreateDeployment(ctx context.Context, input *CreateDeploymentIn
 		return nil, err
 	}
 
-	resp, err := c.MakeRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/deployments", applicationsBasePath, appIdentifier), input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, fmt.Sprintf("%s/%s/deployments", applicationsBasePathV1, appIdentifier), input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
