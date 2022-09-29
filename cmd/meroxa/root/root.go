@@ -18,8 +18,9 @@ package root
 
 import (
 	"context"
-	"github.com/meroxa/cli/cmd/meroxa/root/fixtures"
 	"os"
+
+	"github.com/meroxa/cli/cmd/meroxa/root/fixtures"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
