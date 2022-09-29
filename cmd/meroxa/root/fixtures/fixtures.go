@@ -2,6 +2,7 @@ package fixtures
 
 import (
 	"fmt"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/spf13/cobra"
 )

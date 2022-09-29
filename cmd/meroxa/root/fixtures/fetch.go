@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 var (
@@ -57,7 +58,9 @@ func (f *Fetch) Flags() []builder.Flag {
 }
 
 func (f *Fetch) Execute(ctx context.Context) error {
-	ri, err := f.client.IntrospectResource(ctx, f.args.NameOrUUID)
+	resourceName := f.args.NameOrUUID
+	f.logger.Infof(ctx, "Fetching fixtures for %s...", resourceName)
+	ri, err := f.client.IntrospectResource(ctx, resourceName)
 	if err != nil {
 		return err
 	}
@@ -87,19 +90,17 @@ func (f *Fetch) Execute(ctx context.Context) error {
 
 	// iterate through resources and write samples to the paths listed
 	for r, c := range appConfig.Resources {
-		if r == f.args.NameOrUUID {
+		if r == resourceName {
 			pathToFixtureFile := filepath.Join(pwd, c)
-			f.logger.Infof(ctx, "writing samples to %s", pathToFixtureFile)
+			f.logger.Infof(ctx, "Writing fixtures to %s", pathToFixtureFile)
 			err := writeFixtures(pathToFixtureFile, samples)
 			if err != nil {
 				return err
 			}
 		}
 	}
-	// check if the fixtures directory exists at the path provided
 
-	f.logger.Info(ctx, "successfully fetched fixtures")
-	f.logger.JSON(ctx, "successfully fetched fixtures")
+	f.logger.Info(ctx, "Successfully fetched fixtures")
 
 	return nil
 }
