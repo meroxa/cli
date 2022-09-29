@@ -28,7 +28,7 @@ type Build struct {
 }
 
 func (c *client) GetBuild(ctx context.Context, uuid string) (*Build, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", buildsBasePath, uuid), nil, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", buildsBasePath, uuid), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *client) GetBuild(ctx context.Context, uuid string) (*Build, error) {
 }
 
 func (c *client) CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, buildsBasePath, input, nil, c.headers)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, buildsBasePath, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
