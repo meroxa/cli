@@ -207,12 +207,12 @@ func (c *client) IntrospectResource(ctx context.Context, nameOrUUID string) (*Re
 		return nil, err
 	}
 
-	var ri *ResourceIntrospection
+	var ri ResourceIntrospection
 	err = json.NewDecoder(resp.Body).Decode(&ri)
 	if err != nil {
 		return nil, err
 	}
-	return ri, nil
+	return &ri, nil
 }
 
 // ListResources returns an array of Resources (scoped to the calling user)

@@ -63,6 +63,24 @@ func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) 
 	return d, nil
 }
 
+func (c *client) GetDeployment(ctx context.Context, appIdentifier string, depUUID string) (*Deployment, error) {
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/deployments/%s", applicationsBasePath, appIdentifier, depUUID), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = handleAPIErrors(resp); err != nil {
+		return nil, err
+	}
+
+	var d *Deployment
+	if err = json.NewDecoder(resp.Body).Decode(&d); err != nil {
+		return nil, err
+	}
+
+	return d, nil
+}
+
 func (c *client) CreateDeployment(ctx context.Context, input *CreateDeploymentInput) (*Deployment, error) {
 	appIdentifier, err := input.Application.GetNameOrUUID()
 

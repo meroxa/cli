@@ -467,6 +467,21 @@ func (mr *MockClientMockRecorder) GetConnectorLogs(ctx, nameOrID interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorLogs", reflect.TypeOf((*MockClient)(nil).GetConnectorLogs), ctx, nameOrID)
 }
 
+// GetDeployment mocks base method.
+func (m *MockClient) GetDeployment(ctx context.Context, appIdentifier, depUUID string) (*meroxa.Deployment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDeployment", ctx, appIdentifier, depUUID)
+	ret0, _ := ret[0].(*meroxa.Deployment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDeployment indicates an expected call of GetDeployment.
+func (mr *MockClientMockRecorder) GetDeployment(ctx, appIdentifier, depUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeployment", reflect.TypeOf((*MockClient)(nil).GetDeployment), ctx, appIdentifier, depUUID)
+}
+
 // GetEndpoint mocks base method.
 func (m *MockClient) GetEndpoint(ctx context.Context, name string) (*meroxa.Endpoint, error) {
 	m.ctrl.T.Helper()

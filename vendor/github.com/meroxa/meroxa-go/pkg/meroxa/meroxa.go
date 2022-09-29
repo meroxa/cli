@@ -49,6 +49,7 @@ type client struct {
 type Requester struct {
 	baseURL    *url.URL
 	httpClient *http.Client
+	headers    http.Header
 	userAgent  string
 }
 
@@ -84,6 +85,7 @@ type Client interface {
 	UpdateConnector(ctx context.Context, nameOrID string, input *UpdateConnectorInput) (*Connector, error)
 	UpdateConnectorStatus(ctx context.Context, nameOrID string, state Action) (*Connector, error)
 
+	GetDeployment(ctx context.Context, appIdentifier string, depUUID string) (*Deployment, error)
 	GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error)
 	CreateDeployment(ctx context.Context, input *CreateDeploymentInput) (*Deployment, error)
 
@@ -162,7 +164,9 @@ func New(options ...Option) (Client, error) {
 			return nil, err
 		}
 	}
-	c := &client{requester: r}
+	c := &client{
+		requester: r,
+	}
 	return c, nil
 }
 
