@@ -36,13 +36,13 @@ type Sync struct {
 	}
 
 	flags struct {
-		Collections string `long:"collections" short:"c" usage:"fetch --collections table1,table2"`
-		Path        string `long:"path" short:"p" usage:"fetch --path ./foo/bar"`
+		Collections string `long:"collections" short:"c" usage:"--collections table1,table2"`
+		Path        string `long:"path" short:"p" usage:"--path ./foo/bar"`
 	}
 }
 
 func (f *Sync) Usage() string {
-	return "fetch [NAMEorUUID]"
+	return "sync [NAMEorUUID]"
 }
 
 func (f *Sync) Docs() builder.Docs {
