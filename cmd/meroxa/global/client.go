@@ -68,13 +68,11 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		defer cancel()
 
 		m, err := NewClient()
-
 		if err != nil {
 			return "", "", fmt.Errorf("meroxa: could not create Meroxa client: %v", err)
 		}
 
 		user, err := m.GetUser(ctx)
-
 		if err != nil {
 			return "", "", fmt.Errorf("meroxa: could not fetch Meroxa user: %v", err)
 		}
@@ -91,9 +89,6 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 
 		// write when was the last time we updated user info
 		Config.Set(UserInfoUpdatedAtEnv, time.Now().UTC())
-
-		// write account uuid
-		Config.Set(UserAccountUUID, nil) // TODO add account ID
 
 		err = Config.WriteConfig()
 		if err != nil {
@@ -120,9 +115,22 @@ func GetUserToken() (accessToken, refreshToken string, err error) {
 	return accessToken, refreshToken, nil
 }
 
+func SetAccountUUID(client meroxa.Client) error {
+	// loading current user accounts
+	accounts, err := client.ListAccounts(context.Background())
+	if err != nil {
+		return fmt.Errorf("meroxa: could not fetch user accounts: %v", err)
+	}
+	if len(accounts) <= 0 {
+		return fmt.Errorf("meroxa: no accounts created for this account, please create them in the website")
+	}
+	// write account uuid
+	Config.Set(UserAccountUUID, accounts[0].UUID) // TODO add account ID
+	return nil
+}
+
 func NewClient() (meroxa.Client, error) {
 	accessToken, refreshToken, err := GetUserToken()
-
 	if err != nil {
 		return nil, err
 	}
@@ -153,6 +161,17 @@ func NewClient() (meroxa.Client, error) {
 		onTokenRefreshed,
 	))
 
+	// If account is not set, set account as the default account
+	if Config.GetString(UserAccountUUID) == "" {
+		client, err := meroxa.New(options...)
+		if err != nil {
+			return nil, err
+		}
+		if err = SetAccountUUID(client); err != nil {
+			return nil, err
+		}
+	}
+	options = append(options, meroxa.WithAccountUUID(Config.GetString(UserAccountUUID)))
 	return meroxa.New(options...)
 }
 

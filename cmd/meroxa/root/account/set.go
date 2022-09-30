@@ -43,7 +43,7 @@ type Set struct {
 	config config.Config
 
 	args struct {
-		NameOrUUID string
+		UUID string
 	}
 }
 
@@ -53,7 +53,7 @@ func (s *Set) Usage() string {
 
 func (s *Set) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Set current active account connector",
+		Short: "Set active account",
 	}
 }
 
@@ -74,15 +74,15 @@ func (s *Set) Execute(ctx context.Context) error {
 	found := false
 	uuid := ""
 	for _, account := range accounts {
-		if s.args.NameOrUUID == account.Name ||
-			s.args.NameOrUUID == account.UUID {
+		if s.args.UUID == account.Name ||
+			s.args.UUID == account.UUID {
 			found = true
 			uuid = account.UUID
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("'%s' is an invalid account name or UUID", s.args.NameOrUUID)
+		return fmt.Errorf("'%s' is an invalid account UUID", s.args.UUID)
 	}
 	s.config.Set(global.UserAccountUUID, uuid)
 
@@ -98,6 +98,6 @@ func (s *Set) ParseArgs(args []string) error {
 		return errors.New("requires account UUID or name")
 	}
 
-	s.args.NameOrUUID = args[0]
+	s.args.UUID = args[0]
 	return nil
 }
