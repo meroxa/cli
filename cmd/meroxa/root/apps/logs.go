@@ -74,9 +74,9 @@ func (l *Logs) Docs() builder.Docs {
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	app, err := l.client.GetApplication(ctx, l.args.NameOrUUID)
-	if err != nil {
-		return err
+	app, getErr := l.client.GetApplication(ctx, l.args.NameOrUUID)
+	if getErr != nil {
+		return getErr
 	}
 
 	connectors := make([]*display.AppExtendedConnector, 0)

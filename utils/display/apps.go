@@ -94,7 +94,11 @@ func AppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors 
 	return output
 }
 
-func AppLogsTable(resources []meroxa.ApplicationResource, connectors []*AppExtendedConnector, functions []*meroxa.Function, deployment *meroxa.Deployment) string {
+func AppLogsTable(
+	resources []meroxa.ApplicationResource,
+	connectors []*AppExtendedConnector,
+	functions []*meroxa.Function,
+	deployment *meroxa.Deployment) string {
 	var r meroxa.ApplicationResource
 	var subTable string
 
