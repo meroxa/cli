@@ -52,7 +52,7 @@ type deployApplicationClient interface {
 	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
 	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
-	GetLatestDeployment(ctx context.Context, appName string) (*meroxa.Deployment, error)
+	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
@@ -242,11 +242,11 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	}
 }
 
-func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) error {
+func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
 	deploymentSpec, err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if specVersion != "" {
 		input := &meroxa.CreateDeploymentInput{
@@ -255,9 +255,9 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 			SpecVersion: null.StringFrom(specVersion),
 			Spec:        null.StringFrom(deploymentSpec),
 		}
-		_, err = d.client.CreateDeployment(ctx, input)
+		return d.client.CreateDeployment(ctx, input)
 	}
-	return err
+	return nil, err
 }
 
 func (d *Deploy) checkPreIRApplication(ctx context.Context) (*meroxa.Application, error) {
@@ -608,7 +608,7 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 	return appName
 }
 
-func (d *Deploy) waitForDeployment(ctx context.Context) error {
+func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	logs := []string{}
 
 	cctx, cancel := context.WithTimeout(ctx, durationToWaitForDeployment)
@@ -621,7 +621,7 @@ func (d *Deploy) waitForDeployment(ctx context.Context) error {
 		select {
 		case <-t.C:
 			var deployment *meroxa.Deployment
-			deployment, err := d.client.GetLatestDeployment(ctx, d.appName)
+			deployment, err := d.client.GetDeployment(ctx, d.appName, depUUID)
 			if err != nil {
 				return err
 			}
@@ -714,14 +714,15 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
+	var deployment *meroxa.Deployment
+	if deployment, err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
 		return err
 	}
 
 	if d.specVersion == "" {
 		app, err = d.checkPreIRApplication(ctx)
 	} else {
-		err = d.waitForDeployment(ctx)
+		err = d.waitForDeployment(ctx, deployment.UUID)
 	}
 	if err != nil {
 		return err
