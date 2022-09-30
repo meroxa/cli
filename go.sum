@@ -536,8 +536,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20220928221425-7822027a0998 h1:2qiRoXIoUUuQC3GM0feyT5yLJoRkvy72f00sMxsngac=
 github.com/meroxa/meroxa-go v0.0.0-20220928221425-7822027a0998/go.mod h1:p61AAKVuiWaLyOuVSyFqvubsmiCG5Xcd1LGzV6A7aJ0=
-github.com/meroxa/turbine-go v0.0.0-20220922002215-28ab10576a74 h1:3UCJsZ2bAjyQYueCd2wj73li2qYqyl81V3EOqSgoal4=
-github.com/meroxa/turbine-go v0.0.0-20220922002215-28ab10576a74/go.mod h1:+N3q1m9H+Ko5owCgWmPuQ/eUbP+x9BzV5z9qgXRjAjA=
+github.com/meroxa/turbine-go v0.0.0-20220923153128-39758280fd07 h1:CWz59c7/VBA3CyfQP1jvRovZs3L97z2pXQ3Y8TKr+cQ=
+github.com/meroxa/turbine-go v0.0.0-20220923153128-39758280fd07/go.mod h1:oOFZFDs/Vt6bpSLfBtcs7mAL+DuX63nSoyWBVMzbYIM=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
