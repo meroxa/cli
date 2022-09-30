@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -605,20 +604,20 @@ func TestValidateCollections(t *testing.T) {
 					Resources: []meroxa.ApplicationResource{
 						{
 							EntityIdentifier: meroxa.EntityIdentifier{
-								Name: null.StringFrom("pg"),
+								Name: "pg",
 							},
 							Collection: meroxa.ResourceCollection{
-								Name:        null.StringFrom("anonymous"),
-								Destination: null.StringFrom("true"),
+								Name:        "anonymous",
+								Destination: "true",
 							},
 						},
 						{
 							EntityIdentifier: meroxa.EntityIdentifier{
-								Name: null.StringFrom("source"),
+								Name: "source",
 							},
 							Collection: meroxa.ResourceCollection{
-								Name:   null.StringFrom("sequences"),
-								Source: null.StringFrom("true"),
+								Name:   "sequences",
+								Source: "true",
 							},
 						},
 					},
@@ -737,10 +736,10 @@ func TestDeployApp(t *testing.T) {
 
 				client.EXPECT().
 					CreateDeployment(ctx, &meroxa.CreateDeploymentInput{
-						Application: meroxa.EntityIdentifier{Name: null.StringFrom(appName)},
+						Application: meroxa.EntityIdentifier{Name: appName},
 						GitSha:      gitSha,
-						SpecVersion: null.StringFrom(specVersion),
-						Spec:        null.StringFrom(spec),
+						SpecVersion: specVersion,
+						Spec:        spec,
 					}).
 					Return(&meroxa.Deployment{}, err)
 				return client
@@ -998,8 +997,11 @@ func TestWaitForDeployment(t *testing.T) {
 				client.EXPECT().
 					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
-						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeployed},
-						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil)
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeployed,
+							Details: strings.Join(outputLogs, "\n"),
+						},
+					}, nil)
 				return client
 			},
 			err: nil,
@@ -1012,18 +1014,27 @@ func TestWaitForDeployment(t *testing.T) {
 				first := client.EXPECT().
 					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
-						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
-						OutputLog: null.StringFrom(strings.Join(outputLogs[:1], "\n"))}, nil)
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeploying,
+							Details: strings.Join(outputLogs[:1], "\n"),
+						},
+					}, nil)
 				second := client.EXPECT().
 					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
-						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeploying},
-						OutputLog: null.StringFrom(strings.Join(outputLogs[:2], "\n"))}, nil)
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeploying,
+							Details: strings.Join(outputLogs[:2], "\n"),
+						},
+					}, nil)
 				third := client.EXPECT().
 					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
-						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateDeployed},
-						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil).AnyTimes()
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeployed,
+							Details: strings.Join(outputLogs, "\n"),
+						},
+					}, nil).AnyTimes()
 				gomock.InOrder(first, second, third)
 				return client
 			},
@@ -1037,8 +1048,11 @@ func TestWaitForDeployment(t *testing.T) {
 				client.EXPECT().
 					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
-						Status:    meroxa.DeploymentStatus{State: meroxa.DeploymentStateRollingBackError},
-						OutputLog: null.StringFrom(strings.Join(outputLogs, "\n"))}, nil)
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateRollingBackError,
+							Details: strings.Join(outputLogs, "\n"),
+						},
+					}, nil)
 				return client
 			},
 			noLogs: false,

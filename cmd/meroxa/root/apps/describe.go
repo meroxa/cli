@@ -75,21 +75,21 @@ func (d *Describe) Execute(ctx context.Context) error {
 	functions := make([]*meroxa.Function, 0)
 
 	for _, rr := range app.Resources {
-		resource, err := d.client.GetResourceByNameOrID(ctx, rr.Name.String)
+		resource, err := d.client.GetResourceByNameOrID(ctx, rr.Name)
 		if err != nil {
 			return err
 		}
 		resources = append(resources, resource)
 	}
 	for _, cc := range app.Connectors {
-		connector, err := d.client.GetConnectorByNameOrID(ctx, cc.Name.String)
+		connector, err := d.client.GetConnectorByNameOrID(ctx, cc.Name)
 		if err != nil {
 			return err
 		}
 		connectors = append(connectors, connector)
 	}
 	for _, ff := range app.Functions {
-		function, err := d.client.GetFunction(ctx, ff.Name.String)
+		function, err := d.client.GetFunction(ctx, ff.Name)
 		if err != nil {
 			return err
 		}

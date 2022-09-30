@@ -7,7 +7,6 @@ import (
 
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	"github.com/volatiletech/null/v8"
 )
 
 func TestPipelinesTable(t *testing.T) {
@@ -25,8 +24,8 @@ func TestPipelinesTable(t *testing.T) {
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
 	pipelineWithEnv.Environment = &meroxa.EntityIdentifier{
-		UUID: null.StringFrom("e56b1b2e-b6d7-455d-887e-84a0823d84a8"),
-		Name: null.StringFrom("my-environment"),
+		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
+		Name: "my-environment",
 	}
 
 	tests := map[string][]*meroxa.Pipeline{
@@ -68,8 +67,8 @@ func TestPipelinesTable(t *testing.T) {
 					t.Errorf("%s, not found", pipelineIDAlign.UUID)
 				}
 			case "With_Environment":
-				if !strings.Contains(out, pipelineWithEnv.Environment.Name.String) {
-					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name.String)
+				if !strings.Contains(out, pipelineWithEnv.Environment.Name) {
+					t.Errorf("expected environment name to be %q", pipelineWithEnv.Environment.Name)
 				}
 			}
 
@@ -89,8 +88,8 @@ func TestPipelineTable(t *testing.T) {
 	deepCopy(pipelineBase, pipelineWithEnv)
 	pipelineWithEnv.UUID = "038de172-c4b0-49d8-a1d9-26fbeaa2f726"
 	pipelineWithEnv.Environment = &meroxa.EntityIdentifier{
-		UUID: null.StringFrom("e56b1b2e-b6d7-455d-887e-84a0823d84a8"),
-		Name: null.StringFrom("my-environment"),
+		UUID: "e56b1b2e-b6d7-455d-887e-84a0823d84a8",
+		Name: "my-environment",
 	}
 
 	tests := map[string]*meroxa.Pipeline{
@@ -128,8 +127,8 @@ func TestPipelineTable(t *testing.T) {
 					t.Errorf("%q not found", envHeader)
 				}
 			case "With_Environment":
-				if !strings.Contains(out, pipelineWithEnv.Environment.UUID.String) {
-					t.Errorf("expected environment UUID to be %q", pipelineWithEnv.Environment.UUID.String)
+				if !strings.Contains(out, pipelineWithEnv.Environment.UUID) {
+					t.Errorf("expected environment UUID to be %q", pipelineWithEnv.Environment.UUID)
 				}
 			}
 			fmt.Println(out)

@@ -21,16 +21,16 @@ func PipelineTable(p *meroxa.Pipeline) string {
 	}
 
 	if p.Environment != nil {
-		if p.Environment.UUID.Valid {
+		if p.Environment.UUID != "" {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
-				{Text: p.Environment.UUID.String},
+				{Text: p.Environment.UUID},
 			})
 		}
-		if p.Environment.Name.Valid {
+		if p.Environment.Name != "" {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment Name:"},
-				{Text: p.Environment.Name.String},
+				{Text: p.Environment.Name},
 			})
 		}
 	} else {
@@ -72,8 +72,8 @@ func PipelinesTable(pipelines []*meroxa.Pipeline, hideHeaders bool) string {
 		for _, p := range pipelines {
 			var env string
 
-			if p.Environment != nil && p.Environment.Name.Valid {
-				env = p.Environment.Name.String
+			if p.Environment != nil && p.Environment.Name != "" {
+				env = p.Environment.Name
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}

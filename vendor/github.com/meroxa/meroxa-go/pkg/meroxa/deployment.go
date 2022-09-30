@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/volatiletech/null/v8"
 )
 
 type DeploymentState string
@@ -22,27 +20,26 @@ const (
 
 type DeploymentStatus struct {
 	State   DeploymentState `json:"state"`
-	Details null.String     `json:"details,omitempty"`
+	Details string          `json:"details,omitempty"`
 }
 
 type Deployment struct {
 	UUID        string           `json:"uuid"`
 	GitSha      string           `json:"git_sha"`
 	Application EntityIdentifier `json:"application"`
-	OutputLog   null.String      `json:"output_log,omitempty"`
 	CreatedAt   time.Time        `json:"created_at"`
 	DeletedAt   time.Time        `json:"deleted_at,omitempty"`
 	Status      DeploymentStatus `json:"status"`
-	Spec        null.String      `json:"spec,omitempty"`
-	SpecVersion null.String      `json:"spec_version,omitempty"`
+	Spec        string           `json:"spec,omitempty"`
+	SpecVersion string           `json:"spec_version,omitempty"`
 	CreatedBy   string           `json:"created_by"`
 }
 
 type CreateDeploymentInput struct {
 	GitSha      string           `json:"git_sha"`
 	Application EntityIdentifier `json:"application"`
-	Spec        null.String      `json:"spec,omitempty"`
-	SpecVersion null.String      `json:"spec_version,omitempty"`
+	Spec        string           `json:"spec,omitempty"`
+	SpecVersion string           `json:"spec_version,omitempty"`
 }
 
 func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error) {

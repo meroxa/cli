@@ -105,7 +105,7 @@ func AppLogsTable(
 	for _, c := range connectors {
 		found := false
 		for _, resource := range resources {
-			if resource.Name.String == c.Connector.ResourceName {
+			if resource.Name == c.Connector.ResourceName {
 				r = resource
 				found = true
 				break
@@ -117,11 +117,11 @@ func AppLogsTable(
 
 		// Only show information if there are logs or a trace available
 		if c.Logs != "" || c.Connector.Trace != "" {
-			if r.Collection.Source.String != "" {
-				subTable += fmt.Sprintf("\n%s (source)", r.Name.String)
+			if r.Collection.Source != "" {
+				subTable += fmt.Sprintf("\n%s (source)", r.Name)
 			}
-			if r.Collection.Destination.String != "" {
-				subTable += fmt.Sprintf("\n%s (destination)", r.Name.String)
+			if r.Collection.Destination != "" {
+				subTable += fmt.Sprintf("\n%s (destination)", r.Name)
 			}
 		}
 
@@ -140,8 +140,8 @@ func AppLogsTable(
 		}
 	}
 
-	if deployment != nil && deployment.Status.Details.Valid {
-		subTable += fmt.Sprintf("\n%s (deployment)\n\t%s\n", deployment.UUID, deployment.Status.Details.String)
+	if deployment != nil && deployment.Status.Details != "" {
+		subTable += fmt.Sprintf("\n%s (deployment)\n\t%s\n", deployment.UUID, deployment.Status.Details)
 	}
 
 	return subTable

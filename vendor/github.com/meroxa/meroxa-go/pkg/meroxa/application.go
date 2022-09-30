@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
-	"github.com/volatiletech/null/v8"
 )
 
 type ApplicationState string
@@ -21,9 +19,9 @@ const applicationsBasePath = "/v1/applications"
 const v2applicationsBasePath = "/v2/applications"
 
 type ResourceCollection struct {
-	Name        null.String `json:"name,omitempty"`
-	Source      null.String `json:"source,omitempty"`
-	Destination null.String `json:"destination,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Source      string `json:"source,omitempty"`
+	Destination string `json:"destination,omitempty"`
 }
 
 type ApplicationResource struct {
@@ -52,7 +50,7 @@ type Application struct {
 type CreateApplicationInput struct {
 	Name     string           `json:"name"`
 	Language string           `json:"language"`
-	GitSha   null.String      `json:"git_sha,omitempty"`
+	GitSha   string           `json:"git_sha,omitempty"`
 	Pipeline EntityIdentifier `json:"pipeline,omitempty"`
 }
 

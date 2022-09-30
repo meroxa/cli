@@ -74,16 +74,16 @@ func ConnectorTable(connector *meroxa.Connector) string {
 		})
 	}
 	if connector.Environment != nil {
-		if connector.Environment.UUID.Valid {
+		if connector.Environment.UUID != "" {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
-				{Text: connector.Environment.UUID.String},
+				{Text: connector.Environment.UUID},
 			})
 		}
-		if connector.Environment.Name.Valid {
+		if connector.Environment.Name != "" {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment Name:"},
-				{Text: connector.Environment.Name.String},
+				{Text: connector.Environment.Name},
 			})
 		}
 	} else {
@@ -119,8 +119,8 @@ func ConnectorsTable(connectors []*meroxa.Connector, hideHeaders bool) string {
 		for _, conn := range connectors {
 			var env string
 
-			if conn.Environment != nil && conn.Environment.Name.Valid {
-				env = conn.Environment.Name.String
+			if conn.Environment != nil && conn.Environment.Name != "" {
+				env = conn.Environment.Name
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}
