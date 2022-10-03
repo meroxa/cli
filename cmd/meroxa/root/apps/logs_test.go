@@ -120,6 +120,10 @@ func TestApplicationLogsExecution(t *testing.T) {
 		{Name: null.StringFrom("fun1")},
 	}
 
+	deployment := &meroxa.Deployment{
+		UUID:   "ghi-jkl",
+		Status: meroxa.DeploymentStatus{Details: null.StringFrom("deployment in progress")}}
+
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
 	client.EXPECT().GetConnectorByNameOrID(ctx, "conn1").
 		Return(&meroxa.Connector{Name: "conn1", ResourceName: "res1"}, nil)
@@ -129,6 +133,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	client.EXPECT().GetConnectorLogs(ctx, "conn2").Return(res2, nil)
 	client.EXPECT().GetFunction(ctx, "fun1").Return(functions[0], nil)
 	client.EXPECT().GetFunctionLogs(ctx, "fun1").Return(res3, nil)
+	client.EXPECT().GetLatestDeployment(ctx, a.Name).Return(deployment, nil)
 
 	dc := &Logs{
 		client: client,
@@ -142,7 +147,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppLogsTable(a.Resources, connectors, functions)
+	wantLeveledOutput := display.AppLogsTable(a.Resources, connectors, functions, deployment)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))

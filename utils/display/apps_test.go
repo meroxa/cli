@@ -48,7 +48,11 @@ func TestAppLogsTable(t *testing.T) {
 		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: "running"}, Logs: log},
 	}
 
-	out := AppLogsTable(app.Resources, connectors, functions)
+	deployment := &meroxa.Deployment{
+		UUID:   "ghi-jkl",
+		Status: meroxa.DeploymentStatus{Details: null.StringFrom("deployment in progress")}}
+
+	out := AppLogsTable(app.Resources, connectors, functions, deployment)
 
 	if !strings.Contains(out, "custom log") {
 		t.Errorf("expected %q to be shown", log)
@@ -60,5 +64,13 @@ func TestAppLogsTable(t *testing.T) {
 
 	if !strings.Contains(out, fmt.Sprintf("%s (destination)", res2)) {
 		t.Errorf("expected %q to be shown as a destination", res2)
+	}
+
+	if !strings.Contains(out, fmt.Sprintf("%s (function)", functions[0].Name)) {
+		t.Errorf("expected %q to be shown as a function", functions[0].Name)
+	}
+
+	if !strings.Contains(out, fmt.Sprintf("%s (deployment)", deployment.UUID)) {
+		t.Errorf("expected %q to be shown as a deployment", deployment.UUID)
 	}
 }

@@ -53,6 +53,7 @@ type applicationLogsClient interface {
 	GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
 	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
+	GetLatestDeployment(ctx context.Context, appName string) (*meroxa.Deployment, error)
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 }
 
@@ -73,9 +74,9 @@ func (l *Logs) Docs() builder.Docs {
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	app, err := l.client.GetApplication(ctx, l.args.NameOrUUID)
-	if err != nil {
-		return err
+	app, getErr := l.client.GetApplication(ctx, l.args.NameOrUUID)
+	if getErr != nil {
+		return getErr
 	}
 
 	connectors := make([]*display.AppExtendedConnector, 0)
@@ -121,7 +122,13 @@ func (l *Logs) Execute(ctx context.Context) error {
 		function.Logs = buf.String()
 		functions = append(functions, function)
 	}
-	output := display.AppLogsTable(resources, connectors, functions)
+
+	deployment, err := l.client.GetLatestDeployment(ctx, app.Name)
+	if err != nil {
+		return err
+	}
+
+	output := display.AppLogsTable(resources, connectors, functions, deployment)
 
 	l.logger.Info(ctx, output)
 	l.logger.JSON(ctx, app)
