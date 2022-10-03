@@ -26,8 +26,6 @@ import (
 
 	"github.com/meroxa/cli/utils/display"
 
-	"github.com/volatiletech/null/v8"
-
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -73,29 +71,29 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	a.Resources = []meroxa.ApplicationResource{
 		{
 			EntityIdentifier: meroxa.EntityIdentifier{
-				Name: null.StringFrom("res1"),
+				Name: "res1",
 			},
 			Collection: meroxa.ResourceCollection{
-				Name:   null.StringFrom("res1"),
-				Source: null.StringFrom("source"),
+				Name:   "res1",
+				Source: "source",
 			},
 		},
 		{
 			EntityIdentifier: meroxa.EntityIdentifier{
-				Name: null.StringFrom("res2"),
+				Name: "res2",
 			},
 			Collection: meroxa.ResourceCollection{
-				Name:        null.StringFrom("res2"),
-				Destination: null.StringFrom("destination"),
+				Name:        "res2",
+				Destination: "destination",
 			},
 		},
 		{
 			EntityIdentifier: meroxa.EntityIdentifier{
-				Name: null.StringFrom("res3"),
+				Name: "res3",
 			},
 			Collection: meroxa.ResourceCollection{
-				Name:        null.StringFrom("res3"),
-				Destination: null.StringFrom("destination"),
+				Name:        "res3",
+				Destination: "destination",
 			},
 		},
 	}
@@ -106,9 +104,9 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	}
 
 	a.Connectors = []meroxa.EntityIdentifier{
-		{Name: null.StringFrom("conn1")},
-		{Name: null.StringFrom("conn2")},
-		{Name: null.StringFrom("conn3")},
+		{Name: "conn1"},
+		{Name: "conn2"},
+		{Name: "conn3"},
 	}
 	connectors := []*meroxa.Connector{
 		{Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
@@ -120,7 +118,7 @@ func TestDescribeApplicationExecution(t *testing.T) {
 		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: "running"}},
 	}
 	a.Functions = []meroxa.EntityIdentifier{
-		{Name: null.StringFrom("fun1")},
+		{Name: "fun1"},
 	}
 
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)

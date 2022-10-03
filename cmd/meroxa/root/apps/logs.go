@@ -84,7 +84,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 
 	resources := app.Resources
 	for _, cc := range app.Connectors {
-		connector, err := l.client.GetConnectorByNameOrID(ctx, cc.Name.String)
+		connector, err := l.client.GetConnectorByNameOrID(ctx, cc.Name)
 		if err != nil {
 			return err
 		}
@@ -103,12 +103,12 @@ func (l *Logs) Execute(ctx context.Context) error {
 		connectors = append(connectors, &display.AppExtendedConnector{Connector: connector, Logs: buf.String()})
 	}
 	for _, ff := range app.Functions {
-		function, err := l.client.GetFunction(ctx, ff.Name.String)
+		function, err := l.client.GetFunction(ctx, ff.Name)
 		if err != nil {
 			return err
 		}
 
-		resp, err := l.client.GetFunctionLogs(ctx, ff.Name.String)
+		resp, err := l.client.GetFunctionLogs(ctx, ff.Name)
 		if err != nil {
 			return err
 		}

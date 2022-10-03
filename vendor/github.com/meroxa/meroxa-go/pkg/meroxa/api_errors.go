@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -35,8 +36,16 @@ func (err *errResponse) Error() string {
 func mapToString(m map[string][]string) string {
 	s := ""
 	count := 1
-	for k, v := range m {
-		s = fmt.Sprintf("%s\n%d. %s: \"%s\"", s, count, k, strings.Join(v, `", "`))
+
+	// need to sort map keys separately
+	var mKeys []string
+	for k := range m {
+		mKeys = append(mKeys, k)
+	}
+	sort.Strings(mKeys)
+
+	for _, k := range mKeys {
+		s = fmt.Sprintf("%s\n%d. %s: \"%s\"", s, count, k, strings.Join(m[k], `", "`))
 		count++
 	}
 	return s

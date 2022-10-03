@@ -27,7 +27,6 @@ import (
 	"time"
 
 	"github.com/coreos/go-semver/semver"
-	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -250,10 +249,10 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 	}
 	if specVersion != "" {
 		input := &meroxa.CreateDeploymentInput{
-			Application: meroxa.EntityIdentifier{Name: null.StringFrom(d.appName)},
+			Application: meroxa.EntityIdentifier{Name: d.appName},
 			GitSha:      gitSha,
-			SpecVersion: null.StringFrom(specVersion),
-			Spec:        null.StringFrom(deploymentSpec),
+			SpecVersion: specVersion,
+			Spec:        deploymentSpec,
 		}
 		return d.client.CreateDeployment(ctx, input)
 	}
@@ -551,17 +550,17 @@ func (d *Deploy) validateDestinationCollectionUnique(apps []*meroxa.Application,
 	var errMessage string
 	for _, app := range apps {
 		for _, r := range app.Resources {
-			if r.Collection.Destination.String == "true" &&
+			if r.Collection.Destination == "true" &&
 				destinations[resourceCollectionPair{
-					collectionName: r.Collection.Name.String,
-					resourceName:   r.Name.String,
+					collectionName: r.Collection.Name,
+					resourceName:   r.Name,
 				}] {
 				errMessage = fmt.Sprintf(
 					"%s\n\tApplication resource %q with collection %q cannot be used as a destination. "+
 						"It is also being used as a destination by another application %q.",
 					errMessage,
-					r.Name.String,
-					r.Collection.Name.String,
+					r.Name,
+					r.Collection.Name,
 					app.Name,
 				)
 			}
@@ -625,7 +624,7 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 			if err != nil {
 				return err
 			}
-			newLogs := strings.Split(deployment.OutputLog.String, "\n")
+			newLogs := strings.Split(deployment.Status.Details, "\n")
 			if len(newLogs) > len(logs) {
 				for i := len(logs); i < len(newLogs); i++ {
 					if len(logs) == 0 && i != 0 {
@@ -702,7 +701,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
 			Name:     d.appName,
 			Language: d.lang,
-			GitSha:   null.StringFrom(gitSha)})
+			GitSha:   gitSha})
 		if err != nil && !strings.Contains(err.Error(), "already exists") {
 			return err
 		}

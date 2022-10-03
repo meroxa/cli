@@ -24,8 +24,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/volatiletech/null/v8"
-
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -178,14 +176,14 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
-		Environment: &meroxa.EntityIdentifier{Name: null.StringFrom(env)},
+		Environment: &meroxa.EntityIdentifier{Name: env},
 	}
 
 	p := &meroxa.Pipeline{
 		Name: pName,
 		Environment: &meroxa.EntityIdentifier{
-			UUID: null.StringFrom("2560fbcc-b9ee-461a-a959-fa5656422dc2"),
-			Name: null.StringFrom(env),
+			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
+			Name: env,
 		},
 		State: "healthy",
 	}
@@ -201,7 +199,7 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 		Return(p, nil)
 
 	c.args.Name = pi.Name
-	c.flags.Environment = pi.Environment.Name.String
+	c.flags.Environment = pi.Environment.Name
 
 	// override feature flags
 	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
@@ -267,14 +265,14 @@ func TestCreatePipelineWithEnvironmentExecutionWithoutFeatureFlag(t *testing.T) 
 
 	pi := &meroxa.CreatePipelineInput{
 		Name:        pName,
-		Environment: &meroxa.EntityIdentifier{Name: null.StringFrom(env)},
+		Environment: &meroxa.EntityIdentifier{Name: env},
 	}
 
 	p := &meroxa.Pipeline{
 		Name: pName,
 		Environment: &meroxa.EntityIdentifier{
-			UUID: null.StringFrom("2560fbcc-b9ee-461a-a959-fa5656422dc2"),
-			Name: null.StringFrom(env),
+			UUID: "2560fbcc-b9ee-461a-a959-fa5656422dc2",
+			Name: env,
 		},
 		State: "healthy",
 	}
@@ -282,7 +280,7 @@ func TestCreatePipelineWithEnvironmentExecutionWithoutFeatureFlag(t *testing.T) 
 	p.Name = pName
 
 	c.args.Name = pi.Name
-	c.flags.Environment = pi.Environment.Name.String
+	c.flags.Environment = pi.Environment.Name
 
 	err := c.Execute(ctx)
 

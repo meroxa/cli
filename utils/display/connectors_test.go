@@ -7,7 +7,6 @@ import (
 
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	"github.com/volatiletech/null/v8"
 )
 
 func TestConnectorRunningTable(t *testing.T) {
@@ -24,7 +23,7 @@ func TestConnectorRunningTable(t *testing.T) {
 		State:        "running",
 		Trace:        "",
 		PipelineName: "pipeline-1",
-		Environment:  &meroxa.EntityIdentifier{Name: null.StringFrom("my-env")},
+		Environment:  &meroxa.EntityIdentifier{Name: "my-env"},
 	}
 	failedConnector := &meroxa.Connector{}
 	deepCopy(connector, failedConnector)
@@ -96,7 +95,7 @@ func TestConnectorsTable(t *testing.T) {
 		State:        "running",
 		Trace:        "",
 		PipelineName: "pipeline-1",
-		Environment:  &meroxa.EntityIdentifier{UUID: null.StringFrom("2c5326ac-041f-4679-b446-d6d95b91f497")},
+		Environment:  &meroxa.EntityIdentifier{UUID: "2c5326ac-041f-4679-b446-d6d95b91f497"},
 	}
 
 	deepCopy(connection, connectionIDAlign)

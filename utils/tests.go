@@ -6,8 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/volatiletech/null/v8"
-
 	"github.com/google/uuid"
 	"github.com/spf13/pflag"
 
@@ -26,8 +24,8 @@ func GeneratePipelineWithEnvironment() meroxa.Pipeline {
 	p := GeneratePipeline()
 
 	p.Environment = &meroxa.EntityIdentifier{
-		UUID: null.StringFrom("236d6e81-6a22-4805-b64f-3fa0a57fdbdc"),
-		Name: null.StringFrom("my-env"),
+		UUID: "236d6e81-6a22-4805-b64f-3fa0a57fdbdc",
+		Name: "my-env",
 	}
 
 	return p
@@ -57,8 +55,8 @@ func GenerateResourceWithEnvironment() meroxa.Resource {
 	r := GenerateResource()
 
 	r.Environment = &meroxa.EntityIdentifier{
-		UUID: null.StringFrom("424ec647-9f0f-45a5-8e4b-3e0441f12444"),
-		Name: null.StringFrom("my-environment"),
+		UUID: "424ec647-9f0f-45a5-8e4b-3e0441f12444",
+		Name: "my-environment",
 	}
 	return r
 }
@@ -100,9 +98,9 @@ func GenerateConnectorWithEnvironment(pipelineName, connectorName, envNameOrUUID
 	var env meroxa.EntityIdentifier
 	_, err := uuid.Parse(envNameOrUUID)
 	if err == nil {
-		env.UUID = null.StringFrom(envNameOrUUID)
+		env.UUID = envNameOrUUID
 	} else {
-		env.Name = null.StringFrom(envNameOrUUID)
+		env.Name = envNameOrUUID
 	}
 
 	return meroxa.Connector{

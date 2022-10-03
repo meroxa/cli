@@ -49,17 +49,17 @@ func ResourceTable(res *meroxa.Resource) string {
 	}
 
 	if res.Environment != nil {
-		if res.Environment.UUID.Valid {
+		if res.Environment.UUID != "" {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment UUID:"},
-				{Text: res.Environment.UUID.String},
+				{Text: res.Environment.UUID},
 			})
 		}
 
-		if res.Environment.Name.Valid {
+		if res.Environment.Name != "" {
 			mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 				{Align: simpletable.AlignRight, Text: "Environment Name:"},
-				{Text: res.Environment.Name.String},
+				{Text: res.Environment.Name},
 			})
 		}
 	} else {
@@ -100,8 +100,8 @@ func ResourcesTable(resources []*meroxa.Resource, hideHeaders bool) string {
 
 			var env string
 
-			if res.Environment != nil && res.Environment.Name.Valid {
-				env = res.Environment.Name.String
+			if res.Environment != nil && res.Environment.Name != "" {
+				env = res.Environment.Name
 			} else {
 				env = string(meroxa.EnvironmentTypeCommon)
 			}

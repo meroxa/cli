@@ -617,6 +617,21 @@ func (mr *MockClientMockRecorder) GetUser(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockClient)(nil).GetUser), ctx)
 }
 
+// IntrospectResource mocks base method.
+func (m *MockClient) IntrospectResource(ctx context.Context, nameOrID string) (*meroxa.ResourceIntrospection, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IntrospectResource", ctx, nameOrID)
+	ret0, _ := ret[0].(*meroxa.ResourceIntrospection)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IntrospectResource indicates an expected call of IntrospectResource.
+func (mr *MockClientMockRecorder) IntrospectResource(ctx, nameOrID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IntrospectResource", reflect.TypeOf((*MockClient)(nil).IntrospectResource), ctx, nameOrID)
+}
+
 // ListAccounts mocks base method.
 func (m *MockClient) ListAccounts(ctx context.Context) ([]*meroxa.Account, error) {
 	m.ctrl.T.Helper()

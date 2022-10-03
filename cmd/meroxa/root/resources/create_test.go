@@ -183,7 +183,7 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
-	c.flags.Environment = r.Environment.Name.String
+	c.flags.Environment = r.Environment.Name
 
 	// override feature flags
 	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
@@ -206,7 +206,7 @@ func TestCreateResourceExecutionWithEnvironmentName(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
 Resource %q is successfully created!
-`, cr.Type, cr.Environment.Name.String, cr.Name)
+`, cr.Type, cr.Environment.Name, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -266,7 +266,7 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
-	c.flags.Environment = r.Environment.UUID.String
+	c.flags.Environment = r.Environment.UUID
 
 	// override feature flags
 	featureFlags := global.Config.Get(global.UserFeatureFlagsEnv)
@@ -289,7 +289,7 @@ func TestCreateResourceExecutionWithEnvironmentUUID(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Creating %q resource in %q environment...
 Resource %q is successfully created!
-`, cr.Type, cr.Environment.UUID.String, cr.Name)
+`, cr.Type, cr.Environment.UUID, cr.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -342,7 +342,7 @@ func TestCreateResourceExecutionWithEnvironmentUUIDWithoutFeatureFlag(t *testing
 	c.args.Name = r.Name
 	c.flags.Type = string(r.Type)
 	c.flags.URL = r.URL
-	c.flags.Environment = r.Environment.UUID.String
+	c.flags.Environment = r.Environment.UUID
 
 	err := c.Execute(ctx)
 	if err == nil {

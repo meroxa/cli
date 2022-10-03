@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
-	"github.com/volatiletech/null/v8"
 
 	"github.com/meroxa/cli/utils"
 )
@@ -18,17 +17,17 @@ func TestAppLogsTable(t *testing.T) {
 
 	app.Resources = []meroxa.ApplicationResource{
 		{
-			EntityIdentifier: meroxa.EntityIdentifier{Name: null.StringFrom(res1)},
+			EntityIdentifier: meroxa.EntityIdentifier{Name: res1},
 			Collection: meroxa.ResourceCollection{
-				Name:   null.StringFrom(res1),
-				Source: null.StringFrom("source"),
+				Name:   res1,
+				Source: "source",
 			},
 		},
 		{
-			EntityIdentifier: meroxa.EntityIdentifier{Name: null.StringFrom(res2)},
+			EntityIdentifier: meroxa.EntityIdentifier{Name: res2},
 			Collection: meroxa.ResourceCollection{
-				Name:        null.StringFrom(res2),
-				Destination: null.StringFrom("destination"),
+				Name:        res2,
+				Destination: "destination",
 			},
 		},
 	}
@@ -50,7 +49,7 @@ func TestAppLogsTable(t *testing.T) {
 
 	deployment := &meroxa.Deployment{
 		UUID:   "ghi-jkl",
-		Status: meroxa.DeploymentStatus{Details: null.StringFrom("deployment in progress")}}
+		Status: meroxa.DeploymentStatus{Details: "deployment in progress"}}
 
 	out := AppLogsTable(app.Resources, connectors, functions, deployment)
 
