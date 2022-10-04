@@ -18,6 +18,7 @@ package apps
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -243,16 +244,23 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
-	deploymentSpec, err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
+	specStr, err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
 	if err != nil {
 		return nil, err
 	}
+	var spec map[string]interface{}
+	if specStr != "" {
+		if unmarshalErr := json.Unmarshal([]byte(specStr), &spec); unmarshalErr != nil {
+			return nil, fmt.Errorf("failed to parse deployment spec into json")
+		}
+	}
+
 	if specVersion != "" {
 		input := &meroxa.CreateDeploymentInput{
 			Application: meroxa.EntityIdentifier{Name: d.appName},
 			GitSha:      gitSha,
 			SpecVersion: specVersion,
-			Spec:        deploymentSpec,
+			Spec:        spec,
 		}
 		return d.client.CreateDeployment(ctx, input)
 	}
