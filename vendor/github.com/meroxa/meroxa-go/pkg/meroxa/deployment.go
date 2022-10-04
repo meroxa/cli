@@ -24,22 +24,22 @@ type DeploymentStatus struct {
 }
 
 type Deployment struct {
-	UUID        string           `json:"uuid"`
-	GitSha      string           `json:"git_sha"`
-	Application EntityIdentifier `json:"application"`
-	CreatedAt   time.Time        `json:"created_at"`
-	DeletedAt   time.Time        `json:"deleted_at,omitempty"`
-	Status      DeploymentStatus `json:"status"`
-	Spec        string           `json:"spec,omitempty"`
-	SpecVersion string           `json:"spec_version,omitempty"`
-	CreatedBy   string           `json:"created_by"`
+	UUID        string                 `json:"uuid"`
+	GitSha      string                 `json:"git_sha"`
+	Application EntityIdentifier       `json:"application"`
+	CreatedAt   time.Time              `json:"created_at"`
+	DeletedAt   time.Time              `json:"deleted_at,omitempty"`
+	Status      DeploymentStatus       `json:"status"`
+	Spec        map[string]interface{} `json:"spec,omitempty"`
+	SpecVersion string                 `json:"spec_version,omitempty"`
+	CreatedBy   string                 `json:"created_by"`
 }
 
 type CreateDeploymentInput struct {
-	GitSha      string           `json:"git_sha"`
-	Application EntityIdentifier `json:"application"`
-	Spec        string           `json:"spec,omitempty"`
-	SpecVersion string           `json:"spec_version,omitempty"`
+	GitSha      string                 `json:"git_sha"`
+	Application EntityIdentifier       `json:"application"`
+	Spec        map[string]interface{} `json:"spec,omitempty"`
+	SpecVersion string                 `json:"spec_version,omitempty"`
 }
 
 func (c *client) GetLatestDeployment(ctx context.Context, appIdentifier string) (*Deployment, error) {

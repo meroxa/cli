@@ -690,7 +690,10 @@ func TestDeployApp(t *testing.T) {
 	imageName := "doc.ker:latest"
 	gitSha := "aa:bb:cc:dd"
 	specVersion := "latest"
-	spec := "{}"
+	specStr := `{"metadata": "metadata"}`
+	spec := map[string]interface{}{
+		"metadata": "metadata",
+	}
 	err := fmt.Errorf("nope")
 
 	tests := []struct {
@@ -724,7 +727,7 @@ func TestDeployApp(t *testing.T) {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, specVersion).
-					Return(spec, err)
+					Return(specStr, err)
 				return mockTurbineCLI
 			},
 			err: err,
@@ -748,7 +751,7 @@ func TestDeployApp(t *testing.T) {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, specVersion).
-					Return(spec, nil)
+					Return(specStr, nil)
 				return mockTurbineCLI
 			},
 			err: err,
