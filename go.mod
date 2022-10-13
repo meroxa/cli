@@ -29,7 +29,7 @@ require (
 	github.com/coreos/go-semver v0.3.0
 	github.com/docker/docker v20.10.18+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220929144639-55053b3b6c6b
+	github.com/meroxa/turbine-go v0.0.0-20221003150239-536f17d8e3ee
 	github.com/stretchr/testify v1.8.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 )
