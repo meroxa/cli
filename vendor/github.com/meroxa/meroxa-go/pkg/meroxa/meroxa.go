@@ -203,6 +203,9 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body in
 	}
 
 	// add global headers to request
+	if r.headers != nil {
+		req.Header = r.headers
+	}
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", r.userAgent)
