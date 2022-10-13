@@ -135,18 +135,17 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audienc
 		// return an indication of success to the caller
 		_, _ = io.WriteString(w, `
 			<html>
-				<div style="width:100%!; color:#282D39; display:flex; flex-direction: column; justify-content: center; align-items:center;">
-					<img src="https://meroxa-public-assets.s3.us-east-2.amazonaws.com/MeroxaTransparent%402x.png" alt="Meroxa"
+				<div style="width:100%!; color:#282D39; display:flex; flex-direction: column; justify-content:center; 
+						align-items:center; margin-top:40px;">
+					<img src="https://meroxa-public-assets.s3.us-east-2.amazonaws.com/MeroxaTransparent%402x.png" alt="Meroxa logo"
 						 width="150" padding="2000px">
 					<h1 style="margin-top:40px; font-size:43px; text-align:left; color: #282D39; font-family: Arial; font-weight: bold;">
-						Successfully logged in</h1>
-					<p style="margin-top:17px; font-size:18px; text-align:left; color: #282D39; font-family: Arial;">You can now return
-						to the CLI. This will auto-close.</p></div>
-				<script>
-					window.onload = function () {
-						setTimeout(this.close, 5000)
-					}
-				</script>
+						Successfully logged in
+					</h1>
+					<p style="margin-top:17px; font-size:18px; text-align:left; color: #282D39; font-family: Arial;">
+						You can close this window now and return to the CLI.
+					</p>
+				</div>
 			</html>`)
 
 		l.logger.Infof(ctx, "Successfully logged in.")
