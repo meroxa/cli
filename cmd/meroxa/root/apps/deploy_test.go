@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"net/http"
 	"strings"
 	"testing"
@@ -15,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/config"
@@ -683,6 +683,7 @@ func TestValidateLanguage(t *testing.T) {
 	}
 }
 
+//nolint:funlen // this is a test function, splitting it would duplicate code
 func TestDeployApp(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
@@ -701,23 +702,51 @@ func TestDeployApp(t *testing.T) {
 	tests := []struct {
 		description    string
 		meroxaClient   func() meroxa.Client
-		mockTurbineCLI func() turbine.CLI
+		mockTurbineCLI func(string) turbine.CLI
+		version        string
 		err            error
 	}{
 		{
-			description: "Successfully deploy app",
+			description: "Successfully deploy app pre IR",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID).
+					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
-			err: nil,
+			version: "",
+			err:     nil,
+		},
+		{
+			description: "Successfully deploy app with IR",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				input := &meroxa.CreateDeploymentInput{
+					Application: meroxa.EntityIdentifier{Name: appName},
+					GitSha:      gitSha,
+					SpecVersion: specVersion,
+					Spec:        spec,
+				}
+				client.EXPECT().
+					CreateDeployment(ctx, input).
+					Return(&meroxa.Deployment{}, nil)
+				return client
+			},
+			mockTurbineCLI: func(version string) turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
+					Return(specStr, nil)
+
+				return mockTurbineCLI
+			},
+			version: specVersion,
+			err:     nil,
 		},
 		{
 			description: "Fail to call Turbine deploy",
@@ -725,14 +754,15 @@ func TestDeployApp(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID).
+					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, err)
 				return mockTurbineCLI
 			},
-			err: err,
+			version: specVersion,
+			err:     err,
 		},
 		{
 			description: "Fail to create deployment",
@@ -749,14 +779,15 @@ func TestDeployApp(t *testing.T) {
 					Return(&meroxa.Deployment{}, err)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID).
+					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
-			err: err,
+			version: specVersion,
+			err:     err,
 		},
 	}
 
@@ -766,13 +797,13 @@ func TestDeployApp(t *testing.T) {
 			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
 				client:     tc.meroxaClient(),
-				turbineCLI: tc.mockTurbineCLI(),
+				turbineCLI: tc.mockTurbineCLI(tc.version),
 				logger:     logger,
 				appName:    appName,
 				config:     cfg,
 			}
 
-			_, err := d.deployApp(ctx, imageName, gitSha, specVersion)
+			_, err := d.deployApp(ctx, imageName, gitSha, tc.version)
 			if err != nil {
 				require.NotEmpty(t, tc.err)
 				require.Equal(t, tc.err, err)

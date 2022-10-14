@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"net/http"
 	"os"
 	"regexp"
@@ -31,6 +30,7 @@ import (
 	"github.com/coreos/go-semver/semver"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
