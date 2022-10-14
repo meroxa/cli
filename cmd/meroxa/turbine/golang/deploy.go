@@ -43,6 +43,7 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		cmd.Env,
 		fmt.Sprintf("ACCESS_TOKEN=%s", accessToken),
 		fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken),
+		fmt.Sprintf("MEROXA_DEBUG=%s", os.Getenv("MEROXA_DEBUG")),
 		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
 
 	output, err := cmd.CombinedOutput()
