@@ -34,7 +34,7 @@ func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 	return strconv.ParseBool(isNeeded)
 }
 
-func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) (string, error) {
+func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	var (
 		output         string
 		deploymentSpec string
@@ -52,7 +52,10 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		return deploymentSpec, err
 	}
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
+	cmd.Env = append(
+		cmd.Env,
+		fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken),
+		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
 
 	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
 	if err != nil {

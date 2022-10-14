@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"net/http"
 	"strings"
 	"testing"
@@ -690,6 +691,7 @@ func TestDeployApp(t *testing.T) {
 	imageName := "doc.ker:latest"
 	gitSha := "aa:bb:cc:dd"
 	specVersion := "latest"
+	accountUUID := "aa-bb-cc-dd"
 	specStr := `{"metadata": "metadata"}`
 	spec := map[string]interface{}{
 		"metadata": "metadata",
@@ -702,7 +704,7 @@ func TestDeployApp(t *testing.T) {
 		mockTurbineCLI func() turbine.CLI
 		err            error
 	}{
-		/*{
+		{
 			description: "Successfully deploy app",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
@@ -711,12 +713,12 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, specVersion).
-					Return(spec, nil)
+					Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID).
+					Return(specStr, nil)
 				return mockTurbineCLI
 			},
 			err: nil,
-		},*/
+		},
 		{
 			description: "Fail to call Turbine deploy",
 			meroxaClient: func() meroxa.Client {
@@ -726,7 +728,7 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, specVersion).
+					Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID).
 					Return(specStr, err)
 				return mockTurbineCLI
 			},
@@ -750,7 +752,7 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, specVersion).
+					Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
@@ -760,11 +762,14 @@ func TestDeployApp(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.description, func(t *testing.T) {
+			cfg := config.NewInMemoryConfig()
+			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
 				client:     tc.meroxaClient(),
 				turbineCLI: tc.mockTurbineCLI(),
 				logger:     logger,
 				appName:    appName,
+				config:     cfg,
 			}
 
 			_, err := d.deployApp(ctx, imageName, gitSha, specVersion)

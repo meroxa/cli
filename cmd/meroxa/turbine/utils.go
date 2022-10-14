@@ -29,8 +29,9 @@ const (
 	Python     = "python"
 	Python3    = "python3"
 
-	turbineJSVersion = "1.2.0"
-	isTrue           = "true"
+	turbineJSVersion  = "1.2.0"
+	isTrue            = "true"
+	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
 )
 
 type AppConfig struct {
@@ -51,7 +52,7 @@ type ApplicationResource struct {
 	Collection  string `json:"collection"`
 }
 
-// getResourceNamesFromString provides backward compatibility with turbine-go
+// GetResourceNamesFromString provides backward compatibility with turbine-go
 // legacy resource listing format.
 func GetResourceNamesFromString(s string) []ApplicationResource {
 	resources := make([]ApplicationResource, 0)
