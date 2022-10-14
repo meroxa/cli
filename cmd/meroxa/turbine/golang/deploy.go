@@ -15,7 +15,7 @@ import (
 )
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha string, specVersion string) (string, error) {
+func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	deploymentSpec := ""
 	args := []string{
 		"--deploy",
@@ -39,7 +39,11 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha st
 		return deploymentSpec, err
 	}
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
+	cmd.Env = append(
+		cmd.Env,
+		fmt.Sprintf("ACCESS_TOKEN=%s", accessToken),
+		fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken),
+		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

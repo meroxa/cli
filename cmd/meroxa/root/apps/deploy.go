@@ -30,6 +30,7 @@ import (
 	"github.com/coreos/go-semver/semver"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
@@ -244,7 +245,13 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
-	specStr, err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
+	specStr, err := d.turbineCLI.Deploy(
+		ctx,
+		imageName,
+		d.appName,
+		gitSha,
+		specVersion,
+		d.config.GetString(global.UserAccountUUID))
 	if err != nil {
 		return nil, err
 	}

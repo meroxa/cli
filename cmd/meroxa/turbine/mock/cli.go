@@ -63,18 +63,18 @@ func (mr *MockCLIMockRecorder) CleanUpBinaries(ctx, appName interface{}) *gomock
 }
 
 // Deploy mocks base method.
-func (m *MockCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) (string, error) {
+func (m *MockCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Deploy", ctx, imageName, appName, gitSha, specVersion)
+	ret := m.ctrl.Call(m, "Deploy", ctx, imageName, appName, gitSha, specVersion, accountUUID)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Deploy indicates an expected call of Deploy.
-func (mr *MockCLIMockRecorder) Deploy(ctx, imageName, appName, gitSha, specVersion interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) Deploy(ctx, imageName, appName, gitSha, specVersion, accountUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deploy", reflect.TypeOf((*MockCLI)(nil).Deploy), ctx, imageName, appName, gitSha, specVersion)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deploy", reflect.TypeOf((*MockCLI)(nil).Deploy), ctx, imageName, appName, gitSha, specVersion, accountUUID)
 }
 
 // GetGitSha mocks base method.
