@@ -197,6 +197,7 @@ func (l *Login) login(ctx context.Context) error {
 func (l *Login) cleanup(server *http.Server) {
 	// we run this as a goroutine so that this function falls through and
 	// the socket to the browser gets flushed/closed before the server goes away
+	l.config.Set(global.UserAccountUUID, "")
 	go server.Close()
 }
 
