@@ -84,7 +84,7 @@ func (t *turbinePyCLI) GetResources(ctx context.Context, appName string) ([]util
 		return resources, errors.New(string(output))
 	}
 	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err != nil {
+	if err != nil && list != "" {
 		// ignores any lines that are not intended to be part of the response
 		output = []byte(list)
 	}
