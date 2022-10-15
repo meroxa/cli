@@ -69,6 +69,10 @@ func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]util
 	if err != nil {
 		return resources, errors.New(string(output))
 	}
+	list, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err != nil {
+		output = []byte(list)
+	}
 
 	if err := json.Unmarshal(output, &resources); err != nil {
 		// fall back if not json
