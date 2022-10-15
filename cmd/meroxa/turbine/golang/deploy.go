@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path"
 	"regexp"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -71,6 +72,7 @@ func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]util
 	}
 	list, err := utils.GetTurbineResponseFromOutput(string(output))
 	if err != nil {
+		// ignores any lines that are not intended to be part of the response
 		output = []byte(list)
 	}
 
@@ -94,14 +96,19 @@ func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	// TODO: Implement in Turbine something that returns a boolean rather than having to regex its output
-	re := regexp.MustCompile(`\[(.+?)]`)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(output))
 		return false, fmt.Errorf("build failed")
 	}
+	list, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err != nil {
+		// ignores any lines that are not intended to be part of the response
+		hasFunctions := len(strings.Split(list, ",")) > 0
+		return hasFunctions, nil
+	}
 
+	re := regexp.MustCompile(`\[(.+?)]`)
 	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function.
 	hasFunctions := len(re.FindAllString(string(output), -1)) > 0
 
