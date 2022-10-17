@@ -23,7 +23,7 @@ import (
 )
 
 // Account implement the projects management onto the Meroxa platform.
-// Accounts were renames Projects, renamed to fix the information architecture.
+// Accounts on the platform were renamed to Projects, to fix the information architecture.
 type Account struct{}
 
 var (
