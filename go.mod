@@ -27,7 +27,7 @@ require (
 require (
 	github.com/briandowns/spinner v1.19.0
 	github.com/coreos/go-semver v0.3.0
-	github.com/docker/docker v20.10.18+incompatible
+	github.com/docker/docker v20.10.19+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-go v0.0.0-20220929144639-55053b3b6c6b
 	github.com/stretchr/testify v1.8.0
