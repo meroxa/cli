@@ -36,7 +36,7 @@ func AccountsTable(accounts []*meroxa.Account, currentAccount string, hideHeader
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
-					{Align: simpletable.AlignCenter, Text: "Current"},
+					{Align: simpletable.AlignCenter, Text: "Selected"},
 					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 				},
