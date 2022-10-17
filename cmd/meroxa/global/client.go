@@ -119,10 +119,10 @@ func SetAccountUUID(client meroxa.Client) error {
 	// loading current user accounts
 	accounts, err := client.ListAccounts(context.Background())
 	if err != nil {
-		return fmt.Errorf("meroxa: could not fetch user accounts: %v", err)
+		return fmt.Errorf("meroxa: could not fetch user projects: %v", err)
 	}
 	if len(accounts) <= 0 {
-		return fmt.Errorf("meroxa: no accounts created for this account, please create them in the website")
+		return fmt.Errorf("meroxa: user doesn't have any projects, please create or accept them in the web dashboard")
 	}
 	// write account uuid
 	Config.Set(UserAccountUUID, accounts[0].UUID) // TODO add account ID
