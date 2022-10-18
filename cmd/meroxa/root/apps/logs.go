@@ -21,6 +21,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/meroxa/cli/utils/display"
 
@@ -124,7 +125,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 	}
 
 	deployment, err := l.client.GetLatestDeployment(ctx, app.Name)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "user lacks permission") {
 		return err
 	}
 

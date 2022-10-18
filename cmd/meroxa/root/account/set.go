@@ -53,7 +53,7 @@ func (s *Set) Usage() string {
 
 func (s *Set) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Set active account",
+		Short: "Set active project",
 	}
 }
 
@@ -82,7 +82,7 @@ func (s *Set) Execute(ctx context.Context) error {
 		}
 	}
 	if !found {
-		return fmt.Errorf("'%s' is an invalid account UUID", s.args.UUID)
+		return fmt.Errorf("'%s' is an invalid project UUID", s.args.UUID)
 	}
 	s.config.Set(global.UserAccountUUID, uuid)
 
@@ -95,7 +95,7 @@ func (s *Set) Logger(logger log.Logger) {
 
 func (s *Set) ParseArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires account UUID or name")
+		return errors.New("requires project UUID")
 	}
 
 	s.args.UUID = args[0]

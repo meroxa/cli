@@ -18,7 +18,7 @@ require (
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
-	github.com/spf13/cobra v1.5.0
+	github.com/spf13/cobra v1.6.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
 	golang.org/x/oauth2 v0.0.0-20220630143837-2104d58473e0
@@ -27,7 +27,7 @@ require (
 require (
 	github.com/briandowns/spinner v1.19.0
 	github.com/coreos/go-semver v0.3.0
-	github.com/docker/docker v20.10.18+incompatible
+	github.com/docker/docker v20.10.19+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-go v0.0.0-20221018190300-cf96cdb16beb
 	github.com/stretchr/testify v1.8.0
