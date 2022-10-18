@@ -68,7 +68,7 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
 		if err != nil {
 			err = fmt.Errorf(
-				"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
 		}
 	}
 	return deploymentSpec, err
