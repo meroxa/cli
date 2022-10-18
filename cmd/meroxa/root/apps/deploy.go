@@ -662,7 +662,9 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 				return fmt.Errorf("failed to deploy Application %q", d.appName)
 			}
 		case <-cctx.Done():
-			return cctx.Err()
+			return fmt.Errorf(
+				"Application Deployment did not finish within %d. Check `meroxa apps logs` for further information.",
+				durationToWaitForDeployment)
 		}
 	}
 }
