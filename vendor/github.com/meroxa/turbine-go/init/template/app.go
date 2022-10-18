@@ -42,7 +42,7 @@ func (a App) Run(v turbine.Turbine) error {
 	// If a configuration is needed for your source,
 	// you can pass it as a second argument to the `Records` function. For example:
 	//
-	// source.Records("collection_name", turbine.ResourceConfigs{turbine.ResourceConfig{Field: "incrementing.field.name", Value:"id"}})
+	// source.Records("collection_name", turbine.ConnectionOptions{turbine.ResourceConfig{Field: "incrementing.field.name", Value:"id"}})
 
 	rr, err := source.Records("collection_name", nil)
 	if err != nil {
@@ -74,7 +74,7 @@ func (a App) Run(v turbine.Turbine) error {
 	// dest.WriteWithConfig(
 	//  res,
 	//  "my-archive",
-	//  turbine.ResourceConfigs{turbine.ResourceConfig{Field: "buffer.flush.time", Value: "10"}}
+	//  turbine.ConnectionOptions{turbine.ResourceConfig{Field: "buffer.flush.time", Value: "10"}}
 	// )
 
 	err = dest.Write(res, "collection_archive")

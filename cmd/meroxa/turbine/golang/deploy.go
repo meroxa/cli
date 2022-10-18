@@ -102,7 +102,7 @@ func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 		return false, fmt.Errorf("build failed")
 	}
 	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err != nil {
+	if err == nil && list != "" {
 		// ignores any lines that are not intended to be part of the response
 		hasFunctions := len(strings.Split(list, ",")) > 0
 		return hasFunctions, nil
