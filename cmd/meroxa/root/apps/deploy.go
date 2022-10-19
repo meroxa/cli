@@ -322,6 +322,8 @@ func (d *Deploy) validateLanguage() error {
 		d.lang = turbine.JavaScript
 	case "py", turbine.Python3, turbine.Python:
 		d.lang = turbine.Python
+	case "rb", turbine.Ruby:
+		d.lang = turbine.Ruby
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
