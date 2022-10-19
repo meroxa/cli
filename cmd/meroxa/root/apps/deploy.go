@@ -44,9 +44,9 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 
-	platformBuildPollDuration   = 2 * time.Second
-	durationToWaitForDeployment = 5
-	intervalCheckForDeployment  = 500 * time.Millisecond
+	platformBuildPollDuration  = 2 * time.Second
+	minutesToWaitForDeployment = 5
+	intervalCheckForDeployment = 500 * time.Millisecond
 )
 
 type deployApplicationClient interface {
@@ -625,7 +625,7 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	logs := []string{}
 
-	cctx, cancel := context.WithTimeout(ctx, durationToWaitForDeployment*time.Minute)
+	cctx, cancel := context.WithTimeout(ctx, minutesToWaitForDeployment*time.Minute)
 	defer cancel()
 
 	t := time.NewTicker(intervalCheckForDeployment)
@@ -666,7 +666,7 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 			return fmt.Errorf(
 				"Your Turbine Application Deployment did not finish within %d minutes."+
 					" Check `meroxa apps logs` for further information",
-				durationToWaitForDeployment)
+				minutesToWaitForDeployment)
 		}
 	}
 }
