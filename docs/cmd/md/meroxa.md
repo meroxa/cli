@@ -25,6 +25,7 @@ meroxa resources list --types
 
 ### SEE ALSO
 
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
 * [meroxa api](meroxa_api.md)	 - Invoke Meroxa API
 * [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
@@ -37,7 +38,6 @@ meroxa resources list --types
 * [meroxa login](meroxa_login.md)	 - Login or Sign up to the Meroxa Platform
 * [meroxa logout](meroxa_logout.md)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](meroxa_open.md)	 - Open in a web browser
-* [meroxa project](meroxa_project.md)	 - Manage Meroxa Projects (Beta)
 * [meroxa resources](meroxa_resources.md)	 - Manage resources on Meroxa
 * [meroxa transforms](meroxa_transforms.md)	 - Manage transforms on Meroxa
 * [meroxa version](meroxa_version.md)	 - Display the Meroxa CLI version

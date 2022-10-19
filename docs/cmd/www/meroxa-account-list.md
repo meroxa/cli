@@ -1,16 +1,16 @@
 ---
 createdAt: 
 updatedAt: 
-title: "meroxa project list"
-slug: meroxa-project-list
-url: /cli/cmd/meroxa-project-list/
+title: "meroxa account list"
+slug: meroxa-account-list
+url: /cli/cmd/meroxa-account-list/
 ---
-## meroxa project list
+## meroxa account list
 
-List available projects (Beta)
+List Turbine Data Applications (Beta)
 
 ```
-meroxa project list [flags]
+meroxa account list [flags]
 ```
 
 ### Options
@@ -31,5 +31,5 @@ meroxa project list [flags]
 
 ### SEE ALSO
 
-* [meroxa project](/cli/cmd/meroxa-project/)	 - Manage Meroxa Projects (Beta)
+* [meroxa account](/cli/cmd/meroxa-account/)	 - Manage Meroxa Accounts (Beta)
 

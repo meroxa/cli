@@ -58,7 +58,7 @@ func (l *List) Config(cfg config.Config) {
 
 func (l *List) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "List available projects",
+		Short: "List Turbine Data Applications",
 		Beta:  true,
 	}
 }

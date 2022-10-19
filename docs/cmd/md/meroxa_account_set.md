@@ -1,9 +1,9 @@
-## meroxa project set
+## meroxa account set
 
-Set active project
+Set current active account connector
 
 ```
-meroxa project set [flags]
+meroxa account set [flags]
 ```
 
 ### Options
@@ -23,5 +23,5 @@ meroxa project set [flags]
 
 ### SEE ALSO
 
-* [meroxa project](meroxa_project.md)	 - Manage Meroxa Projects (Beta)
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
 
