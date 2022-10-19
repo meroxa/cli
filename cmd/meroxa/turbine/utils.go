@@ -28,6 +28,7 @@ const (
 	NodeJs     = "nodejs"
 	Python     = "python"
 	Python3    = "python3"
+	Ruby       = "ruby"
 
 	turbineJSVersion  = "1.3.1"
 	isTrue            = "true"

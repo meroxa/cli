@@ -35,6 +35,7 @@ import (
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRB "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -333,6 +334,8 @@ func (d *Deploy) validateLanguage() error {
 		d.lang = turbine.JavaScript
 	case "py", turbine.Python3, turbine.Python:
 		d.lang = turbine.Python
+	case "rb", turbine.Ruby:
+		d.lang = turbine.Ruby
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
@@ -691,6 +694,10 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	case "py", turbine.Python3, turbine.Python:
 		if d.turbineCLI == nil {
 			d.turbineCLI = turbinePY.New(d.logger, d.path)
+		}
+	case "rb", turbine.Ruby:
+		if d.turbineCLI == nil {
+			d.turbineCLI = turbineRB.New(d.logger, d.path)
 		}
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
