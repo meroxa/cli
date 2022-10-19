@@ -1,18 +1,18 @@
 ---
 createdAt: 
 updatedAt: 
-title: "meroxa project"
-slug: meroxa-project
-url: /cli/cmd/meroxa-project/
+title: "meroxa account"
+slug: meroxa-account
+url: /cli/cmd/meroxa-account/
 ---
-## meroxa project
+## meroxa account
 
-Manage Meroxa Projects (Beta)
+Manage Meroxa Accounts (Beta)
 
 ### Options
 
 ```
-  -h, --help   help for project
+  -h, --help   help for account
 ```
 
 ### Options inherited from parent commands
@@ -27,6 +27,6 @@ Manage Meroxa Projects (Beta)
 ### SEE ALSO
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
-* [meroxa project list](/cli/cmd/meroxa-project-list/)	 - List available projects (Beta)
-* [meroxa project set](/cli/cmd/meroxa-project-set/)	 - Set active project
+* [meroxa account list](/cli/cmd/meroxa-account-list/)	 - List Turbine Data Applications (Beta)
+* [meroxa account set](/cli/cmd/meroxa-account-set/)	 - Set current active account connector
 

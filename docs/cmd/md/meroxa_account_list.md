@@ -1,11 +1,16 @@
-## meroxa project
+## meroxa account list
 
-Manage Meroxa Projects (Beta)
+List Turbine Data Applications (Beta)
+
+```
+meroxa account list [flags]
+```
 
 ### Options
 
 ```
-  -h, --help   help for project
+  -h, --help         help for list
+      --no-headers   display output without headers
 ```
 
 ### Options inherited from parent commands
@@ -19,7 +24,5 @@ Manage Meroxa Projects (Beta)
 
 ### SEE ALSO
 
-* [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa project list](meroxa_project_list.md)	 - List available projects (Beta)
-* [meroxa project set](meroxa_project_set.md)	 - Set active project
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
 

@@ -22,8 +22,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 )
 
-// Account implement the projects management onto the Meroxa platform.
-// Accounts on the platform were renamed to Projects, to fix the information architecture.
 type Account struct{}
 
 var (
@@ -33,16 +31,16 @@ var (
 )
 
 func (*Account) Aliases() []string {
-	return []string{"projects"}
+	return []string{"accounts"}
 }
 
 func (*Account) Usage() string {
-	return "project"
+	return "account"
 }
 
 func (*Account) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Manage Meroxa Projects",
+		Short: "Manage Meroxa Accounts",
 		Beta:  true,
 	}
 }
