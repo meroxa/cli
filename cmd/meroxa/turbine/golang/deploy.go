@@ -65,9 +65,13 @@ func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]util
 		return resources, errors.New(string(output))
 	}
 
-	if err := json.Unmarshal(output, &resources); err != nil {
+	resourceSpec, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err != nil {
+		return resources, fmt.Errorf("unable to receive the resource spec for the Meroxa Application at %s has a Process", t.appPath)
+	}
+	if err := json.Unmarshal([]byte(resourceSpec), &resources); err != nil {
 		// fall back if not json
-		return utils.GetResourceNamesFromString(string(output)), nil
+		return utils.GetResourceNamesFromString(resourceSpec), nil
 	}
 
 	return resources, nil
