@@ -30,6 +30,7 @@ import (
 	"github.com/coreos/go-semver/semver"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
@@ -43,9 +44,9 @@ const (
 	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
 	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
 
-	platformBuildPollDuration   = 2 * time.Second
-	durationToWaitForDeployment = 5 * time.Minute
-	intervalCheckForDeployment  = 500 * time.Millisecond
+	platformBuildPollDuration  = 2 * time.Second
+	minutesToWaitForDeployment = 5
+	intervalCheckForDeployment = 500 * time.Millisecond
 )
 
 type deployApplicationClient interface {
@@ -244,7 +245,13 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
 	d.logger.Infof(ctx, "Deploying application %q...", d.appName)
-	specStr, err := d.turbineCLI.Deploy(ctx, imageName, d.appName, gitSha, specVersion)
+	specStr, err := d.turbineCLI.Deploy(
+		ctx,
+		imageName,
+		d.appName,
+		gitSha,
+		specVersion,
+		d.config.GetString(global.UserAccountUUID))
 	if err != nil {
 		return nil, err
 	}
@@ -618,7 +625,7 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	logs := []string{}
 
-	cctx, cancel := context.WithTimeout(ctx, durationToWaitForDeployment)
+	cctx, cancel := context.WithTimeout(ctx, minutesToWaitForDeployment*time.Minute)
 	defer cancel()
 
 	t := time.NewTicker(intervalCheckForDeployment)
@@ -655,7 +662,11 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 				return fmt.Errorf("failed to deploy Application %q", d.appName)
 			}
 		case <-cctx.Done():
-			return cctx.Err()
+			//nolint:stylecheck
+			return fmt.Errorf(
+				"Your Turbine Application Deployment did not finish within %d minutes."+
+					" Check `meroxa apps logs` for further information",
+				minutesToWaitForDeployment)
 		}
 	}
 }

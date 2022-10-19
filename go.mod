@@ -13,7 +13,7 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20221013173722-55761ea28c2f
+	github.com/meroxa/meroxa-go v0.0.0-20221017201107-221ac11788e1
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/coreos/go-semver v0.3.0
 	github.com/docker/docker v20.10.19+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-go v0.0.0-20220929144639-55053b3b6c6b
+	github.com/meroxa/turbine-go v0.0.0-20221018190300-cf96cdb16beb
 	github.com/stretchr/testify v1.8.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 )

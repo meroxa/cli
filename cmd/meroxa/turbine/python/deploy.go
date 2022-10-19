@@ -37,7 +37,7 @@ func (t *turbinePyCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 }
 
 // Deploy creates Application entities.
-func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion string) (string, error) {
+func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	var (
 		output         string
 		deploymentSpec string
@@ -55,7 +55,10 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		return deploymentSpec, err
 	}
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken))
+	cmd.Env = append(
+		cmd.Env,
+		fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken),
+		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
 
 	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
 	if err != nil {
@@ -65,7 +68,7 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
 		if err != nil {
 			err = fmt.Errorf(
-				"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
 		}
 	}
 	return deploymentSpec, err
@@ -79,6 +82,11 @@ func (t *turbinePyCLI) GetResources(ctx context.Context, appName string) ([]util
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return resources, errors.New(string(output))
+	}
+	list, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err == nil && list != "" {
+		// ignores any lines that are not intended to be part of the response
+		output = []byte(list)
 	}
 
 	if err := json.Unmarshal(output, &resources); err != nil {

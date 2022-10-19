@@ -36,6 +36,7 @@ func AccountsTable(accounts []*meroxa.Account, currentAccount string, hideHeader
 		if !hideHeaders {
 			table.Header = &simpletable.Header{
 				Cells: []*simpletable.Cell{
+					{Align: simpletable.AlignCenter, Text: "Selected"},
 					{Align: simpletable.AlignCenter, Text: "UUID"},
 					{Align: simpletable.AlignCenter, Text: "NAME"},
 				},
@@ -44,8 +45,9 @@ func AccountsTable(accounts []*meroxa.Account, currentAccount string, hideHeader
 
 		for _, p := range accounts {
 			r := []*simpletable.Cell{
+				{Align: simpletable.AlignCenter, Text: checkCurrent(p.UUID, currentAccount)},
 				{Align: simpletable.AlignRight, Text: p.UUID},
-				{Align: simpletable.AlignCenter, Text: checkCurrent(p.Name, p.UUID, currentAccount)},
+				{Align: simpletable.AlignCenter, Text: p.Name},
 			}
 
 			table.Body.Cells = append(table.Body.Cells, r)
@@ -56,11 +58,11 @@ func AccountsTable(accounts []*meroxa.Account, currentAccount string, hideHeader
 	return ""
 }
 
-func checkCurrent(name, uuid, currentUUID string) string {
+func checkCurrent(uuid, currentUUID string) string {
 	if uuid == currentUUID {
-		return name + " (current)"
+		return "*"
 	}
-	return name
+	return ""
 }
 
 func PrintAccountsTable(accounts []*meroxa.Account, currentAccount string, hideHeaders bool) {

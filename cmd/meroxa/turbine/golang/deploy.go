@@ -9,13 +9,14 @@ import (
 	"os/exec"
 	"path"
 	"regexp"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha string, specVersion string) (string, error) {
+func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	deploymentSpec := ""
 	args := []string{
 		"--deploy",
@@ -39,7 +40,12 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha st
 		return deploymentSpec, err
 	}
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
+	cmd.Env = append(
+		cmd.Env,
+		fmt.Sprintf("ACCESS_TOKEN=%s", accessToken),
+		fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken),
+		fmt.Sprintf("MEROXA_DEBUG=%s", os.Getenv("MEROXA_DEBUG")),
+		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -50,7 +56,7 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha st
 		deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
 		if err != nil {
 			err = fmt.Errorf(
-				"unable to receive the deployment spec for the Meroxa Application at %s has a Process", t.appPath)
+				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
 		}
 	}
 	return deploymentSpec, err
@@ -63,6 +69,11 @@ func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]util
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return resources, errors.New(string(output))
+	}
+	list, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err == nil && list != "" {
+		// ignores any lines that are not intended to be part of the response
+		output = []byte(list)
 	}
 
 	if err := json.Unmarshal(output, &resources); err != nil {
@@ -85,14 +96,19 @@ func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	// TODO: Implement in Turbine something that returns a boolean rather than having to regex its output
-	re := regexp.MustCompile(`\[(.+?)]`)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(output))
 		return false, fmt.Errorf("build failed")
 	}
+	list, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err == nil && list != "" {
+		// ignores any lines that are not intended to be part of the response
+		hasFunctions := len(strings.Split(list, ",")) > 0
+		return hasFunctions, nil
+	}
 
+	re := regexp.MustCompile(`\[(.+?)]`)
 	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function.
 	hasFunctions := len(re.FindAllString(string(output), -1)) > 0
 
