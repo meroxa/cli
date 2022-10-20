@@ -967,16 +967,17 @@ func TestWaitForDeployment(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	appName := "unit-test"
 	outputLogs := []string{"just getting started", "going well", "nailed it"}
-	uuid := "does=not-matter"
+	uuid := "does-not-matter"
 
 	tests := []struct {
 		description  string
 		meroxaClient func() meroxa.Client
+		wantOutput   func() string
 		noLogs       bool
 		err          error
 	}{
 		{
-			description: "Deployment immediately finished",
+			description: "Deployment finishes successfully immediately",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -990,10 +991,11 @@ func TestWaitForDeployment(t *testing.T) {
 					}, nil)
 				return client
 			},
-			err: nil,
+			wantOutput: func() string { return "" },
+			err:        nil,
 		},
 		{
-			description: "Deployment finishes over time",
+			description: "Deployment finishes successfully over time",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -1024,7 +1026,8 @@ func TestWaitForDeployment(t *testing.T) {
 				gomock.InOrder(first, second, third)
 				return client
 			},
-			err: nil,
+			err:        nil,
+			wantOutput: func() string { return "" },
 		},
 		{
 			description: "Deployment immediately failed",
@@ -1035,14 +1038,21 @@ func TestWaitForDeployment(t *testing.T) {
 					GetDeployment(ctx, appName, uuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
-							State:   meroxa.DeploymentStateRollingBackError,
+							State:   meroxa.DeploymentStateDeployingError,
 							Details: strings.Join(outputLogs, "\n"),
 						},
 					}, nil)
 				return client
 			},
 			noLogs: false,
-			err:    fmt.Errorf("failed to deploy Application %q", appName),
+			wantOutput: func() string {
+				errorMsg := fmt.Sprintf("\t x Failed to deploy Application %q\n", appName)
+				for _, l := range outputLogs {
+					errorMsg = fmt.Sprintf("%s\t\t > %s\n", errorMsg, l)
+				}
+				return errorMsg
+			},
+			err: fmt.Errorf("\n Check `meroxa apps logs` for further information"),
 		},
 		{
 			description: "Failed to get latest deployment",
@@ -1055,7 +1065,10 @@ func TestWaitForDeployment(t *testing.T) {
 				return client
 			},
 			noLogs: true,
-			err:    fmt.Errorf("not today"),
+			wantOutput: func() string {
+				return ""
+			},
+			err: errors.New("couldn't fetch deployment status: not today"),
 		},
 	}
 
@@ -1072,16 +1085,9 @@ func TestWaitForDeployment(t *testing.T) {
 			require.Equal(t, tc.err, err, "errors are not equal")
 
 			if err != nil {
-				var failureLogs string
-				if tc.noLogs {
-					failureLogs = ""
-				} else {
-					failureLogs = outputLogs[0] + "\n" + outputLogs[1] + "\n\tx " + outputLogs[2] + "\n"
-				}
-				require.Equal(t, failureLogs, logger.SpinnerOutput(), "logs are not equal")
+				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
 			} else {
-				successLogs := strings.Join(outputLogs, "\n") + "\n"
-				require.Equal(t, successLogs, logger.SpinnerOutput(), "logs are not equal")
+				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
 			}
 		})
 	}
