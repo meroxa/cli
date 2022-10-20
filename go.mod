@@ -26,9 +26,9 @@ require (
 
 require (
 	github.com/briandowns/spinner v1.19.0
-	github.com/coreos/go-semver v0.3.0
 	github.com/docker/docker v20.10.19+incompatible
 	github.com/mattn/go-shellwords v1.0.12
+	github.com/meroxa/turbine-core v0.0.0-20221020080535-736b3696533b
 	github.com/meroxa/turbine-go v0.0.0-20221018190300-cf96cdb16beb
 	github.com/stretchr/testify v1.8.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
@@ -69,6 +69,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/santhosh-tekuri/jsonschema/v5 v5.0.1 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
