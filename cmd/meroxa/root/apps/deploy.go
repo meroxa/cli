@@ -27,8 +27,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/go-semver/semver"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -38,6 +36,7 @@ import (
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 const (
@@ -456,27 +455,6 @@ func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	return err
 }
 
-// validateSpecVersionDeployment checks, when --spec is specified, whether the version has a valid format
-// accepted formats are: semver or "latest".
-func (d *Deploy) validateSpecVersionDeployment() error {
-	switch d.flags.Spec {
-	case "":
-		return nil
-	case "latest":
-		d.specVersion = d.flags.Spec
-		return nil
-	}
-
-	// check if the version has a valid format
-	version, err := semver.NewVersion(d.flags.Spec)
-	if err != nil {
-		return fmt.Errorf("invalid spec version: %v. You must specify a valid format or use \"latest\"", err)
-	}
-
-	d.specVersion = version.String()
-	return nil
-}
-
 // validateConfig will validate uncommitted changes and git branch.
 func (d *Deploy) validateGitConfig(ctx context.Context) error {
 	return d.turbineCLI.GitChecks(ctx)
@@ -713,7 +691,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		}
 	} else {
 		// Intermediate Representation Workflow
-		if err = d.validateSpecVersionDeployment(); err != nil {
+		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
 			return err
 		}
 

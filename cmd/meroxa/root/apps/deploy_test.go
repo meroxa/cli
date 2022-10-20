@@ -64,59 +64,6 @@ func TestDeployAppFlags(t *testing.T) {
 	}
 }
 
-func TestValidateSpecVersionDeployment(t *testing.T) {
-	fooVersion := "foo"
-	semverError := fmt.Sprintf("%s is not in dotted-tri format", fooVersion)
-
-	tests := []struct {
-		desc                string
-		version             string
-		err                 error
-		expectedSpecVersion string
-	}{
-		{
-			desc:                "no spec is specified",
-			version:             "",
-			err:                 nil,
-			expectedSpecVersion: "",
-		},
-		{
-			desc:                "spec is \"latest\"",
-			version:             "latest",
-			err:                 nil,
-			expectedSpecVersion: "latest",
-		},
-		{
-			desc:                "spec is an invalid version",
-			version:             fooVersion,
-			err:                 fmt.Errorf("invalid spec version: %s. You must specify a valid format or use \"latest\"", semverError),
-			expectedSpecVersion: "",
-		},
-		{
-			desc:                "spec is a valid semver",
-			version:             "0.1.0",
-			err:                 nil,
-			expectedSpecVersion: "0.1.0",
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.desc, func(t *testing.T) {
-			d := &Deploy{}
-			d.flags.Spec = tc.version
-			got := d.validateSpecVersionDeployment()
-
-			if got != nil && tc.err.Error() != got.Error() {
-				t.Fatalf("expected %v, got %v", tc.err, got)
-			}
-
-			if got == nil && d.specVersion != tc.expectedSpecVersion {
-				t.Fatalf("expected version to be set to %s, got %s", tc.expectedSpecVersion, d.specVersion)
-			}
-		})
-	}
-}
-
 func TestValidateDockerHubFlags(t *testing.T) {
 	tests := []struct {
 		desc                 string
