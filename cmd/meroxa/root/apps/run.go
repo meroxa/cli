@@ -25,6 +25,7 @@ import (
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbinePy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRB "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
 )
 
@@ -101,6 +102,11 @@ func (r *Run) Execute(ctx context.Context) error {
 	case "py", turbine.Python3, turbine.Python:
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbinePy.New(r.logger, r.path)
+		}
+		return r.turbineCLI.Run(ctx)
+	case "rb", turbine.Ruby:
+		if r.turbineCLI == nil {
+			r.turbineCLI = turbineRB.New(r.logger, r.path)
 		}
 		return r.turbineCLI.Run(ctx)
 	default:

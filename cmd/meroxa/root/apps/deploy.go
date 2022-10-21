@@ -367,7 +367,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		d.appName = d.prepareAppName(ctx)
 	}
 
-	if err = d.validateLanguage(); err != nil {
+	if err = validateLanguage(d.lang); err != nil {
 		return err
 	}
 
