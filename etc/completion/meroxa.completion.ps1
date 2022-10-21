@@ -10,7 +10,7 @@ filter __meroxa_escapeStringWithSpecialChars {
     $_ -replace '\s|#|@|\$|;|,|''|\{|\}|\(|\)|"|`|\||<|>|&','`$&'
 }
 
-Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock {
+[scriptblock]$__meroxaCompleterBlock = {
     param(
             $WordToComplete,
             $CommandAst,
@@ -226,3 +226,5 @@ Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock {
 
     }
 }
+
+Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock $__meroxaCompleterBlock

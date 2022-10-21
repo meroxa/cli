@@ -2,6 +2,8 @@ module github.com/meroxa/cli
 
 go 1.18
 
+replace github.com/meroxa/turbine-core-grpc => ../turbine-core-grpc
+
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 	github.com/cased/cased-go v1.0.4
@@ -28,10 +30,13 @@ require (
 	github.com/briandowns/spinner v1.19.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/docker/docker v20.10.19+incompatible
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/mattn/go-shellwords v1.0.12
+	github.com/meroxa/turbine-core-grpc v0.0.0-00010101000000-000000000000
 	github.com/meroxa/turbine-go v0.0.0-20221018190300-cf96cdb16beb
 	github.com/stretchr/testify v1.8.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
+	google.golang.org/grpc v1.49.0
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -39,6 +44,7 @@ require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Microsoft/hcsshim v0.9.4 // indirect
+	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.5.13 // indirect
@@ -83,6 +89,7 @@ require (
 	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20220707150051-590a5ac7bee1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

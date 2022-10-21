@@ -324,24 +324,6 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	return fqImageName, nil
 }
 
-// validateLanguage stops execution of the deployment in case language is not supported.
-// It also consolidates lang used in API in case user specified a supported language using an unexpected description.
-func (d *Deploy) validateLanguage() error {
-	switch d.lang {
-	case "go", turbine.GoLang:
-		d.lang = turbine.GoLang
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		d.lang = turbine.JavaScript
-	case "py", turbine.Python3, turbine.Python:
-		d.lang = turbine.Python
-	case "rb", turbine.Ruby:
-		d.lang = turbine.Ruby
-	default:
-		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
-	}
-	return nil
-}
-
 func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	var err error
 	var config turbine.AppConfig
@@ -377,7 +359,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		d.appName = d.prepareAppName(ctx)
 	}
 
-	if err = d.validateLanguage(); err != nil {
+	if err = validateLanguage(d.lang); err != nil {
 		return err
 	}
 
