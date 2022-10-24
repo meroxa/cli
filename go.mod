@@ -29,8 +29,8 @@ require (
 	github.com/docker/docker v20.10.19+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-core v0.0.0-20221020080535-736b3696533b
-	github.com/meroxa/turbine-go v0.0.0-20221018190300-cf96cdb16beb
-	github.com/stretchr/testify v1.8.0
+	github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf
+	github.com/stretchr/testify v1.8.1
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 )
 

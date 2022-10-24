@@ -180,7 +180,7 @@ github.com/meroxa/meroxa-go/pkg/mock
 # github.com/meroxa/turbine-core v0.0.0-20221020080535-736b3696533b
 ## explicit; go 1.19
 github.com/meroxa/turbine-core/pkg/ir
-# github.com/meroxa/turbine-go v0.0.0-20221018190300-cf96cdb16beb
+# github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf
 ## explicit; go 1.18
 github.com/meroxa/turbine-go
 github.com/meroxa/turbine-go/deploy
@@ -268,7 +268,7 @@ github.com/spf13/viper/internal/encoding/javaproperties
 github.com/spf13/viper/internal/encoding/json
 github.com/spf13/viper/internal/encoding/toml
 github.com/spf13/viper/internal/encoding/yaml
-# github.com/stretchr/testify v1.8.0
+# github.com/stretchr/testify v1.8.1
 ## explicit; go 1.13
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
