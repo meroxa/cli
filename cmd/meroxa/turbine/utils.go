@@ -472,7 +472,7 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	for retries > 0 {
 		res, err = client.Do(req)
 		if err != nil {
-			retries -= 1
+			retries--
 		} else {
 			break
 		}
