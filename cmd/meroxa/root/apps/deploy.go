@@ -601,10 +601,10 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 }
 
 func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
-	logs := []string{}
-
 	cctx, cancel := context.WithTimeout(ctx, minutesToWaitForDeployment*time.Minute)
 	defer cancel()
+
+	checkLogsMsg := "Check `meroxa apps logs` for further information"
 
 	t := time.NewTicker(intervalCheckForDeployment)
 	defer t.Stop()
@@ -615,36 +615,24 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 			var deployment *meroxa.Deployment
 			deployment, err := d.client.GetDeployment(ctx, d.appName, depUUID)
 			if err != nil {
-				return err
+				return fmt.Errorf("couldn't fetch deployment status: %s", err.Error())
 			}
-			newLogs := strings.Split(deployment.Status.Details, "\n")
-			if len(newLogs) > len(logs) {
-				for i := len(logs); i < len(newLogs); i++ {
-					if len(logs) == 0 && i != 0 {
-						d.logger.StopSpinner(newLogs[i-1])
-					} else if len(logs) != 0 {
-						d.logger.StopSpinner(newLogs[i-1])
-					}
-					d.logger.StartSpinner("\t", newLogs[i])
-				}
-				logs = newLogs
-			}
-			if deployment.Status.State == meroxa.DeploymentStateDeployed {
-				l := len(logs)
-				d.logger.StopSpinner(logs[l-1])
+			logs := strings.Split(deployment.Status.Details, "\n")
+
+			switch {
+			case deployment.Status.State == meroxa.DeploymentStateDeployed:
 				return nil
-			} else if deployment.Status.State == meroxa.DeploymentStateDeployingError ||
-				deployment.Status.State == meroxa.DeploymentStateRollingBackError {
-				l := len(logs)
-				d.logger.StopSpinnerWithStatus(logs[l-1], log.Failed)
-				return fmt.Errorf("failed to deploy Application %q", d.appName)
+			case deployment.Status.State == meroxa.DeploymentStateDeployingError:
+				d.logger.Errorf(ctx, "\t %s Failed to deploy Application %q\n", d.logger.FailedMark(), d.appName)
+				for _, l := range logs {
+					d.logger.Errorf(ctx, "\t\t > %s", l)
+				}
+				return fmt.Errorf("\n %s", checkLogsMsg)
 			}
 		case <-cctx.Done():
-			//nolint:stylecheck
 			return fmt.Errorf(
-				"Your Turbine Application Deployment did not finish within %d minutes."+
-					" Check `meroxa apps logs` for further information",
-				minutesToWaitForDeployment)
+				"your Turbine Application Deployment did not finish within %d minutes. %s",
+				minutesToWaitForDeployment, checkLogsMsg)
 		}
 	}
 }
@@ -699,7 +687,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			Name:     d.appName,
 			Language: d.lang,
 			GitSha:   gitSha})
-		if err != nil && !strings.Contains(err.Error(), "already exists") {
+		if err != nil {
+			if strings.Contains(err.Error(), "already exists") {
+				msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
+				return errors.New(msg)
+			}
 			return err
 		}
 	}
