@@ -125,7 +125,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 	}
 
 	deployment, err := l.client.GetLatestDeployment(ctx, app.Name)
-	if err != nil && !strings.Contains(err.Error(), "user lacks permission") {
+	if err != nil && !strings.Contains(err.Error(), "could not find") {
 		return err
 	}
 
