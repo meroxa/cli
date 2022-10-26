@@ -466,14 +466,24 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	req.ContentLength = fi.Size()
 
 	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		logger.StopSpinnerWithStatus("\t Failed to send PUT request", log.Failed)
-		return err
+
+	retries := 3
+	var res *http.Response
+	for retries > 0 {
+		res, err = client.Do(req)
+		if err != nil {
+			retries--
+		} else {
+			break
+		}
 	}
 
 	if res != nil && res.Body != nil {
 		defer res.Body.Close()
+	}
+	if err != nil {
+		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
+		return err
 	}
 
 	logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
