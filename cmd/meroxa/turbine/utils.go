@@ -472,7 +472,7 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 		return err
 	}
 
-	if res.Body != nil {
+	if res != nil && res.Body != nil {
 		defer res.Body.Close()
 	}
 
