@@ -32,6 +32,10 @@ const (
 	turbineJSVersion  = "1.3.3"
 	isTrue            = "true"
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
+
+	IncompatibleTurbineVersion = `your Turbine library version is incompatible with the Meroxa CLI.
+For guidance on updating to the latest version, visit: 
+https://docs.meroxa.com/beta-overview#updated-meroxa-cli-and-outdated-turbine-library`
 )
 
 type AppConfig struct {
