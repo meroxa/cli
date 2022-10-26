@@ -1,6 +1,6 @@
 ## meroxa account set
 
-Set current active account connector
+Set active account
 
 ```
 meroxa account set [flags]
