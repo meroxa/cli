@@ -57,19 +57,19 @@ func TestAppLogsTable(t *testing.T) {
 		t.Errorf("expected %q to be shown", log)
 	}
 
-	if !strings.Contains(out, fmt.Sprintf("%s (source)", res1)) {
+	if !strings.Contains(out, fmt.Sprintf("# Source connector logs (%s)", res1)) {
 		t.Errorf("expected %q to be shown as a source", res1)
 	}
 
-	if !strings.Contains(out, fmt.Sprintf("%s (destination)", res2)) {
+	if !strings.Contains(out, fmt.Sprintf("# Destination connector logs (%s)", res2)) {
 		t.Errorf("expected %q to be shown as a destination", res2)
 	}
 
-	if !strings.Contains(out, fmt.Sprintf("%s (function)", functions[0].Name)) {
+	if !strings.Contains(out, fmt.Sprintf("# Function logs (%s)", functions[0].Name)) {
 		t.Errorf("expected %q to be shown as a function", functions[0].Name)
 	}
 
-	if !strings.Contains(out, fmt.Sprintf("%s (deployment)", deployment.UUID)) {
+	if !strings.Contains(out, fmt.Sprintf("# Deployment logs (%s)", deployment.UUID)) {
 		t.Errorf("expected %q to be shown as a deployment", deployment.UUID)
 	}
 }
