@@ -118,30 +118,30 @@ func AppLogsTable(
 		// Only show information if there are logs or a trace available
 		if c.Logs != "" || c.Connector.Trace != "" {
 			if r.Collection.Source != "" {
-				subTable += fmt.Sprintf("\n%s (source)", r.Name)
+				subTable += fmt.Sprintf("\n# Source connector logs (%s)\n", r.Name)
 			}
 			if r.Collection.Destination != "" {
-				subTable += fmt.Sprintf("\n%s (destination)", r.Name)
+				subTable += fmt.Sprintf("\n# Destination connector logs (%s)\n", r.Name)
 			}
 		}
 
 		if c.Logs != "" {
-			subTable += fmt.Sprintf("\n\t%s\n", c.Logs)
+			subTable += fmt.Sprintf("\n%s\n", c.Logs)
 		}
 
 		if c.Connector.Trace != "" {
-			subTable += fmt.Sprintf("\n\t%s\n", c.Connector.Trace)
+			subTable += fmt.Sprintf("\n%s\n", c.Connector.Trace)
 		}
 	}
 
 	for _, f := range functions {
 		if f.Logs != "" {
-			subTable += fmt.Sprintf("\n%s (function)\n\t%s\n", f.Name, f.Logs)
+			subTable += fmt.Sprintf("\n# Function logs (%s)\n\n%s\n", f.Name, f.Logs)
 		}
 	}
 
 	if deployment != nil && deployment.Status.Details != "" {
-		subTable += fmt.Sprintf("\n%s (deployment)\n\t%s\n", deployment.UUID, deployment.Status.Details)
+		subTable += fmt.Sprintf("\n# Deployment logs (%s)\n\n%s\n", deployment.UUID, deployment.Status.Details)
 	}
 
 	return subTable
