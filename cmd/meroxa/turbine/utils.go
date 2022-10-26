@@ -371,7 +371,7 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 	var err error
 
 	if language == GoLang || language == JavaScript {
-		logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", appPath))
+		logger.StartSpinner("\t", fmt.Sprintf(" Creating Dockerfile before uploading source in %s", appPath))
 
 		if language == GoLang {
 			err = turbineGo.CreateDockerfile(appName, appPath)

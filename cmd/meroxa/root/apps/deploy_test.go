@@ -4,24 +4,29 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
+
+	"reflect"
 	"strings"
 	"testing"
 
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
+	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeployAppFlags(t *testing.T) {
@@ -66,31 +71,31 @@ func TestDeployAppFlags(t *testing.T) {
 
 func TestValidateDockerHubFlags(t *testing.T) {
 	tests := []struct {
-		desc                 string
+		name                 string
 		dockerHubUserName    string
 		dockerHubAccessToken string
 		err                  error
 	}{
 		{
-			desc:                 "Neither DockerHub flags are present",
+			name:                 "Neither DockerHub flags are present",
 			dockerHubUserName:    "",
 			dockerHubAccessToken: "",
 			err:                  nil,
 		},
 		{
-			desc:                 "DockerHubUserName is specified, but DockerHubAccessToken isn't",
+			name:                 "DockerHubUserName is specified, but DockerHubAccessToken isn't",
 			dockerHubUserName:    "my-docker-hub-username",
 			dockerHubAccessToken: "",
 			err:                  errors.New("--docker-hub-access-token is required when --docker-hub-username is present"),
 		},
 		{
-			desc:                 "DockerHubAccessToken is specified, but DockerHubUserName isn't",
+			name:                 "DockerHubAccessToken is specified, but DockerHubUserName isn't",
 			dockerHubUserName:    "",
 			dockerHubAccessToken: "my-docker-hub-access-token",
 			err:                  errors.New("--docker-hub-username is required when --docker-hub-access-token is present"),
 		},
 		{
-			desc:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
+			name:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
 			dockerHubUserName:    "my-docker-hub-username",
 			dockerHubAccessToken: "my-docker-hub-access-token",
 			err:                  nil,
@@ -98,7 +103,7 @@ func TestValidateDockerHubFlags(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.desc, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			d := &Deploy{}
 			d.flags.DockerHubUserName = tc.dockerHubUserName
 			d.flags.DockerHubAccessToken = tc.dockerHubAccessToken
@@ -123,31 +128,31 @@ func TestValidateDockerHubFlags(t *testing.T) {
 
 func TestValidateDockerHubEnVars(t *testing.T) {
 	tests := []struct {
-		desc                 string
+		name                 string
 		dockerHubUserName    string
 		dockerHubAccessToken string
 		err                  error
 	}{
 		{
-			desc:                 "Neither DockerHub flags are present",
+			name:                 "Neither DockerHub flags are present",
 			dockerHubUserName:    "",
 			dockerHubAccessToken: "",
 			err:                  nil,
 		},
 		{
-			desc:                 "DockerHubUserName is specified, but DockerHubAccessToken isn't",
+			name:                 "DockerHubUserName is specified, but DockerHubAccessToken isn't",
 			dockerHubUserName:    "my-docker-hub-username",
 			dockerHubAccessToken: "",
 			err:                  fmt.Errorf("%s is required when %s is present", dockerHubAccessTokenEnv, dockerHubUserNameEnv),
 		},
 		{
-			desc:                 "DockerHubAccessToken is specified, but DockerHubUserName isn't",
+			name:                 "DockerHubAccessToken is specified, but DockerHubUserName isn't",
 			dockerHubUserName:    "",
 			dockerHubAccessToken: "my-docker-hub-access-token",
 			err:                  fmt.Errorf("%s is required when %s is present", dockerHubUserNameEnv, dockerHubAccessTokenEnv),
 		},
 		{
-			desc:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
+			name:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
 			dockerHubUserName:    "my-docker-hub-username",
 			dockerHubAccessToken: "my-docker-hub-access-token",
 			err:                  nil,
@@ -155,7 +160,7 @@ func TestValidateDockerHubEnVars(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.desc, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewInMemoryConfig()
 
 			d := &Deploy{
@@ -184,19 +189,19 @@ func TestValidateDockerHubEnVars(t *testing.T) {
 
 func TestValidateLocalDeploymentConfig(t *testing.T) {
 	tests := []struct {
-		desc                 string
+		name                 string
 		dockerHubUserName    string
 		dockerHubAccessToken string
 		localDeployment      bool
 	}{
 		{
-			desc:                 "Neither DockerHub flags are present",
+			name:                 "Neither DockerHub flags are present",
 			dockerHubUserName:    "",
 			dockerHubAccessToken: "",
 			localDeployment:      false,
 		},
 		{
-			desc:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
+			name:                 "BothDockerHubAccessToken and DockerHubUserName are specified",
 			dockerHubUserName:    "my-docker-hub-username",
 			dockerHubAccessToken: "my-docker-hub-access-token",
 			localDeployment:      true,
@@ -204,7 +209,7 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.desc, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewInMemoryConfig()
 			d := &Deploy{
 				config: cfg,
@@ -220,101 +225,6 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 				t.Fatalf("expected localDeployment to be %v, got %v", tc.localDeployment, d.localDeploy.Enabled)
 			}
 		})
-	}
-}
-
-func TestTearDownExistingResourcesWithAppRunning(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
-
-	d := &Deploy{
-		client: client,
-		logger: logger,
-	}
-
-	app := utils.GenerateApplication("")
-	d.appName = app.Name
-
-	client.
-		EXPECT().
-		GetApplication(ctx, app.Name).
-		Return(&app, nil)
-
-	err := d.tearDownExistingResources(ctx)
-
-	expectedError := fmt.Sprintf("application %q is already %s", app.Name, app.Status.State)
-	expectedError = fmt.Sprintf("%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", expectedError, app.Name)
-	if err.Error() != expectedError {
-		t.Fatalf("expected %s error, got \"%s\"", expectedError, err.Error())
-	}
-}
-
-func TestTearDownExistingResourcesWithAppDegraded(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
-
-	d := &Deploy{
-		client: client,
-		logger: logger,
-	}
-
-	app := utils.GenerateApplication(meroxa.ApplicationStateDegraded)
-	d.appName = app.Name
-
-	client.
-		EXPECT().
-		GetApplication(ctx, app.Name).
-		Return(&app, nil)
-
-	res := &http.Response{
-		StatusCode: http.StatusNoContent,
-	}
-	client.
-		EXPECT().
-		DeleteApplicationEntities(ctx, d.appName).
-		Return(res, nil)
-
-	err := d.tearDownExistingResources(ctx)
-
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
-}
-
-func TestTearDownExistingResourcesWithAppNotFound(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
-
-	d := &Deploy{
-		client: client,
-		logger: logger,
-	}
-
-	d.appName = "test"
-
-	client.
-		EXPECT().
-		GetApplication(ctx, d.appName).
-		Return(nil, nil)
-
-	res := &http.Response{
-		StatusCode: http.StatusNoContent,
-	}
-	client.
-		EXPECT().
-		DeleteApplicationEntities(ctx, d.appName).
-		Return(res, nil)
-
-	err := d.tearDownExistingResources(ctx)
-
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
 	}
 }
 
@@ -588,33 +498,33 @@ func TestValidateCollections(t *testing.T) {
 
 func TestValidateLanguage(t *testing.T) {
 	tests := []struct {
-		description string
-		languages   []string
-		errFormat   string
+		name      string
+		languages []string
+		errFormat string
 	}{
 		{
-			description: "Successfully validate golang",
-			languages:   []string{"go", "golang"},
+			name:      "Successfully validate golang",
+			languages: []string{"go", "golang"},
 		},
 		{
-			description: "Successfully validate javascript",
-			languages:   []string{"js", "javascript", "nodejs"},
+			name:      "Successfully validate javascript",
+			languages: []string{"js", "javascript", "nodejs"},
 		},
 		{
-			description: "Successfully validate python",
-			languages:   []string{"py", "python", "python3"},
+			name:      "Successfully validate python",
+			languages: []string{"py", "python", "python3"},
 		},
 		{
-			description: "Reject unsupported languages",
-			languages:   []string{"cobol", "crystal", "g@rbAg3"},
-			errFormat:   "language %q not supported. Currently, we support \"javascript\", \"golang\", and \"python\"",
+			name:      "Reject unsupported languages",
+			languages: []string{"cobol", "crystal", "g@rbAg3"},
+			errFormat: "language %q not supported. Currently, we support \"javascript\", \"golang\", and \"python\"",
 		},
 	}
 
 	test := &Deploy{}
 
 	for _, tc := range tests {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			for _, lang := range tc.languages {
 				test.lang = lang
 				err := test.validateLanguage()
@@ -647,30 +557,14 @@ func TestDeployApp(t *testing.T) {
 	err := fmt.Errorf("nope")
 
 	tests := []struct {
-		description    string
+		name           string
 		meroxaClient   func() meroxa.Client
 		mockTurbineCLI func(string) turbine.CLI
 		version        string
 		err            error
 	}{
 		{
-			description: "Successfully deploy app pre IR",
-			meroxaClient: func() meroxa.Client {
-				client := mock.NewMockClient(ctrl)
-				return client
-			},
-			mockTurbineCLI: func(version string) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
-				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
-					Return(specStr, nil)
-				return mockTurbineCLI
-			},
-			version: "",
-			err:     nil,
-		},
-		{
-			description: "Successfully deploy app with IR",
+			name: "Successfully deploy app",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				input := &meroxa.CreateDeploymentInput{
@@ -696,7 +590,7 @@ func TestDeployApp(t *testing.T) {
 			err:     nil,
 		},
 		{
-			description: "Fail to call Turbine deploy",
+			name: "Fail to call Turbine deploy",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				return client
@@ -712,7 +606,7 @@ func TestDeployApp(t *testing.T) {
 			err:     err,
 		},
 		{
-			description: "Fail to create deployment",
+			name: "Fail to create deployment",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -739,7 +633,7 @@ func TestDeployApp(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			cfg := config.NewInMemoryConfig()
 			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
@@ -774,13 +668,13 @@ func TestGetPlatformImage(t *testing.T) {
 	err := fmt.Errorf("nope")
 
 	tests := []struct {
-		description    string
+		name           string
 		meroxaClient   func() meroxa.Client
 		mockTurbineCLI func() turbine.CLI
 		err            error
 	}{
 		{
-			description: "Successfully build image",
+			name: "Successfully build image",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -807,7 +701,7 @@ func TestGetPlatformImage(t *testing.T) {
 			err: nil,
 		},
 		{
-			description: "Fail to create source",
+			name: "Fail to create source",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -823,7 +717,7 @@ func TestGetPlatformImage(t *testing.T) {
 			err: err,
 		},
 		{
-			description: "Fail to upload source",
+			name: "Fail to upload source",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -842,7 +736,7 @@ func TestGetPlatformImage(t *testing.T) {
 			err: err,
 		},
 		{
-			description: "Fail to create build",
+			name: "Fail to create build",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -865,7 +759,7 @@ func TestGetPlatformImage(t *testing.T) {
 			err: err,
 		},
 		{
-			description: "Fail to build",
+			name: "Fail to build",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -894,7 +788,7 @@ func TestGetPlatformImage(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			d := &Deploy{
 				client:     tc.meroxaClient(),
 				turbineCLI: tc.mockTurbineCLI(),
@@ -920,34 +814,34 @@ func TestPrepareAppName(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	tests := []struct {
-		description string
-		branchName  string
-		resultName  string
+		name       string
+		branchName string
+		resultName string
 	}{
 		{
-			description: "Prepare app name for main",
-			branchName:  "main",
-			resultName:  appName,
+			name:       "Prepare app name for main",
+			branchName: "main",
+			resultName: appName,
 		},
 		{
-			description: "Prepare app name for master",
-			branchName:  "master",
-			resultName:  appName,
+			name:       "Prepare app name for master",
+			branchName: "master",
+			resultName: appName,
 		},
 		{
-			description: "Prepare app name for feature branch without characters to replace",
-			branchName:  "my-feature-branch",
-			resultName:  "my-app-my-feature-branch",
+			name:       "Prepare app name for feature branch without characters to replace",
+			branchName: "my-feature-branch",
+			resultName: "my-app-my-feature-branch",
 		},
 		{
-			description: "Prepare app name for feature branch with characters to replace",
-			branchName:  "My.Feature\\Branch@01[",
-			resultName:  "my-app-my-feature-branch-01-",
+			name:       "Prepare app name for feature branch with characters to replace",
+			branchName: "My.Feature\\Branch@01[",
+			resultName: "my-app-my-feature-branch-01-",
 		},
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			d := &Deploy{
 				gitBranch:     tc.branchName,
 				configAppName: appName,
@@ -970,14 +864,14 @@ func TestWaitForDeployment(t *testing.T) {
 	uuid := "does-not-matter"
 
 	tests := []struct {
-		description  string
+		name         string
 		meroxaClient func() meroxa.Client
 		wantOutput   func() string
 		noLogs       bool
 		err          error
 	}{
 		{
-			description: "Deployment finishes successfully immediately",
+			name: "Deployment finishes successfully immediately",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -995,7 +889,7 @@ func TestWaitForDeployment(t *testing.T) {
 			err:        nil,
 		},
 		{
-			description: "Deployment finishes successfully over time",
+			name: "Deployment finishes successfully over time",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -1030,7 +924,7 @@ func TestWaitForDeployment(t *testing.T) {
 			wantOutput: func() string { return "" },
 		},
 		{
-			description: "Deployment immediately failed",
+			name: "Deployment immediately failed",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -1055,7 +949,7 @@ func TestWaitForDeployment(t *testing.T) {
 			err: fmt.Errorf("\n Check `meroxa apps logs` for further information"),
 		},
 		{
-			description: "Failed to get latest deployment",
+			name: "Failed to get latest deployment",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -1073,7 +967,7 @@ func TestWaitForDeployment(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.description, func(t *testing.T) {
+		t.Run(tc.name, func(t *testing.T) {
 			logger := log.NewTestLogger()
 			d := &Deploy{
 				client:  tc.meroxaClient(),
@@ -1088,6 +982,103 @@ func TestWaitForDeployment(t *testing.T) {
 				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
 			} else {
 				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
+			}
+		})
+	}
+}
+
+func Test_getTurbineCLIFromLanguage(t *testing.T) {
+	d := &Deploy{
+		logger: log.NewTestLogger(),
+		path:   ".",
+	}
+
+	testCases := []struct {
+		name           string
+		language       string
+		wantTurbineCLI turbine.CLI
+		wantErr        error
+	}{
+		{
+			name:           "when language is go",
+			language:       turbine.GoLang,
+			wantTurbineCLI: turbineGo.New(d.logger, d.path),
+		},
+		{
+			name:           "when language is js",
+			language:       turbine.JavaScript,
+			wantTurbineCLI: turbineJS.New(d.logger, d.path),
+		},
+		{
+			name:           "when language is python",
+			language:       turbine.Python,
+			wantTurbineCLI: turbinePY.New(d.logger, d.path),
+		},
+		{
+			name:           "when language is python",
+			language:       turbine.Python,
+			wantTurbineCLI: turbinePY.New(d.logger, d.path),
+		},
+		{
+			name:           "when language is not supported",
+			language:       "crystal",
+			wantTurbineCLI: nil,
+			wantErr:        fmt.Errorf("language \"crystal\" not supported. %s", LanguageNotSupportedError),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			d.lang = tc.language
+			gotTurbineCLI, gotErr := d.getTurbineCLIFromLanguage()
+
+			if tc.wantErr != nil {
+				assert.Equal(t, gotErr, tc.wantErr)
+			} else {
+				assert.NoError(t, gotErr)
+				require.Equal(t, reflect.TypeOf(gotTurbineCLI), reflect.TypeOf(tc.wantTurbineCLI))
+			}
+		})
+	}
+}
+
+func Test_getSpecVersion(t *testing.T) {
+	d := &Deploy{}
+
+	testCases := []struct {
+		name     string
+		spec     string
+		wantErr  error
+		wantSpec string
+	}{
+		{
+			name:     "when user specifies a valid spec version",
+			spec:     ir.LatestSpecVersion,
+			wantSpec: ir.LatestSpecVersion,
+		},
+		{
+			name:     "when user doesn't specify a spec version",
+			spec:     "",
+			wantSpec: ir.LatestSpecVersion,
+		},
+		{
+			name:    "when user specifes an invalid spec version",
+			spec:    "0.0.0",
+			wantErr: fmt.Errorf("spec version \"0.0.0\" is not a supported. use version %q instead", ir.LatestSpecVersion),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			d.flags.Spec = tc.spec
+
+			gotSpec, gotErr := d.getSpecVersion()
+
+			if tc.wantErr != nil {
+				assert.Equal(t, gotErr, tc.wantErr)
+			} else {
+				assert.NoError(t, gotErr)
+				assert.Equal(t, gotSpec, tc.wantSpec)
 			}
 		})
 	}
