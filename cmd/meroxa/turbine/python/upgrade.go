@@ -15,7 +15,7 @@ func (t *turbinePyCLI) Upgrade(vendor bool) error {
 	cmd.Dir = t.appPath
 	err := cmd.Run()
 	if err != nil {
-		t.logger.StartSpinner("\t", " Tidying up requirements.txt...")
+		t.logger.StartSpinner("\t", "Tidying up requirements.txt...")
 		cmd = exec.Command("bash", "-c", "sed -i 's+meroxa-py++g' requirements.txt")
 		cmd.Dir = t.appPath
 		err1 := cmd.Run()
@@ -31,7 +31,7 @@ func (t *turbinePyCLI) Upgrade(vendor bool) error {
 		}
 	}
 
-	t.logger.StartSpinner("\t", " Updating Python dependencies...")
+	t.logger.StartSpinner("\t", "Updating Python dependencies...")
 	cmd = exec.Command("pip", "install", "turbine-py", "-U")
 	cmd.Dir = t.appPath
 	out, err := cmd.CombinedOutput()

@@ -13,7 +13,7 @@ func (t *turbineJsCLI) Upgrade(vendor bool) error {
 	cmd.Dir = t.appPath
 	err := cmd.Wait()
 	if err != nil {
-		t.logger.StartSpinner("\t", " Adding @meroxa/turbine-js-framework requirement...")
+		t.logger.StartSpinner("\t", "Adding @meroxa/turbine-js-framework requirement...")
 		cmd = exec.Command("npm", "install", "@meroxa/turbine-js-framework", "--save")
 		cmd.Dir = t.appPath
 		out, err := cmd.CombinedOutput()
@@ -38,7 +38,7 @@ func (t *turbineJsCLI) Upgrade(vendor bool) error {
 		}
 		t.logger.StopSpinnerWithStatus("Added @meroxa/turbine-js-framework requirement successfully!", log.Successful)
 	} else {
-		t.logger.StartSpinner("\t", " Upgrading @meroxa/turbine-js-framework...")
+		t.logger.StartSpinner("\t", "Upgrading @meroxa/turbine-js-framework...")
 		cmd = exec.Command("npm", "upgrade", "@meroxa/turbine-js-framework")
 		cmd.Dir = t.appPath
 		out, err := cmd.CombinedOutput()

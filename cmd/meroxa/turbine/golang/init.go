@@ -27,7 +27,7 @@ func (t *turbineGoCLI) GitInit(ctx context.Context, name string) error {
 }
 
 func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
-	l.StartSpinner("\t", " Running golang module initializing...")
+	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +
 		"https://docs.meroxa.com/beta-overview#go-mod-init-for-a-new-golang-turbine-data-application"
 	goPath := os.Getenv("GOPATH")

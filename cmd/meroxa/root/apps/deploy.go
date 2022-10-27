@@ -66,6 +66,7 @@ type Deploy struct {
 		DockerHubAccessToken     string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
 		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
+		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
 	}
 
 	client        deployApplicationClient
@@ -195,7 +196,7 @@ func (d *Deploy) Logger(logger log.Logger) {
 }
 
 func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
-	d.logger.StartSpinner("\t", " Fetching Meroxa Platform source...")
+	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
 
 	s, err := d.client.CreateSource(ctx)
 	if err != nil {
@@ -218,7 +219,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
 	}
-	d.logger.StartSpinner("\t", fmt.Sprintf(" Building Meroxa Process image (%q)...", build.Uuid))
+	d.logger.StartSpinner("\t", fmt.Sprintf("Building Meroxa Process image (%q)...", build.Uuid))
 
 	for {
 		b, err := d.client.GetBuild(ctx, build.Uuid)
@@ -276,7 +277,7 @@ func (d *Deploy) buildApp(ctx context.Context) (err error) {
 // getAppImage will check what type of build needs to perform and ultimately will return the image name to use
 // when deploying.
 func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
-	d.logger.StartSpinner("\t", " Checking if application has processes...")
+	d.logger.StartSpinner("\t", "Checking if application has processes...")
 	var fqImageName string
 
 	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx, d.appName)
@@ -287,7 +288,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	// If no need to build, return empty imageName which won't be utilized by the deployment process anyway.
 	if !needsToBuild {
-		d.logger.StopSpinnerWithStatus("No need to create process image...\n", log.Successful)
+		d.logger.StopSpinnerWithStatus("No need to create process image\n", log.Successful)
 		return "", nil
 	}
 
@@ -396,7 +397,7 @@ func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resources []t
 }
 
 func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
-	resourceCheckMessage := fmt.Sprintf(" Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
+	resourceCheckMessage := fmt.Sprintf("Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
 
 	d.logger.StartSpinner("\t", resourceCheckMessage)
 
@@ -578,11 +579,11 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	cctx, cancel := context.WithTimeout(ctx, minutesToWaitForDeployment*time.Minute)
 	defer cancel()
-
 	checkLogsMsg := "Check `meroxa apps logs` for further information"
-
 	t := time.NewTicker(intervalCheckForDeployment)
 	defer t.Stop()
+
+	prevLine := ""
 
 	for {
 		select {
@@ -592,15 +593,26 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 			if err != nil {
 				return fmt.Errorf("couldn't fetch deployment status: %s", err.Error())
 			}
+
 			logs := strings.Split(deployment.Status.Details, "\n")
+
+			if d.flags.Verbose {
+				l := len(logs)
+				if l > 0 && logs[l-1] != prevLine {
+					prevLine = logs[l-1]
+					d.logger.Info(ctx, "\t"+logs[l-1])
+				}
+			}
 
 			switch {
 			case deployment.Status.State == meroxa.DeploymentStateDeployed:
 				return nil
 			case deployment.Status.State == meroxa.DeploymentStateDeployingError:
-				d.logger.Errorf(ctx, "\t %s Failed to deploy Application %q\n", d.logger.FailedMark(), d.appName)
-				for _, l := range logs {
-					d.logger.Errorf(ctx, "\t\t > %s", l)
+				if !d.flags.Verbose {
+					d.logger.Error(ctx, "\n")
+					for _, l := range logs {
+						d.logger.Errorf(ctx, "\t%s", l)
+					}
 				}
 				return fmt.Errorf("\n %s", checkLogsMsg)
 			}
@@ -686,25 +698,39 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	d.logger.StartSpinner("", fmt.Sprintf(" Deploying application %q...", d.appName))
-
 	var deployment *meroxa.Deployment
 	if deployment, err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
-		d.logger.StopSpinnerWithStatus("Couldn't complete the deployment", log.Failed)
 		return err
 	}
 
-	if err := d.waitForDeployment(ctx, deployment.UUID); err != nil {
-		d.logger.StopSpinnerWithStatus("Couldn't complete the deployment", log.Failed)
-		return err
+	deployMsg := fmt.Sprintf("Deploying application %q...", d.appName)
+	// In verbose mode, we'll use spinners for each deployment step
+	if d.flags.Verbose {
+		d.logger.Info(ctx, deployMsg+"\n")
+	} else {
+		d.logger.StartSpinner("", deployMsg)
 	}
 
-	d.logger.StopSpinnerWithStatus("Deploying completed!", log.Successful)
+	err = d.waitForDeployment(ctx, deployment.UUID)
+	if err != nil {
+		deploymentErroredMsg := "Couldn't complete the deployment"
+		if !d.flags.Verbose {
+			d.logger.StopSpinnerWithStatus(deploymentErroredMsg, log.Failed)
+		} else {
+			d.logger.Error(ctx, fmt.Sprintf("\t%s %s", d.logger.FailedMark(), deploymentErroredMsg))
+		}
+		return err
+	}
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", d.appName)
-	output := fmt.Sprintf("\t%s Application %q successfully deployed!\n\n  ✨ To visualize your application visit %s",
-		d.logger.SuccessfulCheck(), d.appName, dashboardURL)
-	d.logger.Info(ctx, output)
+	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To visualize your application visit %s",
+		d.appName, dashboardURL)
+
+	if d.flags.Verbose {
+		d.logger.Info(ctx, fmt.Sprintf("\n\t%s %s", d.logger.SuccessfulCheck(), output))
+	} else {
+		d.logger.StopSpinnerWithStatus(output, log.Successful)
+	}
 
 	d.logger.JSON(ctx, app)
 	return nil

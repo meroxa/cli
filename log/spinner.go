@@ -38,7 +38,7 @@ type spinnerLogger struct {
 func (l *spinnerLogger) StartSpinner(prefix, suffix string) {
 	l.s = spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithWriter(l.out)) //nolint:gomnd
 	l.s.Prefix = prefix
-	l.s.Suffix = suffix
+	l.s.Suffix = " " + suffix
 	l.s.Start()
 }
 
