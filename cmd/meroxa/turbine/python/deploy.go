@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -62,6 +63,10 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 
 	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
 	if err != nil {
+		if strings.Contains(err.Error(), "unrecognized arguments") {
+			return deploymentSpec, errors.New(utils.IncompatibleTurbineVersion)
+		}
+
 		return deploymentSpec, err
 	}
 	if specVersion != "" {

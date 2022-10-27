@@ -49,6 +49,9 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
+		if strings.Contains(string(output), "flag provided but not defined") {
+			return deploymentSpec, errors.New(utils.IncompatibleTurbineVersion)
+		}
 		return deploymentSpec, errors.New(string(output))
 	}
 
