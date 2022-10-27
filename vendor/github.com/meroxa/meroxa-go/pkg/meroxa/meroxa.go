@@ -66,9 +66,10 @@ type Client interface {
 
 	CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error)
 	CreateApplicationV2(ctx context.Context, input *CreateApplicationInput) (*Application, error)
-	DeleteApplication(ctx context.Context, name string) error
-	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
-	GetApplication(ctx context.Context, name string) (*Application, error)
+	DeleteApplication(ctx context.Context, nameOrUUID string) error
+	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
+	GetApplication(ctx context.Context, nameOrUUID string) (*Application, error)
+	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error)
 	ListApplications(ctx context.Context) ([]*Application, error)
 
 	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
