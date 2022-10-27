@@ -24,10 +24,8 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		appName,
 		"--gitsha",
 		gitSha,
-	}
-
-	if specVersion != "" {
-		args = append(args, "--spec", specVersion)
+		"--spec",
+		specVersion,
 	}
 
 	if imageName != "" {
@@ -55,13 +53,11 @@ func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		return deploymentSpec, errors.New(string(output))
 	}
 
-	if specVersion != "" {
-		deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
-		if err != nil {
-			err = fmt.Errorf(
-				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
-		}
+	deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
+	if err != nil {
+		err = fmt.Errorf("unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
 	}
+
 	return deploymentSpec, err
 }
 

@@ -7,7 +7,7 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-const turbinePYVersion = "1.5.0"
+const turbinePYVersion = "1.5.3"
 
 // Upgrade fetches the latest Meroxa dependencies.
 func (t *turbinePyCLI) Upgrade(vendor bool) error {
