@@ -26,7 +26,15 @@ type ResourceCollection struct {
 
 type ApplicationResource struct {
 	EntityIdentifier
-	Collection ResourceCollection `json:"collection,omitempty"`
+	ResourceType string             `json:"type,omitempty"`
+	Status       string             `json:"status,omitempty"`
+	Collection   ResourceCollection `json:"collection,omitempty"`
+}
+
+type EntityDetails struct {
+	EntityIdentifier
+	ResourceType string `json:"type,omitempty"`
+	Status       string `json:"status,omitempty"`
 }
 
 // Application represents the Meroxa Application type within the Meroxa API
@@ -36,9 +44,9 @@ type Application struct {
 	Language    string                `json:"language"`
 	GitSha      string                `json:"git_sha,omitempty"`
 	Status      ApplicationStatus     `json:"status,omitempty"`
-	Pipeline    EntityIdentifier      `json:"pipeline,omitempty"`
-	Connectors  []EntityIdentifier    `json:"connectors,omitempty"`
-	Functions   []EntityIdentifier    `json:"functions,omitempty"`
+	Pipeline    EntityDetails         `json:"pipeline,omitempty"`
+	Connectors  []EntityDetails       `json:"connectors,omitempty"`
+	Functions   []EntityDetails       `json:"functions,omitempty"`
 	Resources   []ApplicationResource `json:"resources,omitempty"`
 	Deployments []EntityIdentifier    `json:"deployments,omitempty"`
 	CreatedAt   time.Time             `json:"created_at"`

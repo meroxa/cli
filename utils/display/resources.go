@@ -154,32 +154,3 @@ func ResourceTypesTable(types []string, hideHeaders bool) string {
 func PrintResourceTypesTable(types []string, hideHeaders bool) {
 	fmt.Println(ResourceTypesTable(types, hideHeaders))
 }
-
-func extendedResourcesTable(resources []*meroxa.Resource, connectors []*meroxa.Connector) string {
-	if len(resources) == 0 {
-		return ""
-	}
-	subTable := "\tResources\n"
-
-	var r *meroxa.Resource
-	for _, c := range connectors {
-		found := false
-		for _, resource := range resources {
-			if resource.Name == c.ResourceName {
-				r = resource
-				found = true
-				break
-			}
-		}
-		if !found {
-			panic("internal error")
-		}
-
-		subTable += fmt.Sprintf("\t    %s (%s)\n", r.Name, string(c.Type))
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", string(r.Type))
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", string(c.State))
-	}
-
-	return subTable
-}

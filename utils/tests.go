@@ -116,18 +116,6 @@ func GenerateConnectorWithEnvironment(pipelineName, connectorName, envNameOrUUID
 	}
 }
 
-func GenerateEndpoint() meroxa.Endpoint {
-	return meroxa.Endpoint{
-		Name:              "endpoint",
-		Protocol:          meroxa.EndpointProtocolHttp,
-		Host:              "https://endpoint.test",
-		Stream:            "stream",
-		Ready:             true,
-		BasicAuthUsername: "root",
-		BasicAuthPassword: "secret",
-	}
-}
-
 func GenerateTransform() meroxa.Transform {
 	return meroxa.Transform{
 		ID:          0,
