@@ -13,6 +13,9 @@ import (
 
 // NeedsToBuild determines if the app has functions or not.
 func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
+	//todo:
+	// - run local server in "info" mode
+	// - check if "process" is called
 	return false, errors.New("unimplemented")
 }
 
