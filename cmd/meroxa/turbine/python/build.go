@@ -11,7 +11,7 @@ import (
 
 // Build created the needed structure for a python app.
 func (t *turbinePyCLI) Build(ctx context.Context, appName string, platform bool) (string, error) {
-	t.logger.StartSpinner("\t", " Building application...")
+	t.logger.StartSpinner("\t", "Building application...")
 	cmd := exec.CommandContext(ctx, "turbine-py", "clibuild", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {

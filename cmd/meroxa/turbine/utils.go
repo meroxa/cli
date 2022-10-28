@@ -90,7 +90,7 @@ func GetPath(flag string) (string, error) {
 
 // GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", " Determining application language from app.json...")
+	l.StartSpinner("\t", "Determining application language from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
 		l.StopSpinnerWithStatus("Something went wrong reading your app.json", log.Failed)
@@ -107,7 +107,7 @@ func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, 
 
 // GetAppNameFromAppJSON returns specified app name in users' app.json.
 func GetAppNameFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", " Reading application name from app.json...")
+	l.StartSpinner("\t", "Reading application name from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
 		return "", err
@@ -371,7 +371,7 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 	var err error
 
 	if language == GoLang || language == JavaScript {
-		logger.StartSpinner("\t", fmt.Sprintf(" Creating Dockerfile before uploading source in %s", appPath))
+		logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", appPath))
 
 		if language == GoLang {
 			err = turbineGo.CreateDockerfile(appName, appPath)
@@ -405,7 +405,7 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 		return err
 	}
 
-	logger.StartSpinner("\t", fmt.Sprintf(" Creating %q in %q to upload to our build service...", appPath, dFile))
+	logger.StartSpinner("\t", fmt.Sprintf("Creating %q in %q to upload to our build service...", appPath, dFile))
 
 	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
 	defer func(fileToWrite *os.File) {
@@ -415,7 +415,7 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 		}
 
 		// remove .tar.gz file
-		logger.StartSpinner("\t", fmt.Sprintf(" Removing %q...", dFile))
+		logger.StartSpinner("\t", fmt.Sprintf("Removing %q...", dFile))
 		removeErr := os.Remove(dFile)
 		if removeErr != nil {
 			logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
@@ -439,7 +439,7 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 }
 
 func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) error {
-	logger.StartSpinner("\t", " Uploading source...")
+	logger.StartSpinner("\t", "Uploading source...")
 
 	fh, err := os.Open(filePath)
 	if err != nil {
@@ -526,7 +526,7 @@ func createJavascriptDockerfile(ctx context.Context, appPath string) error {
 
 // cleanUpPythonTempBuildLocation removes any artifacts in the temporary directory.
 func cleanUpPythonTempBuildLocation(ctx context.Context, logger log.Logger, appPath string) {
-	logger.StartSpinner("\t", fmt.Sprintf(" Removing artifacts from building the Python Application at %s...", appPath))
+	logger.StartSpinner("\t", fmt.Sprintf("Removing artifacts from building the Python Application at %s...", appPath))
 
 	cmd := exec.CommandContext(ctx, "turbine-py", "cliclean", appPath)
 	output, err := cmd.CombinedOutput()

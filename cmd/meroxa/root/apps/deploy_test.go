@@ -41,6 +41,7 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "docker-hub-access-token", required: false, hidden: true},
 		{name: "spec", required: false, hidden: true},
 		{name: "skip-collection-validation", required: false, hidden: false},
+		{name: "verbose", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})
@@ -867,11 +868,11 @@ func TestWaitForDeployment(t *testing.T) {
 		name         string
 		meroxaClient func() meroxa.Client
 		wantOutput   func() string
-		noLogs       bool
+		verboseFlag  bool
 		err          error
 	}{
 		{
-			name: "Deployment finishes successfully immediately",
+			name: "Deployment finishes successfully immediately (no verbose flag)",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -889,7 +890,26 @@ func TestWaitForDeployment(t *testing.T) {
 			err:        nil,
 		},
 		{
-			name: "Deployment finishes successfully over time",
+			name: "Deployment finishes successfully immediately (with verbose flag)",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					GetDeployment(ctx, appName, uuid).
+					Return(&meroxa.Deployment{
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeployed,
+							Details: strings.Join(outputLogs, "\n"),
+						},
+					}, nil)
+				return client
+			},
+			wantOutput:  func() string { return "\tnailed it\n" },
+			verboseFlag: true,
+			err:         nil,
+		},
+		{
+			name: "Deployment finishes successfully over time (no verbose flag)",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -924,7 +944,49 @@ func TestWaitForDeployment(t *testing.T) {
 			wantOutput: func() string { return "" },
 		},
 		{
-			name: "Deployment immediately failed",
+			name: "Deployment finishes successfully over time (with verbose flag)",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				first := client.EXPECT().
+					GetDeployment(ctx, appName, uuid).
+					Return(&meroxa.Deployment{
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeploying,
+							Details: strings.Join(outputLogs[:1], "\n"),
+						},
+					}, nil)
+				second := client.EXPECT().
+					GetDeployment(ctx, appName, uuid).
+					Return(&meroxa.Deployment{
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeploying,
+							Details: strings.Join(outputLogs[:2], "\n"),
+						},
+					}, nil)
+				third := client.EXPECT().
+					GetDeployment(ctx, appName, uuid).
+					Return(&meroxa.Deployment{
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeployed,
+							Details: strings.Join(outputLogs, "\n"),
+						},
+					}, nil).AnyTimes()
+				gomock.InOrder(first, second, third)
+				return client
+			},
+			err: nil,
+			wantOutput: func() string {
+				errorMsg := ""
+				for _, l := range outputLogs {
+					errorMsg = fmt.Sprintf("%s\t%s\n", errorMsg, l)
+				}
+				return errorMsg
+			},
+			verboseFlag: true,
+		},
+		{
+			name: "Deployment immediately failed (no verbose flag)",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
@@ -938,15 +1000,35 @@ func TestWaitForDeployment(t *testing.T) {
 					}, nil)
 				return client
 			},
-			noLogs: false,
 			wantOutput: func() string {
-				errorMsg := fmt.Sprintf("\t x Failed to deploy Application %q\n", appName)
+				errorMsg := "\n"
 				for _, l := range outputLogs {
-					errorMsg = fmt.Sprintf("%s\t\t > %s\n", errorMsg, l)
+					errorMsg = fmt.Sprintf("%s\t%s\n", errorMsg, l)
 				}
 				return errorMsg
 			},
 			err: fmt.Errorf("\n Check `meroxa apps logs` for further information"),
+		},
+		{
+			name: "Deployment immediately failed (with verbose flag)",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				client.EXPECT().
+					GetDeployment(ctx, appName, uuid).
+					Return(&meroxa.Deployment{
+						Status: meroxa.DeploymentStatus{
+							State:   meroxa.DeploymentStateDeployingError,
+							Details: strings.Join(outputLogs, "\n"),
+						},
+					}, nil)
+				return client
+			},
+			wantOutput: func() string {
+				return "\tnailed it\n"
+			},
+			verboseFlag: true,
+			err:         fmt.Errorf("\n Check `meroxa apps logs` for further information"),
 		},
 		{
 			name: "Failed to get latest deployment",
@@ -958,11 +1040,8 @@ func TestWaitForDeployment(t *testing.T) {
 					Return(&meroxa.Deployment{}, fmt.Errorf("not today"))
 				return client
 			},
-			noLogs: true,
-			wantOutput: func() string {
-				return ""
-			},
-			err: errors.New("couldn't fetch deployment status: not today"),
+			wantOutput: func() string { return "" },
+			err:        errors.New("couldn't fetch deployment status: not today"),
 		},
 	}
 
@@ -974,6 +1053,8 @@ func TestWaitForDeployment(t *testing.T) {
 				logger:  logger,
 				appName: appName,
 			}
+
+			d.flags.Verbose = tc.verboseFlag
 
 			err := d.waitForDeployment(ctx, uuid)
 			require.Equal(t, tc.err, err, "errors are not equal")

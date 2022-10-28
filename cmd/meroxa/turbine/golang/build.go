@@ -13,7 +13,7 @@ import (
 func (t *turbineGoCLI) Build(ctx context.Context, appName string, platform bool) (string, error) {
 	var cmd *exec.Cmd
 
-	t.logger.StartSpinner("\t", " Building Golang binary...")
+	t.logger.StartSpinner("\t", "Building Golang binary...")
 	if platform {
 		cmd = exec.CommandContext(ctx, "go", "build", "--tags", "platform", "-o", appName, "./...")
 	} else {

@@ -31,7 +31,7 @@ func (t *turbineGoCLI) Upgrade(vendor bool) error {
 
 func (t *turbineGoCLI) tidy(vendor bool) error {
 	var err error
-	t.logger.StartSpinner("\t", " Tidying up Golang modules...")
+	t.logger.StartSpinner("\t", "Tidying up Golang modules...")
 	if vendor {
 		_, err = os.Stat("vendor")
 		if !os.IsNotExist(err) {

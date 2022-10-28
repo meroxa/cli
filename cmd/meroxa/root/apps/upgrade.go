@@ -73,7 +73,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	var err error
 	if u.config == nil {
 		u.path, err = turbine.GetPath(u.flags.Path)
-		u.logger.StartSpinner("\t", fmt.Sprintf(" Fetching details of application in %q...", u.path))
+		u.logger.StartSpinner("\t", fmt.Sprintf("Fetching details of application in %q...", u.path))
 		if err != nil {
 			u.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return err
@@ -114,7 +114,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 		return err
 	}
 
-	u.logger.StartSpinner("\t", " Testing upgrades locally...")
+	u.logger.StartSpinner("\t", "Testing upgrades locally...")
 	runOutput := ""
 	buf := bytes.NewBufferString(runOutput)
 	if u.run == nil {

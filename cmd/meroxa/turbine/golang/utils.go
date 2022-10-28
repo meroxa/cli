@@ -9,7 +9,7 @@ import (
 
 // GoGetDeps updates the latest Meroxa mods.
 func GoGetDeps(l log.Logger) error {
-	l.StartSpinner("\t", " Getting latest turbine-go and turbine-go/running dependencies...")
+	l.StartSpinner("\t", "Getting latest turbine-go and turbine-go/running dependencies...")
 	cmd := exec.Command("go", "get", "-u", "github.com/meroxa/turbine-go")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
