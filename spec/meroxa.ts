@@ -177,53 +177,6 @@ const completionSpec: Fig.Spec = {
       ],
     },
     {
-      name: ["endpoint", "endpoints"],
-      description: "Manage endpoints on Meroxa",
-      subcommands: [
-        {
-          name: ["create"],
-          description: "Create an endpoint",
-          options: [
-            {
-              name: ["--protocol", "-p"],
-              description: "protocol, value can be http or grpc (required)",
-              args: [{ name: "protocol" }],
-              isRequired: true,
-            },
-            {
-              name: ["--stream", "-s"],
-              description: "stream name (required)",
-              args: [{ name: "stream" }],
-              isRequired: true,
-            },
-          ],
-        },
-        { name: ["describe"], description: "Describe endpoint" },
-        {
-          name: ["ls", "list"],
-          description: "List endpoints",
-          options: [
-            {
-              name: ["--no-headers"],
-              description: "display output without headers",
-            },
-          ],
-        },
-        {
-          name: ["rm", "delete", "remove"],
-          description: "Remove endpoint",
-          options: [
-            { name: ["--force", "-f"], description: "skip confirmation" },
-            {
-              name: ["--yolo"],
-              description: "skip confirmation",
-              hidden: true,
-            },
-          ],
-        },
-      ],
-    },
-    {
       name: ["env", "environment", "environments"],
       description: "Manage environments on Meroxa",
       subcommands: [
@@ -593,19 +546,6 @@ const completionSpec: Fig.Spec = {
               name: ["set"],
               description:
                 "Update your Meroxa CLI configuration file with a specific key=value",
-            },
-          ],
-        },
-        {
-          name: ["endpoint", "endpoints"],
-          description: "Manage endpoints on Meroxa",
-          subcommands: [
-            { name: ["create"], description: "Create an endpoint" },
-            { name: ["describe"], description: "Describe endpoint" },
-            { name: ["ls", "list"], description: "List endpoints" },
-            {
-              name: ["rm", "delete", "remove"],
-              description: "Remove endpoint",
             },
           ],
         },

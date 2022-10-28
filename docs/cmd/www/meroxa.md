@@ -40,7 +40,6 @@ meroxa resources list --types
 * [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa (Beta)
 * [meroxa completion](/cli/cmd/meroxa-completion/)	 - Generate completion script
 * [meroxa config](/cli/cmd/meroxa-config/)	 - Manage your Meroxa CLI configuration
-* [meroxa endpoints](/cli/cmd/meroxa-endpoints/)	 - Manage endpoints on Meroxa
 * [meroxa environments](/cli/cmd/meroxa-environments/)	 - Manage environments on Meroxa
 * [meroxa login](/cli/cmd/meroxa-login/)	 - Login or Sign up to the Meroxa Platform
 * [meroxa logout](/cli/cmd/meroxa-logout/)	 - Clears local login credentials of the Meroxa Platform

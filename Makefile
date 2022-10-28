@@ -5,7 +5,7 @@ GIT_UNTRACKED   = $(shell git diff-index --quiet HEAD -- || echo "(updated)")
 LDFLAGS        += -X main.GitUntracked=${GIT_UNTRACKED}
 GIT_TAG         = $(shell git describe)
 LDFLAGS        += -X main.GitLatestTag=${GIT_TAG}
-REBUILD_DOCS    ?= "true"
+REBUILD_DOCS    ?= true
 
 .PHONY: build
 build: docs
@@ -24,7 +24,7 @@ test:
 	go test -v ${GO_TEST_FLAGS} -count=1 -timeout 5m ./...
 
 .PHONY: docs
-ifeq ($(REBUILD_DOCS), "true")
+ifeq ($(REBUILD_DOCS), true)
 docs:
 	rm -rf docs/cmd && mkdir -p docs/cmd/{md,www}
 	rm -rf etc && mkdir -p etc/man/man1 && mkdir -p etc/completion
