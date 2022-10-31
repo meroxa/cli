@@ -1,6 +1,6 @@
 ## meroxa account
 
-Manage Meroxa Accounts (Beta)
+Manage Meroxa Accounts
 
 ### Options
 
@@ -20,6 +20,6 @@ Manage Meroxa Accounts (Beta)
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa account list](meroxa_account_list.md)	 - List Turbine Data Applications (Beta)
+* [meroxa account list](meroxa_account_list.md)	 - List Meroxa Accounts
 * [meroxa account set](meroxa_account_set.md)	 - Set active account
 

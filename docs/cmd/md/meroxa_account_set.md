@@ -23,5 +23,5 @@ meroxa account set [flags]
 
 ### SEE ALSO
 
-* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts
 

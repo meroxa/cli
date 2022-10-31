@@ -41,7 +41,6 @@ func (*Account) Usage() string {
 func (*Account) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Manage Meroxa Accounts",
-		Beta:  true,
 	}
 }
 

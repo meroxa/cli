@@ -1,6 +1,6 @@
 ## meroxa account list
 
-List Turbine Data Applications (Beta)
+List Meroxa Accounts
 
 ```
 meroxa account list [flags]
@@ -24,5 +24,5 @@ meroxa account list [flags]
 
 ### SEE ALSO
 
-* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts (Beta)
+* [meroxa account](meroxa_account.md)	 - Manage Meroxa Accounts
 

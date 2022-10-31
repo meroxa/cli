@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-account-list/
 ---
 ## meroxa account list
 
-List Turbine Data Applications (Beta)
+List Meroxa Accounts
 
 ```
 meroxa account list [flags]
@@ -31,5 +31,5 @@ meroxa account list [flags]
 
 ### SEE ALSO
 
-* [meroxa account](/cli/cmd/meroxa-account/)	 - Manage Meroxa Accounts (Beta)
+* [meroxa account](/cli/cmd/meroxa-account/)	 - Manage Meroxa Accounts
 

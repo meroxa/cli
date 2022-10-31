@@ -30,5 +30,5 @@ meroxa account set [flags]
 
 ### SEE ALSO
 
-* [meroxa account](/cli/cmd/meroxa-account/)	 - Manage Meroxa Accounts (Beta)
+* [meroxa account](/cli/cmd/meroxa-account/)	 - Manage Meroxa Accounts
 
