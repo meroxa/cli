@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-account/
 ---
 ## meroxa account
 
-Manage Meroxa Accounts (Beta)
+Manage Meroxa Accounts
 
 ### Options
 
@@ -27,6 +27,6 @@ Manage Meroxa Accounts (Beta)
 ### SEE ALSO
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
-* [meroxa account list](/cli/cmd/meroxa-account-list/)	 - List Turbine Data Applications (Beta)
+* [meroxa account list](/cli/cmd/meroxa-account-list/)	 - List Meroxa Accounts
 * [meroxa account set](/cli/cmd/meroxa-account-set/)	 - Set active account
 
