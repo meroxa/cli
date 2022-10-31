@@ -44,26 +44,27 @@ func TestDescribeAPIArgs(t *testing.T) {
 			err:  errors.New("requires METHOD and PATH"),
 		},
 		{
-			args:   []string{"GET", "/v1/endpoints"},
+			args:   []string{"GET", "/v1/resources"},
 			err:    nil,
 			method: "GET",
-			path:   "/v1/endpoints",
+			path:   "/v1/resources",
 		},
 		{
-			args:   []string{"get", "/v1/endpoints"}, // lowercase
+			args:   []string{"get", "/v1/resources"}, // lowercase
 			err:    nil,
 			method: "GET",
-			path:   "/v1/endpoints",
+			path:   "/v1/resources",
 		},
 		{
 			args: []string{
 				"POST",
-				"/v1/endpoints",
-				"'{\"protocol\": \"HTTP\", \"stream\": \"resource-2-499379-public.accounts\", \"name\": \"1234\"}'"},
+				"/v1/resources",
+				`'{"type":"postgres", "name":"pg", "url":"postgres://u:p@127.0.01:5432/db"}'`,
+			},
 			err:    nil,
 			method: "POST",
-			path:   "/v1/endpoints",
-			body:   "'{\"protocol\": \"HTTP\", \"stream\": \"resource-2-499379-public.accounts\", \"name\": \"1234\"}'",
+			path:   "/v1/resources",
+			body:   `'{"type":"postgres", "name":"pg", "url":"postgres://u:p@127.0.01:5432/db"}'`,
 		},
 	}
 
@@ -107,6 +108,7 @@ func TestAPIExecution(t *testing.T) {
 	var httpResponse = &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
+		Proto:      "HTTP/1.1",
 		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
@@ -133,9 +135,9 @@ func TestAPIExecution(t *testing.T) {
 
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`> %s %s
-< %s 
+< %s %s
 %s
-`, a.args.Method, a.args.Path, httpResponse.Status, expectedBody)
+`, a.args.Method, a.args.Path, httpResponse.Status, httpResponse.Proto, expectedBody)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
