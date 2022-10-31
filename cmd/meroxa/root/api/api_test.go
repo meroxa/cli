@@ -134,7 +134,6 @@ func TestAPIExecution(t *testing.T) {
 }`
 
 	gotLeveledOutput := logger.LeveledOutput()
-	fmt.Printf("%s\n", gotLeveledOutput)
 	wantLeveledOutput := fmt.Sprintf(`> %s %s
 < %s %s
 %s
