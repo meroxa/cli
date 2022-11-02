@@ -106,7 +106,7 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 		return ""
 	}
 	subTable := "\tResources\n"
-	var connector meroxa.EntityDetails
+	var connector *meroxa.EntityDetails
 
 	for _, r := range resources {
 		t := "source"
@@ -115,7 +115,7 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 		}
 		for _, c := range connectors {
 			if r.UUID == c.ResourceUUID && isMatching(r.Collection, c.ResourceType) {
-				connector = c
+				connector = &c
 				break
 			}
 		}
@@ -123,7 +123,10 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 		subTable += fmt.Sprintf("\t    %s (%s)\n", r.Name, t)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", r.ResourceType)
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", connector.Status)
+		if connector != nil {
+			subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", connector.Status)
+		}
+		connector = nil
 	}
 
 	return subTable
