@@ -11,8 +11,12 @@ import (
 type ApplicationState string
 
 const (
-	ApplicationStateRunning  ApplicationState = "running"
-	ApplicationStateDegraded ApplicationState = "degraded"
+	ApplicationStateInitialized ApplicationState = "initialized"
+	ApplicationStateDeploying   ApplicationState = "deploying"
+	ApplicationStatePending     ApplicationState = "pending"
+	ApplicationStateRunning     ApplicationState = "running"
+	ApplicationStateDegraded    ApplicationState = "degraded"
+	ApplicationStateFailed      ApplicationState = "failed"
 )
 
 const applicationsBasePath = "/v1/applications"
@@ -33,6 +37,7 @@ type ApplicationResource struct {
 
 type EntityDetails struct {
 	EntityIdentifier
+	ResourceUUID string `json:"resource_uuid,omitempty"`
 	ResourceType string `json:"type,omitempty"`
 	Status       string `json:"status,omitempty"`
 }
