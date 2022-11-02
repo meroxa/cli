@@ -82,7 +82,7 @@ func AppTable(app *meroxa.Application) string {
 	mainTable.SetStyle(simpletable.StyleCompact)
 	output := mainTable.String()
 
-	subTable := appResourcesTable(app.Resources)
+	subTable := appResourcesTable(app.Resources, app.Connectors)
 	if subTable != "" {
 		output += "\n" + subTable
 	}
@@ -93,21 +93,29 @@ func AppTable(app *meroxa.Application) string {
 	return output
 }
 
-func appResourcesTable(resources []meroxa.ApplicationResource) string {
+func appResourcesTable(resources []meroxa.ApplicationResource, connectors []meroxa.EntityDetails) string {
 	if len(resources) == 0 {
 		return ""
 	}
 	subTable := "\tResources\n"
+	var connector meroxa.EntityDetails
 
 	for _, r := range resources {
 		t := "source"
 		if r.Collection.Destination == "true" {
 			t = "destination"
 		}
+		for _, c := range connectors {
+			if r.UUID == c.ResourceUUID {
+				connector = c
+				break
+			}
+		}
+
 		subTable += fmt.Sprintf("\t    %s (%s)\n", r.Name, t)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
 		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", r.ResourceType)
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", r.Status)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", connector.Status)
 	}
 
 	return subTable
