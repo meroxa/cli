@@ -93,6 +93,14 @@ func AppTable(app *meroxa.Application) string {
 	return output
 }
 
+func isMatching(collection meroxa.ResourceCollection, connectorType string) bool {
+	t := "destination"
+	if collection.Source == "true" {
+		t = "source"
+	}
+	return strings.Contains(connectorType, t)
+}
+
 func appResourcesTable(resources []meroxa.ApplicationResource, connectors []meroxa.EntityDetails) string {
 	if len(resources) == 0 {
 		return ""
@@ -106,7 +114,7 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 			t = "destination"
 		}
 		for _, c := range connectors {
-			if r.UUID == c.ResourceUUID {
+			if r.UUID == c.ResourceUUID && isMatching(r.Collection, c.ResourceType) {
 				connector = c
 				break
 			}
