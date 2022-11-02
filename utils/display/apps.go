@@ -47,8 +47,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	return table.String()
 }
 
-func AppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors []*meroxa.Connector,
-	functions []*meroxa.Function) string {
+func AppTable(app *meroxa.Application) string {
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
@@ -83,15 +82,69 @@ func AppTable(app *meroxa.Application, resources []*meroxa.Resource, connectors 
 	mainTable.SetStyle(simpletable.StyleCompact)
 	output := mainTable.String()
 
-	subTable := extendedResourcesTable(resources, connectors)
+	subTable := appResourcesTable(app.Resources, app.Connectors)
 	if subTable != "" {
 		output += "\n" + subTable
 	}
-	subTable = extendedFunctionsTable(functions)
+	subTable = appFunctionsTable(app.Functions)
 	if subTable != "" {
 		output += "\n" + subTable
 	}
 	return output
+}
+
+func isMatching(collection meroxa.ResourceCollection, connectorType string) bool {
+	t := "destination"
+	if collection.Source == "true" {
+		t = "source"
+	}
+	return strings.Contains(connectorType, t)
+}
+
+func appResourcesTable(resources []meroxa.ApplicationResource, connectors []meroxa.EntityDetails) string {
+	if len(resources) == 0 {
+		return ""
+	}
+	subTable := "\tResources\n"
+
+	for _, r := range resources {
+		var status string
+		t := "source"
+		if r.Collection.Destination == "true" {
+			t = "destination"
+		}
+		for _, c := range connectors {
+			if r.UUID == c.ResourceUUID && isMatching(r.Collection, c.ResourceType) {
+				status = c.Status
+				break
+			}
+		}
+
+		subTable += fmt.Sprintf("\t    %s (%s)\n", r.Name, t)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", r.UUID)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "Type", r.ResourceType)
+		if status != "" {
+			subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", status)
+		}
+		status = ""
+	}
+
+	return subTable
+}
+
+func appFunctionsTable(functions []meroxa.EntityDetails) string {
+	if len(functions) == 0 {
+		return ""
+	}
+	subTable := "\tFunctions\n"
+
+	for _, f := range functions {
+		subTable += fmt.Sprintf("\t    %s\n", f.Name)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", f.UUID)
+		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", f.Status)
+	}
+
+	return subTable
 }
 
 func AppLogsTable(

@@ -97,38 +97,16 @@ func TestDescribeApplicationExecution(t *testing.T) {
 			},
 		},
 	}
-	resources := []*meroxa.Resource{
-		{Name: "res1", UUID: "abc-def", Type: meroxa.ResourceTypePostgres},
-		{Name: "res2", UUID: "abc-def", Type: meroxa.ResourceTypeBigquery},
-		{Name: "res3", UUID: "abc-def", Type: meroxa.ResourceTypeConfluentCloud},
+	a.Connectors = []meroxa.EntityDetails{
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn1"}},
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn2"}},
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn3"}},
 	}
-
-	a.Connectors = []meroxa.EntityIdentifier{
-		{Name: "conn1"},
-		{Name: "conn2"},
-		{Name: "conn3"},
-	}
-	connectors := []*meroxa.Connector{
-		{Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
-		{Name: "conn2", ResourceName: "res2", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
-		{Name: "conn3", ResourceName: "res3", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
-	}
-
-	functions := []*meroxa.Function{
-		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: "running"}},
-	}
-	a.Functions = []meroxa.EntityIdentifier{
-		{Name: "fun1"},
+	a.Functions = []meroxa.EntityDetails{
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "fun1"}},
 	}
 
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
-	client.EXPECT().GetResourceByNameOrID(ctx, "res1").Return(resources[0], nil)
-	client.EXPECT().GetResourceByNameOrID(ctx, "res2").Return(resources[1], nil)
-	client.EXPECT().GetResourceByNameOrID(ctx, "res3").Return(resources[2], nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn1").Return(connectors[0], nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn2").Return(connectors[1], nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn3").Return(connectors[2], nil)
-	client.EXPECT().GetFunction(ctx, "fun1").Return(functions[0], nil)
 
 	dc := &Describe{
 		client: client,
@@ -142,7 +120,7 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppTable(&a, resources, connectors, functions)
+	wantLeveledOutput := display.AppTable(&a)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

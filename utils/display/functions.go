@@ -33,7 +33,7 @@ func FunctionsTable(funs []*meroxa.Function, hideHeaders bool) string {
 			{Align: simpletable.AlignCenter, Text: p.Name},
 			{Align: simpletable.AlignCenter, Text: p.InputStream},
 			{Align: simpletable.AlignCenter, Text: p.OutputStream},
-			{Align: simpletable.AlignCenter, Text: p.Status.State},
+			{Align: simpletable.AlignCenter, Text: string(p.Status.State)},
 			{Align: simpletable.AlignCenter, Text: p.Pipeline.Name},
 		}
 
@@ -90,7 +90,7 @@ func FunctionTable(fun *meroxa.Function) string {
 		},
 		{
 			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: fun.Status.State},
+			{Text: string(fun.Status.State)},
 		},
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -102,19 +102,4 @@ func FunctionTable(fun *meroxa.Function) string {
 	}
 
 	return fmt.Sprintf("%s\n\n%s", table, details)
-}
-
-func extendedFunctionsTable(functions []*meroxa.Function) string {
-	if len(functions) == 0 {
-		return ""
-	}
-	subTable := "\tFunctions\n"
-
-	for _, f := range functions {
-		subTable += fmt.Sprintf("\t    %s\n", f.Name)
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", f.UUID)
-		subTable += fmt.Sprintf("\t\t%5s:   %s\n", "State", f.Status.State)
-	}
-
-	return subTable
 }

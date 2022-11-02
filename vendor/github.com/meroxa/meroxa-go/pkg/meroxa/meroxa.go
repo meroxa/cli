@@ -93,11 +93,6 @@ type Client interface {
 	ListFunctions(ctx context.Context) ([]*Function, error)
 	DeleteFunction(ctx context.Context, nameOrUUID string) (*Function, error)
 
-	CreateEndpoint(ctx context.Context, input *CreateEndpointInput) error
-	DeleteEndpoint(ctx context.Context, name string) error
-	GetEndpoint(ctx context.Context, name string) (*Endpoint, error)
-	ListEndpoints(ctx context.Context) ([]Endpoint, error)
-
 	CreateEnvironment(ctx context.Context, input *CreateEnvironmentInput) (*Environment, error)
 	DeleteEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error)
 	GetEnvironment(ctx context.Context, nameOrUUID string) (*Environment, error)

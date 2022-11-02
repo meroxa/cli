@@ -99,9 +99,9 @@ func TestApplicationLogsExecution(t *testing.T) {
 		},
 	}
 
-	a.Connectors = []meroxa.EntityIdentifier{
-		{Name: "conn1"},
-		{Name: "conn2"},
+	a.Connectors = []meroxa.EntityDetails{
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn1"}},
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn2"}},
 	}
 	connectors := []*display.AppExtendedConnector{
 		{Connector: &meroxa.Connector{
@@ -115,8 +115,8 @@ func TestApplicationLogsExecution(t *testing.T) {
 	functions := []*meroxa.Function{
 		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: "running"}, Logs: log},
 	}
-	a.Functions = []meroxa.EntityIdentifier{
-		{Name: "fun1"},
+	a.Functions = []meroxa.EntityDetails{
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "fun1"}},
 	}
 
 	deployment := &meroxa.Deployment{

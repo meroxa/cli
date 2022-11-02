@@ -70,34 +70,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	resources := make([]*meroxa.Resource, 0)
-	connectors := make([]*meroxa.Connector, 0)
-	functions := make([]*meroxa.Function, 0)
-
-	for _, rr := range app.Resources {
-		resource, err := d.client.GetResourceByNameOrID(ctx, rr.Name)
-		if err != nil {
-			return err
-		}
-		resources = append(resources, resource)
-	}
-	for _, cc := range app.Connectors {
-		connector, err := d.client.GetConnectorByNameOrID(ctx, cc.Name)
-		if err != nil {
-			return err
-		}
-		connectors = append(connectors, connector)
-	}
-	for _, ff := range app.Functions {
-		function, err := d.client.GetFunction(ctx, ff.Name)
-		if err != nil {
-			return err
-		}
-
-		functions = append(functions, function)
-	}
-
-	output = display.AppTable(app, resources, connectors, functions)
+	output = display.AppTable(app)
 
 	d.logger.Info(ctx, output)
 	d.logger.JSON(ctx, app)

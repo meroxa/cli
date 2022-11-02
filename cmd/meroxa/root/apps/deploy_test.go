@@ -850,7 +850,6 @@ func TestPrepareAppName(t *testing.T) {
 			}
 
 			result := d.prepareAppName(ctx)
-			fmt.Printf("result: %s\n", result)
 			require.Equal(t, tc.resultName, result)
 		})
 	}
