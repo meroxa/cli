@@ -55,9 +55,6 @@ type ApplicationResource struct {
 	Destination bool   `json:"destination"`
 	Collection  string `json:"collection"`
 }
-type HTTPClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
 
 // GetResourceNamesFromString provides backward compatibility with turbine-go
 // legacy resource listing format.
