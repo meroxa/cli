@@ -441,41 +441,41 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) error {
 	logger.StartSpinner("\t", "Uploading source...")
 
-	fh, err := os.Open(filePath)
-	if err != nil {
-		logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
-		return err
-	}
-	defer func(fh *os.File) {
-		fh.Close()
-	}(fh)
-
-	req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
-	if err != nil {
-		logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
-		return err
-	}
-
-	fi, err := fh.Stat()
-	if err != nil {
-		logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
-		return err
-	}
-
-	req.Header.Set("Accept", "*/*")
-	req.Header.Set("Content-Type", "multipart/form-data")
-	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
-	req.Header.Set("Connection", "keep-alive")
-
-	req.ContentLength = fi.Size()
-
+	var clientErr error
+	var res *http.Response
 	client := &http.Client{}
 
 	retries := 3
-	var res *http.Response
 	for retries > 0 {
-		res, err = client.Do(req)
+		fh, err := os.Open(filePath)
 		if err != nil {
+			logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
+			return err
+		}
+		defer func(fh *os.File) {
+			fh.Close()
+		}(fh)
+
+		req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
+		if err != nil {
+			logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
+			return err
+		}
+
+		fi, err := fh.Stat()
+		if err != nil {
+			logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
+			return err
+		}
+		req.Header.Set("Accept", "*/*")
+		req.Header.Set("Content-Type", "multipart/form-data")
+		req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+		req.Header.Set("Connection", "keep-alive")
+
+		req.ContentLength = fi.Size()
+
+		res, clientErr = client.Do(req)
+		if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
 			retries--
 		} else {
 			break
@@ -485,9 +485,12 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	if res != nil && res.Body != nil {
 		defer res.Body.Close()
 	}
-	if err != nil {
+	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
 		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
-		return err
+		if clientErr == nil {
+			clientErr = fmt.Errorf("upload failed: %s", res.Status)
+		}
+		return clientErr
 	}
 
 	logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
