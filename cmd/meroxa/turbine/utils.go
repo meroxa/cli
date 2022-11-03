@@ -475,7 +475,7 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 		req.ContentLength = fi.Size()
 
 		res, clientErr = client.Do(req)
-		if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusNoContent) {
+		if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
 			retries--
 		} else {
 			break
@@ -485,7 +485,7 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	if res != nil && res.Body != nil {
 		defer res.Body.Close()
 	}
-	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusNoContent) {
+	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
 		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
 		if clientErr == nil {
 			clientErr = fmt.Errorf("upload failed: %s", res.Status)
