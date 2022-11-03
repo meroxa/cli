@@ -55,6 +55,9 @@ type ApplicationResource struct {
 	Destination bool   `json:"destination"`
 	Collection  string `json:"collection"`
 }
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
 
 // GetResourceNamesFromString provides backward compatibility with turbine-go
 // legacy resource listing format.
@@ -441,7 +444,7 @@ func UploadSource(ctx context.Context, logger log.Logger, language, appPath, app
 func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) error {
 	logger.StartSpinner("\t", "Uploading source...")
 
-	var err error
+	var clientErr error
 	var res *http.Response
 	client := &http.Client{}
 
@@ -474,8 +477,8 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 
 		req.ContentLength = fi.Size()
 
-		res, err = client.Do(req)
-		if err != nil {
+		res, clientErr = client.Do(req)
+		if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusNoContent) {
 			retries--
 		} else {
 			break
@@ -485,9 +488,9 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	if res != nil && res.Body != nil {
 		defer res.Body.Close()
 	}
-	if err != nil {
+	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusNoContent) {
 		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
-		return err
+		return clientErr
 	}
 
 	logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
