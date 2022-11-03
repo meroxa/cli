@@ -490,6 +490,9 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	}
 	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusNoContent) {
 		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
+		if clientErr == nil {
+			clientErr = fmt.Errorf("upload failed: %s", res.Status)
+		}
 		return clientErr
 	}
 

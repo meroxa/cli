@@ -123,6 +123,7 @@ func TestUploadFile(t *testing.T) {
 			status:  http.StatusInternalServerError,
 			retries: 3,
 			output:  "Failed to upload build source file",
+			err:     fmt.Errorf("upload failed: 500 Internal Server Error"),
 		},
 	}
 
