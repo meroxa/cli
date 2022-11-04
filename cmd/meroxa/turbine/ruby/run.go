@@ -14,7 +14,7 @@ const GRPC_SERVER_PORT = 50500
 func (t *turbineRbCLI) Run(ctx context.Context) error {
 	// Run turbine-core gRPC server
 	cs := core.NewCoreServer()
-	go cs.Run(GRPC_SERVER_PORT, "local")
+	go cs.Run(GRPC_SERVER_PORT, "platform")
 
 	// Execute Turbine.run on app:
 	// bundle exec ruby -e "require_relative('./app'); Turbine.run;"

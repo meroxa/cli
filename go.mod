@@ -2,7 +2,7 @@ module github.com/meroxa/cli
 
 go 1.18
 
-replace github.com/meroxa/turbine-core-grpc => ../turbine-core-grpc
+replace github.com/meroxa/turbine-core => ../turbine-core
 
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
@@ -23,7 +23,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
-	golang.org/x/oauth2 v0.0.0-20220630143837-2104d58473e0
+	golang.org/x/oauth2 v0.1.0
 )
 
 require (
@@ -31,11 +31,10 @@ require (
 	github.com/docker/docker v20.10.21+incompatible
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-core v0.0.0-20221020080535-736b3696533b
-	github.com/meroxa/turbine-core-grpc v0.0.0-00010101000000-000000000000
 	github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf
 	github.com/stretchr/testify v1.8.1
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
-	google.golang.org/grpc v1.49.0
+	google.golang.org/grpc v1.50.1
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -43,7 +42,6 @@ require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Microsoft/hcsshim v0.9.4 // indirect
-	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.5.13 // indirect
@@ -54,9 +52,7 @@ require (
 	github.com/docker/distribution v2.8.0+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/friendsofgo/errors v0.9.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
-	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -86,15 +82,10 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
-	github.com/volatiletech/inflect v0.0.1 // indirect
-	github.com/volatiletech/null/v8 v8.1.2 // indirect
-	github.com/volatiletech/randomize v0.0.1 // indirect
-	github.com/volatiletech/strmangle v0.0.4 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220805013720-a33c5aa5df48 // indirect
-	golang.org/x/sys v0.0.0-20220804214406-8e32c043e418 // indirect
-	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
+	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220707150051-590a5ac7bee1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

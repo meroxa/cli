@@ -5,10 +5,10 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/meroxa/turbine-core-grpc/lib/go/github.com/meroxa/turbine/core"
-	"github.com/meroxa/turbine-core-grpc/servers/info"
-	"github.com/meroxa/turbine-core-grpc/servers/local"
-	"github.com/meroxa/turbine-core-grpc/servers/platform"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/servers/info"
+	"github.com/meroxa/turbine-core/servers/local"
+	"github.com/meroxa/turbine-core/servers/platform"
 	"google.golang.org/grpc"
 )
 
