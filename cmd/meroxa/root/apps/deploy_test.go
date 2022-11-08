@@ -24,7 +24,6 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -565,7 +564,23 @@ func TestDeployApp(t *testing.T) {
 		err            error
 	}{
 		{
-			name: "Successfully deploy app",
+			name: "Successfully deploy app pre IR",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				return client
+			},
+			mockTurbineCLI: func(version string) turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
+					Return(specStr, nil)
+				return mockTurbineCLI
+			},
+			version: "",
+			err:     nil,
+		},
+		{
+			name: "Successfully deploy app with IR",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				input := &meroxa.CreateDeploymentInput{
@@ -1117,48 +1132,6 @@ func Test_getTurbineCLIFromLanguage(t *testing.T) {
 			} else {
 				assert.NoError(t, gotErr)
 				require.Equal(t, reflect.TypeOf(gotTurbineCLI), reflect.TypeOf(tc.wantTurbineCLI))
-			}
-		})
-	}
-}
-
-func Test_getSpecVersion(t *testing.T) {
-	d := &Deploy{}
-
-	testCases := []struct {
-		name     string
-		spec     string
-		wantErr  error
-		wantSpec string
-	}{
-		{
-			name:     "when user specifies a valid spec version",
-			spec:     ir.LatestSpecVersion,
-			wantSpec: ir.LatestSpecVersion,
-		},
-		{
-			name:     "when user doesn't specify a spec version",
-			spec:     "",
-			wantSpec: ir.LatestSpecVersion,
-		},
-		{
-			name:    "when user specifes an invalid spec version",
-			spec:    "0.0.0",
-			wantErr: fmt.Errorf("spec version \"0.0.0\" is not a supported. use version %q instead", ir.LatestSpecVersion),
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			d.flags.Spec = tc.spec
-
-			gotSpec, gotErr := d.getSpecVersion()
-
-			if tc.wantErr != nil {
-				assert.Equal(t, gotErr, tc.wantErr)
-			} else {
-				assert.NoError(t, gotErr)
-				assert.Equal(t, gotSpec, tc.wantSpec)
 			}
 		})
 	}

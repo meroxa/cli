@@ -39,7 +39,11 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		output         string
 		deploymentSpec string
 	)
-	params := []string{"clideploy", imageName, t.appPath, appName, gitSha, specVersion}
+	params := []string{"clideploy", imageName, t.appPath, appName, gitSha}
+
+	if specVersion != "" {
+		params = append(params, specVersion)
+	}
 
 	cmd := utils.RunTurbineJS(ctx, params...)
 
@@ -57,10 +61,13 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 	if err != nil {
 		return deploymentSpec, err
 	}
-	deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
-	if err != nil {
-		err = fmt.Errorf(
-			"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
+
+	if specVersion != "" {
+		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
+		if err != nil {
+			err = fmt.Errorf(
+				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
+		}
 	}
 	return deploymentSpec, err
 }
