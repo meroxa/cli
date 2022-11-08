@@ -51,6 +51,7 @@ const (
 type deployApplicationClient interface {
 	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
 	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
+	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
 	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
@@ -258,13 +259,16 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 			return nil, fmt.Errorf("failed to parse deployment spec into json")
 		}
 	}
-	input := &meroxa.CreateDeploymentInput{
-		Application: meroxa.EntityIdentifier{Name: d.appName},
-		GitSha:      gitSha,
-		SpecVersion: specVersion,
-		Spec:        spec,
+	if specVersion != "" {
+		input := &meroxa.CreateDeploymentInput{
+			Application: meroxa.EntityIdentifier{Name: d.appName},
+			GitSha:      gitSha,
+			SpecVersion: specVersion,
+			Spec:        spec,
+		}
+		return d.client.CreateDeployment(ctx, input)
 	}
-	return d.client.CreateDeployment(ctx, input)
+	return nil, nil
 }
 
 // buildApp will call any specifics to the turbine library to prepare a directory that's ready
@@ -643,23 +647,17 @@ func (d *Deploy) getTurbineCLIFromLanguage() (turbine.CLI, error) {
 	return nil, fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 }
 
-// getSpecVersion will validate if spec provided is valid. It'll use latest when not provided.
-func (d *Deploy) getSpecVersion() (string, error) {
-	if d.flags.Spec != "" {
-		if err := ir.ValidateSpecVersion(d.flags.Spec); err != nil {
-			return "", err
-		}
-		return d.flags.Spec, nil
-	}
-	return ir.LatestSpecVersion, nil
-}
-
+//nolint:gocyclo
 func (d *Deploy) Execute(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
 
-	var err error
+	var (
+		app *meroxa.Application
+		err error
+	)
+
 	d.turbineCLI, err = d.getTurbineCLIFromLanguage()
 	if err != nil {
 		return err
@@ -674,22 +672,24 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if d.specVersion, err = d.getSpecVersion(); err != nil {
-		return err
-	}
-
-	// Creates application
-	var app *meroxa.Application
-	app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
-		Name:     d.appName,
-		Language: d.lang,
-		GitSha:   gitSha})
-	if err != nil {
-		if strings.Contains(err.Error(), "already exists") {
-			msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
-			return errors.New(msg)
+	d.specVersion = d.flags.Spec
+	if d.specVersion != "" {
+		// Intermediate Representation Workflow
+		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
+			return err
 		}
-		return err
+		// Creates application
+		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
+			Name:     d.appName,
+			Language: d.lang,
+			GitSha:   gitSha})
+		if err != nil {
+			if strings.Contains(err.Error(), "already exists") {
+				msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
+				return errors.New(msg)
+			}
+			return err
+		}
 	}
 
 	err = d.prepareDeployment(ctx)
@@ -699,27 +699,39 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	var deployment *meroxa.Deployment
+	// Not deploying using IR
+	deployMsg := fmt.Sprintf("Deploying application %q...", d.appName)
+
+	// If not using IR as deployment type
+	if d.specVersion == "" {
+		d.logger.Infof(ctx, deployMsg)
+	}
+
 	if deployment, err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
 		return err
 	}
 
-	deployMsg := fmt.Sprintf("Deploying application %q...", d.appName)
-	// In verbose mode, we'll use spinners for each deployment step
-	if d.flags.Verbose {
-		d.logger.Info(ctx, deployMsg+"\n")
-	} else {
-		d.logger.StartSpinner("", deployMsg)
-	}
-
-	err = d.waitForDeployment(ctx, deployment.UUID)
-	if err != nil {
-		deploymentErroredMsg := "Couldn't complete the deployment"
-		if !d.flags.Verbose {
-			d.logger.StopSpinnerWithStatus(deploymentErroredMsg, log.Failed)
+	if d.specVersion == "" {
+		// App was created by turbine libraries using pre-IR
+		app, err = d.client.GetApplication(ctx, d.appName)
+	} else { // Deploying using IR
+		// In verbose mode, we'll use spinners for each deployment step
+		if d.flags.Verbose {
+			d.logger.Info(ctx, deployMsg+"\n")
 		} else {
-			d.logger.Error(ctx, fmt.Sprintf("\t%s %s", d.logger.FailedMark(), deploymentErroredMsg))
+			d.logger.StartSpinner("", deployMsg)
 		}
-		return err
+
+		err = d.waitForDeployment(ctx, deployment.UUID)
+		if err != nil {
+			deploymentErroredMsg := "Couldn't complete the deployment"
+			if !d.flags.Verbose {
+				d.logger.StopSpinnerWithStatus(deploymentErroredMsg, log.Failed)
+			} else {
+				d.logger.Error(ctx, fmt.Sprintf("\t%s %s", d.logger.FailedMark(), deploymentErroredMsg))
+			}
+			return err
+		}
 	}
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", d.appName)

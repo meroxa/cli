@@ -43,7 +43,11 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		output         string
 		deploymentSpec string
 	)
-	args := []string{"clideploy", t.appPath, imageName, appName, gitSha, specVersion}
+	args := []string{"clideploy", t.appPath, imageName, appName, gitSha}
+
+	if specVersion != "" {
+		args = append(args, specVersion)
+	}
 
 	cmd := exec.CommandContext(ctx, "turbine-py", args...)
 
@@ -66,10 +70,12 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		return deploymentSpec, err
 	}
 
-	deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
-	if err != nil {
-		err = fmt.Errorf(
-			"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
+	if specVersion != "" {
+		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
+		if err != nil {
+			err = fmt.Errorf(
+				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
+		}
 	}
 	return deploymentSpec, err
 }
