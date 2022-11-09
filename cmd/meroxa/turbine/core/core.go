@@ -12,15 +12,15 @@ import (
 	"google.golang.org/grpc"
 )
 
-type CoreServer struct {
+type TurbineCoreServer struct {
 	server *grpc.Server
 }
 
-func NewCoreServer() CoreServer {
-	return CoreServer{}
+func NewTurbineCoreServer() TurbineCoreServer {
+	return TurbineCoreServer{}
 }
 
-func (cs *CoreServer) Run(port int, mode string) {
+func (cs *TurbineCoreServer) Run(port int, mode string) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -44,6 +44,6 @@ func (cs *CoreServer) Run(port int, mode string) {
 	}
 }
 
-func (cs *CoreServer) Stop() {
+func (cs *TurbineCoreServer) Stop() {
 	cs.server.GracefulStop()
 }

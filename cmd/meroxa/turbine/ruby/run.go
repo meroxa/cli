@@ -13,7 +13,7 @@ const GrpcServerPort = 50500
 
 func (t *turbineRbCLI) Run(ctx context.Context) (err error) {
 	// Run turbine-core gRPC server
-	cs := core.NewCoreServer()
+	cs := core.NewTurbineCoreServer()
 	go cs.Run(GrpcServerPort, "local")
 
 	// Execute Turbine.run on app:
