@@ -110,5 +110,5 @@ func (t *turbineRbCLI) GitChecks(ctx context.Context) error {
 }
 
 func (t *turbineRbCLI) UploadSource(ctx context.Context, appName, appPath, url string) error {
-	return utils.UploadSource(ctx, t.logger, utils.JavaScript, t.appPath, appName, url)
+	return utils.UploadSource(ctx, t.logger, utils.Ruby, t.appPath, appName, url)
 }

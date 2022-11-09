@@ -648,7 +648,7 @@ func (d *Deploy) getTurbineCLIFromLanguage() (turbine.CLI, error) {
 		}
 	case "rb", turbine.Ruby:
 		if d.turbineCLI == nil {
-			d.turbineCLI = turbineRB.New(d.logger, d.path)
+			return turbineRB.New(d.logger, d.path), nil
 		}
 	}
 	return nil, fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)

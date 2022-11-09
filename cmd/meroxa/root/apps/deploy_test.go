@@ -13,6 +13,7 @@ import (
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRB "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -513,6 +514,10 @@ func TestValidateLanguage(t *testing.T) {
 		{
 			name:      "Successfully validate python",
 			languages: []string{"py", "python", "python3"},
+		},
+		{
+			name:      "Successfully validate ruby",
+			languages: []string{"rb", "ruby"},
 		},
 		{
 			name:      "Reject unsupported languages",
@@ -1110,9 +1115,9 @@ func Test_getTurbineCLIFromLanguage(t *testing.T) {
 			wantTurbineCLI: turbinePY.New(d.logger, d.path),
 		},
 		{
-			name:           "when language is python",
-			language:       turbine.Python,
-			wantTurbineCLI: turbinePY.New(d.logger, d.path),
+			name:           "when language is ruby",
+			language:       turbine.Ruby,
+			wantTurbineCLI: turbineRB.New(d.logger, d.path),
 		},
 		{
 			name:           "when language is not supported",

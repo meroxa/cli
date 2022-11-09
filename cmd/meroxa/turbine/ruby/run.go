@@ -9,18 +9,18 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/turbine/core"
 )
 
-const GRPC_SERVER_PORT = 50500
+const GrpcServerPort = 50500
 
 func (t *turbineRbCLI) Run(ctx context.Context) (err error) {
 	// Run turbine-core gRPC server
 	cs := core.NewCoreServer()
-	go cs.Run(GRPC_SERVER_PORT, "local")
+	go cs.Run(GrpcServerPort, "local")
 
 	// Execute Turbine.run on app:
 	// turbine_client process
 	pipelineCmd := exec.Command("turbine_client", "process")
 	pipelineCmd.Env = append(os.Environ(),
-		fmt.Sprintf("TURBINE_CORE_SERVER=localhost:%d", GRPC_SERVER_PORT))
+		fmt.Sprintf("TURBINE_CORE_SERVER=localhost:%d", GrpcServerPort))
 	pipelineCmd.Stdout = os.Stdout
 	pipelineCmd.Stderr = os.Stderr
 
@@ -40,7 +40,11 @@ func (t *turbineRbCLI) Run(ctx context.Context) (err error) {
 	}
 
 	// wait for pipelineCmd to exit
-	pipelineCmd.Wait()
+	err = pipelineCmd.Wait()
+	if err != nil {
+		t.logger.Errorf(ctx, err.Error())
+		return err
+	}
 
 	// teardown turbine core server
 	cs.Stop()
