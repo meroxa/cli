@@ -69,9 +69,6 @@
 						"image": {
 							"type": "string",
 							"minLength": 1
-						},
-						"env_vars": {
-							"type": "object"
 						}
 					},
 					"required": [ "name", "image" ]
@@ -81,33 +78,51 @@
 			"maxItems": 1,
 			"uniqueItems": true
 		},
-		"metadata": {
-			"description": "The metadata associated with the spec",
+		"secrets": {
+			"type": "object"
+		},
+		"definition": {
+			"description": "The extra details about the spec",
 			"type": "object",
 			"properties": {
-				"turbine": {
-					"description": "The turbine details",
+				"git_sha": {
+					"description": "The git sha used to generate the spec",
+					"type": "string"
+				},
+				"metadata": {
+					"description": "The metadata associated with the spec",
 					"type": "object",
 					"properties": {
-						"language": {
-							"description": "The language used to create deployment",
-							"type": "string",
-							"enum": ["golang", "js", "python" ]
+						"turbine": {
+							"description": "The turbine details",
+							"type": "object",
+							"properties": {
+								"language": {
+									"description": "The language used to create deployment",
+									"type": "string",
+									"enum": ["golang", "js", "py" ]
+								},
+								"version": {
+									"description": "The version of language used to create deployment",
+									"type": "string",
+									"minLength": 1
+								}
+							},
+							"required": [ "language", "version" ]
 						},
-						"version": {
-							"description": "The version of language used to create deployment",
-							"type": "string",
-							"minLength": 1
+						"spec_version": {
+							"description": "The spec version",
+							"type": "string"
 						}
 					},
-					"required": [ "language", "version" ]
+					"required": [ "turbine", "spec_version" ]
 				}
 			},
-			"required": [ "turbine" ]
+			"required": [ "git_sha", "metadata" ]
 		}
 	},
   	"required": [
 		"connectors",
-		"metadata"
+		"definition"
 	]
 }
