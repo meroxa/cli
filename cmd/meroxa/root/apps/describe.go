@@ -19,6 +19,7 @@ package apps
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/meroxa/cli/utils/display"
 
@@ -75,6 +76,8 @@ func (d *Describe) Execute(ctx context.Context) error {
 	d.logger.Info(ctx, output)
 	d.logger.JSON(ctx, app)
 
+	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.Name)
+	d.logger.Info(ctx, fmt.Sprintf("\n ✨ To visualize your application, visit %s", dashboardURL))
 	return nil
 }
 
