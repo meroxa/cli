@@ -2,26 +2,25 @@ package turbinerb
 
 import (
 	"context"
+	"fmt"
 
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
 func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
-
 	return false, nil
 }
 
 func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	var (
 		deploymentSpec string
-		err            error
 	)
-	return deploymentSpec, err
+	return deploymentSpec, fmt.Errorf("command not implemented")
 }
 
 func (t *turbineRbCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
 	var resources []utils.ApplicationResource
-	return resources, nil
+	return resources, fmt.Errorf("not implemented")
 }
 
 func (t *turbineRbCLI) GetGitSha(ctx context.Context) (string, error) {

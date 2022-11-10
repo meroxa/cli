@@ -2,14 +2,13 @@ package turbinerb
 
 import (
 	"context"
-
-	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"fmt"
 )
 
 func (t *turbineRbCLI) Init(ctx context.Context, name string) error {
-	return nil
+	return fmt.Errorf("command unavailable")
 }
 
 func (t *turbineRbCLI) GitInit(ctx context.Context, name string) error {
-	return utils.GitInit(ctx, name)
+	return fmt.Errorf("command unavailable")
 }

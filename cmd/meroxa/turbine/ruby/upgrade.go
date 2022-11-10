@@ -1,6 +1,7 @@
 package turbinerb
 
-// Upgrade fetches the latest Meroxa dependencies.
+import "fmt"
+
 func (t *turbineRbCLI) Upgrade(vendor bool) error {
-	return nil
+	return fmt.Errorf("command unavailable")
 }
