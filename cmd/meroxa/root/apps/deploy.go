@@ -735,7 +735,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", d.appName)
-	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To visualize your application visit %s",
+	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To visualize your application, visit %s",
 		d.appName, dashboardURL)
 
 	if d.flags.Verbose {

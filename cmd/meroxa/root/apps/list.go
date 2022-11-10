@@ -19,10 +19,9 @@ package apps
 import (
 	"context"
 
-	"github.com/meroxa/cli/utils/display"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -70,6 +69,8 @@ func (l *List) Execute(ctx context.Context) error {
 	l.logger.JSON(ctx, apps)
 	l.logger.Info(ctx, display.AppsTable(apps, l.hideHeaders))
 
+	output := " ✨ To visualize your applications, visit https://dashboard.meroxa.io/apps"
+	l.logger.Info(ctx, output)
 	return nil
 }
 
