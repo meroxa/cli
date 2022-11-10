@@ -21,17 +21,18 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.14.0
-	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783
+	golang.org/x/oauth2 v0.1.0
 )
 
 require (
 	github.com/briandowns/spinner v1.19.0
 	github.com/docker/docker v20.10.21+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-core v0.0.0-20221020080535-736b3696533b
+	github.com/meroxa/turbine-core v0.0.0-20221104165847-92a0a6b3eb20
 	github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf
 	github.com/stretchr/testify v1.8.1
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
+	google.golang.org/grpc v1.50.1
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
@@ -39,6 +40,7 @@ require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Microsoft/hcsshim v0.9.4 // indirect
+	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.5.13 // indirect
@@ -80,10 +82,11 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20221014081412-f15817d10f9b // indirect
-	golang.org/x/sys v0.0.0-20220908164124-27713097b956 // indirect
+	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

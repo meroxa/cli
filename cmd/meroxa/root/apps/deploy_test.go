@@ -517,7 +517,7 @@ func TestValidateLanguage(t *testing.T) {
 		{
 			name:      "Reject unsupported languages",
 			languages: []string{"cobol", "crystal", "g@rbAg3"},
-			errFormat: "language %q not supported. Currently, we support \"javascript\", \"golang\", and \"python\"",
+			errFormat: "language %q not supported. " + LanguageNotSupportedError,
 		},
 	}
 
