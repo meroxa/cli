@@ -18,19 +18,12 @@ func (t *turbineRbCLI) Run(ctx context.Context) (err error) {
 
 	// Execute Turbine.run on app:
 	// turbine_client process
-	pipelineCmd := exec.Command("bundle", "exec", "ruby", "-r", "./app", "-e", "Turbine.run")
+	pipelineCmd := exec.Command("bundle", "exec", "ruby", "-r", t.appPath+"/app", "-e", "Turbine.run")
 	pipelineCmd.Env = append(os.Environ(),
 		fmt.Sprintf("TURBINE_CORE_SERVER=localhost:%d", GrpcServerPort))
 	pipelineCmd.Stdout = os.Stdout
 	pipelineCmd.Stderr = os.Stderr
-
-	// set working directory to where the CLI was run
-	folderPath, err := os.Getwd()
-	if err != nil {
-		t.logger.Error(ctx, err.Error())
-		return err
-	}
-	pipelineCmd.Dir = folderPath
+	pipelineCmd.Dir = t.appPath
 
 	// Run command
 	err = pipelineCmd.Start()
