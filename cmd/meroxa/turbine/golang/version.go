@@ -29,8 +29,9 @@ func (t *turbineGoCLI) GetVersion(ctx context.Context) (string, error) {
 	chars := []rune(version)
 	if chars[0] == 'v' {
 		// Looks like v0.0.0-20221024132549-e6470e58b719
+		const sections = 3
 		parts := strings.Split(version, "-")
-		if len(parts) < 3 {
+		if len(parts) < sections {
 			return "", fmtErr
 		}
 		version = parts[2]
