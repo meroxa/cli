@@ -18,7 +18,7 @@ func (t *turbineRbCLI) Run(ctx context.Context) (err error) {
 
 	// Execute Turbine.run on app:
 	// turbine_client process
-	pipelineCmd := exec.Command("bundle", "exec", "ruby", "-r", t.appPath+"/app", "-e", "Turbine.run")
+	pipelineCmd := exec.Command("ruby", "-r", t.appPath+"/app", "-e", "Turbine.run")
 	pipelineCmd.Env = append(os.Environ(),
 		fmt.Sprintf("TURBINE_CORE_SERVER=localhost:%d", GrpcServerPort))
 	pipelineCmd.Stdout = os.Stdout
