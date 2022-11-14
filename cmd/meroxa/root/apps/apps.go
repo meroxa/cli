@@ -24,7 +24,7 @@ import (
 
 type Apps struct{}
 
-const LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", and \"python\""
+const LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", \"python\", and \"ruby (beta)\" "
 
 var (
 	_ builder.CommandWithDocs        = (*Apps)(nil)

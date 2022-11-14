@@ -74,6 +74,14 @@ func TestRunExecute(t *testing.T) {
 			err: nil,
 		},
 		{
+			desc: "Execute Ruby Run successfully",
+			config: turbine.AppConfig{
+				Name:     "ruby-test",
+				Language: turbine.Ruby,
+			},
+			err: nil,
+		},
+		{
 			desc: "Execute Python Run with an error",
 			config: turbine.AppConfig{
 				Name:     "py-test",
