@@ -25,7 +25,7 @@ func (t *turbineGoCLI) GetVersion(ctx context.Context) (string, error) {
 		return "", fmtErr
 	}
 
-	version := string(stdout)
+	version := strings.TrimSpace(string(stdout))
 	chars := []rune(version)
 	if chars[0] == 'v' {
 		// Looks like v0.0.0-20221024132549-e6470e58b719
