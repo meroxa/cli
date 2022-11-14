@@ -59,6 +59,12 @@ type Application struct {
 	DeletedAt   time.Time             `json:"deleted_at,omitempty"`
 }
 
+type ApplicationLogs struct {
+	FunctionLogs   map[string]string `json:"functions"`
+	ConnectorLogs  map[string]string `json:"connectors"`
+	DeploymentLogs map[string]string `json:"latest_deployment"`
+}
+
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
 type CreateApplicationInput struct {
 	Name     string           `json:"name"`
@@ -110,8 +116,8 @@ func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicati
 	return a, nil
 }
 
-func (c *client) DeleteApplication(ctx context.Context, name string) error {
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
+func (c *client) DeleteApplication(ctx context.Context, nameOrUUID string) error {
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -121,15 +127,15 @@ func (c *client) DeleteApplication(ctx context.Context, name string) error {
 
 // DeleteApplicationEntities does a bit more than DeleteApplication. Its main purpose is to remove underneath's app resources
 // even in the event the application didn't exist.
-func (c *client) DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error) {
-	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
+func (c *client) DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error) {
+	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return respAppDelete, err
 	}
 
 	// It is possible that an app failed to be created, but its resources still exist.
 	if respAppDelete.StatusCode == 404 {
-		respPipelineGet, err := c.GetPipelineByName(ctx, fmt.Sprintf("turbine-pipeline-%s", name))
+		respPipelineGet, err := c.GetPipelineByName(ctx, fmt.Sprintf("turbine-pipeline-%s", nameOrUUID))
 		// If pipeline doesn't exist either, returns as if the app didn't exist in the first place
 		if err != nil {
 			return nil, handleAPIErrors(respAppDelete)
@@ -175,8 +181,8 @@ func (c *client) DeleteApplicationEntities(ctx context.Context, name string) (*h
 	return respAppDelete, handleAPIErrors(respAppDelete)
 }
 
-func (c *client) GetApplication(ctx context.Context, name string) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, name), nil, nil, nil)
+func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Application, error) {
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -213,4 +219,24 @@ func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
 	}
 
 	return aa, nil
+}
+
+func (c *client) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error) {
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/logs", applicationsBasePath, nameOrUUID), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var l *ApplicationLogs
+	err = json.NewDecoder(resp.Body).Decode(&l)
+	if err != nil {
+		return nil, err
+	}
+
+	return l, nil
 }

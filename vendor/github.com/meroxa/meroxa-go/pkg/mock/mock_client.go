@@ -264,32 +264,32 @@ func (mr *MockClientMockRecorder) CreateSource(ctx interface{}) *gomock.Call {
 }
 
 // DeleteApplication mocks base method.
-func (m *MockClient) DeleteApplication(ctx context.Context, name string) error {
+func (m *MockClient) DeleteApplication(ctx context.Context, nameOrUUID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteApplication", ctx, name)
+	ret := m.ctrl.Call(m, "DeleteApplication", ctx, nameOrUUID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteApplication indicates an expected call of DeleteApplication.
-func (mr *MockClientMockRecorder) DeleteApplication(ctx, name interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteApplication(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockClient)(nil).DeleteApplication), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockClient)(nil).DeleteApplication), ctx, nameOrUUID)
 }
 
 // DeleteApplicationEntities mocks base method.
-func (m *MockClient) DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error) {
+func (m *MockClient) DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteApplicationEntities", ctx, name)
+	ret := m.ctrl.Call(m, "DeleteApplicationEntities", ctx, nameOrUUID)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteApplicationEntities indicates an expected call of DeleteApplicationEntities.
-func (mr *MockClientMockRecorder) DeleteApplicationEntities(ctx, name interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) DeleteApplicationEntities(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplicationEntities", reflect.TypeOf((*MockClient)(nil).DeleteApplicationEntities), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplicationEntities", reflect.TypeOf((*MockClient)(nil).DeleteApplicationEntities), ctx, nameOrUUID)
 }
 
 // DeleteConnector mocks base method.
@@ -365,18 +365,33 @@ func (mr *MockClientMockRecorder) DeleteResource(ctx, nameOrID interface{}) *gom
 }
 
 // GetApplication mocks base method.
-func (m *MockClient) GetApplication(ctx context.Context, name string) (*meroxa.Application, error) {
+func (m *MockClient) GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetApplication", ctx, name)
+	ret := m.ctrl.Call(m, "GetApplication", ctx, nameOrUUID)
 	ret0, _ := ret[0].(*meroxa.Application)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetApplication indicates an expected call of GetApplication.
-func (mr *MockClientMockRecorder) GetApplication(ctx, name interface{}) *gomock.Call {
+func (mr *MockClientMockRecorder) GetApplication(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, nameOrUUID)
+}
+
+// GetApplicationLogs mocks base method.
+func (m *MockClient) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetApplicationLogs", ctx, nameOrUUID)
+	ret0, _ := ret[0].(*meroxa.ApplicationLogs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetApplicationLogs indicates an expected call of GetApplicationLogs.
+func (mr *MockClientMockRecorder) GetApplicationLogs(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationLogs", reflect.TypeOf((*MockClient)(nil).GetApplicationLogs), ctx, nameOrUUID)
 }
 
 // GetBuild mocks base method.

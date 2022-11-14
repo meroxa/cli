@@ -147,54 +147,19 @@ func appFunctionsTable(functions []meroxa.EntityDetails) string {
 	return subTable
 }
 
-func AppLogsTable(
-	resources []meroxa.ApplicationResource,
-	connectors []*AppExtendedConnector,
-	functions []*meroxa.Function,
-	deployment *meroxa.Deployment) string {
-	var r meroxa.ApplicationResource
+func AppLogsTable(appLogs *meroxa.ApplicationLogs) string {
 	var subTable string
 
-	for _, c := range connectors {
-		found := false
-		for _, resource := range resources {
-			if resource.Name == c.Connector.ResourceName {
-				r = resource
-				found = true
-				break
-			}
-		}
-		if !found {
-			panic("internal error")
-		}
-
-		// Only show information if there are logs or a trace available
-		if c.Logs != "" || c.Connector.Trace != "" {
-			if r.Collection.Source != "" {
-				subTable += fmt.Sprintf("\n# Source connector logs (%s)\n", r.Name)
-			}
-			if r.Collection.Destination != "" {
-				subTable += fmt.Sprintf("\n# Destination connector logs (%s)\n", r.Name)
-			}
-		}
-
-		if c.Logs != "" {
-			subTable += fmt.Sprintf("\n%s\n", c.Logs)
-		}
-
-		if c.Connector.Trace != "" {
-			subTable += fmt.Sprintf("\n%s\n", c.Connector.Trace)
-		}
+	for key, logs := range appLogs.ConnectorLogs {
+		subTable += fmt.Sprintf("\n# Logs for %s resource\n\n%s\n", key, logs)
 	}
 
-	for _, f := range functions {
-		if f.Logs != "" {
-			subTable += fmt.Sprintf("\n# Function logs (%s)\n\n%s\n", f.Name, f.Logs)
-		}
+	for key, logs := range appLogs.FunctionLogs {
+		subTable += fmt.Sprintf("\n# Logs for %s function\n\n%s\n", key, logs)
 	}
 
-	if deployment != nil && deployment.Status.Details != "" {
-		subTable += fmt.Sprintf("\n# Deployment logs (%s)\n\n%s\n", deployment.UUID, deployment.Status.Details)
+	for key, logs := range appLogs.DeploymentLogs {
+		subTable += fmt.Sprintf("\n# Logs for %s deployment\n\n%s\n", key, logs)
 	}
 
 	return subTable

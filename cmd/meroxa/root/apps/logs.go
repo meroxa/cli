@@ -17,16 +17,12 @@ limitations under the License.
 package apps
 
 import (
-	"bytes"
 	"context"
 	"errors"
-	"net/http"
-	"strings"
-
-	"github.com/meroxa/cli/utils/display"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -49,13 +45,7 @@ type Logs struct {
 }
 
 type applicationLogsClient interface {
-	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
-	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
-	GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error)
-	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
-	GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error)
-	GetLatestDeployment(ctx context.Context, appName string) (*meroxa.Deployment, error)
-	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
+	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error)
 }
 
 func (*Logs) Aliases() []string {
@@ -75,64 +65,15 @@ func (l *Logs) Docs() builder.Docs {
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	app, getErr := l.client.GetApplication(ctx, l.args.NameOrUUID)
+	appLogs, getErr := l.client.GetApplicationLogs(ctx, l.args.NameOrUUID)
 	if getErr != nil {
 		return getErr
 	}
 
-	connectors := make([]*display.AppExtendedConnector, 0)
-	functions := make([]*meroxa.Function, 0)
-
-	resources := app.Resources
-	for _, cc := range app.Connectors {
-		connector, err := l.client.GetConnectorByNameOrID(ctx, cc.Name)
-		if err != nil {
-			return err
-		}
-
-		resp, err := l.client.GetConnectorLogs(ctx, connector.Name)
-		if err != nil {
-			return err
-		}
-
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(resp.Body)
-		if err != nil {
-			return err
-		}
-
-		connectors = append(connectors, &display.AppExtendedConnector{Connector: connector, Logs: buf.String()})
-	}
-	for _, ff := range app.Functions {
-		function, err := l.client.GetFunction(ctx, ff.Name)
-		if err != nil {
-			return err
-		}
-
-		resp, err := l.client.GetFunctionLogs(ctx, ff.Name)
-		if err != nil {
-			return err
-		}
-
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(resp.Body)
-		if err != nil {
-			return err
-		}
-
-		function.Logs = buf.String()
-		functions = append(functions, function)
-	}
-
-	deployment, err := l.client.GetLatestDeployment(ctx, app.Name)
-	if err != nil && !strings.Contains(err.Error(), "could not find") {
-		return err
-	}
-
-	output := display.AppLogsTable(resources, connectors, functions, deployment)
+	output := display.AppLogsTable(appLogs)
 
 	l.logger.Info(ctx, output)
-	l.logger.JSON(ctx, app)
+	l.logger.JSON(ctx, appLogs)
 
 	return nil
 }

@@ -20,8 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
 	"reflect"
 	"strings"
 	"testing"
@@ -32,7 +30,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
@@ -69,76 +66,20 @@ func TestApplicationLogsExecution(t *testing.T) {
 
 	appName := "my-app-with-funcs"
 	log := "hello world"
-	res1 := &http.Response{
-		Body: io.NopCloser(strings.NewReader(log)),
-	}
-	res2 := &http.Response{
-		Body: io.NopCloser(strings.NewReader(log)),
-	}
-	res3 := &http.Response{
-		Body: io.NopCloser(strings.NewReader(log)),
+
+	appLogs := &meroxa.ApplicationLogs{
+		ConnectorLogs:  map[string]string{"res1": log, "res2": log},
+		FunctionLogs:   map[string]string{"fun1": log},
+		DeploymentLogs: map[string]string{"uu-id": log},
 	}
 
-	a := utils.GenerateApplication("")
-	a.Name = appName
-
-	a.Resources = []meroxa.ApplicationResource{
-		{
-			EntityIdentifier: meroxa.EntityIdentifier{Name: "res1"},
-			Collection: meroxa.ResourceCollection{
-				Name:   "res1",
-				Source: "source",
-			},
-		},
-		{
-			EntityIdentifier: meroxa.EntityIdentifier{Name: "res2"},
-			Collection: meroxa.ResourceCollection{
-				Name:        "res2",
-				Destination: "destination",
-			},
-		},
-	}
-
-	a.Connectors = []meroxa.EntityDetails{
-		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn1"}},
-		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn2"}},
-	}
-	connectors := []*display.AppExtendedConnector{
-		{Connector: &meroxa.Connector{
-			Name: "conn1", ResourceName: "res1", Type: meroxa.ConnectorTypeSource, State: meroxa.ConnectorStateRunning},
-			Logs: log},
-		{Connector: &meroxa.Connector{
-			Name: "conn2", ResourceName: "res2", Type: meroxa.ConnectorTypeDestination, State: meroxa.ConnectorStateRunning},
-			Logs: log},
-	}
-
-	functions := []*meroxa.Function{
-		{Name: "fun1", UUID: "abc-def", Status: meroxa.FunctionStatus{State: "running"}, Logs: log},
-	}
-	a.Functions = []meroxa.EntityDetails{
-		{EntityIdentifier: meroxa.EntityIdentifier{Name: "fun1"}},
-	}
-
-	deployment := &meroxa.Deployment{
-		UUID:   "ghi-jkl",
-		Status: meroxa.DeploymentStatus{Details: "deployment in progress"}}
-
-	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn1").
-		Return(&meroxa.Connector{Name: "conn1", ResourceName: "res1"}, nil)
-	client.EXPECT().GetConnectorLogs(ctx, "conn1").Return(res1, nil)
-	client.EXPECT().GetConnectorByNameOrID(ctx, "conn2").
-		Return(&meroxa.Connector{Name: "conn2", ResourceName: "res2"}, nil)
-	client.EXPECT().GetConnectorLogs(ctx, "conn2").Return(res2, nil)
-	client.EXPECT().GetFunction(ctx, "fun1").Return(functions[0], nil)
-	client.EXPECT().GetFunctionLogs(ctx, "fun1").Return(res3, nil)
-	client.EXPECT().GetLatestDeployment(ctx, a.Name).Return(deployment, nil)
+	client.EXPECT().GetApplicationLogs(ctx, appName).Return(appLogs, nil)
 
 	dc := &Logs{
 		client: client,
 		logger: logger,
 	}
-	dc.args.NameOrUUID = a.Name
+	dc.args.NameOrUUID = appName
 
 	err := dc.Execute(ctx)
 	if err != nil {
@@ -146,20 +87,20 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppLogsTable(a.Resources, connectors, functions, deployment)
+	wantLeveledOutput := display.AppLogsTable(appLogs)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotApp meroxa.Application
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotApp)
+	var gotAppLogs meroxa.ApplicationLogs
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotAppLogs)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !reflect.DeepEqual(gotApp, a) {
-		t.Fatalf(cmp.Diff(a, gotApp))
+	if !reflect.DeepEqual(gotAppLogs, *appLogs) {
+		t.Fatalf(cmp.Diff(*appLogs, gotAppLogs))
 	}
 }
