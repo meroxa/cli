@@ -9,6 +9,7 @@ type CLI interface {
 	CleanUpBinaries(ctx context.Context, appName string)
 	Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error)
 	GetResources(ctx context.Context, appName string) ([]ApplicationResource, error)
+	GetVersion(ctx context.Context) (string, error)
 	GitInit(ctx context.Context, name string) error
 	GitChecks(ctx context.Context) error
 	GetGitSha(ctx context.Context) (string, error)
