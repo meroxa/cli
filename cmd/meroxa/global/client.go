@@ -30,6 +30,8 @@ import (
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
+const CLIReferer = "MeroxaCLI"
+
 func noUserInfo(actor, actorUUID string) bool {
 	return actor == "" || actorUUID == ""
 }
@@ -172,6 +174,7 @@ func NewClient() (meroxa.Client, error) {
 		}
 	}
 	options = append(options, meroxa.WithAccountUUID(Config.GetString(UserAccountUUID)))
+	options = append(options, meroxa.WithReferer(CLIReferer))
 	return meroxa.New(options...)
 }
 
