@@ -9,13 +9,13 @@ import (
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
-// GetVersion calls turbine-py to get the version of the app.
+// GetVersion calls turbine-py to get its version used by the given app.
 func (t *turbinePyCLI) GetVersion(ctx context.Context) (string, error) {
 	cmd := exec.Command("turbine-py", "version", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err = fmt.Errorf(
-			"unable to determine the turbine-py version of the Meroxa Application at %s",
+			"unable to determine the version of turbine-py used by the Meroxa Application at %s",
 			t.appPath)
 		return "", err
 	}
