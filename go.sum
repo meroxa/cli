@@ -109,8 +109,6 @@ github.com/buger/jsonparser v0.0.0-20180808090653-f4dd9f5a6b44/go.mod h1:bbYlZJ7
 github.com/bugsnag/bugsnag-go v0.0.0-20141110184014-b1d153021fcd/go.mod h1:2oa8nejYd4cQ/b0hMIopN0lCRxU0bueqREvZLWFrtK8=
 github.com/bugsnag/osext v0.0.0-20130617224835-0dd3f918b21b/go.mod h1:obH5gd0BsqsP2LwDJ9aOkm/6J86V6lyAXCoQWGw3K50=
 github.com/bugsnag/panicwrap v0.0.0-20151223152923-e2c28503fcd0/go.mod h1:D/8v3kj0zr8ZAKg1AQ6crr+5VwKN5eIywRkfhyM/+dE=
-github.com/caarlos0/env/v6 v6.10.1 h1:t1mPSxNpei6M5yAeu1qtRdPAK29Nbcf/n3G7x+b3/II=
-github.com/caarlos0/env/v6 v6.10.1/go.mod h1:hvp/ryKXKipEkcuYjs9mI4bBCg+UI0Yhgm5Zu0ddvwc=
 github.com/cased/cased-go v1.0.4 h1:7HxJb80Z//e0g8o7yIANh0cqNMqv08UIHvADt1uAeX4=
 github.com/cased/cased-go v1.0.4/go.mod h1:ycyzk9B574kc7XGS6UhhlfTD19Q3D23N3irNe+LQ++A=
 github.com/cenkalti/backoff/v4 v4.1.1/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
@@ -532,8 +530,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20221114192131-5634c0aa09db h1:/Ps+cHRZQqXSnwnQ/7NpCCNuu3qf5msn717Q0DIyUQU=
 github.com/meroxa/meroxa-go v0.0.0-20221114192131-5634c0aa09db/go.mod h1:OdTP4P/yHcTAqOE86kDXoTTLqC1Vj+/PFMG41kOcmhI=
-github.com/meroxa/turbine-core v0.0.0-20221104165847-92a0a6b3eb20 h1:ah42Wv7MeWdfJHIMvoA0qKtOU6noRPgHlE5x/SF/+ng=
-github.com/meroxa/turbine-core v0.0.0-20221104165847-92a0a6b3eb20/go.mod h1:fy7Db+a2UQWwssCe2CnzKXFoAk+l0iTCGioljzV+h9o=
+github.com/meroxa/turbine-core v0.0.0-20221116144720-1157fe02439b h1:0I9CIO9KfE/rGRAqblL/R1DRl5YXdjyHKl4WQ01pZF4=
+github.com/meroxa/turbine-core v0.0.0-20221116144720-1157fe02439b/go.mod h1:/9LeCwWod4XQ8Iha3Wspf/xJgkXAXXJnZuEnFZbThy8=
 github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf h1:VgotQwcTL+8Xes5AIxawSgUrp5yE9BgTIWPw3cSx7S8=
 github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf/go.mod h1:AS+QT+Mo6LZ0a437ZqjdbrdM+1WjE6dT0419fD6WJW8=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=

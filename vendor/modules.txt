@@ -34,9 +34,6 @@ github.com/alexeyco/simpletable
 # github.com/briandowns/spinner v1.19.0
 ## explicit; go 1.14
 github.com/briandowns/spinner
-# github.com/caarlos0/env/v6 v6.10.1
-## explicit; go 1.17
-github.com/caarlos0/env/v6
 # github.com/cased/cased-go v1.0.4
 ## explicit; go 1.14
 github.com/cased/cased-go
@@ -185,15 +182,12 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine-core v0.0.0-20221104165847-92a0a6b3eb20
+# github.com/meroxa/turbine-core v0.0.0-20221116144720-1157fe02439b
 ## explicit; go 1.19
 github.com/meroxa/turbine-core
 github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core
 github.com/meroxa/turbine-core/pkg/ir
-github.com/meroxa/turbine-core/platform
-github.com/meroxa/turbine-core/servers/info
-github.com/meroxa/turbine-core/servers/local
-github.com/meroxa/turbine-core/servers/platform
+github.com/meroxa/turbine-core/pkg/server
 # github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf
 ## explicit; go 1.18
 github.com/meroxa/turbine-go
