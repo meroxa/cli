@@ -30,7 +30,7 @@ const (
 	Python3    = "python3"
 	Ruby       = "ruby"
 
-	turbineJSVersion  = "1.3.3"
+	turbineJSVersion  = "1.3.4"
 	isTrue            = "true"
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
 
