@@ -156,6 +156,8 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 		StatusCode: http.StatusNoContent,
 	}
 
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", turbine.GoLang).Times(1)
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.
 		EXPECT().
 		DeleteApplicationEntities(ctx, app.Name).

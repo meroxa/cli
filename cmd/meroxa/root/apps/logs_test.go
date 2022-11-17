@@ -149,6 +149,8 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 		DeploymentLogs: map[string]string{"uu-id": log},
 	}
 
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", turbine.GoLang).Times(1)
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.EXPECT().GetApplicationLogs(ctx, appName).Return(appLogs, nil)
 
 	dc := &Logs{

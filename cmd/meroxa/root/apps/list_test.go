@@ -49,6 +49,10 @@ func TestListAppsExecution(t *testing.T) {
 
 	client.
 		EXPECT().
+		AddHeader("Meroxa-CLI-App", "1").
+		Times(1)
+	client.
+		EXPECT().
 		ListApplications(ctx).
 		Return(apps, nil)
 
