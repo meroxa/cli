@@ -84,7 +84,9 @@ func TestRemoveAppExecution(t *testing.T) {
 		DeleteApplicationEntities(ctx, r.args.NameOrUUID).
 		Return(res, nil)
 
+	os.Setenv("UNIT_TEST", "1")
 	err := r.Execute(ctx)
+	os.Setenv("UNIT_TEST", "")
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())

@@ -17,10 +17,13 @@ limitations under the License.
 package apps
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -66,11 +69,6 @@ meroxa remove NAME`,
 	}
 }
 
-func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
-	// @TODO tricky...
-	return r.args.NameOrUUID
-}
-
 func (r *Remove) Execute(ctx context.Context) error {
 	var lang, path string
 	var err error
@@ -98,6 +96,20 @@ func (r *Remove) Execute(ctx context.Context) error {
 			}
 		}
 	}
+
+	if os.Getenv("UNIT_TEST") == "" {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+
+		if nameOrUUID != strings.TrimSuffix(input, "\n") {
+			return errors.New("action aborted")
+		}
+	}
+
 	r.logger.Infof(ctx, "Removing application %q...", nameOrUUID)
 
 	res, err := r.client.DeleteApplicationEntities(ctx, nameOrUUID)
@@ -123,11 +135,10 @@ func (r *Remove) Client(client meroxa.Client) {
 }
 
 func (r *Remove) ParseArgs(args []string) error {
-	if len(args) < 1 {
-		return errors.New("requires application name")
+	if len(args) > 0 {
+		r.args.NameOrUUID = args[0]
 	}
 
-	r.args.NameOrUUID = args[0]
 	return nil
 }
 
@@ -136,12 +147,11 @@ func (r *Remove) Aliases() []string {
 }
 
 var (
-	_ builder.CommandWithDocs             = (*Remove)(nil)
-	_ builder.CommandWithAliases          = (*Remove)(nil)
-	_ builder.CommandWithArgs             = (*Remove)(nil)
-	_ builder.CommandWithFlags            = (*Remove)(nil)
-	_ builder.CommandWithClient           = (*Remove)(nil)
-	_ builder.CommandWithLogger           = (*Remove)(nil)
-	_ builder.CommandWithExecute          = (*Remove)(nil)
-	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)
+	_ builder.CommandWithDocs    = (*Remove)(nil)
+	_ builder.CommandWithAliases = (*Remove)(nil)
+	_ builder.CommandWithArgs    = (*Remove)(nil)
+	_ builder.CommandWithFlags   = (*Remove)(nil)
+	_ builder.CommandWithClient  = (*Remove)(nil)
+	_ builder.CommandWithLogger  = (*Remove)(nil)
+	_ builder.CommandWithExecute = (*Remove)(nil)
 )
