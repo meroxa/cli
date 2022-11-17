@@ -98,9 +98,10 @@ func (r *Remove) Execute(ctx context.Context) error {
 	}
 
 	if os.Getenv("UNIT_TEST") == "" {
+		var input string
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
-		input, err := reader.ReadString('\n')
+		input, err = reader.ReadString('\n')
 		if err != nil {
 			return err
 		}
