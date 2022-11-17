@@ -2,24 +2,17 @@ package turbinerb
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"os/exec"
-	"path"
+
+	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/internal"
 )
 
 func (t *turbineRbCLI) Run(ctx context.Context) error {
 	go t.runServer.Run(ctx)
 	defer t.runServer.GracefulStop()
 
-	cmd := exec.Command("ruby", []string{
-		"-r", path.Join(t.appPath, "app"),
-		"-e", "Turbine.run",
-	}...)
-	cmd.Env = append(os.Environ(), fmt.Sprintf("TURBINE_CORE_SERVER=%s", t.grpcListenAddress))
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Dir = t.appPath
+	cmd := internal.NewTurbineCmd(t.appPath, map[string]string{
+		"TURBINE_CORE_SERVER": t.grpcListenAddress,
+	})
 
 	if err := cmd.Start(); err != nil {
 		t.logger.Errorf(ctx, err.Error())
