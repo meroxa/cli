@@ -58,7 +58,7 @@ func (r *Remove) Flags() []builder.Flag {
 
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Removes a Turbine Data Application",
+		Short: "Remove a Turbine Data Application",
 		Long: `This command will remove the Application specified in '--path'
 (or current working directory if not specified) previously deployed on our Meroxa Platform,
 or the Application specified by the given name or UUID identifier.`,
