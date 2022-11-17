@@ -3,11 +3,13 @@ package apps
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
@@ -51,38 +53,67 @@ func TestRunAppFlags(t *testing.T) {
 }
 
 func TestRunExecute(t *testing.T) {
+	ctx := context.Background()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockCli := func() turbine.CLI {
+		mock := mockturbinecli.NewMockCLI(mockCtrl)
+		mock.EXPECT().Run(ctx)
+		return mock
+	}
+
 	tests := []struct {
-		desc   string
-		config turbine.AppConfig
-		err    error
+		desc     string
+		cli      turbine.CLI
+		config   turbine.AppConfig
+		features []string
+		err      error
 	}{
 		{
 			desc: "Execute Javascript run successfully",
+			cli:  mockCli(),
 			config: turbine.AppConfig{
 				Name:     "js-test",
 				Language: turbine.JavaScript,
 				Vendor:   "false",
 			},
-			err: nil,
 		},
 		{
 			desc: "Execute Golang run successfully",
+			cli:  mockCli(),
 			config: turbine.AppConfig{
 				Name:     "go-test",
 				Language: turbine.GoLang,
 			},
-			err: nil,
 		},
 		{
 			desc: "Execute Ruby Run successfully",
+			cli:  mockCli(),
 			config: turbine.AppConfig{
 				Name:     "ruby-test",
 				Language: turbine.Ruby,
 			},
-			err: nil,
+			features: []string{"ruby_implementation"},
 		},
 		{
+			desc: "Execute Ruby Run (Missing feature)",
+			cli:  mockturbinecli.NewMockCLI(mockCtrl),
+			config: turbine.AppConfig{
+				Name:     "ruby-test",
+				Language: turbine.Ruby,
+			},
+			err: fmt.Errorf(`no access to the Meroxa Turbine Ruby feature.
+Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`),
+		},
+
+		{
 			desc: "Execute Python Run with an error",
+			cli: func() turbine.CLI {
+				mock := mockturbinecli.NewMockCLI(mockCtrl)
+				mock.EXPECT().Run(ctx).Return(fmt.Errorf("not good"))
+				return mock
+			}(),
 			config: turbine.AppConfig{
 				Name:     "py-test",
 				Language: turbine.Python,
@@ -93,20 +124,21 @@ func TestRunExecute(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			ctx := context.Background()
-			mockCtrl := gomock.NewController(t)
-
-			u := &Run{}
-			u.Logger(log.NewTestLogger())
-			u.config = &tt.config
-
-			mock := mockturbinecli.NewMockCLI(mockCtrl)
-			if tt.err == nil {
-				mock.EXPECT().Run(ctx)
-			} else {
-				mock.EXPECT().Run(ctx).Return(tt.err)
+			u := &Run{
+				logger:     log.NewTestLogger(),
+				config:     &tt.config,
+				turbineCLI: tt.cli,
 			}
-			u.turbineCLI = mock
+
+			if global.Config == nil {
+				build := builder.BuildCobraCommand(u)
+				_ = global.PersistentPreRunE(build)
+			}
+
+			if len(tt.features) != 0 {
+				oldflags := setFlags(tt.features, false)
+				defer setFlags(oldflags, true)
+			}
 
 			err := u.Execute(ctx)
 			processError(t, err, tt.err)
@@ -115,4 +147,25 @@ func TestRunExecute(t *testing.T) {
 			}
 		})
 	}
+}
+
+// setFlags adds newflags to the global flag collection and returns old flags,
+// when replace is true, flags will be overwritten with newflags.
+func setFlags(newflags []string, replace bool) []string {
+	var flags string
+	oldflags := global.Config.Get(global.UserFeatureFlagsEnv)
+	if oldflags != nil {
+		flags = oldflags.(string)
+	} else {
+		oldflags = ""
+	}
+
+	if replace {
+		flags = strings.Join(newflags, " ")
+	} else {
+		flags += " " + strings.Join(newflags, " ")
+	}
+	global.Config.Set(global.UserFeatureFlagsEnv, flags)
+
+	return strings.Split(oldflags.(string), " ")
 }

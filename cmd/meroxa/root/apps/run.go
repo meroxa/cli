@@ -42,10 +42,11 @@ type Run struct {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*Run)(nil)
-	_ builder.CommandWithFlags   = (*Run)(nil)
-	_ builder.CommandWithExecute = (*Run)(nil)
-	_ builder.CommandWithLogger  = (*Run)(nil)
+	_ builder.CommandWithDocs        = (*Run)(nil)
+	_ builder.CommandWithFlags       = (*Run)(nil)
+	_ builder.CommandWithExecute     = (*Run)(nil)
+	_ builder.CommandWithLogger      = (*Run)(nil)
+	_ builder.CommandWithFeatureFlag = (*Run)(nil)
 )
 
 func (*Run) Usage() string {
@@ -69,6 +70,11 @@ func (r *Run) Logger(logger log.Logger) {
 
 func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
+}
+
+func (r *Run) FeatureFlag() (string, error) {
+	return "ruby_implementation", fmt.Errorf(`no access to the Meroxa Turbine Ruby feature.
+Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`)
 }
 
 func (r *Run) Execute(ctx context.Context) error {
@@ -105,6 +111,9 @@ func (r *Run) Execute(ctx context.Context) error {
 		}
 		return r.turbineCLI.Run(ctx)
 	case "rb", turbine.Ruby:
+		if err = builder.CheckFeatureFlag(r, r); err != nil {
+			return err
+		}
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbineRB.New(r.logger, r.path)
 		}

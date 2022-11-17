@@ -100,7 +100,7 @@
 								"language": {
 									"description": "The language used to create deployment",
 									"type": "string",
-									"enum": ["golang", "js", "py" ]
+									"enum": ["golang", "js", "py", "ruby" ]
 								},
 								"version": {
 									"description": "The version of language used to create deployment",

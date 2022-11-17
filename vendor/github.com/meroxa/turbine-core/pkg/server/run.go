@@ -1,4 +1,4 @@
-package local
+package server
 
 import (
 	"context"
@@ -10,53 +10,41 @@ import (
 
 	turbinecore "github.com/meroxa/turbine-core"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"github.com/meroxa/turbine-core/platform"
-	platform2 "github.com/meroxa/turbine-core/servers/platform"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type server struct {
+type runService struct {
 	pb.UnimplementedTurbineServiceServer
-	client      *platform.Client
-	processes   map[string]*pb.Process
-	resources   []pb.Resource
-	deploy      bool
-	imageName   string
 	config      turbinecore.AppConfig
 	appRootPath string
-	secrets     map[string]string
-	gitSha      string
-	appUUID     string
 }
 
-func (s *server) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
+func NewRunService() *runService {
+	return &runService{
+		config: turbinecore.AppConfig{},
+	}
+}
+
+func (s *runService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
 	// load app config (app.json)
 	ac, err := turbinecore.ReadAppConfig(request.AppName, request.ConfigFilePath)
 	if err != nil {
 		log.Printf("error initializeing app; err: %s", err)
-		return platform2.Empty(), err
+		return empty(), err
 	}
 	s.config = ac
 	s.appRootPath = request.ConfigFilePath
-	return platform2.Empty(), nil
+	return empty(), nil
 }
 
-func (s *server) GetResource(ctx context.Context, id *pb.NameOrUUID) (*pb.Resource, error) {
-	r := pb.Resource{}
-	if id.Uuid != "" {
-		r.Uuid = id.Uuid
-	}
-	if id.Name != "" {
-		r.Name = id.Name
-	}
-
-	s.resources = append(s.resources, r)
-
-	return &r, nil
+func (s *runService) GetResource(ctx context.Context, id *pb.GetResourceRequest) (*pb.Resource, error) {
+	return &pb.Resource{
+		Name: id.Name,
+	}, nil
 }
 
-func (s *server) ReadCollection(ctx context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
+func (s *runService) ReadCollection(ctx context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
 	if request.Collection == "" {
 		return &pb.Collection{}, fmt.Errorf("please provide a collection name to Records()")
 	}
@@ -66,32 +54,18 @@ func (s *server) ReadCollection(ctx context.Context, request *pb.ReadCollectionR
 	return readFixtures(resourceFixturesPath, request.Collection)
 }
 
-func (s *server) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *runService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	if request.Collection.Name == "" {
-		return platform2.Empty(), fmt.Errorf("please provide a collection name to Records()")
+		return empty(), fmt.Errorf("please provide a collection name to Records()")
 	}
 
 	prettyPrintRecords(request.Resource.Name, request.Collection.Stream, request.Collection.Records)
 
-	return platform2.Empty(), nil
+	return empty(), nil
 }
 
-func (s *server) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
-	s.processes[request.Process.Name] = request.Process
-	return nil, nil
-}
-
-func New() *server {
-	return &server{
-		processes: make(map[string]*pb.Process),
-		resources: []pb.Resource{},
-		deploy:    false,
-		imageName: "",
-		config:    turbinecore.AppConfig{},
-		secrets:   nil,
-		gitSha:    "",
-		appUUID:   "",
-	}
+func (s *runService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+	return request.GetCollection(), nil
 }
 
 type fixtureRecord struct {

@@ -6,11 +6,11 @@ type ConnectorType string
 type Lang string
 
 const (
-	GoLang            Lang = "golang"
-	LatestSpecVersion      = "0.1.1"
-
+	GoLang               Lang          = "golang"
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
+
+	LatestSpecVersion = "0.1.1"
 )
 
 type DeploymentSpec struct {
@@ -28,9 +28,8 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
-	Name    string                 `json:"name"`
-	Image   string                 `json:"image"`
-	EnvVars map[string]interface{} `json:"env_vars,omitempty"`
+	Name  string `json:"name"`
+	Image string `json:"image"`
 }
 
 type DefinitionSpec struct {

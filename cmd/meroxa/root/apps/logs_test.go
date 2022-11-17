@@ -68,7 +68,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	log := "hello world"
 
 	appLogs := &meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"res1": log, "res2": log},
+		ConnectorLogs:  map[string]string{"res1": log},
 		FunctionLogs:   map[string]string{"fun1": log},
 		DeploymentLogs: map[string]string{"uu-id": log},
 	}
@@ -89,6 +89,9 @@ func TestApplicationLogsExecution(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := display.AppLogsTable(appLogs)
 
+	// N.B. This comparison is undeterminstic when the test data map contains
+	//      more than one key. Maps in golang are not guaranteed ordered so the result
+	//      can be different.
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))
 	}
