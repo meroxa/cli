@@ -22,6 +22,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -71,7 +72,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	log := "hello world"
 
 	appLogs := &meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"res1": log, "res2": log},
+		ConnectorLogs:  map[string]string{"res1": log},
 		FunctionLogs:   map[string]string{"fun1": log},
 		DeploymentLogs: map[string]string{"uu-id": log},
 	}
@@ -106,7 +107,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !compareApplicationLogs(&gotAppLogs, appLogs) {
+	if !reflect.DeepEqual(gotAppLogs, *appLogs) {
 		t.Fatalf(cmp.Diff(*appLogs, gotAppLogs))
 	}
 
@@ -143,7 +144,7 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	require.NoError(t, err)
 
 	appLogs := &meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"res1": log, "res2": log},
+		ConnectorLogs:  map[string]string{"res1": log},
 		FunctionLogs:   map[string]string{"fun1": log},
 		DeploymentLogs: map[string]string{"uu-id": log},
 	}
@@ -176,35 +177,7 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !compareApplicationLogs(&gotAppLogs, appLogs) {
+	if !reflect.DeepEqual(gotAppLogs, *appLogs) {
 		t.Fatalf(cmp.Diff(*appLogs, gotAppLogs))
 	}
-}
-
-func compareApplicationLogs(a *meroxa.ApplicationLogs, b *meroxa.ApplicationLogs) bool {
-	if len(a.ConnectorLogs) != len(b.ConnectorLogs) {
-		return false
-	}
-	for key, val := range a.ConnectorLogs {
-		if b.ConnectorLogs[key] != val {
-			return false
-		}
-	}
-	if len(a.FunctionLogs) != len(b.FunctionLogs) {
-		return false
-	}
-	for key, val := range a.FunctionLogs {
-		if b.FunctionLogs[key] != val {
-			return false
-		}
-	}
-	if len(a.DeploymentLogs) != len(b.DeploymentLogs) {
-		return false
-	}
-	for key, val := range a.DeploymentLogs {
-		if b.DeploymentLogs[key] != val {
-			return false
-		}
-	}
-	return true
 }
