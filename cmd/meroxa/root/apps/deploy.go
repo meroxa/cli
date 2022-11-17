@@ -647,7 +647,7 @@ func (d *Deploy) getTurbineCLIFromLanguage() (turbine.CLI, error) {
 	return nil, fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 }
 
-//nolint:gocyclo
+//nolint:gocyclo,funlen
 func (d *Deploy) Execute(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
@@ -658,9 +658,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		err error
 	)
 
-	d.turbineCLI, err = d.getTurbineCLIFromLanguage()
-	if err != nil {
-		return err
+	if d.turbineCLI == nil {
+		d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path)
+		if err != nil {
+			return err
+		}
 	}
 
 	if err = d.validateGitConfig(ctx); err != nil {

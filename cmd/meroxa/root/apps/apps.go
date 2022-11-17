@@ -17,9 +17,16 @@ limitations under the License.
 package apps
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	"github.com/meroxa/cli/log"
 )
 
 type Apps struct{}
@@ -58,4 +65,17 @@ func (*Apps) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Run{}),
 		builder.BuildCobraCommand(&Upgrade{}),
 	}
+}
+
+// getTurbineCLIFromLanguage will return the appropriate turbine.CLI based on language.
+func getTurbineCLIFromLanguage(logger log.Logger, lang, path string) (turbine.CLI, error) {
+	switch lang {
+	case "go", turbine.GoLang:
+		return turbineGo.New(logger, path), nil
+	case "js", turbine.JavaScript, turbine.NodeJs:
+		return turbineJS.New(logger, path), nil
+	case "py", turbine.Python3, turbine.Python:
+		return turbinePY.New(logger, path), nil
+	}
+	return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 }

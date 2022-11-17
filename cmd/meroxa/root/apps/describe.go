@@ -21,16 +21,17 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/meroxa/cli/utils/display"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
 	_ builder.CommandWithDocs    = (*Describe)(nil)
 	_ builder.CommandWithArgs    = (*Describe)(nil)
+	_ builder.CommandWithFlags   = (*Describe)(nil)
 	_ builder.CommandWithClient  = (*Describe)(nil)
 	_ builder.CommandWithLogger  = (*Describe)(nil)
 	_ builder.CommandWithExecute = (*Describe)(nil)
@@ -44,29 +45,69 @@ type describeApplicationClient interface {
 }
 
 type Describe struct {
-	client describeApplicationClient
-	logger log.Logger
+	client     describeApplicationClient
+	logger     log.Logger
+	turbineCLI turbine.CLI
 
 	args struct {
 		NameOrUUID string
 	}
+	flags struct {
+		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
+	}
 }
 
 func (d *Describe) Usage() string {
-	return "describe [NAMEorUUID]"
+	return "describe"
+}
+
+func (d *Describe) Flags() []builder.Flag {
+	return builder.BuildFlags(&d.flags)
 }
 
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe a Turbine Data Application",
-		Beta:  true,
+		Long: `This command will fetch details about the Application specified in '--path'
+(or current working directory if not specified) on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.`,
+		Example: `meroxa describe # assumes that the Application is in the current directory
+meroxa describe --path /my/app
+meroxa describe [NAMEorUUID]`,
+		Beta: true,
 	}
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	var output string
+	var output, lang, path string
+	var err error
 
-	app, err := d.client.GetApplication(ctx, d.args.NameOrUUID)
+	nameOrUUID := d.args.NameOrUUID
+	if nameOrUUID != "" && d.flags.Path != "" {
+		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
+	}
+
+	if nameOrUUID == "" {
+		if path, err = turbine.GetPath(d.flags.Path); err != nil {
+			return err
+		}
+
+		if lang, err = turbine.GetLangFromAppJSON(ctx, d.logger, path); err != nil {
+			return err
+		}
+		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, d.logger, path); err != nil {
+			return err
+		}
+
+		if d.turbineCLI == nil {
+			d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, lang, path)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	app, err := d.client.GetApplication(ctx, nameOrUUID)
 	if err != nil {
 		return err
 	}

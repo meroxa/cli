@@ -19,9 +19,11 @@ package apps
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -31,33 +33,74 @@ type removeAppClient interface {
 }
 
 type Remove struct {
-	client removeAppClient
-	logger log.Logger
+	client     removeAppClient
+	logger     log.Logger
+	turbineCLI turbine.CLI
 
 	args struct {
 		NameOrUUID string
 	}
+	flags struct {
+		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
+	}
 }
 
 func (r *Remove) Usage() string {
-	return "remove NAME"
+	return `remove`
+}
+
+func (r *Remove) Flags() []builder.Flag {
+	return builder.BuildFlags(&r.flags)
 }
 
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Removes a Turbine Data Application",
-		Beta:  true,
+		Long: `This command will remove the Application specified in '--path'
+(or current working directory if not specified) previously deployed on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.`,
+		Example: `meroxa remove # assumes that the Application is in the current directory
+meroxa remove --path /my/app
+meroxa remove NAME`,
+		Beta: true,
 	}
 }
 
 func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
+	// @TODO tricky...
 	return r.args.NameOrUUID
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
-	r.logger.Infof(ctx, "Removing application %q...", r.args.NameOrUUID)
+	var lang, path string
+	var err error
+	nameOrUUID := r.args.NameOrUUID
+	if nameOrUUID != "" && r.flags.Path != "" {
+		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
+	}
 
-	res, err := r.client.DeleteApplicationEntities(ctx, r.args.NameOrUUID)
+	if nameOrUUID == "" {
+		if path, err = turbine.GetPath(r.flags.Path); err != nil {
+			return err
+		}
+
+		if lang, err = turbine.GetLangFromAppJSON(ctx, r.logger, path); err != nil {
+			return err
+		}
+		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, r.logger, path); err != nil {
+			return err
+		}
+
+		if r.turbineCLI == nil {
+			r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, lang, path)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	r.logger.Infof(ctx, "Removing application %q...", nameOrUUID)
+
+	res, err := r.client.DeleteApplicationEntities(ctx, nameOrUUID)
 	if err != nil {
 		return err
 	}
@@ -65,7 +108,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		defer res.Body.Close()
 	}
 
-	r.logger.Infof(ctx, "Application %q successfully removed", r.args.NameOrUUID)
+	r.logger.Infof(ctx, "Application %q successfully removed", nameOrUUID)
 	r.logger.JSON(ctx, res)
 
 	return nil
@@ -96,6 +139,7 @@ var (
 	_ builder.CommandWithDocs             = (*Remove)(nil)
 	_ builder.CommandWithAliases          = (*Remove)(nil)
 	_ builder.CommandWithArgs             = (*Remove)(nil)
+	_ builder.CommandWithFlags            = (*Remove)(nil)
 	_ builder.CommandWithClient           = (*Remove)(nil)
 	_ builder.CommandWithLogger           = (*Remove)(nil)
 	_ builder.CommandWithExecute          = (*Remove)(nil)

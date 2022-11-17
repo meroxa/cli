@@ -19,8 +19,10 @@ package apps
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -30,17 +32,22 @@ var (
 	_ builder.CommandWithAliases = (*Logs)(nil)
 	_ builder.CommandWithDocs    = (*Logs)(nil)
 	_ builder.CommandWithArgs    = (*Logs)(nil)
+	_ builder.CommandWithFlags   = (*Logs)(nil)
 	_ builder.CommandWithClient  = (*Logs)(nil)
 	_ builder.CommandWithLogger  = (*Logs)(nil)
 	_ builder.CommandWithExecute = (*Logs)(nil)
 )
 
 type Logs struct {
-	client applicationLogsClient
-	logger log.Logger
+	client     applicationLogsClient
+	logger     log.Logger
+	turbineCLI turbine.CLI
 
 	args struct {
 		NameOrUUID string
+	}
+	flags struct {
+		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
 	}
 }
 
@@ -53,19 +60,56 @@ func (*Logs) Aliases() []string {
 }
 
 func (l *Logs) Usage() string {
-	return "logs [NAMEorUUID]"
+	return `logs`
+}
+
+func (l *Logs) Flags() []builder.Flag {
+	return builder.BuildFlags(&l.flags)
 }
 
 func (l *Logs) Docs() builder.Docs {
 	return builder.Docs{
-		Short:   "View relevant logs to the state of the given Turbine Data Application",
-		Example: "meroxa apps logs my-turbine-application",
-		Beta:    true,
+		Short: "View relevant logs to the state of the given Turbine Data Application",
+		Long: `This command will fetch relevant logs about the Application specified in '--path'
+(or current working directory if not specified) on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.`,
+		Example: `meroxa logs # assumes that the Application is in the current directory
+meroxa logs --path /my/app
+meroxa apps logs my-turbine-application`,
+		Beta: true,
 	}
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	appLogs, getErr := l.client.GetApplicationLogs(ctx, l.args.NameOrUUID)
+	var lang, path string
+	var err error
+
+	nameOrUUID := l.args.NameOrUUID
+	if nameOrUUID != "" && l.flags.Path != "" {
+		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
+	}
+
+	if nameOrUUID == "" {
+		if path, err = turbine.GetPath(l.flags.Path); err != nil {
+			return err
+		}
+
+		if lang, err = turbine.GetLangFromAppJSON(ctx, l.logger, path); err != nil {
+			return err
+		}
+		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, l.logger, path); err != nil {
+			return err
+		}
+
+		if l.turbineCLI == nil {
+			l.turbineCLI, err = getTurbineCLIFromLanguage(l.logger, lang, path)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	appLogs, getErr := l.client.GetApplicationLogs(ctx, nameOrUUID)
 	if getErr != nil {
 		return getErr
 	}

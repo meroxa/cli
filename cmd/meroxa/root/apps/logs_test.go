@@ -20,16 +20,19 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"reflect"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/meroxa/cli/utils/display"
-
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
@@ -68,7 +71,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	log := "hello world"
 
 	appLogs := &meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"res1": log},
+		ConnectorLogs:  map[string]string{"res1": log, "res2": log},
 		FunctionLogs:   map[string]string{"fun1": log},
 		DeploymentLogs: map[string]string{"uu-id": log},
 	}
@@ -103,7 +106,105 @@ func TestApplicationLogsExecution(t *testing.T) {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
 
-	if !reflect.DeepEqual(gotAppLogs, *appLogs) {
+	if !compareApplicationLogs(&gotAppLogs, appLogs) {
 		t.Fatalf(cmp.Diff(*appLogs, gotAppLogs))
 	}
+
+	dc.flags.Path = "does not matter"
+	err = dc.Execute(ctx)
+	if err == nil {
+		t.Fatal("expected error, got none")
+	}
+}
+
+func TestApplicationLogsExecutionWithPath(t *testing.T) {
+	os.Setenv("UNIT_TEST", "1")
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	appName := "my-app-with-funcs"
+	log := "hello world"
+
+	i := &Init{
+		logger: logger,
+	}
+	path, _ := filepath.Abs("tmp" + uuid.NewString())
+	i.args.appName = appName
+	i.flags.Path = path
+	i.flags.Lang = turbine.GoLang
+	i.flags.SkipModInit = true
+	i.flags.ModVendor = false
+	err := i.Execute(ctx)
+	defer func(path string) {
+		os.RemoveAll(path)
+	}(path)
+	require.NoError(t, err)
+
+	appLogs := &meroxa.ApplicationLogs{
+		ConnectorLogs:  map[string]string{"res1": log, "res2": log},
+		FunctionLogs:   map[string]string{"fun1": log},
+		DeploymentLogs: map[string]string{"uu-id": log},
+	}
+
+	client.EXPECT().GetApplicationLogs(ctx, appName).Return(appLogs, nil)
+
+	dc := &Logs{
+		client: client,
+		logger: logger,
+	}
+	dc.flags.Path = filepath.Join(path, appName)
+
+	err = dc.Execute(ctx)
+	os.Setenv("UNIT_TEST", "")
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := display.AppLogsTable(appLogs)
+
+	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
+		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotAppLogs meroxa.ApplicationLogs
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotAppLogs)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !compareApplicationLogs(&gotAppLogs, appLogs) {
+		t.Fatalf(cmp.Diff(*appLogs, gotAppLogs))
+	}
+}
+
+func compareApplicationLogs(a *meroxa.ApplicationLogs, b *meroxa.ApplicationLogs) bool {
+	if len(a.ConnectorLogs) != len(b.ConnectorLogs) {
+		return false
+	}
+	for key, val := range a.ConnectorLogs {
+		if b.ConnectorLogs[key] != val {
+			return false
+		}
+	}
+	if len(a.FunctionLogs) != len(b.FunctionLogs) {
+		return false
+	}
+	for key, val := range a.FunctionLogs {
+		if b.FunctionLogs[key] != val {
+			return false
+		}
+	}
+	if len(a.DeploymentLogs) != len(b.DeploymentLogs) {
+		return false
+	}
+	for key, val := range a.DeploymentLogs {
+		if b.DeploymentLogs[key] != val {
+			return false
+		}
+	}
+	return true
 }
