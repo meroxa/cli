@@ -8,18 +8,24 @@ meroxa-apps-logs - View relevant logs to the state of the given Turbine Data App
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps logs [NAMEorUUID] [flags]\fP
+\fBmeroxa apps logs [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-View relevant logs to the state of the given Turbine Data Application (Beta)
+This command will fetch relevant logs about the Application specified in '--path'
+(or current working directory if not specified) on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.
 
 
 .SH OPTIONS
 .PP
 \fB-h\fP, \fB--help\fP[=false]
 	help for logs
+
+.PP
+\fB--path\fP=""
+	Path to the app directory (default is local directory)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -45,6 +51,8 @@ View relevant logs to the state of the given Turbine Data Application (Beta)
 .RS
 
 .nf
+meroxa logs # assumes that the Application is in the current directory
+meroxa logs --path /my/app
 meroxa apps logs my-turbine-application
 
 .fi

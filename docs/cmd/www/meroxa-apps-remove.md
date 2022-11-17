@@ -9,15 +9,30 @@ url: /cli/cmd/meroxa-apps-remove/
 
 Removes a Turbine Data Application (Beta)
 
+### Synopsis
+
+This command will remove the Application specified in '--path'
+(or current working directory if not specified) previously deployed on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.
+
 ```
-meroxa apps remove NAME [flags]
+meroxa apps remove [flags]
+```
+
+### Examples
+
+```
+meroxa remove # assumes that the Application is in the current directory
+meroxa remove --path /my/app
+meroxa remove NAME
 ```
 
 ### Options
 
 ```
-  -f, --force   skip confirmation
-  -h, --help    help for remove
+  -f, --force         skip confirmation
+  -h, --help          help for remove
+      --path string   Path to the app directory (default is local directory)
 ```
 
 ### Options inherited from parent commands
