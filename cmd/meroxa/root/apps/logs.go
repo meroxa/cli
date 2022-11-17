@@ -18,7 +18,6 @@ package apps
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -94,10 +93,11 @@ func (l *Logs) Execute(ctx context.Context) error {
 			return err
 		}
 
-		if lang, err = turbine.GetLangFromAppJSON(ctx, l.logger, path); err != nil {
+		devNullLogger := log.NewWithDevNull()
+		if lang, err = turbine.GetLangFromAppJSON(ctx, devNullLogger, path); err != nil {
 			return err
 		}
-		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, l.logger, path); err != nil {
+		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, devNullLogger, path); err != nil {
 			return err
 		}
 
@@ -131,10 +131,9 @@ func (l *Logs) Logger(logger log.Logger) {
 }
 
 func (l *Logs) ParseArgs(args []string) error {
-	if len(args) < 1 {
-		return errors.New("requires app name or UUID")
+	if len(args) > 0 {
+		l.args.NameOrUUID = args[0]
 	}
 
-	l.args.NameOrUUID = args[0]
 	return nil
 }

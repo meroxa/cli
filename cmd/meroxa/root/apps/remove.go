@@ -82,10 +82,11 @@ func (r *Remove) Execute(ctx context.Context) error {
 			return err
 		}
 
-		if lang, err = turbine.GetLangFromAppJSON(ctx, r.logger, path); err != nil {
+		devNullLogger := log.NewWithDevNull()
+		if lang, err = turbine.GetLangFromAppJSON(ctx, devNullLogger, path); err != nil {
 			return err
 		}
-		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, r.logger, path); err != nil {
+		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, devNullLogger, path); err != nil {
 			return err
 		}
 
