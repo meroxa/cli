@@ -154,28 +154,28 @@ Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sm
 	}
 }
 
-// setFeatures sets features from a map which designates enabled/disabled features
+// setFeatures sets features from a map which designates enabled/disabled features.
 func setFeatures(features map[string]bool) {
-	current := getFeatures()
+	currentFlags := getFeatures()
 
 	for k, v := range features {
 		switch v {
 		case true:
-			current[k] = v
+			currentFlags[k] = v
 		case false:
-			delete(current, k)
+			delete(currentFlags, k)
 		}
 	}
 
 	var flags []string
-	for k, _ := range current {
+	for k := range currentFlags {
 		flags = append(flags, k)
 	}
 
 	global.Config.Set(global.UserFeatureFlagsEnv, strings.Join(flags, " "))
 }
 
-// resetFeatures inverts the state of features defined in the map
+// resetFeatures inverts the state of features defined in the map.
 func resetFeatures(features map[string]bool) {
 	reset := make(map[string]bool)
 	for k, v := range features {
