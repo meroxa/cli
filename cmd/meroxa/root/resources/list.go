@@ -100,6 +100,8 @@ func (l *List) Execute(ctx context.Context) error {
 
 	l.logger.JSON(ctx, resources)
 	l.logger.Info(ctx, display.ResourcesTable(resources, l.hideHeaders))
+	output := "\n ✨ To visualize your resources, visit https://dashboard.meroxa.io/resources"
+	l.logger.Info(ctx, output)
 
 	return nil
 }
