@@ -67,7 +67,7 @@ func TestRunExecute(t *testing.T) {
 		desc     string
 		cli      turbine.CLI
 		config   turbine.AppConfig
-		features []string
+		features map[string]bool
 		err      error
 	}{
 		{
@@ -94,7 +94,9 @@ func TestRunExecute(t *testing.T) {
 				Name:     "ruby-test",
 				Language: turbine.Ruby,
 			},
-			features: []string{"ruby_implementation"},
+			features: map[string]bool{
+				"ruby_implementation": true,
+			},
 		},
 		{
 			desc: "Execute Ruby Run (Missing feature)",
@@ -102,6 +104,9 @@ func TestRunExecute(t *testing.T) {
 			config: turbine.AppConfig{
 				Name:     "ruby-test",
 				Language: turbine.Ruby,
+			},
+			features: map[string]bool{
+				"ruby_implementation": false,
 			},
 			err: fmt.Errorf(`no access to the Meroxa Turbine Ruby feature.
 Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`),
@@ -136,8 +141,8 @@ Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sm
 			}
 
 			if len(tt.features) != 0 {
-				oldflags := setFlags(tt.features, false)
-				defer setFlags(oldflags, true)
+				setFeatures(tt.features)
+				defer resetFeatures(tt.features)
 			}
 
 			err := u.Execute(ctx)
@@ -149,23 +154,45 @@ Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sm
 	}
 }
 
-// setFlags adds newflags to the global flag collection and returns old flags,
-// when replace is true, flags will be overwritten with newflags.
-func setFlags(newflags []string, replace bool) []string {
-	var flags string
-	oldflags := global.Config.Get(global.UserFeatureFlagsEnv)
-	if oldflags != nil {
-		flags = oldflags.(string)
-	} else {
-		oldflags = ""
+// setFeatures sets features from a map which designates enabled/disabled features.
+func setFeatures(features map[string]bool) {
+	currentFlags := getFeatures()
+
+	for k, v := range features {
+		switch v {
+		case true:
+			currentFlags[k] = v
+		case false:
+			delete(currentFlags, k)
+		}
 	}
 
-	if replace {
-		flags = strings.Join(newflags, " ")
-	} else {
-		flags += " " + strings.Join(newflags, " ")
+	var flags []string
+	for k := range currentFlags {
+		flags = append(flags, k)
 	}
-	global.Config.Set(global.UserFeatureFlagsEnv, flags)
 
-	return strings.Split(oldflags.(string), " ")
+	global.Config.Set(global.UserFeatureFlagsEnv, strings.Join(flags, " "))
+}
+
+// resetFeatures inverts the state of features defined in the map.
+func resetFeatures(features map[string]bool) {
+	reset := make(map[string]bool)
+	for k, v := range features {
+		reset[k] = !v
+	}
+
+	setFeatures(reset)
+}
+
+func getFeatures() map[string]bool {
+	flags := make(map[string]bool)
+
+	if s := global.Config.Get(global.UserFeatureFlagsEnv); s != nil {
+		for _, t := range strings.Split(s.(string), " ") {
+			flags[t] = true
+		}
+	}
+
+	return flags
 }

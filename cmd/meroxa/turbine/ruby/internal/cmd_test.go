@@ -20,7 +20,7 @@ func Test_NewTurbineCmd(t *testing.T) {
 	assert.Equal(t, cmd.Args, []string{
 		"ruby",
 		"-r", "/my/path/app",
-		"-e", "Turbine.run",
+		"-e", "TurbineRb.run",
 	})
 	assert.Contains(t, cmd.Env, "foo=bar")
 	assert.Contains(t, cmd.Env, "x=y")
