@@ -10,7 +10,7 @@ import (
 func NewTurbineCmd(appPath string, env map[string]string) *exec.Cmd {
 	cmd := exec.Command("ruby", []string{
 		"-r", path.Join(appPath, "app"),
-		"-e", "Turbine.run",
+		"-e", "TurbineRb.run",
 	}...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
