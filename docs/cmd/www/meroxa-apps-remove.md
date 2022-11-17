@@ -22,9 +22,9 @@ meroxa apps remove [flags]
 ### Examples
 
 ```
-meroxa remove # assumes that the Application is in the current directory
-meroxa remove --path /my/app
-meroxa remove NAME
+meroxa apps remove # assumes that the Application is in the current directory
+meroxa apps remove --path /my/app
+meroxa apps remove NAME
 ```
 
 ### Options

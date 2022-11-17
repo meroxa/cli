@@ -15,9 +15,9 @@ meroxa apps describe [flags]
 ### Examples
 
 ```
-meroxa describe # assumes that the Application is in the current directory
-meroxa describe --path /my/app
-meroxa describe NAMEorUUID
+meroxa apps describe # assumes that the Application is in the current directory
+meroxa apps describe --path /my/app
+meroxa apps describe NAMEorUUID
 ```
 
 ### Options

@@ -70,9 +70,9 @@ func (d *Describe) Docs() builder.Docs {
 		Long: `This command will fetch details about the Application specified in '--path'
 (or current working directory if not specified) on our Meroxa Platform,
 or the Application specified by the given name or UUID identifier.`,
-		Example: `meroxa describe # assumes that the Application is in the current directory
-meroxa describe --path /my/app
-meroxa describe NAMEorUUID`,
+		Example: `meroxa apps describe # assumes that the Application is in the current directory
+meroxa apps describe --path /my/app
+meroxa apps describe NAMEorUUID`,
 		Beta: true,
 	}
 }

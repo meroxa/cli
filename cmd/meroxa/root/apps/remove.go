@@ -62,9 +62,9 @@ func (r *Remove) Docs() builder.Docs {
 		Long: `This command will remove the Application specified in '--path'
 (or current working directory if not specified) previously deployed on our Meroxa Platform,
 or the Application specified by the given name or UUID identifier.`,
-		Example: `meroxa remove # assumes that the Application is in the current directory
-meroxa remove --path /my/app
-meroxa remove NAME`,
+		Example: `meroxa apps remove # assumes that the Application is in the current directory
+meroxa apps remove --path /my/app
+meroxa apps remove NAME`,
 		Beta: true,
 	}
 }

@@ -15,8 +15,8 @@ meroxa apps logs [flags]
 ### Examples
 
 ```
-meroxa logs # assumes that the Application is in the current directory
-meroxa logs --path /my/app
+meroxa apps logs # assumes that the Application is in the current directory
+meroxa apps logs --path /my/app
 meroxa apps logs my-turbine-application
 ```
 
