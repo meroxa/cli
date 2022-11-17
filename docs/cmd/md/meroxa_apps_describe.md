@@ -9,7 +9,7 @@ This command will fetch details about the Application specified in '--path'
 or the Application specified by the given name or UUID identifier.
 
 ```
-meroxa apps describe [flags]
+meroxa apps describe [NameOrUUID] [--path pwd] [flags]
 ```
 
 ### Examples

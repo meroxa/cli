@@ -58,7 +58,7 @@ type Describe struct {
 }
 
 func (d *Describe) Usage() string {
-	return "describe"
+	return "describe [NameOrUUID] [--path pwd]"
 }
 
 func (d *Describe) Flags() []builder.Flag {

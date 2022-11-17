@@ -50,7 +50,7 @@ type Remove struct {
 }
 
 func (r *Remove) Usage() string {
-	return `remove`
+	return `remove [NameOrUUID] [--path pwd]`
 }
 
 func (r *Remove) Flags() []builder.Flag {

@@ -9,7 +9,7 @@ This command will remove the Application specified in '--path'
 or the Application specified by the given name or UUID identifier.
 
 ```
-meroxa apps remove [flags]
+meroxa apps remove [NameOrUUID] [--path pwd] [flags]
 ```
 
 ### Examples

@@ -96,7 +96,7 @@ var (
 )
 
 func (*Deploy) Usage() string {
-	return "deploy"
+	return "deploy [--path pwd]"
 }
 
 func (*Deploy) Docs() builder.Docs {

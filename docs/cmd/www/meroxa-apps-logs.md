@@ -16,7 +16,7 @@ This command will fetch relevant logs about the Application specified in '--path
 or the Application specified by the given name or UUID identifier.
 
 ```
-meroxa apps logs [flags]
+meroxa apps logs [NameOrUUID] [--path pwd] [flags]
 ```
 
 ### Examples

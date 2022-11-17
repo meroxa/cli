@@ -7,7 +7,7 @@ Execute a Turbine Data Application locally (Beta)
 meroxa apps run will build your app locally to then run it locally in --path.
 
 ```
-meroxa apps run [flags]
+meroxa apps run [--path pwd] [flags]
 ```
 
 ### Examples

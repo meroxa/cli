@@ -41,7 +41,7 @@ var (
 )
 
 func (*Init) Usage() string {
-	return "init [APP_NAME] [--path pwd] --lang js|go|py"
+	return "init APP_NAME [--path pwd] --lang js|go|py"
 }
 
 func (*Init) Docs() builder.Docs {

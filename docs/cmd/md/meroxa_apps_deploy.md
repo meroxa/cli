@@ -10,7 +10,7 @@ If deployment was successful, you should expect an application you'll be able to
 
 
 ```
-meroxa apps deploy [flags]
+meroxa apps deploy [--path pwd] [flags]
 ```
 
 ### Examples

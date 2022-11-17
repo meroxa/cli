@@ -60,7 +60,7 @@ func (*Logs) Aliases() []string {
 }
 
 func (l *Logs) Usage() string {
-	return `logs`
+	return `logs [NameOrUUID] [--path pwd]`
 }
 
 func (l *Logs) Flags() []builder.Flag {
