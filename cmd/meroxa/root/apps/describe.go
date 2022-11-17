@@ -47,6 +47,7 @@ type Describe struct {
 	client     describeApplicationClient
 	logger     log.Logger
 	turbineCLI turbine.CLI
+	path       string
 
 	args struct {
 		NameOrUUID string
@@ -78,29 +79,25 @@ meroxa apps describe NAMEorUUID`,
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	var output, lang, path string
-	var err error
-
 	nameOrUUID := d.args.NameOrUUID
 	if nameOrUUID != "" && d.flags.Path != "" {
 		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
 	}
 
 	if nameOrUUID == "" {
-		if path, err = turbine.GetPath(d.flags.Path); err != nil {
+		var err error
+		if d.path, err = turbine.GetPath(d.flags.Path); err != nil {
 			return err
 		}
 
-		devNullLogger := log.NewWithDevNull()
-		if lang, err = turbine.GetLangFromAppJSON(ctx, devNullLogger, path); err != nil {
+		config, err := turbine.ReadConfigFile(d.path)
+		if err != nil {
 			return err
 		}
-		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, devNullLogger, path); err != nil {
-			return err
-		}
+		nameOrUUID = config.Name
 
 		if d.turbineCLI == nil {
-			d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, lang, path)
+			d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, config.Language, d.path)
 			if err != nil {
 				return err
 			}
@@ -112,9 +109,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 
-	output = display.AppTable(app)
-
-	d.logger.Info(ctx, output)
+	d.logger.Info(ctx, display.AppTable(app))
 	d.logger.JSON(ctx, app)
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.Name)

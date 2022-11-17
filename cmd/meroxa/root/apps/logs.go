@@ -41,6 +41,7 @@ type Logs struct {
 	client     applicationLogsClient
 	logger     log.Logger
 	turbineCLI turbine.CLI
+	path       string
 
 	args struct {
 		NameOrUUID string
@@ -80,29 +81,25 @@ meroxa apps logs my-turbine-application`,
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	var lang, path string
-	var err error
-
 	nameOrUUID := l.args.NameOrUUID
 	if nameOrUUID != "" && l.flags.Path != "" {
 		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
 	}
 
 	if nameOrUUID == "" {
-		if path, err = turbine.GetPath(l.flags.Path); err != nil {
+		var err error
+		if l.path, err = turbine.GetPath(l.flags.Path); err != nil {
 			return err
 		}
 
-		devNullLogger := log.NewWithDevNull()
-		if lang, err = turbine.GetLangFromAppJSON(ctx, devNullLogger, path); err != nil {
+		config, err := turbine.ReadConfigFile(l.path)
+		if err != nil {
 			return err
 		}
-		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, devNullLogger, path); err != nil {
-			return err
-		}
+		nameOrUUID = config.Name
 
 		if l.turbineCLI == nil {
-			l.turbineCLI, err = getTurbineCLIFromLanguage(l.logger, lang, path)
+			l.turbineCLI, err = getTurbineCLIFromLanguage(l.logger, config.Language, l.path)
 			if err != nil {
 				return err
 			}

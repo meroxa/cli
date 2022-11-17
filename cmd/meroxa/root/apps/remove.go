@@ -39,6 +39,7 @@ type Remove struct {
 	client     removeAppClient
 	logger     log.Logger
 	turbineCLI turbine.CLI
+	path       string
 
 	args struct {
 		NameOrUUID string
@@ -70,28 +71,25 @@ meroxa apps remove NAME`,
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
-	var lang, path string
-	var err error
 	nameOrUUID := r.args.NameOrUUID
 	if nameOrUUID != "" && r.flags.Path != "" {
 		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
 	}
 
 	if nameOrUUID == "" {
-		if path, err = turbine.GetPath(r.flags.Path); err != nil {
+		var err error
+		if r.path, err = turbine.GetPath(r.flags.Path); err != nil {
 			return err
 		}
 
-		devNullLogger := log.NewWithDevNull()
-		if lang, err = turbine.GetLangFromAppJSON(ctx, devNullLogger, path); err != nil {
+		config, err := turbine.ReadConfigFile(r.path)
+		if err != nil {
 			return err
 		}
-		if nameOrUUID, err = turbine.GetAppNameFromAppJSON(ctx, devNullLogger, path); err != nil {
-			return err
-		}
+		nameOrUUID = config.Name
 
 		if r.turbineCLI == nil {
-			r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, lang, path)
+			r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, config.Language, r.path)
 			if err != nil {
 				return err
 			}
@@ -99,10 +97,9 @@ func (r *Remove) Execute(ctx context.Context) error {
 	}
 
 	if os.Getenv("UNIT_TEST") == "" {
-		var input string
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
-		input, err = reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
 		if err != nil {
 			return err
 		}
