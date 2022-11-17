@@ -30,7 +30,7 @@ const (
 	Python3    = "python3"
 	Ruby       = "ruby"
 
-	turbineJSVersion  = "1.3.5"
+	TurbineJSVersion  = "1.3.5"
 	isTrue            = "true"
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
 
@@ -505,7 +505,7 @@ func RunTurbineJS(ctx context.Context, params ...string) (cmd *exec.Cmd) {
 
 func getTurbineJSBinary(params []string) []string {
 	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
-	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion)
+	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", TurbineJSVersion)
 	if shouldUseLocalTurbineJS == isTrue {
 		turbineJSBinary = "turbine-js-cli"
 	}

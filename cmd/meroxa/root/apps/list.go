@@ -36,6 +36,7 @@ var (
 
 type listApplicationsClient interface {
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
+	AddHeader(key, value string)
 }
 
 type List struct {
@@ -61,6 +62,8 @@ func (l *List) Aliases() []string {
 
 func (l *List) Execute(ctx context.Context) error {
 	var err error
+	l.client.AddHeader("Meroxa-CLI-App", "1")
+
 	apps, err := l.client.ListApplications(ctx)
 	if err != nil {
 		return err

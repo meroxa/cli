@@ -41,6 +41,7 @@ type describeApplicationClient interface {
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
+	AddHeader(key, value string)
 }
 
 type Describe struct {
@@ -79,6 +80,7 @@ meroxa apps describe NAMEorUUID`,
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
+	var turbineLibVersion string
 	nameOrUUID := d.args.NameOrUUID
 	if nameOrUUID != "" && d.flags.Path != "" {
 		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
@@ -102,6 +104,11 @@ func (d *Describe) Execute(ctx context.Context) error {
 				return err
 			}
 		}
+
+		if turbineLibVersion, err = d.turbineCLI.GetVersion(ctx); err != nil {
+			return err
+		}
+		addTurbineHeaders(d.client, config.Language, turbineLibVersion)
 	}
 
 	app, err := d.client.GetApplication(ctx, nameOrUUID)

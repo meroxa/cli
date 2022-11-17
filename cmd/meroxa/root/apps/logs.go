@@ -53,6 +53,7 @@ type Logs struct {
 
 type applicationLogsClient interface {
 	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error)
+	AddHeader(key, value string)
 }
 
 func (*Logs) Aliases() []string {
@@ -81,6 +82,7 @@ meroxa apps logs my-turbine-application`,
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
+	var turbineLibVersion string
 	nameOrUUID := l.args.NameOrUUID
 	if nameOrUUID != "" && l.flags.Path != "" {
 		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
@@ -104,6 +106,11 @@ func (l *Logs) Execute(ctx context.Context) error {
 				return err
 			}
 		}
+
+		if turbineLibVersion, err = l.turbineCLI.GetVersion(ctx); err != nil {
+			return err
+		}
+		addTurbineHeaders(l.client, config.Language, turbineLibVersion)
 	}
 
 	appLogs, getErr := l.client.GetApplicationLogs(ctx, nameOrUUID)
