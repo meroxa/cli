@@ -96,7 +96,7 @@ var (
 )
 
 func (*Deploy) Usage() string {
-	return "deploy"
+	return "deploy [--path pwd]"
 }
 
 func (*Deploy) Docs() builder.Docs {
@@ -658,9 +658,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		err error
 	)
 
-	d.turbineCLI, err = d.getTurbineCLIFromLanguage()
-	if err != nil {
-		return err
+	if d.turbineCLI == nil {
+		d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path)
+		if err != nil {
+			return err
+		}
 	}
 
 	if err = d.validateGitConfig(ctx); err != nil {

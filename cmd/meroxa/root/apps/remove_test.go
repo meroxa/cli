@@ -22,11 +22,16 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/mock"
@@ -79,7 +84,85 @@ func TestRemoveAppExecution(t *testing.T) {
 		DeleteApplicationEntities(ctx, r.args.NameOrUUID).
 		Return(res, nil)
 
+	os.Setenv("UNIT_TEST", "1")
 	err := r.Execute(ctx)
+	os.Setenv("UNIT_TEST", "")
+
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := fmt.Sprintf(`Removing application %q...
+Application %q successfully removed
+`, app.Name, app.Name)
+
+	if gotLeveledOutput != wantLeveledOutput {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+
+	var gotResponse *http.Response
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotResponse)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotResponse, res) {
+		t.Fatalf("expected \"%v\", got \"%v\"", gotResponse, res)
+	}
+
+	r.flags.Path = "does not matter"
+	err = r.Execute(ctx)
+	if err == nil {
+		t.Fatal("expected error, got none")
+	}
+}
+
+func TestRemoveAppExecutionWithPath(t *testing.T) {
+	os.Setenv("UNIT_TEST", "1")
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	app := utils.GenerateApplication("")
+
+	i := &Init{
+		logger: logger,
+	}
+	path := "tmp" + uuid.NewString()
+	i.args.appName = app.Name
+	i.flags.Path = path
+	i.flags.Lang = turbine.GoLang
+	i.flags.SkipModInit = true
+	i.flags.ModVendor = false
+	err := i.Execute(ctx)
+	defer func(path string) {
+		os.RemoveAll(path)
+	}(path)
+	require.NoError(t, err)
+
+	logger = log.NewTestLogger()
+	r := &Remove{
+		client: client,
+		logger: logger,
+	}
+
+	r.flags.Path = filepath.Join(path, app.Name)
+
+	res := &http.Response{
+		StatusCode: http.StatusNoContent,
+	}
+
+	client.
+		EXPECT().
+		DeleteApplicationEntities(ctx, app.Name).
+		Return(res, nil)
+
+	err = r.Execute(ctx)
+	os.Setenv("UNIT_TEST", "")
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())

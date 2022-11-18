@@ -20,15 +20,20 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/meroxa/cli/utils/display"
-
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
@@ -115,6 +120,110 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	dc.args.NameOrUUID = a.Name
 
 	err := dc.Execute(ctx)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	gotLeveledOutput := logger.LeveledOutput()
+	wantLeveledOutput := display.AppTable(&a)
+
+	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
+		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotApp meroxa.Application
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotApp)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotApp, a) {
+		t.Fatalf("expected \"%v\", got \"%v\"", a, gotApp)
+	}
+
+	dc.flags.Path = "does not matter"
+	err = dc.Execute(ctx)
+	if err == nil {
+		t.Fatal("expected error, got none")
+	}
+}
+
+func TestDescribeApplicationExecutionWithPath(t *testing.T) {
+	os.Setenv("UNIT_TEST", "1")
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := mock.NewMockClient(ctrl)
+	logger := log.NewTestLogger()
+
+	appName := "my-env"
+
+	i := &Init{
+		logger: logger,
+	}
+	path := "tmp" + uuid.NewString()
+	i.args.appName = appName
+	i.flags.Path = path
+	i.flags.Lang = turbine.GoLang
+	i.flags.SkipModInit = true
+	i.flags.ModVendor = false
+	err := i.Execute(ctx)
+	defer func(path string) {
+		os.RemoveAll(path)
+	}(path)
+	require.NoError(t, err)
+
+	a := utils.GenerateApplication("")
+	a.Name = appName
+
+	a.Resources = []meroxa.ApplicationResource{
+		{
+			EntityIdentifier: meroxa.EntityIdentifier{
+				Name: "res1",
+			},
+			Collection: meroxa.ResourceCollection{
+				Name:   "res1",
+				Source: "source",
+			},
+		},
+		{
+			EntityIdentifier: meroxa.EntityIdentifier{
+				Name: "res2",
+			},
+			Collection: meroxa.ResourceCollection{
+				Name:        "res2",
+				Destination: "destination",
+			},
+		},
+		{
+			EntityIdentifier: meroxa.EntityIdentifier{
+				Name: "res3",
+			},
+			Collection: meroxa.ResourceCollection{
+				Name:        "res3",
+				Destination: "destination",
+			},
+		},
+	}
+	a.Connectors = []meroxa.EntityDetails{
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn1"}},
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn2"}},
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "conn3"}},
+	}
+	a.Functions = []meroxa.EntityDetails{
+		{EntityIdentifier: meroxa.EntityIdentifier{Name: "fun1"}},
+	}
+
+	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
+
+	dc := &Describe{
+		client: client,
+		logger: logger,
+	}
+	dc.flags.Path = filepath.Join(path, appName)
+
+	err = dc.Execute(ctx)
+	os.Setenv("UNIT_TEST", "")
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}

@@ -8,18 +8,24 @@ meroxa-apps-describe - Describe a Turbine Data Application (Beta)
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps describe [NAMEorUUID] [flags]\fP
+\fBmeroxa apps describe [NameOrUUID] [--path pwd] [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Describe a Turbine Data Application (Beta)
+This command will fetch details about the Application specified in '--path'
+(or current working directory if not specified) on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.
 
 
 .SH OPTIONS
 .PP
 \fB-h\fP, \fB--help\fP[=false]
 	help for describe
+
+.PP
+\fB--path\fP=""
+	Path to the app directory (default is local directory)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -38,6 +44,19 @@ Describe a Turbine Data Application (Beta)
 .PP
 \fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+meroxa apps describe # assumes that the Application is in the current directory
+meroxa apps describe --path /my/app
+meroxa apps describe NAMEorUUID
+
+.fi
+.RE
 
 
 .SH SEE ALSO

@@ -50,7 +50,7 @@ var (
 )
 
 func (*Run) Usage() string {
-	return "run"
+	return "run [--path pwd]"
 }
 
 func (*Run) Docs() builder.Docs {
