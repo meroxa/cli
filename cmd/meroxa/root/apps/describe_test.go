@@ -214,7 +214,6 @@ func TestDescribeApplicationExecutionWithPath(t *testing.T) {
 		{EntityIdentifier: meroxa.EntityIdentifier{Name: "fun1"}},
 	}
 
-	client.EXPECT().AddHeader("Meroxa-CLI-App", "1").Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", turbine.GoLang).Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
