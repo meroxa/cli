@@ -74,6 +74,7 @@ func TestRemoveAppExecution(t *testing.T) {
 
 	app := utils.GenerateApplication("")
 	r.args.NameOrUUID = app.Name
+	r.flags.Force = true
 
 	res := &http.Response{
 		StatusCode: http.StatusNoContent,
@@ -84,9 +85,7 @@ func TestRemoveAppExecution(t *testing.T) {
 		DeleteApplicationEntities(ctx, r.args.NameOrUUID).
 		Return(res, nil)
 
-	os.Setenv("UNIT_TEST", "1")
 	err := r.Execute(ctx)
-	os.Setenv("UNIT_TEST", "")
 
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
@@ -151,6 +150,7 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 	}
 
 	r.flags.Path = filepath.Join(path, app.Name)
+	r.flags.Force = true
 
 	res := &http.Response{
 		StatusCode: http.StatusNoContent,

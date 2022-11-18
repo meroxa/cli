@@ -46,7 +46,8 @@ type Remove struct {
 		NameOrUUID string
 	}
 	flags struct {
-		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
+		Path  string `long:"path" usage:"Path to the app directory (default is local directory)"`
+		Force bool   `long:"force" short:"f" default:"false" usage:"skip confirmation"`
 	}
 }
 
@@ -103,7 +104,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		addTurbineHeaders(r.client, config.Language, turbineLibVersion)
 	}
 
-	if os.Getenv("UNIT_TEST") == "" {
+	if r.flags.Force == false {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
 		input, err := reader.ReadString('\n')
