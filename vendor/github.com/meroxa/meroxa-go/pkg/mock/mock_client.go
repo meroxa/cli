@@ -37,6 +37,18 @@ func (m *Mockrequester) EXPECT() *MockrequesterMockRecorder {
 	return m.recorder
 }
 
+// AddHeader mocks base method.
+func (m *Mockrequester) AddHeader(key, value string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "AddHeader", key, value)
+}
+
+// AddHeader indicates an expected call of AddHeader.
+func (mr *MockrequesterMockRecorder) AddHeader(key, value interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*Mockrequester)(nil).AddHeader), key, value)
+}
+
 // MakeRequest mocks base method.
 func (m *Mockrequester) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error) {
 	m.ctrl.T.Helper()
@@ -111,6 +123,18 @@ func NewMockClient(ctrl *gomock.Controller) *MockClient {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
+}
+
+// AddHeader mocks base method.
+func (m *MockClient) AddHeader(key, value string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "AddHeader", key, value)
+}
+
+// AddHeader indicates an expected call of AddHeader.
+func (mr *MockClientMockRecorder) AddHeader(key, value interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*MockClient)(nil).AddHeader), key, value)
 }
 
 // CreateApplication mocks base method.

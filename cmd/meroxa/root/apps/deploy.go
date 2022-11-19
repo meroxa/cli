@@ -58,6 +58,7 @@ type deployApplicationClient interface {
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
+	AddHeader(key, value string)
 }
 
 type Deploy struct {
@@ -647,7 +648,7 @@ func (d *Deploy) getTurbineCLIFromLanguage() (turbine.CLI, error) {
 	return nil, fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 }
 
-//nolint:gocyclo
+//nolint:gocyclo,funlen
 func (d *Deploy) Execute(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
@@ -664,6 +665,12 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			return err
 		}
 	}
+
+	turbineLibVersion, err := d.turbineCLI.GetVersion(ctx)
+	if err != nil {
+		return err
+	}
+	addTurbineHeaders(d.client, d.lang, turbineLibVersion)
 
 	if err = d.validateGitConfig(ctx); err != nil {
 		return err

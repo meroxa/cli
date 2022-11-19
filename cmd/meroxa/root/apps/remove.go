@@ -33,6 +33,7 @@ import (
 
 type removeAppClient interface {
 	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
+	AddHeader(key, value string)
 }
 
 type Remove struct {
@@ -45,7 +46,8 @@ type Remove struct {
 		NameOrUUID string
 	}
 	flags struct {
-		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
+		Path  string `long:"path" usage:"Path to the app directory (default is local directory)"`
+		Force bool   `long:"force" short:"f" default:"false" usage:"skip confirmation"`
 	}
 }
 
@@ -71,6 +73,7 @@ meroxa apps remove NAME`,
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
+	var turbineLibVersion string
 	nameOrUUID := r.args.NameOrUUID
 	if nameOrUUID != "" && r.flags.Path != "" {
 		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
@@ -94,9 +97,14 @@ func (r *Remove) Execute(ctx context.Context) error {
 				return err
 			}
 		}
+
+		if turbineLibVersion, err = r.turbineCLI.GetVersion(ctx); err != nil {
+			return err
+		}
+		addTurbineHeaders(r.client, config.Language, turbineLibVersion)
 	}
 
-	if os.Getenv("UNIT_TEST") == "" {
+	if r.flags.Force == false {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
 		input, err := reader.ReadString('\n')

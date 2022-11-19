@@ -53,6 +53,7 @@ type Requester struct {
 
 type requester interface {
 	MakeRequest(ctx context.Context, method string, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error)
+	AddHeader(key string, value string)
 }
 
 type account interface {
@@ -162,6 +163,18 @@ func New(options ...Option) (Client, error) {
 		requester: r,
 	}
 	return c, nil
+}
+
+// AddHeader allows for setting a generic header to use for requests.
+func (c *client) AddHeader(key, value string) {
+	c.requester.AddHeader(key, value)
+}
+
+func (r *Requester) AddHeader(key, value string) {
+	if r.headers == nil {
+		r.headers = make(http.Header)
+	}
+	r.headers.Add(key, value)
 }
 
 func (r *Requester) MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error) {
