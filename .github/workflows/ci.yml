@@ -15,8 +15,6 @@ jobs:
     - name: Build
       run: |
        make build
-       pwd
-       ls -lah meroxa
   golangci:
     name: lint
     runs-on: ubuntu-latest
