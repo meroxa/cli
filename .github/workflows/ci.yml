@@ -97,4 +97,5 @@ jobs:
             -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
             -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
             -e ACCEPTANCE_TEST_API_HOST=${MEROXA_API_URL} \
+            --mount type=bind,source=/home/runner/work/cli/cli,target=/app/cli \
             meroxa/acceptance -test.v
