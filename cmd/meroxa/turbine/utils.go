@@ -554,3 +554,16 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 	}
 	return match[1], nil
 }
+
+func RunCMD(ctx context.Context, logger log.Logger, cmd *exec.Cmd) error {
+	if err := cmd.Start(); err != nil {
+		logger.Errorf(ctx, err.Error())
+		return err
+	}
+
+	if err := cmd.Wait(); err != nil {
+		logger.Errorf(ctx, err.Error())
+		return err
+	}
+	return nil
+}

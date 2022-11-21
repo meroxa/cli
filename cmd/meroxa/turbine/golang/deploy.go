@@ -134,3 +134,7 @@ func (t *turbineGoCLI) GitChecks(ctx context.Context) error {
 func (t *turbineGoCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
 	return utils.UploadSource(ctx, t.logger, utils.GoLang, t.appPath, appName, url)
 }
+
+func (t *turbineGoCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+	return func() {}, nil
+}

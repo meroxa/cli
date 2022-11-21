@@ -30,9 +30,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -297,6 +294,12 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 		return "", nil
 	}
 
+	// After this point, CLI will package it up and will build it
+	err = d.buildApp(ctx)
+	if err != nil {
+		return "", err
+	}
+
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
 
 	d.localDeploy.TempPath = d.tempPath
@@ -327,6 +330,8 @@ func (d *Deploy) validateLanguage() error {
 		d.lang = turbine.JavaScript
 	case "py", turbine.Python3, turbine.Python:
 		d.lang = turbine.Python
+	case "rb", turbine.Ruby:
+		d.lang = turbine.Ruby
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
@@ -436,14 +441,8 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
 
-	// After this point, CLI will package it up and will build it
-	err := d.buildApp(ctx)
-	if err != nil {
-		return err
-	}
-
 	// check if resources exist and are ready
-	err = d.checkResourceAvailability(ctx)
+	err := d.checkResourceAvailability(ctx)
 	if err != nil {
 		return err
 	}
@@ -629,25 +628,6 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	}
 }
 
-// getTurbineCLIFromLanguage will return the appropriate turbine.CLI based on language.
-func (d *Deploy) getTurbineCLIFromLanguage() (turbine.CLI, error) {
-	switch d.lang {
-	case "go", turbine.GoLang:
-		if d.turbineCLI == nil {
-			return turbineGo.New(d.logger, d.path), nil
-		}
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		if d.turbineCLI == nil {
-			return turbineJS.New(d.logger, d.path), nil
-		}
-	case "py", turbine.Python3, turbine.Python:
-		if d.turbineCLI == nil {
-			return turbinePY.New(d.logger, d.path), nil
-		}
-	}
-	return nil, fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
-}
-
 //nolint:gocyclo,funlen
 func (d *Deploy) Execute(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
@@ -666,6 +646,12 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		}
 	}
 
+	cleanup, err := d.turbineCLI.SetupForDeploy(ctx)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
+
 	turbineLibVersion, err := d.turbineCLI.GetVersion(ctx)
 	if err != nil {
 		return err
@@ -682,6 +668,9 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	d.specVersion = d.flags.Spec
+	if d.specVersion == "" && d.lang == turbine.Ruby {
+		d.specVersion = ir.LatestSpecVersion
+	}
 	if d.specVersion != "" {
 		// Intermediate Representation Workflow
 		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
@@ -723,6 +712,9 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if d.specVersion == "" {
 		// App was created by turbine libraries using pre-IR
 		app, err = d.client.GetApplication(ctx, d.appName)
+		if err != nil {
+			return err
+		}
 	} else { // Deploying using IR
 		// In verbose mode, we'll use spinners for each deployment step
 		if d.flags.Verbose {

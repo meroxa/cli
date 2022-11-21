@@ -26,6 +26,7 @@ import (
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
 )
 
@@ -76,6 +77,11 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang, path string) (turbine.CL
 		return turbineJS.New(logger, path), nil
 	case "py", turbine.Python3, turbine.Python:
 		return turbinePY.New(logger, path), nil
+	case "rb", turbine.Ruby:
+		if !builder.CheckFeatureFlag(turbineRb.TurbineRubyFeatureFlag) {
+			return nil, turbineRb.ErrTurbineRubyFeatureFlag
+		}
+		return turbineRb.New(logger, path), nil
 	}
 	return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 }

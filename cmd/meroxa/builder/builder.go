@@ -771,7 +771,7 @@ func buildCommandWithFeatureFlag(cmd *cobra.Command, c Command) {
 	}
 }
 
-func CheckFeatureFlag(exec Command, cmd CommandWithFeatureFlag) error {
+func CheckCMDFeatureFlag(exec Command, cmd CommandWithFeatureFlag) error {
 	if global.Config == nil {
 		c := BuildCobraCommand(exec)
 		_ = global.PersistentPreRunE(c)
@@ -780,12 +780,17 @@ func CheckFeatureFlag(exec Command, cmd CommandWithFeatureFlag) error {
 	if global.Config.Get(global.UserFeatureFlagsEnv) == "" {
 		return err
 	}
-	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
 
-	if !hasFeatureFlag(userFeatureFlags, flagRequired) {
+	if !CheckFeatureFlag(flagRequired) {
 		return err
 	}
+
 	return nil
+}
+
+func CheckFeatureFlag(featureFlag string) bool {
+	userFeatureFlags := global.Config.GetStringSlice(global.UserFeatureFlagsEnv)
+	return hasFeatureFlag(userFeatureFlags, featureFlag)
 }
 
 func writeConfigFile() error {
