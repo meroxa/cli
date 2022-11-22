@@ -1,6 +1,9 @@
 package ir
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type ConnectorType string
 type Lang string
@@ -52,4 +55,22 @@ func ValidateSpecVersion(specVersion string) error {
 		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
 	}
 	return nil
+}
+
+func (s *DeploymentSpec) SetImageForFunctions(image string) {
+	for i := range s.Functions {
+		s.Functions[i].Image = image
+	}
+}
+
+func (s *DeploymentSpec) Marshal() ([]byte, error) {
+	return json.Marshal(s)
+}
+
+func Unmarshal(data []byte) (*DeploymentSpec, error) {
+	spec := &DeploymentSpec{}
+	if err := json.Unmarshal(data, spec); err != nil {
+		return nil, err
+	}
+	return spec, nil
 }

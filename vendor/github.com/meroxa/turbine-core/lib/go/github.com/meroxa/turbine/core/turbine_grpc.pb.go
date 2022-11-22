@@ -12,6 +12,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -29,6 +30,9 @@ type TurbineServiceClient interface {
 	WriteCollectionToResource(ctx context.Context, in *WriteCollectionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddProcessToCollection(ctx context.Context, in *ProcessCollectionRequest, opts ...grpc.CallOption) (*Collection, error)
 	RegisterSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
+	ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error)
+	GetSpec(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSpecResponse, error)
 }
 
 type turbineServiceClient struct {
@@ -93,6 +97,33 @@ func (c *turbineServiceClient) RegisterSecret(ctx context.Context, in *Secret, o
 	return out, nil
 }
 
+func (c *turbineServiceClient) HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
+	out := new(wrapperspb.BoolValue)
+	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/HasFunctions", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *turbineServiceClient) ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error) {
+	out := new(ListResourcesResponse)
+	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/ListResources", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *turbineServiceClient) GetSpec(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSpecResponse, error) {
+	out := new(GetSpecResponse)
+	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetSpec", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TurbineServiceServer is the server API for TurbineService service.
 // All implementations should embed UnimplementedTurbineServiceServer
 // for forward compatibility
@@ -103,6 +134,9 @@ type TurbineServiceServer interface {
 	WriteCollectionToResource(context.Context, *WriteCollectionRequest) (*emptypb.Empty, error)
 	AddProcessToCollection(context.Context, *ProcessCollectionRequest) (*Collection, error)
 	RegisterSecret(context.Context, *Secret) (*emptypb.Empty, error)
+	HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error)
+	ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error)
+	GetSpec(context.Context, *emptypb.Empty) (*GetSpecResponse, error)
 }
 
 // UnimplementedTurbineServiceServer should be embedded to have forward compatible implementations.
@@ -126,6 +160,15 @@ func (UnimplementedTurbineServiceServer) AddProcessToCollection(context.Context,
 }
 func (UnimplementedTurbineServiceServer) RegisterSecret(context.Context, *Secret) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterSecret not implemented")
+}
+func (UnimplementedTurbineServiceServer) HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HasFunctions not implemented")
+}
+func (UnimplementedTurbineServiceServer) ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
+}
+func (UnimplementedTurbineServiceServer) GetSpec(context.Context, *emptypb.Empty) (*GetSpecResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSpec not implemented")
 }
 
 // UnsafeTurbineServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -247,6 +290,60 @@ func _TurbineService_RegisterSecret_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TurbineService_HasFunctions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TurbineServiceServer).HasFunctions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/turbine_core.TurbineService/HasFunctions",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TurbineServiceServer).HasFunctions(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TurbineService_ListResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TurbineServiceServer).ListResources(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/turbine_core.TurbineService/ListResources",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TurbineServiceServer).ListResources(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TurbineServiceServer).GetSpec(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/turbine_core.TurbineService/GetSpec",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TurbineServiceServer).GetSpec(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TurbineService_ServiceDesc is the grpc.ServiceDesc for TurbineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -277,6 +374,18 @@ var TurbineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterSecret",
 			Handler:    _TurbineService_RegisterSecret_Handler,
+		},
+		{
+			MethodName: "HasFunctions",
+			Handler:    _TurbineService_HasFunctions_Handler,
+		},
+		{
+			MethodName: "ListResources",
+			Handler:    _TurbineService_ListResources_Handler,
+		},
+		{
+			MethodName: "GetSpec",
+			Handler:    _TurbineService_GetSpec_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

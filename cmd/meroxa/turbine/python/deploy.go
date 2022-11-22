@@ -114,3 +114,7 @@ func (t *turbinePyCLI) GitChecks(ctx context.Context) error {
 func (t *turbinePyCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
 	return utils.UploadSource(ctx, t.logger, utils.Python, tempPath, appName, url)
 }
+
+func (t *turbinePyCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+	return func() {}, nil
+}

@@ -3,6 +3,7 @@ package turbinerb
 import (
 	"context"
 
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/internal"
 )
 
@@ -14,15 +15,5 @@ func (t *turbineRbCLI) Run(ctx context.Context) error {
 		"TURBINE_CORE_SERVER": t.grpcListenAddress,
 	})
 
-	if err := cmd.Start(); err != nil {
-		t.logger.Errorf(ctx, err.Error())
-		return err
-	}
-
-	if err := cmd.Wait(); err != nil {
-		t.logger.Errorf(ctx, err.Error())
-		return err
-	}
-
-	return nil
+	return turbine.RunCMD(ctx, t.logger, cmd)
 }

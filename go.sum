@@ -298,6 +298,7 @@ github.com/envoyproxy/go-control-plane v0.9.4/go.mod h1:6rpuAdCZL397s3pYoYcLgu1m
 github.com/envoyproxy/go-control-plane v0.9.7/go.mod h1:cwu0lG7PUMfa9snN8LXBig5ynNVH9qI8YYLbd1fK2po=
 github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.mod h1:cXg6YxExXjJnVBQHBLXeUAgxn2UodCpnH306RInaBQk=
 github.com/envoyproxy/go-control-plane v0.9.9-0.20210512163311-63b5d3c536b0/go.mod h1:hliV/p42l8fGbc6Y9bQ70uLwIvmJyVE5k4iMKlh8wCQ=
+github.com/envoyproxy/protoc-gen-validate v0.1.0 h1:EQciDnbrYxy13PgWoY8AqoxGiPrpgBZ1R8UNe3ddc+A=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/evanphx/json-patch v4.9.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
@@ -530,8 +531,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20221118163012-998deb3e9975 h1:SFEpbZ8ycykpdPbMQLUQu9z+72daMQytU1F6UG2pwSU=
 github.com/meroxa/meroxa-go v0.0.0-20221118163012-998deb3e9975/go.mod h1:OdTP4P/yHcTAqOE86kDXoTTLqC1Vj+/PFMG41kOcmhI=
-github.com/meroxa/turbine-core v0.0.0-20221116144720-1157fe02439b h1:0I9CIO9KfE/rGRAqblL/R1DRl5YXdjyHKl4WQ01pZF4=
-github.com/meroxa/turbine-core v0.0.0-20221116144720-1157fe02439b/go.mod h1:/9LeCwWod4XQ8Iha3Wspf/xJgkXAXXJnZuEnFZbThy8=
+github.com/meroxa/turbine-core v0.0.0-20221118201146-fc80da5a5044 h1:V9btYDQbFG1x4BdMusQzYwcAtv9nNzXYXOX3JYOKeW8=
+github.com/meroxa/turbine-core v0.0.0-20221118201146-fc80da5a5044/go.mod h1:Hw41HYd/QpD60kLclXg1qPWNBAddTPrQNWpnw0sxphk=
 github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf h1:VgotQwcTL+8Xes5AIxawSgUrp5yE9BgTIWPw3cSx7S8=
 github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf/go.mod h1:AS+QT+Mo6LZ0a437ZqjdbrdM+1WjE6dT0419fD6WJW8=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=

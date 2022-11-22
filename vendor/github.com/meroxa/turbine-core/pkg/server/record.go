@@ -2,13 +2,13 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type recordService struct {
@@ -45,7 +45,7 @@ func (s *recordService) GetResource(ctx context.Context, request *pb.GetResource
 	return r, nil
 }
 
-func resourceConfigsToMap(configs []*pb.ResourceConfig) map[string]interface{} {
+func resourceConfigsToMap(configs []*pb.Config) map[string]interface{} {
 	m := make(map[string]interface{})
 	for _, rc := range configs {
 		m[rc.GetField()] = rc.GetValue()
@@ -71,7 +71,7 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 			Collection: request.GetCollection(),
 			Resource:   request.GetResource().GetName(),
 			Type:       ir.ConnectorSource,
-			Config:     resourceConfigsToMap(request.GetConfigs().GetResourceConfig()),
+			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
 	)
 
@@ -90,17 +90,9 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 			Collection: request.GetTargetCollection(),
 			Resource:   request.GetResource().GetName(),
 			Type:       ir.ConnectorDestination,
-			Config:     resourceConfigsToMap(request.GetConfigs().GetResourceConfig()),
+			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
 	)
-
-	b, err := json.Marshal(s.deploymentSpec)
-	if err != nil {
-		fmt.Printf("MARSHAL ERR: %#+v\n", err)
-		return empty(), err
-	}
-	fmt.Printf("SPEC VALID: %#+v\n", ir.ValidateSpec(b, "0.1.1"))
-	fmt.Printf("SPEC: %#+v\n", s.deploymentSpec)
 
 	return empty(), nil
 }
@@ -121,4 +113,23 @@ func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (
 	}
 	s.deploymentSpec.Secrets[secret.Name] = secret.Value
 	return empty(), nil
+}
+
+func (s *recordService) HasFunctions(ctx context.Context, in *emptypb.Empty) (*wrapperspb.BoolValue, error) {
+	return wrapperspb.Bool(len(s.deploymentSpec.Functions) > 0), nil
+}
+
+func (s *recordService) ListResources(ctx context.Context, in *emptypb.Empty) (*pb.ListResourcesResponse, error) {
+	return &pb.ListResourcesResponse{Resources: s.resources}, nil
+}
+
+func (s *recordService) GetSpec(ctx context.Context, in *emptypb.Empty) (*pb.GetSpecResponse, error) {
+	spec, err := s.deploymentSpec.Marshal()
+	if err != nil {
+		return &pb.GetSpecResponse{}, err
+	}
+
+	return &pb.GetSpecResponse{
+		Spec: spec,
+	}, nil
 }

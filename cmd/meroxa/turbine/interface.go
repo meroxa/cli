@@ -18,4 +18,5 @@ type CLI interface {
 	Run(ctx context.Context) error
 	Upgrade(vendor bool) error
 	UploadSource(ctx context.Context, appName, tempPath, url string) error
+	SetupForDeploy(ctx context.Context) (func(), error)
 }

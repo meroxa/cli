@@ -104,7 +104,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		addTurbineHeaders(r.client, config.Language, turbineLibVersion)
 	}
 
-	if r.flags.Force == false {
+	if !r.flags.Force {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
 		input, err := reader.ReadString('\n')

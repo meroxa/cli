@@ -101,6 +101,9 @@ github.com/docker/go-connections/tlsconfig
 # github.com/docker/go-units v0.4.0
 ## explicit
 github.com/docker/go-units
+# github.com/envoyproxy/protoc-gen-validate v0.1.0
+## explicit
+github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/fatih/color v1.13.0
 ## explicit; go 1.13
 github.com/fatih/color
@@ -122,6 +125,7 @@ github.com/golang/mock/gomock
 ## explicit; go 1.9
 github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
+github.com/golang/protobuf/protoc-gen-go/descriptor
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
@@ -182,7 +186,7 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine-core v0.0.0-20221116144720-1157fe02439b
+# github.com/meroxa/turbine-core v0.0.0-20221118201146-fc80da5a5044
 ## explicit; go 1.19
 github.com/meroxa/turbine-core
 github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core
@@ -432,6 +436,7 @@ google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/emptypb
 google.golang.org/protobuf/types/known/timestamppb
+google.golang.org/protobuf/types/known/wrapperspb
 # gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
 ## explicit; go 1.11
 # gopkg.in/ini.v1 v1.67.0
