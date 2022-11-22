@@ -5,14 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"reflect"
 	"strings"
 	"testing"
 
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -513,6 +509,10 @@ func TestValidateLanguage(t *testing.T) {
 		{
 			name:      "Successfully validate python",
 			languages: []string{"py", "python", "python3"},
+		},
+		{
+			name:      "Successfully validate ruby",
+			languages: []string{"rb", "ruby"},
 		},
 		{
 			name:      "Reject unsupported languages",
@@ -1077,61 +1077,6 @@ func TestWaitForDeployment(t *testing.T) {
 				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
 			} else {
 				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
-			}
-		})
-	}
-}
-
-func Test_getTurbineCLIFromLanguage(t *testing.T) {
-	d := &Deploy{
-		logger: log.NewTestLogger(),
-		path:   ".",
-	}
-
-	testCases := []struct {
-		name           string
-		language       string
-		wantTurbineCLI turbine.CLI
-		wantErr        error
-	}{
-		{
-			name:           "when language is go",
-			language:       turbine.GoLang,
-			wantTurbineCLI: turbineGo.New(d.logger, d.path),
-		},
-		{
-			name:           "when language is js",
-			language:       turbine.JavaScript,
-			wantTurbineCLI: turbineJS.New(d.logger, d.path),
-		},
-		{
-			name:           "when language is python",
-			language:       turbine.Python,
-			wantTurbineCLI: turbinePY.New(d.logger, d.path),
-		},
-		{
-			name:           "when language is python",
-			language:       turbine.Python,
-			wantTurbineCLI: turbinePY.New(d.logger, d.path),
-		},
-		{
-			name:           "when language is not supported",
-			language:       "crystal",
-			wantTurbineCLI: nil,
-			wantErr:        fmt.Errorf("language \"crystal\" not supported. %s", LanguageNotSupportedError),
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			d.lang = tc.language
-			gotTurbineCLI, gotErr := d.getTurbineCLIFromLanguage()
-
-			if tc.wantErr != nil {
-				assert.Equal(t, gotErr, tc.wantErr)
-			} else {
-				assert.NoError(t, gotErr)
-				require.Equal(t, reflect.TypeOf(gotTurbineCLI), reflect.TypeOf(tc.wantTurbineCLI))
 			}
 		})
 	}

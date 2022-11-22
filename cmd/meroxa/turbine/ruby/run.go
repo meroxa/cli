@@ -2,45 +2,18 @@ package turbinerb
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"os/exec"
 
-	"github.com/meroxa/cli/cmd/meroxa/turbine/core"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/internal"
 )
 
-const GrpcServerPort = 50500
+func (t *turbineRbCLI) Run(ctx context.Context) error {
+	go t.runServer.Run(ctx)
+	defer t.runServer.GracefulStop()
 
-func (t *turbineRbCLI) Run(ctx context.Context) (err error) {
-	// Run turbine-core gRPC server
-	cs := core.NewTurbineCoreServer()
-	go cs.Run(GrpcServerPort, "local")
+	cmd := internal.NewTurbineCmd(t.appPath, map[string]string{
+		"TURBINE_CORE_SERVER": t.grpcListenAddress,
+	})
 
-	// Execute Turbine.run on app:
-	// turbine_client process
-	pipelineCmd := exec.Command("ruby", "-r", t.appPath+"/app", "-e", "Turbine.run")
-	pipelineCmd.Env = append(os.Environ(),
-		fmt.Sprintf("TURBINE_CORE_SERVER=localhost:%d", GrpcServerPort))
-	pipelineCmd.Stdout = os.Stdout
-	pipelineCmd.Stderr = os.Stderr
-	pipelineCmd.Dir = t.appPath
-
-	// Run command
-	err = pipelineCmd.Start()
-	if err != nil {
-		t.logger.Errorf(ctx, err.Error())
-		return err
-	}
-
-	// wait for pipelineCmd to exit
-	err = pipelineCmd.Wait()
-	if err != nil {
-		t.logger.Errorf(ctx, err.Error())
-		return err
-	}
-
-	// teardown turbine core server
-	cs.Stop()
-
-	return err
+	return turbine.RunCMD(ctx, t.logger, cmd)
 }

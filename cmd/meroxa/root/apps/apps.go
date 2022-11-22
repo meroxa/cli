@@ -17,9 +17,17 @@ limitations under the License.
 package apps
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
+	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
+	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
+	"github.com/meroxa/cli/log"
 )
 
 type Apps struct{}
@@ -58,4 +66,34 @@ func (*Apps) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Run{}),
 		builder.BuildCobraCommand(&Upgrade{}),
 	}
+}
+
+// getTurbineCLIFromLanguage will return the appropriate turbine.CLI based on language.
+func getTurbineCLIFromLanguage(logger log.Logger, lang, path string) (turbine.CLI, error) {
+	switch lang {
+	case "go", turbine.GoLang:
+		return turbineGo.New(logger, path), nil
+	case "js", turbine.JavaScript, turbine.NodeJs:
+		return turbineJS.New(logger, path), nil
+	case "py", turbine.Python3, turbine.Python:
+		return turbinePY.New(logger, path), nil
+	case "rb", turbine.Ruby:
+		if !builder.CheckFeatureFlag(turbineRb.TurbineRubyFeatureFlag) {
+			return nil, turbineRb.ErrTurbineRubyFeatureFlag
+		}
+		return turbineRb.New(logger, path), nil
+	}
+	return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
+}
+
+type addHeader interface {
+	AddHeader(key, value string)
+}
+
+func addTurbineHeaders(c addHeader, lang, version string) {
+	c.AddHeader("Meroxa-CLI-App-Lang", lang)
+	if lang == turbine.JavaScript {
+		version = fmt.Sprintf("%s:cli%s", version, turbine.TurbineJSVersion)
+	}
+	c.AddHeader("Meroxa-CLI-App-Version", version)
 }

@@ -48,3 +48,53 @@ jobs:
          make test
         env:
          GOPATH: /home/runner/work/cli/go
+  acceptance:
+    name: Acceptance
+    needs: [ test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Acceptance
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.MEROXA_MACHINE }}
+          repository: meroxa/acceptance
+          path: acceptance
+      - name: Build and Run
+        working-directory: ./acceptance
+        env:
+          MEROXA_AUTH_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_ID }}
+          MEROXA_AUTH_DOMAIN: ${{ secrets.AUTH0_STAGING_DOMAIN }}
+          MEROXA_AUTH_AUDIENCE: ${{ secrets.AUTH0_STAGING_AUDIENCE }}
+          MEROXA_AUTH_CLIENT_SECRET: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_SECRET }}
+          MEROXA_AUTH_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
+          MEROXA_AUTH_USERNAME: ${{ secrets.AUTH0_USERNAME }}
+          MEROXA_AUTH_PASSWORD2: ${{ secrets.AUTH0_PASSWORD2 }}
+          MEROXA_AUTH_USERNAME2: ${{ secrets.AUTH0_USERNAME2 }}
+          PG_URL: ${{ secrets.TEST_DB_URL }}
+          PRIVATE_PG_URL: ${{ secrets.TEST_PRIVATE_PG_URL }}
+          MYSQL_URL:  ${{ secrets.TEST_MYSQL_URL }}
+          SQLSERVER_URL: ${{ secrets.TEST_SQLSERVER_URL }}
+          MEROXA_API_URL: "https://api.staging.meroxa.io"
+          BASTION_PRIVATE_KEY: ${{ secrets.TEST_BASTION_PRIVATE_KEY }}
+          BASTION_USER: "ec2-user"
+          BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
+        run: |
+          docker build -t meroxa/acceptance .
+          docker run \
+            -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
+            -e MEROXA_AUTH_CLIENT_ID=${MEROXA_AUTH_CLIENT_ID} \
+            -e MEROXA_AUTH_CLIENT_SECRET=${MEROXA_AUTH_CLIENT_SECRET} \
+            -e MEROXA_AUTH_PASSWORD=${MEROXA_AUTH_PASSWORD} \
+            -e MEROXA_AUTH_USERNAME=${MEROXA_AUTH_USERNAME} \
+            -e MEROXA_AUTH_PASSWORD2=${MEROXA_AUTH_PASSWORD2} \
+            -e MEROXA_AUTH_USERNAME2=${MEROXA_AUTH_USERNAME2} \
+            -e MEROXA_AUTH_AUDIENCE=${MEROXA_AUTH_AUDIENCE} \
+            -e ACCEPTANCE_TEST_POSTGRES_URL=${PG_URL} \
+            -e ACCEPTANCE_TEST_PRIVATE_POSTGRES_URL=${PRIVATE_PG_URL} \
+            -e ACCEPTANCE_TEST_MYSQL_URL=${MYSQL_URL} \
+            -e ACCEPTANCE_TEST_SQLSERVER_URL=${SQLSERVER_URL} \
+            -e ACCEPTANCE_TEST_BASTION_PRIVATE_KEY="${BASTION_PRIVATE_KEY}" \
+            -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
+            -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
+            -e ACCEPTANCE_TEST_API_HOST=${MEROXA_API_URL} \
+            meroxa/acceptance -test.v

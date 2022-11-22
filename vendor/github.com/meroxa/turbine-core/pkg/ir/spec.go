@@ -1,16 +1,19 @@
 package ir
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type ConnectorType string
 type Lang string
 
 const (
-	GoLang            Lang = "golang"
-	LatestSpecVersion      = "0.1.1"
-
+	GoLang               Lang          = "golang"
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
+
+	LatestSpecVersion = "0.1.1"
 )
 
 type DeploymentSpec struct {
@@ -28,9 +31,8 @@ type ConnectorSpec struct {
 }
 
 type FunctionSpec struct {
-	Name    string                 `json:"name"`
-	Image   string                 `json:"image"`
-	EnvVars map[string]interface{} `json:"env_vars,omitempty"`
+	Name  string `json:"name"`
+	Image string `json:"image"`
 }
 
 type DefinitionSpec struct {
@@ -53,4 +55,22 @@ func ValidateSpecVersion(specVersion string) error {
 		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
 	}
 	return nil
+}
+
+func (s *DeploymentSpec) SetImageForFunctions(image string) {
+	for i := range s.Functions {
+		s.Functions[i].Image = image
+	}
+}
+
+func (s *DeploymentSpec) Marshal() ([]byte, error) {
+	return json.Marshal(s)
+}
+
+func Unmarshal(data []byte) (*DeploymentSpec, error) {
+	spec := &DeploymentSpec{}
+	if err := json.Unmarshal(data, spec); err != nil {
+		return nil, err
+	}
+	return spec, nil
 }

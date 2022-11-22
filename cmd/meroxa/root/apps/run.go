@@ -50,7 +50,7 @@ var (
 )
 
 func (*Run) Usage() string {
-	return "run"
+	return "run [--path pwd]"
 }
 
 func (*Run) Docs() builder.Docs {
@@ -73,8 +73,7 @@ func (r *Run) Flags() []builder.Flag {
 }
 
 func (r *Run) FeatureFlag() (string, error) {
-	return "ruby_implementation", fmt.Errorf(`no access to the Meroxa Turbine Ruby feature.
-Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`)
+	return turbineRB.TurbineRubyFeatureFlag, turbineRB.ErrTurbineRubyFeatureFlag
 }
 
 func (r *Run) Execute(ctx context.Context) error {
@@ -111,7 +110,7 @@ func (r *Run) Execute(ctx context.Context) error {
 		}
 		return r.turbineCLI.Run(ctx)
 	case "rb", turbine.Ruby:
-		if err = builder.CheckFeatureFlag(r, r); err != nil {
+		if err = builder.CheckCMDFeatureFlag(r, r); err != nil {
 			return err
 		}
 		if r.turbineCLI == nil {

@@ -3,27 +3,29 @@
 
 .SH NAME
 .PP
-meroxa-apps-remove - Removes a Turbine Data Application (Beta)
+meroxa-apps-remove - Remove a Turbine Data Application (Beta)
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps remove NAME [flags]\fP
+\fBmeroxa apps remove [NameOrUUID] [--path pwd] [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Removes a Turbine Data Application (Beta)
+This command will remove the Application specified in '--path'
+(or current working directory if not specified) previously deployed on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.
 
 
 .SH OPTIONS
 .PP
-\fB-f\fP, \fB--force\fP[=false]
-	skip confirmation
-
-.PP
 \fB-h\fP, \fB--help\fP[=false]
 	help for remove
+
+.PP
+\fB--path\fP=""
+	Path to the app directory (default is local directory)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -42,6 +44,19 @@ Removes a Turbine Data Application (Beta)
 .PP
 \fB--timeout\fP=10s
 	set the duration of the client timeout in seconds
+
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+meroxa apps remove # assumes that the Application is in the current directory
+meroxa apps remove --path /my/app
+meroxa apps remove NAME
+
+.fi
+.RE
 
 
 .SH SEE ALSO

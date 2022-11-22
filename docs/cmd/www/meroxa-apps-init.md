@@ -10,7 +10,7 @@ url: /cli/cmd/meroxa-apps-init/
 Initialize a Turbine Data Application (Beta)
 
 ```
-meroxa apps init [APP_NAME] [--path pwd] --lang js|go|py [flags]
+meroxa apps init APP_NAME [--path pwd] --lang js|go|py [flags]
 ```
 
 ### Examples

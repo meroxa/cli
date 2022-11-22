@@ -172,6 +172,7 @@ func NewClient() (meroxa.Client, error) {
 		}
 	}
 	options = append(options, meroxa.WithAccountUUID(Config.GetString(UserAccountUUID)))
+	options = append(options, meroxa.WithHeader("Meroxa-CLI-Version", Version))
 	return meroxa.New(options...)
 }
 

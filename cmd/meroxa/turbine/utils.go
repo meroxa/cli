@@ -30,7 +30,7 @@ const (
 	Python3    = "python3"
 	Ruby       = "ruby"
 
-	turbineJSVersion  = "1.3.3"
+	TurbineJSVersion  = "1.3.5"
 	isTrue            = "true"
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
 
@@ -505,7 +505,7 @@ func RunTurbineJS(ctx context.Context, params ...string) (cmd *exec.Cmd) {
 
 func getTurbineJSBinary(params []string) []string {
 	shouldUseLocalTurbineJS := global.GetLocalTurbineJSSetting()
-	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", turbineJSVersion)
+	turbineJSBinary := fmt.Sprintf("@meroxa/turbine-js-cli@%s", TurbineJSVersion)
 	if shouldUseLocalTurbineJS == isTrue {
 		turbineJSBinary = "turbine-js-cli"
 	}
@@ -553,4 +553,17 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 		return "", fmt.Errorf("output is formatted unexpectedly")
 	}
 	return match[1], nil
+}
+
+func RunCMD(ctx context.Context, logger log.Logger, cmd *exec.Cmd) error {
+	if err := cmd.Start(); err != nil {
+		logger.Errorf(ctx, err.Error())
+		return err
+	}
+
+	if err := cmd.Wait(); err != nil {
+		logger.Errorf(ctx, err.Error())
+		return err
+	}
+	return nil
 }

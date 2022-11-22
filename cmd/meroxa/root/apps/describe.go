@@ -18,18 +18,19 @@ package apps
 
 import (
 	"context"
-	"errors"
-
-	"github.com/meroxa/cli/utils/display"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
 	_ builder.CommandWithDocs    = (*Describe)(nil)
 	_ builder.CommandWithArgs    = (*Describe)(nil)
+	_ builder.CommandWithFlags   = (*Describe)(nil)
 	_ builder.CommandWithClient  = (*Describe)(nil)
 	_ builder.CommandWithLogger  = (*Describe)(nil)
 	_ builder.CommandWithExecute = (*Describe)(nil)
@@ -40,41 +41,86 @@ type describeApplicationClient interface {
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	GetConnectorByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Connector, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error)
+	AddHeader(key, value string)
 }
 
 type Describe struct {
-	client describeApplicationClient
-	logger log.Logger
+	client     describeApplicationClient
+	logger     log.Logger
+	turbineCLI turbine.CLI
+	path       string
 
 	args struct {
 		NameOrUUID string
 	}
+	flags struct {
+		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
+	}
 }
 
 func (d *Describe) Usage() string {
-	return "describe [NAMEorUUID]"
+	return "describe [NameOrUUID] [--path pwd]"
+}
+
+func (d *Describe) Flags() []builder.Flag {
+	return builder.BuildFlags(&d.flags)
 }
 
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe a Turbine Data Application",
-		Beta:  true,
+		Long: `This command will fetch details about the Application specified in '--path'
+(or current working directory if not specified) on our Meroxa Platform,
+or the Application specified by the given name or UUID identifier.`,
+		Example: `meroxa apps describe # assumes that the Application is in the current directory
+meroxa apps describe --path /my/app
+meroxa apps describe NAMEorUUID`,
+		Beta: true,
 	}
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	var output string
+	var turbineLibVersion string
+	nameOrUUID := d.args.NameOrUUID
+	if nameOrUUID != "" && d.flags.Path != "" {
+		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
+	}
 
-	app, err := d.client.GetApplication(ctx, d.args.NameOrUUID)
+	if nameOrUUID == "" {
+		var err error
+		if d.path, err = turbine.GetPath(d.flags.Path); err != nil {
+			return err
+		}
+
+		config, err := turbine.ReadConfigFile(d.path)
+		if err != nil {
+			return err
+		}
+		nameOrUUID = config.Name
+
+		if d.turbineCLI == nil {
+			d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, config.Language, d.path)
+			if err != nil {
+				return err
+			}
+		}
+
+		if turbineLibVersion, err = d.turbineCLI.GetVersion(ctx); err != nil {
+			return err
+		}
+		addTurbineHeaders(d.client, config.Language, turbineLibVersion)
+	}
+
+	app, err := d.client.GetApplication(ctx, nameOrUUID)
 	if err != nil {
 		return err
 	}
 
-	output = display.AppTable(app)
-
-	d.logger.Info(ctx, output)
+	d.logger.Info(ctx, display.AppTable(app))
 	d.logger.JSON(ctx, app)
 
+	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.Name)
+	d.logger.Info(ctx, fmt.Sprintf("\n ✨ To visualize your application, visit %s", dashboardURL))
 	return nil
 }
 
@@ -87,10 +133,9 @@ func (d *Describe) Logger(logger log.Logger) {
 }
 
 func (d *Describe) ParseArgs(args []string) error {
-	if len(args) < 1 {
-		return errors.New("requires app name or UUID")
+	if len(args) > 0 {
+		d.args.NameOrUUID = args[0]
 	}
 
-	d.args.NameOrUUID = args[0]
 	return nil
 }

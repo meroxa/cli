@@ -106,3 +106,7 @@ func (t *turbineJsCLI) GitChecks(ctx context.Context) error {
 func (t *turbineJsCLI) UploadSource(ctx context.Context, appName, appPath, url string) error {
 	return utils.UploadSource(ctx, t.logger, utils.JavaScript, t.appPath, appName, url)
 }
+
+func (t *turbineJsCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+	return func() {}, nil
+}

@@ -107,6 +107,21 @@ func (mr *MockCLIMockRecorder) GetResources(ctx, appName interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResources", reflect.TypeOf((*MockCLI)(nil).GetResources), ctx, appName)
 }
 
+// GetVersion mocks base method.
+func (m *MockCLI) GetVersion(ctx context.Context) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetVersion", ctx)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetVersion indicates an expected call of GetVersion.
+func (mr *MockCLIMockRecorder) GetVersion(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockCLI)(nil).GetVersion), ctx)
+}
+
 // GitChecks mocks base method.
 func (m *MockCLI) GitChecks(ctx context.Context) error {
 	m.ctrl.T.Helper()
@@ -176,6 +191,21 @@ func (m *MockCLI) Run(ctx context.Context) error {
 func (mr *MockCLIMockRecorder) Run(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockCLI)(nil).Run), ctx)
+}
+
+// SetupForDeploy mocks base method.
+func (m *MockCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetupForDeploy", ctx)
+	ret0, _ := ret[0].(func())
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SetupForDeploy indicates an expected call of SetupForDeploy.
+func (mr *MockCLIMockRecorder) SetupForDeploy(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupForDeploy", reflect.TypeOf((*MockCLI)(nil).SetupForDeploy), ctx)
 }
 
 // Upgrade mocks base method.
