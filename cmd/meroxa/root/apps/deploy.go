@@ -294,12 +294,6 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 		return "", nil
 	}
 
-	// After this point, CLI will package it up and will build it
-	err = d.buildApp(ctx)
-	if err != nil {
-		return "", err
-	}
-
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
 
 	d.localDeploy.TempPath = d.tempPath
@@ -441,8 +435,14 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
 
+	// After this point, CLI will package it up and will build it
+	err := d.buildApp(ctx)
+	if err != nil {
+		return err
+	}
+
 	// check if resources exist and are ready
-	err := d.checkResourceAvailability(ctx)
+	err = d.checkResourceAvailability(ctx)
 	if err != nil {
 		return err
 	}

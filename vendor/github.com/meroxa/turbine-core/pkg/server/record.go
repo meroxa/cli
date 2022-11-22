@@ -11,6 +11,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+var _ pb.TurbineServiceServer = (*recordService)(nil)
+
 type recordService struct {
 	pb.UnimplementedTurbineServiceServer
 	deploymentSpec ir.DeploymentSpec
@@ -123,7 +125,14 @@ func (s *recordService) ListResources(ctx context.Context, in *emptypb.Empty) (*
 	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }
 
-func (s *recordService) GetSpec(ctx context.Context, in *emptypb.Empty) (*pb.GetSpecResponse, error) {
+func (s *recordService) GetSpec(ctx context.Context, in *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
+	if image := in.GetImage(); image != "" {
+		if len(s.deploymentSpec.Functions) == 0 {
+			return nil, fmt.Errorf("cannot set function image since spec has no functions")
+		}
+		s.deploymentSpec.SetImageForFunctions(image)
+	}
+
 	spec, err := s.deploymentSpec.Marshal()
 	if err != nil {
 		return &pb.GetSpecResponse{}, err

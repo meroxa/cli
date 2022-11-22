@@ -15,9 +15,10 @@ import (
 func (t *turbineRbCLI) SetupForDeploy(ctx context.Context) (func(), error) {
 	go t.recordServer.Run(ctx)
 
-	cmd := internal.NewTurbineCmd(t.appPath, map[string]string{
-		"TURBINE_CORE_SERVER": t.grpcListenAddress,
-	})
+	cmd := internal.NewTurbineCmd(t.appPath,
+		map[string]string{
+			"TURBINE_CORE_SERVER": t.grpcListenAddress,
+		})
 
 	if err := utils.RunCMD(ctx, t.logger, cmd); err != nil {
 		return nil, err
@@ -58,7 +59,9 @@ func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
-	resp, err := t.recordClient.GetSpec(ctx, &emptypb.Empty{})
+	resp, err := t.recordClient.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
 	if err != nil {
 		return "", err
 	}
