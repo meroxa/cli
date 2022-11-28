@@ -2,6 +2,8 @@ module github.com/meroxa/cli
 
 go 1.18
 
+replace github.com/meroxa/turbine-core-grpc => ../turbine-core-grpc
+
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 	github.com/cased/cased-go v1.0.4

@@ -16,6 +16,7 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context) (func(), error) {
 	go t.recordServer.Run(ctx)
 
 	cmd := internal.NewTurbineCmd(t.appPath,
+		internal.TurbineCommandRun,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
 		})
