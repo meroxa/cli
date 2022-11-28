@@ -32,7 +32,7 @@ type TurbineServiceClient interface {
 	RegisterSecret(ctx context.Context, in *Secret, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	HasFunctions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
 	ListResources(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListResourcesResponse, error)
-	GetSpec(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSpecResponse, error)
+	GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error)
 }
 
 type turbineServiceClient struct {
@@ -115,7 +115,7 @@ func (c *turbineServiceClient) ListResources(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
-func (c *turbineServiceClient) GetSpec(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSpecResponse, error) {
+func (c *turbineServiceClient) GetSpec(ctx context.Context, in *GetSpecRequest, opts ...grpc.CallOption) (*GetSpecResponse, error) {
 	out := new(GetSpecResponse)
 	err := c.cc.Invoke(ctx, "/turbine_core.TurbineService/GetSpec", in, out, opts...)
 	if err != nil {
@@ -136,7 +136,7 @@ type TurbineServiceServer interface {
 	RegisterSecret(context.Context, *Secret) (*emptypb.Empty, error)
 	HasFunctions(context.Context, *emptypb.Empty) (*wrapperspb.BoolValue, error)
 	ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error)
-	GetSpec(context.Context, *emptypb.Empty) (*GetSpecResponse, error)
+	GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error)
 }
 
 // UnimplementedTurbineServiceServer should be embedded to have forward compatible implementations.
@@ -167,7 +167,7 @@ func (UnimplementedTurbineServiceServer) HasFunctions(context.Context, *emptypb.
 func (UnimplementedTurbineServiceServer) ListResources(context.Context, *emptypb.Empty) (*ListResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
 }
-func (UnimplementedTurbineServiceServer) GetSpec(context.Context, *emptypb.Empty) (*GetSpecResponse, error) {
+func (UnimplementedTurbineServiceServer) GetSpec(context.Context, *GetSpecRequest) (*GetSpecResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSpec not implemented")
 }
 
@@ -327,7 +327,7 @@ func _TurbineService_ListResources_Handler(srv interface{}, ctx context.Context,
 }
 
 func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetSpecRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -339,7 +339,7 @@ func _TurbineService_GetSpec_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/turbine_core.TurbineService/GetSpec",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TurbineServiceServer).GetSpec(ctx, req.(*emptypb.Empty))
+		return srv.(TurbineServiceServer).GetSpec(ctx, req.(*GetSpecRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

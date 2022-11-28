@@ -79,7 +79,7 @@ func (mr *MockTurbineServiceClientMockRecorder) GetResource(ctx, in interface{},
 }
 
 // GetSpec mocks base method.
-func (m *MockTurbineServiceClient) GetSpec(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*core.GetSpecResponse, error) {
+func (m *MockTurbineServiceClient) GetSpec(ctx context.Context, in *core.GetSpecRequest, opts ...grpc.CallOption) (*core.GetSpecResponse, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
@@ -272,7 +272,7 @@ func (mr *MockTurbineServiceServerMockRecorder) GetResource(arg0, arg1 interface
 }
 
 // GetSpec mocks base method.
-func (m *MockTurbineServiceServer) GetSpec(arg0 context.Context, arg1 *emptypb.Empty) (*core.GetSpecResponse, error) {
+func (m *MockTurbineServiceServer) GetSpec(arg0 context.Context, arg1 *core.GetSpecRequest) (*core.GetSpecResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSpec", arg0, arg1)
 	ret0, _ := ret[0].(*core.GetSpecResponse)

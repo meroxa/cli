@@ -112,7 +112,9 @@ func Test_Deploy(t *testing.T) {
 				recordClient: func() recordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
-						GetSpec(gomock.Any(), &emptypb.Empty{}).
+						GetSpec(gomock.Any(), &pb.GetSpecRequest{
+							Image: "image",
+						}).
 						Times(1).
 						Return(&pb.GetSpecResponse{
 							Spec: []byte("spec"),
@@ -131,7 +133,9 @@ func Test_Deploy(t *testing.T) {
 				recordClient: func() recordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
-						GetSpec(gomock.Any(), &emptypb.Empty{}).
+						GetSpec(gomock.Any(), &pb.GetSpecRequest{
+							Image: "image",
+						}).
 						Times(1).
 						Return(nil, errors.New("something went wrong"))
 					return recordClient{
