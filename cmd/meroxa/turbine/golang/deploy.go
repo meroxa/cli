@@ -13,6 +13,7 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	turbineGo "github.com/meroxa/turbine-go/deploy"
 )
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
@@ -131,8 +132,12 @@ func (t *turbineGoCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
-	return utils.UploadSource(ctx, t.logger, utils.GoLang, t.appPath, appName, url)
+func (t *turbineGoCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+	return t.appPath, turbineGo.CreateDockerfile(appName, t.appPath)
+}
+
+func (t *turbineGoCLI) CleanUpBuild(ctx context.Context) {
+	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
 func (t *turbineGoCLI) SetupForDeploy(ctx context.Context) (func(), error) {

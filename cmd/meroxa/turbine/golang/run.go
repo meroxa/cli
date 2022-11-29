@@ -19,8 +19,7 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 	}
 
 	// building is a requirement prior to running for go apps
-	_, err = t.Build(ctx, appName, false)
-	if err != nil {
+	if err = t.Build(ctx, appName, false); err != nil {
 		return err
 	}
 

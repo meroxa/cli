@@ -5,7 +5,7 @@ import (
 )
 
 type CLI interface {
-	Build(ctx context.Context, appName string, platform bool) (string, error)
+	Build(ctx context.Context, appName string, platform bool) error
 	CleanUpBinaries(ctx context.Context, appName string)
 	Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error)
 	GetResources(ctx context.Context, appName string) ([]ApplicationResource, error)
@@ -17,6 +17,7 @@ type CLI interface {
 	NeedsToBuild(ctx context.Context, appName string) (bool, error)
 	Run(ctx context.Context) error
 	Upgrade(vendor bool) error
-	UploadSource(ctx context.Context, appName, tempPath, url string) error
+	CreateDockerfile(ctx context.Context, appName string) (string, error)
+	CleanUpBuild(ctx context.Context)
 	SetupForDeploy(ctx context.Context) (func(), error)
 }

@@ -22,7 +22,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/root/environments"
 	"github.com/meroxa/cli/log"

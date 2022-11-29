@@ -10,8 +10,9 @@ import (
 type TurbineCommand string
 
 var (
-	TurbineCommandRun   TurbineCommand = "TurbineRb.run"
-	TurbineCommandBuild TurbineCommand = "TurbineRb.build"
+	TurbineCommandRun    TurbineCommand = "TurbineRb.run"
+	TurbineCommandRecord TurbineCommand = "TurbineRb.record"
+	TurbineCommandBuild  TurbineCommand = "TurbineRb.build"
 )
 
 func NewTurbineCmd(appPath string, command TurbineCommand, env map[string]string) *exec.Cmd {

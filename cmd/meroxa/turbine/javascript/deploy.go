@@ -12,8 +12,12 @@ import (
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
+var (
+	TurbineJSVersion = "1.3.5"
+)
+
 func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
-	cmd := utils.RunTurbineJS(ctx, "hasfunctions", t.appPath)
+	cmd := RunTurbineJS(ctx, "hasfunctions", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		err = fmt.Errorf(
@@ -45,7 +49,7 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		params = append(params, specVersion)
 	}
 
-	cmd := utils.RunTurbineJS(ctx, params...)
+	cmd := RunTurbineJS(ctx, params...)
 
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
@@ -76,7 +80,7 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 func (t *turbineJsCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
 	var resources []utils.ApplicationResource
 
-	cmd := utils.RunTurbineJS(ctx, "listresources", t.appPath)
+	cmd := RunTurbineJS(ctx, "listresources", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return resources, errors.New(string(output))
@@ -103,8 +107,18 @@ func (t *turbineJsCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbineJsCLI) UploadSource(ctx context.Context, appName, appPath, url string) error {
-	return utils.UploadSource(ctx, t.logger, utils.JavaScript, t.appPath, appName, url)
+func (t *turbineJsCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+	cmd := RunTurbineJS(ctx, "clibuild", t.appPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("unable to create Dockerfile at %s; %s", t.appPath, string(output))
+	}
+
+	return t.appPath, err
+}
+
+func (t *turbineJsCLI) CleanUpBuild(ctx context.Context) {
+	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
 func (t *turbineJsCLI) SetupForDeploy(ctx context.Context) (func(), error) {
