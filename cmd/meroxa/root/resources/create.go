@@ -18,13 +18,8 @@ package resources
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-
-	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/root/environments"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -144,79 +139,6 @@ func (c *Create) ParseArgs(args []string) error {
 }
 
 func (c *Create) Execute(ctx context.Context) error {
-	var env string
-
-	input := meroxa.CreateResourceInput{
-		Type:     meroxa.ResourceType(c.flags.Type),
-		Name:     c.args.Name,
-		URL:      c.flags.URL,
-		Metadata: nil,
-	}
-
-	// If the environment specified is not the common environment.
-	if c.flags.Environment != "" && c.flags.Environment != string(meroxa.EnvironmentTypeCommon) {
-		err := builder.CheckCMDFeatureFlag(c, &environments.Environments{})
-		if err != nil {
-			return err
-		}
-
-		input.Environment = &meroxa.EntityIdentifier{}
-		env = c.flags.Environment
-
-		_, err = uuid.Parse(c.flags.Environment)
-
-		if err == nil {
-			input.Environment.UUID = c.flags.Environment
-		} else {
-			input.Environment.Name = c.flags.Environment
-		}
-	} else {
-		env = string(meroxa.EnvironmentTypeCommon)
-	}
-
-	if c.hasCredentials() {
-		input.Credentials = &meroxa.Credentials{
-			Username:      c.flags.Username,
-			Password:      c.flags.Password,
-			CACert:        c.flags.CaCert,
-			ClientCert:    c.flags.ClientCert,
-			ClientCertKey: c.flags.ClientKey,
-			UseSSL:        c.flags.SSL,
-		}
-	}
-
-	if c.flags.Metadata != "" {
-		err := json.Unmarshal([]byte(c.flags.Metadata), &input.Metadata)
-		if err != nil {
-			return fmt.Errorf("could not parse metadata: %w", err)
-		}
-	}
-
-	if sshURL := c.flags.SSHURL; sshURL != "" {
-		input.SSHTunnel = &meroxa.ResourceSSHTunnelInput{
-			Address:    sshURL,
-			PrivateKey: c.flags.SSHPrivateKey,
-		}
-	}
-
-	c.logger.Infof(ctx, "Creating %q resource in %q environment...", input.Type, env)
-
-	res, err := c.client.CreateResource(ctx, &input)
-	if err != nil {
-		return err
-	}
-
-	if tun := res.SSHTunnel; tun == nil {
-		c.logger.Infof(ctx, "Resource %q is successfully created!", res.Name)
-	} else {
-		c.logger.Infof(ctx, "Resource %q is successfully created but is pending for validation!", res.Name)
-		c.logger.Info(ctx, "Paste the following public key on your host:")
-		c.logger.Info(ctx, tun.PublicKey)
-		c.logger.Info(ctx, "Meroxa will try to connect to the resource for 60 minutes and send an email confirmation after a successful resource validation.") //nolint
-	}
-
-	c.logger.JSON(ctx, res)
-
 	return nil
 }
 
