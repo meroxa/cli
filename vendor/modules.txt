@@ -197,7 +197,7 @@ github.com/meroxa/turbine-core/pkg/app
 github.com/meroxa/turbine-core/pkg/ir
 github.com/meroxa/turbine-core/pkg/server
 github.com/meroxa/turbine-core/pkg/server/internal
-# github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf
+# github.com/meroxa/turbine-go v1.0.0
 ## explicit; go 1.18
 github.com/meroxa/turbine-go
 github.com/meroxa/turbine-go/deploy
@@ -293,7 +293,7 @@ github.com/stretchr/testify/require
 # github.com/subosito/gotenv v1.4.1
 ## explicit; go 1.18
 github.com/subosito/gotenv
-# github.com/tidwall/gjson v1.14.3
+# github.com/tidwall/gjson v1.14.4
 ## explicit; go 1.12
 github.com/tidwall/gjson
 # github.com/tidwall/match v1.1.1
