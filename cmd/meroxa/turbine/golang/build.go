@@ -10,7 +10,7 @@ import (
 )
 
 // Build will create a go binary with a specific name on a specific path.
-func (t *turbineGoCLI) Build(ctx context.Context, appName string, platform bool) (string, error) {
+func (t *turbineGoCLI) Build(ctx context.Context, appName string, platform bool) error {
 	var cmd *exec.Cmd
 
 	t.logger.StartSpinner("\t", "Building Golang binary...")
@@ -24,9 +24,9 @@ func (t *turbineGoCLI) Build(ctx context.Context, appName string, platform bool)
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
 		t.logger.StopSpinnerWithStatus(string(stdout), log.Failed)
-		return "", fmt.Errorf("build failed")
+		return fmt.Errorf("build failed")
 	}
-	return "", t.buildForCrossCompile(ctx, appName)
+	return t.buildForCrossCompile(ctx, appName)
 }
 
 func (t *turbineGoCLI) buildForCrossCompile(ctx context.Context, appName string) error {

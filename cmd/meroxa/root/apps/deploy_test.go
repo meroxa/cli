@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 
 	"strings"
 	"testing"
@@ -680,7 +682,7 @@ func TestGetPlatformImage(t *testing.T) {
 	sourcePutURL := "http://foo.bar"
 	sourceGetURL := "http://foo.bar"
 	appName := "my-app"
-	tempPath := "/tmp"
+	buildPath := ""
 	err := fmt.Errorf("nope")
 
 	tests := []struct {
@@ -693,10 +695,13 @@ func TestGetPlatformImage(t *testing.T) {
 			name: "Successfully build image",
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+				}))
 
 				client.EXPECT().
 					CreateSource(ctx).
-					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				client.EXPECT().
 					CreateBuild(ctx, &meroxa.CreateBuildInput{SourceBlob: meroxa.SourceBlob{Url: sourceGetURL}}).
@@ -710,8 +715,11 @@ func TestGetPlatformImage(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					UploadSource(ctx, appName, tempPath, sourcePutURL).
-					Return(nil)
+					CreateDockerfile(ctx, appName).
+					Return(buildPath, nil)
+				mockTurbineCLI.EXPECT().
+					CleanUpBuild(ctx).
+					Return()
 				return mockTurbineCLI
 			},
 			err: nil,
@@ -745,8 +753,8 @@ func TestGetPlatformImage(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					UploadSource(ctx, appName, tempPath, sourcePutURL).
-					Return(err)
+					CreateDockerfile(ctx, appName).
+					Return("", err)
 				return mockTurbineCLI
 			},
 			err: err,
@@ -756,9 +764,13 @@ func TestGetPlatformImage(t *testing.T) {
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+				}))
+
 				client.EXPECT().
 					CreateSource(ctx).
-					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				client.EXPECT().
 					CreateBuild(ctx, &meroxa.CreateBuildInput{SourceBlob: meroxa.SourceBlob{Url: sourceGetURL}}).
@@ -768,8 +780,11 @@ func TestGetPlatformImage(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					UploadSource(ctx, appName, tempPath, sourcePutURL).
-					Return(nil)
+					CreateDockerfile(ctx, appName).
+					Return(buildPath, nil)
+				mockTurbineCLI.EXPECT().
+					CleanUpBuild(ctx).
+					Return()
 				return mockTurbineCLI
 			},
 			err: err,
@@ -779,9 +794,13 @@ func TestGetPlatformImage(t *testing.T) {
 			meroxaClient: func() meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+				}))
+
 				client.EXPECT().
 					CreateSource(ctx).
-					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				client.EXPECT().
 					CreateBuild(ctx, &meroxa.CreateBuildInput{SourceBlob: meroxa.SourceBlob{Url: sourceGetURL}}).
@@ -795,8 +814,11 @@ func TestGetPlatformImage(t *testing.T) {
 			mockTurbineCLI: func() turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					UploadSource(ctx, appName, tempPath, sourcePutURL).
-					Return(nil)
+					CreateDockerfile(ctx, appName).
+					Return(buildPath, nil)
+				mockTurbineCLI.EXPECT().
+					CleanUpBuild(ctx).
+					Return()
 				return mockTurbineCLI
 			},
 			err: fmt.Errorf("build with uuid %q errored", buildUUID),
@@ -810,7 +832,6 @@ func TestGetPlatformImage(t *testing.T) {
 				turbineCLI: tc.mockTurbineCLI(),
 				logger:     logger,
 				appName:    appName,
-				tempPath:   tempPath,
 			}
 
 			_, err := d.getPlatformImage(ctx)
@@ -1078,6 +1099,66 @@ func TestWaitForDeployment(t *testing.T) {
 			} else {
 				require.Equal(t, tc.wantOutput(), logger.LeveledOutput(), "logs are not equal")
 			}
+		})
+	}
+}
+
+func TestUploadFile(t *testing.T) {
+	ctx := context.Background()
+	retries := 0
+	testCases := []struct {
+		name    string
+		server  func(int) *httptest.Server
+		status  int
+		retries int
+		output  string
+		err     error
+	}{
+		{
+			name: "Successfully upload file",
+			server: func(status int) *httptest.Server {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					retries++
+					w.WriteHeader(status)
+				}))
+				return server
+			},
+			status:  http.StatusOK,
+			retries: 1,
+			output:  "Source uploaded",
+		},
+		{
+			name: "Fail to upload file",
+			server: func(status int) *httptest.Server {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					retries++
+					w.WriteHeader(status)
+				}))
+				return server
+			},
+			status:  http.StatusInternalServerError,
+			retries: 3,
+			output:  "Failed to upload build source file",
+			err:     fmt.Errorf("upload failed: 500 Internal Server Error"),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			retries = 0
+			logger := log.NewTestLogger()
+			logger.StartSpinner("", "")
+			server := tc.server(tc.status)
+			err := uploadFile(ctx, logger, "deploy.go", server.URL)
+			if tc.err != nil {
+				assert.Equal(t, tc.err, err)
+			} else {
+				require.NoError(t, err)
+			}
+			assert.Equal(t, tc.retries, retries)
+			output := logger.SpinnerOutput()
+			assert.True(t, strings.Contains(output, tc.output))
+			server.Close()
 		})
 	}
 }

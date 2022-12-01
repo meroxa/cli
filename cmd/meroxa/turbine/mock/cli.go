@@ -36,12 +36,11 @@ func (m *MockCLI) EXPECT() *MockCLIMockRecorder {
 }
 
 // Build mocks base method.
-func (m *MockCLI) Build(ctx context.Context, appName string, platform bool) (string, error) {
+func (m *MockCLI) Build(ctx context.Context, appName string, platform bool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Build", ctx, appName, platform)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Build indicates an expected call of Build.
@@ -60,6 +59,33 @@ func (m *MockCLI) CleanUpBinaries(ctx context.Context, appName string) {
 func (mr *MockCLIMockRecorder) CleanUpBinaries(ctx, appName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CleanUpBinaries", reflect.TypeOf((*MockCLI)(nil).CleanUpBinaries), ctx, appName)
+}
+
+// CleanUpBuild mocks base method.
+func (m *MockCLI) CleanUpBuild(ctx context.Context) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "CleanUpBuild", ctx)
+}
+
+// CleanUpBuild indicates an expected call of CleanUpBuild.
+func (mr *MockCLIMockRecorder) CleanUpBuild(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CleanUpBuild", reflect.TypeOf((*MockCLI)(nil).CleanUpBuild), ctx)
+}
+
+// CreateDockerfile mocks base method.
+func (m *MockCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateDockerfile", ctx, appName)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateDockerfile indicates an expected call of CreateDockerfile.
+func (mr *MockCLIMockRecorder) CreateDockerfile(ctx, appName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDockerfile", reflect.TypeOf((*MockCLI)(nil).CreateDockerfile), ctx, appName)
 }
 
 // Deploy mocks base method.
@@ -220,18 +246,4 @@ func (m *MockCLI) Upgrade(vendor bool) error {
 func (mr *MockCLIMockRecorder) Upgrade(vendor interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), vendor)
-}
-
-// UploadSource mocks base method.
-func (m *MockCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UploadSource", ctx, appName, tempPath, url)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// UploadSource indicates an expected call of UploadSource.
-func (mr *MockCLIMockRecorder) UploadSource(ctx, appName, tempPath, url interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UploadSource", reflect.TypeOf((*MockCLI)(nil).UploadSource), ctx, appName, tempPath, url)
 }

@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/log"
 )
 
 // NeedsToBuild determines if the app has functions or not.
@@ -111,8 +113,33 @@ func (t *turbinePyCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbinePyCLI) UploadSource(ctx context.Context, appName, tempPath, url string) error {
-	return utils.UploadSource(ctx, t.logger, utils.Python, tempPath, appName, url)
+func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+	cmd := exec.CommandContext(ctx, "turbine-py", "clibuild", t.appPath)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("unable to create Dockerfile; %s", string(output))
+	}
+	r := regexp.MustCompile("^turbine-response: ([^\n]*)")
+	match := r.FindStringSubmatch(string(output))
+	if match == nil || len(match) < 2 {
+		return "", fmt.Errorf("unable to create Dockerfiles; %s", string(output))
+	}
+	t.tmpPath = match[1]
+	return t.tmpPath, err
+}
+
+func (t *turbinePyCLI) CleanUpBuild(ctx context.Context) {
+	// cleanUpPythonTempBuildLocation removes any artifacts in the temporary directory.
+	t.logger.StartSpinner("\t", fmt.Sprintf("Removing artifacts from building the Python Application at %s...", t.tmpPath))
+
+	cmd := exec.CommandContext(ctx, "turbine-py", "cliclean", t.tmpPath)
+	output, err := cmd.CombinedOutput()
+
+	if err != nil {
+		t.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Failed to clean up artifacts at %s: %v %s", t.tmpPath, err, output), log.Failed)
+	} else {
+		t.logger.StopSpinnerWithStatus("Removed artifacts from building", log.Successful)
+	}
 }
 
 func (t *turbinePyCLI) SetupForDeploy(ctx context.Context) (func(), error) {

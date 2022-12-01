@@ -9,10 +9,12 @@ import (
 )
 
 func Test_NewTurbineCmd(t *testing.T) {
-	cmd := internal.NewTurbineCmd("/my/path", map[string]string{
-		"foo": "bar",
-		"x":   "y",
-	})
+	cmd := internal.NewTurbineCmd("/my/path",
+		internal.TurbineCommandRun,
+		map[string]string{
+			"foo": "bar",
+			"x":   "y",
+		})
 
 	assert.Equal(t, cmd.Stdout, os.Stdout)
 	assert.Equal(t, cmd.Stderr, os.Stderr)

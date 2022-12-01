@@ -9,7 +9,7 @@ import (
 
 // GetVersion calls turbine-js-cli to get the turbine-js-framework version used by the given app.
 func (t *turbineJsCLI) GetVersion(ctx context.Context) (string, error) {
-	cmd := utils.RunTurbineJS(ctx, "version", t.appPath)
+	cmd := RunTurbineJS(ctx, "version", t.appPath)
 	stdOut, err := utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
 	fmtErr := fmt.Errorf(
 		"unable to determine the version of turbine-js-framework used by the Meroxa Application at %s",

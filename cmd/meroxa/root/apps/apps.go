@@ -93,7 +93,7 @@ type addHeader interface {
 func addTurbineHeaders(c addHeader, lang, version string) {
 	c.AddHeader("Meroxa-CLI-App-Lang", lang)
 	if lang == turbine.JavaScript {
-		version = fmt.Sprintf("%s:cli%s", version, turbine.TurbineJSVersion)
+		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)
 	}
 	c.AddHeader("Meroxa-CLI-App-Version", version)
 }

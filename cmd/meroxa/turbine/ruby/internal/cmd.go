@@ -7,10 +7,18 @@ import (
 	"path"
 )
 
-func NewTurbineCmd(appPath string, env map[string]string) *exec.Cmd {
+type TurbineCommand string
+
+var (
+	TurbineCommandRun    TurbineCommand = "TurbineRb.run"
+	TurbineCommandRecord TurbineCommand = "TurbineRb.record"
+	TurbineCommandBuild  TurbineCommand = "TurbineRb.build"
+)
+
+func NewTurbineCmd(appPath string, command TurbineCommand, env map[string]string) *exec.Cmd {
 	cmd := exec.Command("ruby", []string{
 		"-r", path.Join(appPath, "app"),
-		"-e", "TurbineRb.run",
+		"-e", string(command),
 	}...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

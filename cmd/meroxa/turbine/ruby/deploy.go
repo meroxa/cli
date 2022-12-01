@@ -12,10 +12,22 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (t *turbineRbCLI) CleanUpBuild(ctx context.Context) {
+	utils.CleanupDockerfile(t.logger, t.appPath)
+}
+
+func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+	cmd := internal.NewTurbineCmd(t.appPath,
+		internal.TurbineCommandBuild,
+		map[string]string{})
+	return t.appPath, utils.RunCMD(ctx, t.logger, cmd)
+}
+
 func (t *turbineRbCLI) SetupForDeploy(ctx context.Context) (func(), error) {
 	go t.recordServer.Run(ctx)
 
 	cmd := internal.NewTurbineCmd(t.appPath,
+		internal.TurbineCommandRecord,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
 		})
@@ -92,8 +104,4 @@ func (t *turbineRbCLI) GetGitSha(ctx context.Context) (string, error) {
 
 func (t *turbineRbCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
-}
-
-func (t *turbineRbCLI) UploadSource(ctx context.Context, appName, appPath, url string) error {
-	return utils.UploadSource(ctx, t.logger, utils.Ruby, t.appPath, appName, url)
 }

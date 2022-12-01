@@ -17,10 +17,16 @@ limitations under the License.
 package apps
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"path/filepath"
 
 	"os"
 	"regexp"
@@ -80,7 +86,6 @@ type Deploy struct {
 	path          string
 	lang          string
 	fnName        string
-	tempPath      string // find something more elegant to this
 	specVersion   string
 }
 
@@ -205,7 +210,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	}
 	d.logger.StopSpinnerWithStatus("Platform source fetched", log.Successful)
 
-	err = d.turbineCLI.UploadSource(ctx, d.appName, d.tempPath, s.PutUrl)
+	err = d.UploadSource(ctx, s.PutUrl)
 	if err != nil {
 		return "", err
 	}
@@ -240,6 +245,188 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	}
 }
 
+func (d *Deploy) UploadSource(ctx context.Context, url string) error {
+	var (
+		err       error
+		buildPath string
+	)
+
+	d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", d.path))
+	buildPath, err = d.turbineCLI.CreateDockerfile(ctx, d.appName)
+	if err != nil {
+		return err
+	}
+	defer d.turbineCLI.CleanUpBuild(ctx)
+	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
+
+	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
+
+	var buf bytes.Buffer
+	if err = createTarAndZipFile(buildPath, &buf); err != nil {
+		return err
+	}
+
+	d.logger.StartSpinner("\t", fmt.Sprintf("Creating %q in %q to upload to our build service...", buildPath, dFile))
+
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
+	defer func(fileToWrite *os.File) {
+		if err = fileToWrite.Close(); err != nil {
+			panic(err.Error())
+		}
+
+		// remove .tar.gz file
+		d.logger.StartSpinner("\t", fmt.Sprintf("Removing %q...", dFile))
+		if err = os.Remove(dFile); err != nil {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		} else {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
+		}
+	}(fileToWrite)
+	if err != nil {
+		return err
+	}
+	if _, err = io.Copy(fileToWrite, &buf); err != nil {
+		return err
+	}
+	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, buildPath), log.Successful)
+
+	return uploadFile(ctx, d.logger, dFile, url)
+}
+
+// CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
+func createTarAndZipFile(src string, buf io.Writer) error {
+	// Grab the directory we care about (app's directory)
+	appDir := filepath.Base(src)
+
+	// Change to parent's app directory
+	pwd, err := turbine.SwitchToAppDirectory(filepath.Dir(src))
+	if err != nil {
+		return err
+	}
+
+	zipWriter := gzip.NewWriter(buf)
+	tarWriter := tar.NewWriter(zipWriter)
+
+	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
+		if shouldSkipDir(fi) {
+			return filepath.SkipDir
+		}
+		header, err := tar.FileInfoHeader(fi, file)
+		if err != nil {
+			return err
+		}
+
+		header.Name = filepath.ToSlash(file)
+		if err := tarWriter.WriteHeader(header); err != nil { //nolint:govet
+			return err
+		}
+		if !fi.Mode().IsRegular() {
+			return nil
+		}
+		if !fi.IsDir() {
+			var data *os.File
+			data, err = os.Open(file)
+			defer func(data *os.File) {
+				err = data.Close()
+				if err != nil {
+					panic(err.Error())
+				}
+			}(data)
+			if err != nil {
+				return err
+			}
+			if _, err := io.Copy(tarWriter, data); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := tarWriter.Close(); err != nil {
+		return err
+	}
+	if err := zipWriter.Close(); err != nil {
+		return err
+	}
+
+	return os.Chdir(pwd)
+}
+
+func shouldSkipDir(fi os.FileInfo) bool {
+	if !fi.IsDir() {
+		return false
+	}
+
+	switch fi.Name() {
+	case ".git", "fixtures", "node_modules":
+		return true
+	}
+
+	return false
+}
+
+func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) error {
+	logger.StartSpinner("\t", "Uploading source...")
+
+	var clientErr error
+	var res *http.Response
+	client := &http.Client{}
+
+	retries := 3
+	for retries > 0 {
+		fh, err := os.Open(filePath)
+		if err != nil {
+			logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
+			return err
+		}
+		defer func(fh *os.File) {
+			fh.Close()
+		}(fh)
+
+		req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
+		if err != nil {
+			logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
+			return err
+		}
+
+		fi, err := fh.Stat()
+		if err != nil {
+			logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
+			return err
+		}
+		req.Header.Set("Accept", "*/*")
+		req.Header.Set("Content-Type", "multipart/form-data")
+		req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+		req.Header.Set("Connection", "keep-alive")
+
+		req.ContentLength = fi.Size()
+
+		res, clientErr = client.Do(req)
+		if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
+			retries--
+		} else {
+			break
+		}
+	}
+
+	if res != nil && res.Body != nil {
+		defer res.Body.Close()
+	}
+	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
+		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
+		if clientErr == nil {
+			clientErr = fmt.Errorf("upload failed: %s", res.Status)
+		}
+		return clientErr
+	}
+
+	logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
+	return nil
+}
+
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
 	specStr, err := d.turbineCLI.Deploy(
 		ctx,
@@ -272,8 +459,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 // buildApp will call any specifics to the turbine library to prepare a directory that's ready
 // to compress, and build, to then later on call the specific command to deploy depending on the language.
 func (d *Deploy) buildApp(ctx context.Context) (err error) {
-	d.tempPath, err = d.turbineCLI.Build(ctx, d.appName, true)
-	return err
+	return d.turbineCLI.Build(ctx, d.appName, true)
 }
 
 // getAppImage will check what type of build needs to perform and ultimately will return the image name to use
@@ -296,7 +482,6 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
 
-	d.localDeploy.TempPath = d.tempPath
 	d.localDeploy.Lang = d.lang
 	d.localDeploy.AppName = d.appName
 	if d.localDeploy.Enabled {

@@ -8,6 +8,7 @@ import (
 type turbinePyCLI struct {
 	logger  log.Logger
 	appPath string
+	tmpPath string
 }
 
 func New(l log.Logger, appPath string) turbine.CLI {

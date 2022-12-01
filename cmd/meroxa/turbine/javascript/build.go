@@ -5,8 +5,8 @@ import (
 )
 
 // Build has nothing to do for turbine-js.
-func (t *turbineJsCLI) Build(ctx context.Context, appName string, platform bool) (string, error) {
-	return "", nil
+func (t *turbineJsCLI) Build(ctx context.Context, appName string, platform bool) error {
+	return nil
 }
 
 func (t *turbineJsCLI) CleanUpTempBuildLocation(ctx context.Context) error {
