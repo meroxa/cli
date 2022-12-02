@@ -142,6 +142,6 @@ func (t *turbinePyCLI) CleanUpBuild(ctx context.Context) {
 	}
 }
 
-func (t *turbinePyCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+func (t *turbinePyCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	return func() {}, nil
 }

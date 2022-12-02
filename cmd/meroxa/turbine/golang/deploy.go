@@ -140,6 +140,6 @@ func (t *turbineGoCLI) CleanUpBuild(ctx context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	return func() {}, nil
 }

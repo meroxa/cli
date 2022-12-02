@@ -19,5 +19,5 @@ type CLI interface {
 	Upgrade(vendor bool) error
 	CreateDockerfile(ctx context.Context, appName string) (string, error)
 	CleanUpBuild(ctx context.Context)
-	SetupForDeploy(ctx context.Context) (func(), error)
+	SetupForDeploy(ctx context.Context, gitSha string) (func(), error)
 }

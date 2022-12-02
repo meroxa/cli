@@ -23,14 +23,16 @@ func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, appName string) (st
 	return t.appPath, utils.RunCMD(ctx, t.logger, cmd)
 }
 
-func (t *turbineRbCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	go t.recordServer.Run(ctx)
 
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandRecord,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
-		})
+		},
+		gitSha,
+	)
 
 	if err := utils.RunCMD(ctx, t.logger, cmd); err != nil {
 		return nil, err
