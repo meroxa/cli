@@ -3,7 +3,7 @@ package turbinerb
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -65,7 +65,7 @@ func Test_Run(t *testing.T) {
 			name: "success",
 			cli: &turbineRbCLI{
 				appPath: func() string {
-					if err := ioutil.WriteFile(
+					if err := os.WriteFile(
 						path.Join(tempdir, "app.rb"),
 						[]byte(`class Turbine; def self.run; puts "it ran"; end; end`),
 						0644,

@@ -15,11 +15,10 @@ var (
 	TurbineCommandBuild  TurbineCommand = "TurbineRb.build"
 )
 
-func NewTurbineCmd(appPath string, command TurbineCommand, env map[string]string) *exec.Cmd {
-	cmd := exec.Command("ruby", []string{
+func NewTurbineCmd(appPath string, command TurbineCommand, env map[string]string, flags ...string) *exec.Cmd {
+	cmd := exec.Command("ruby", append([]string{
 		"-r", path.Join(appPath, "app"),
-		"-e", string(command),
-	}...)
+		"-e", string(command)}, flags...)...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Dir = appPath

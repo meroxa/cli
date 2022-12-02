@@ -220,18 +220,18 @@ func (mr *MockCLIMockRecorder) Run(ctx interface{}) *gomock.Call {
 }
 
 // SetupForDeploy mocks base method.
-func (m *MockCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+func (m *MockCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetupForDeploy", ctx)
+	ret := m.ctrl.Call(m, "SetupForDeploy", ctx, gitSha)
 	ret0, _ := ret[0].(func())
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SetupForDeploy indicates an expected call of SetupForDeploy.
-func (mr *MockCLIMockRecorder) SetupForDeploy(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) SetupForDeploy(ctx, gitSha interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupForDeploy", reflect.TypeOf((*MockCLI)(nil).SetupForDeploy), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupForDeploy", reflect.TypeOf((*MockCLI)(nil).SetupForDeploy), ctx, gitSha)
 }
 
 // Upgrade mocks base method.

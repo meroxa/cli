@@ -831,12 +831,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		}
 	}
 
-	cleanup, err := d.turbineCLI.SetupForDeploy(ctx)
-	if err != nil {
-		return err
-	}
-	defer cleanup()
-
 	turbineLibVersion, err := d.turbineCLI.GetVersion(ctx)
 	if err != nil {
 		return err
@@ -851,6 +845,12 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
+	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
+	if err != nil {
+		return err
+	}
+	defer cleanup()
 
 	d.specVersion = d.flags.Spec
 	if d.specVersion == "" && d.lang == turbine.Ruby {

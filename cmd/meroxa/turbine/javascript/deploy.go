@@ -121,6 +121,6 @@ func (t *turbineJsCLI) CleanUpBuild(ctx context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineJsCLI) SetupForDeploy(ctx context.Context) (func(), error) {
+func (t *turbineJsCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	return func() {}, nil
 }
