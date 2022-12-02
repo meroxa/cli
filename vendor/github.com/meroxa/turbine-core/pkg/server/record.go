@@ -11,8 +11,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-var _ pb.TurbineServiceServer = (*recordService)(nil)
-
 type recordService struct {
 	pb.UnimplementedTurbineServiceServer
 	deploymentSpec ir.DeploymentSpec
@@ -24,6 +22,10 @@ func NewRecordService() *recordService {
 }
 
 func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
+	if err := request.Validate(); err != nil {
+		return nil, err
+	}
+
 	s.deploymentSpec.Definition = ir.DefinitionSpec{
 		GitSha: request.GetGitSHA(),
 		Metadata: ir.MetadataSpec{
@@ -34,7 +36,6 @@ func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emp
 			SpecVersion: ir.LatestSpecVersion,
 		},
 	}
-
 	return empty(), nil
 }
 
@@ -42,8 +43,6 @@ func (s *recordService) GetResource(ctx context.Context, request *pb.GetResource
 	r := &pb.Resource{
 		Name: request.GetName(),
 	}
-
-	s.resources = append(s.resources, r)
 	return r, nil
 }
 
@@ -60,6 +59,12 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 		return &pb.Collection{}, fmt.Errorf("please provide a collection name to 'read'")
 	}
 
+	s.resources = append(s.resources, &pb.Resource{
+		Name:       request.GetResource().GetName(),
+		Source:     true,
+		Collection: request.GetCollection(),
+	})
+
 	for _, c := range s.deploymentSpec.Connectors {
 		// Only one source per app allowed.
 		if c.Type == ir.ConnectorSource {
@@ -71,7 +76,7 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 		s.deploymentSpec.Connectors,
 		ir.ConnectorSpec{
 			Collection: request.GetCollection(),
-			Resource:   request.GetResource().GetName(),
+			Resource:   request.Resource.GetName(),
 			Type:       ir.ConnectorSource,
 			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},
@@ -86,11 +91,17 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 		return empty(), fmt.Errorf("please provide a collection name to 'write'")
 	}
 
+	s.resources = append(s.resources, &pb.Resource{
+		Name:        request.GetResource().GetName(),
+		Destination: true,
+		Collection:  request.TargetCollection,
+	})
+
 	s.deploymentSpec.Connectors = append(
 		s.deploymentSpec.Connectors,
 		ir.ConnectorSpec{
 			Collection: request.GetTargetCollection(),
-			Resource:   request.GetResource().GetName(),
+			Resource:   request.Resource.GetName(),
 			Type:       ir.ConnectorDestination,
 			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
 		},

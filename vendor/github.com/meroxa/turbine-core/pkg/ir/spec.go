@@ -10,6 +10,11 @@ type Lang string
 
 const (
 	GoLang               Lang          = "golang"
+	JavaScript           Lang          = "javascript"
+	NodeJs               Lang          = "nodejs"
+	Python               Lang          = "python"
+	Python3              Lang          = "python3"
+	Ruby                 Lang          = "ruby"
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
 

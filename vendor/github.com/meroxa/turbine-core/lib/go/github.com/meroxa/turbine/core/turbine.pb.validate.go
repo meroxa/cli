@@ -204,6 +204,12 @@ func (m *GetResourceRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	// no validation rules for Source
+
+	// no validation rules for Destination
+
+	// no validation rules for Collection
+
 	if len(errors) > 0 {
 		return GetResourceRequestMultiError(errors)
 	}
@@ -316,6 +322,12 @@ func (m *Resource) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	}
+
+	// no validation rules for Source
+
+	// no validation rules for Destination
+
+	// no validation rules for Collection
 
 	if len(errors) > 0 {
 		return ResourceMultiError(errors)
