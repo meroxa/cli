@@ -30,6 +30,7 @@ meroxa apps remove NAME
 ### Options
 
 ```
+  -f, --force         skip confirmation
   -h, --help          help for remove
       --path string   Path to the app directory (default is local directory)
 ```
