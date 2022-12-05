@@ -705,6 +705,8 @@ _meroxa_apps_remove()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--force")
+    flags+=("-f")
     flags+=("--help")
     flags+=("-h")
     flags+=("--path=")
