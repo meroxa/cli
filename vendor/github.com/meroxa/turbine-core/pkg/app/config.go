@@ -14,6 +14,7 @@ type Config struct {
 	Environment string            `json:"environment"`
 	Pipeline    string            `json:"pipeline"` // TODO: Eventually remove support for providing a pipeline if we need to
 	Resources   map[string]string `json:"resources"`
+	Language    string            `json:"language"`
 }
 
 // validateAppConfig will check if app.json contains information required

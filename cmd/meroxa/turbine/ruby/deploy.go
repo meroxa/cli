@@ -90,11 +90,13 @@ func (t *turbineRbCLI) GetResources(ctx context.Context, appName string) ([]util
 	if err != nil {
 		return nil, err
 	}
-
 	var resources []utils.ApplicationResource
 	for _, r := range resp.Resources {
 		resources = append(resources, utils.ApplicationResource{
-			Name: r.Name,
+			Name:        r.Name,
+			Destination: r.Destination,
+			Source:      r.Source,
+			Collection:  r.Collection,
 		})
 	}
 	return resources, nil
