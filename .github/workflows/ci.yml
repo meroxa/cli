@@ -59,6 +59,7 @@ jobs:
           token: ${{ secrets.MEROXA_MACHINE }}
           repository: meroxa/acceptance
           path: acceptance
+          ref: 'minikube-cli'
       - name: Build and Run
         working-directory: ./acceptance
         env:
