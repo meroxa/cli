@@ -67,6 +67,8 @@ jobs:
       - name: Build unmerged CLI
         run: |
           ls -l /home/runner/work/cli/cli
+          ls -l
+          pwd
           make build
       - name: Run
         working-directory: ./acceptance
