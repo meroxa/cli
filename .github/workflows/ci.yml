@@ -80,6 +80,8 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
+          cat Dockerfile
+          ls -l /home/runner/work/cli/cli
           docker build -t meroxa/acceptance .
           docker run \
             -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
