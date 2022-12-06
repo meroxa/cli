@@ -50,7 +50,7 @@ jobs:
          GOPATH: /home/runner/work/cli/go
   acceptance:
     name: Acceptance
-    needs: [ test ]
+    needs: [ build ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Acceptance
