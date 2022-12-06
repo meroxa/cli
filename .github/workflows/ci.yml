@@ -80,9 +80,8 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
-          echo $GITHUB_BASE_REF
-          echo ${{ env.GITHUB_BASE_REF }}
-          docker build -t meroxa/acceptance --build-arg=CLI_BRANCH=${{ env.GITHUB_BASE_REF }} .
+          echo $GITHUB_HEAD_REF
+          docker build -t meroxa/acceptance --build-arg CLI_BRANCH=$GITHUB_HEAD_REF .
           docker run \
             -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
             -e MEROXA_AUTH_CLIENT_ID=${MEROXA_AUTH_CLIENT_ID} \
