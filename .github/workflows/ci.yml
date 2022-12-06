@@ -50,9 +50,17 @@ jobs:
          GOPATH: /home/runner/work/cli/go
   acceptance:
     name: Acceptance
-    needs: [ build ]
+    needs: [ test ]
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+      - name: Build CLI
+        run: |
+          ls -l /home/runner/work/cli/cli
+          ls -l
+          pwd
+          make build
       - name: Checkout Acceptance
         uses: actions/checkout@v3
         with:
@@ -64,12 +72,6 @@ jobs:
         working-directory: ./acceptance
         run: |
           docker build -t meroxa/acceptance .
-      - name: Build unmerged CLI
-        run: |
-          ls -l /home/runner/work/cli/cli
-          ls -l
-          pwd
-          make build
       - name: Run
         working-directory: ./acceptance
         env:
