@@ -57,9 +57,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Build CLI
         run: |
-          ls -l /home/runner/work/cli/cli
-          ls -l
-          pwd
           make build
       - name: Checkout Acceptance
         uses: actions/checkout@v3
@@ -68,11 +65,7 @@ jobs:
           repository: meroxa/acceptance
           path: acceptance
           ref: 'minikube-cli'
-      - name: Build Acceptance Image
-        working-directory: ./acceptance
-        run: |
-          docker build -t meroxa/acceptance .
-      - name: Run
+      - name: Build And Run Acceptance
         working-directory: ./acceptance
         env:
           MEROXA_AUTH_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_ID }}
@@ -92,6 +85,7 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
+          docker build -t meroxa/acceptance .
           docker run \
           -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
           -e MEROXA_AUTH_CLIENT_ID=${MEROXA_AUTH_CLIENT_ID} \
