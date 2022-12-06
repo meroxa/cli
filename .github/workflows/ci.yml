@@ -60,7 +60,15 @@ jobs:
           repository: meroxa/acceptance
           path: acceptance
           ref: 'minikube-cli'
-      - name: Build and Run
+      - name: Build Acceptance Image
+        working-directory: ./acceptance
+        run: |
+          docker build -t meroxa/acceptance .
+      - name: Build unmerged CLI
+        run: |
+          ls -l /home/runner/work/cli/cli
+          make build
+      - name: Run
         working-directory: ./acceptance
         env:
           MEROXA_AUTH_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_ID }}
@@ -80,24 +88,22 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
-          ls -l /home/runner/work/cli/cli
-          docker build -t meroxa/acceptance .
           docker run \
-            -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
-            -e MEROXA_AUTH_CLIENT_ID=${MEROXA_AUTH_CLIENT_ID} \
-            -e MEROXA_AUTH_CLIENT_SECRET=${MEROXA_AUTH_CLIENT_SECRET} \
-            -e MEROXA_AUTH_PASSWORD=${MEROXA_AUTH_PASSWORD} \
-            -e MEROXA_AUTH_USERNAME=${MEROXA_AUTH_USERNAME} \
-            -e MEROXA_AUTH_PASSWORD2=${MEROXA_AUTH_PASSWORD2} \
-            -e MEROXA_AUTH_USERNAME2=${MEROXA_AUTH_USERNAME2} \
-            -e MEROXA_AUTH_AUDIENCE=${MEROXA_AUTH_AUDIENCE} \
-            -e ACCEPTANCE_TEST_POSTGRES_URL=${PG_URL} \
-            -e ACCEPTANCE_TEST_PRIVATE_POSTGRES_URL=${PRIVATE_PG_URL} \
-            -e ACCEPTANCE_TEST_MYSQL_URL=${MYSQL_URL} \
-            -e ACCEPTANCE_TEST_SQLSERVER_URL=${SQLSERVER_URL} \
-            -e ACCEPTANCE_TEST_BASTION_PRIVATE_KEY="${BASTION_PRIVATE_KEY}" \
-            -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
-            -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
-            -e ACCEPTANCE_TEST_API_HOST=${MEROXA_API_URL} \
-            --mount type=bind,source=/home/runner/work/cli/cli,target=/app/cli \
-            meroxa/acceptance -test.v
+          -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
+          -e MEROXA_AUTH_CLIENT_ID=${MEROXA_AUTH_CLIENT_ID} \
+          -e MEROXA_AUTH_CLIENT_SECRET=${MEROXA_AUTH_CLIENT_SECRET} \
+          -e MEROXA_AUTH_PASSWORD=${MEROXA_AUTH_PASSWORD} \
+          -e MEROXA_AUTH_USERNAME=${MEROXA_AUTH_USERNAME} \
+          -e MEROXA_AUTH_PASSWORD2=${MEROXA_AUTH_PASSWORD2} \
+          -e MEROXA_AUTH_USERNAME2=${MEROXA_AUTH_USERNAME2} \
+          -e MEROXA_AUTH_AUDIENCE=${MEROXA_AUTH_AUDIENCE} \
+          -e ACCEPTANCE_TEST_POSTGRES_URL=${PG_URL} \
+          -e ACCEPTANCE_TEST_PRIVATE_POSTGRES_URL=${PRIVATE_PG_URL} \
+          -e ACCEPTANCE_TEST_MYSQL_URL=${MYSQL_URL} \
+          -e ACCEPTANCE_TEST_SQLSERVER_URL=${SQLSERVER_URL} \
+          -e ACCEPTANCE_TEST_BASTION_PRIVATE_KEY="${BASTION_PRIVATE_KEY}" \
+          -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
+          -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
+          -e ACCEPTANCE_TEST_API_HOST=${MEROXA_API_URL} \
+          --mount type=bind,source=/home/runner/work/cli/cli,target=/app/cli \
+          meroxa/acceptance -test.v
