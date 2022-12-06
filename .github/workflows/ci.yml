@@ -80,7 +80,6 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
-          cat Dockerfile
           ls -l /home/runner/work/cli/cli
           docker build -t meroxa/acceptance .
           docker run \
@@ -100,5 +99,5 @@ jobs:
             -e ACCEPTANCE_TEST_BASTION_USER=${BASTION_USER} \
             -e ACCEPTANCE_TEST_BASTION_URL=${BASTION_URL} \
             -e ACCEPTANCE_TEST_API_HOST=${MEROXA_API_URL} \
-            --mount type=bind,source=/home/runner/work/cli/cli,target=/app/cli \
+            --mount type=bind,source=/home/runner/work/cli/cli/meroxa,target=/app/cli \
             meroxa/acceptance -test.v
