@@ -290,12 +290,12 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 			// ignore most npm messages
 			errorLogs := trimNonNpmErrorLines(stdErrMsg)
 			if len(errorLogs) > 0 {
-				errLog = stdErrMsg
+				errLog = errorLogs
 			}
 		} else if errMsg != "" {
 			errLog = errMsg
 		}
-		if errMsg != "" {
+		if errLog != "" {
 			if stdOutMsg != "" {
 				l.Info(ctx, "\n"+stdOutMsg+"\n")
 			}
