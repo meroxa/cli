@@ -12,6 +12,7 @@ import (
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
 )
 
@@ -131,6 +132,11 @@ func (i *Init) Execute(ctx context.Context) error {
 			i.turbineCLI = turbinePY.New(i.logger, i.path)
 		}
 		err = i.turbineCLI.Init(ctx, name)
+	case "rb", turbine.Ruby:
+		if i.turbineCLI == nil {
+			i.turbineCLI = turbineRb.New(i.logger, i.path)
+		}
+		err = i.turbineCLI.Init(ctx, name)
 	default:
 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
@@ -140,9 +146,6 @@ func (i *Init) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if lang != "go" && lang != turbine.GoLang {
-		i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
-	}
 	i.logger.StartSpinner("\t", "Running git initialization...")
 	err = i.turbineCLI.GitInit(ctx, i.path+"/"+name)
 	if err != nil {

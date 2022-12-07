@@ -185,7 +185,7 @@ func TestGoInitExecute(t *testing.T) {
 	}
 }
 
-func TestJavascriptAndPythonInitExecute(t *testing.T) {
+func TestJsPyAndRbInitExecute(t *testing.T) {
 	tests := []struct {
 		desc     string
 		path     string
@@ -219,6 +219,20 @@ func TestJavascriptAndPythonInitExecute(t *testing.T) {
 			path:     "/does/not/matter",
 			language: turbine.Python,
 			name:     "py-init",
+			err:      fmt.Errorf("not good"),
+		},
+		{
+			desc:     "Successful Ruby init",
+			path:     "/does/not/matter",
+			language: turbine.Ruby,
+			name:     "rb-init",
+			err:      nil,
+		},
+		{
+			desc:     "Unsuccessful Ruby init",
+			path:     "/does/not/matter",
+			language: turbine.Ruby,
+			name:     "rb-init",
 			err:      fmt.Errorf("not good"),
 		},
 	}
