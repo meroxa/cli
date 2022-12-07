@@ -13,6 +13,8 @@ import (
 	"regexp"
 	"strings"
 
+	"golang.org/x/mod/semver"
+
 	"github.com/meroxa/cli/log"
 )
 
@@ -182,16 +184,41 @@ func GitInit(ctx context.Context, appPath string) error {
 		return errors.New("path is required")
 	}
 
-	cmd := exec.Command("git", "config", "--global", "init.defaultBranch", "main")
-	cmd.Path = appPath
-	_ = cmd.Run()
+	oldWay := checkGitVersion(ctx)
 
-	cmd = exec.Command("git", "init", appPath)
+	if !oldWay {
+		cmd := exec.CommandContext(ctx, "git", "config", "--global", "init.defaultBranch", "main")
+		cmd.Path = appPath
+		_ = cmd.Run()
+	}
+
+	cmd := exec.CommandContext(ctx, "git", "init", appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf(string(output))
 	}
+
+	if oldWay {
+		cmd := exec.CommandContext(ctx, "git", "checkout", "-b", "main")
+		cmd.Path = appPath
+		_ = cmd.Run()
+	}
 	return nil
+}
+
+func checkGitVersion(ctx context.Context) bool {
+	// prior to 2.28
+	old := true
+	// looks like "git version 2.38.1"
+	cmd := exec.CommandContext(ctx, "git", "version")
+	out, _ := cmd.CombinedOutput()
+	r := regexp.MustCompile("git version ([0-9.]+)")
+	matches := r.FindStringSubmatch(string(out))
+	if len(matches) > 0 {
+		comparison := semver.Compare("2.28", matches[1])
+		old = comparison >= 1
+	}
+	return old
 }
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.

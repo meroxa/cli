@@ -3,6 +3,7 @@ package turbine
 import (
 	"context"
 	"errors"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 
@@ -38,4 +39,9 @@ func TestGitInit(t *testing.T) {
 	}
 
 	os.RemoveAll(testDir)
+}
+
+func TestCheckGitVersion(t *testing.T) {
+	val := checkGitVersion(context.Background())
+	assert.False(t, val)
 }
