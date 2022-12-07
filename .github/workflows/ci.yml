@@ -59,7 +59,6 @@ jobs:
           token: ${{ secrets.MEROXA_MACHINE }}
           repository: meroxa/acceptance
           path: acceptance
-          ref: 'minikube-cli'
       - name: Build And Run
         working-directory: ./acceptance
         env:
@@ -80,7 +79,6 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
-          echo $GITHUB_HEAD_REF
           docker build -t meroxa/acceptance --build-arg CLI_BRANCH=$GITHUB_HEAD_REF .
           docker run \
             -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
