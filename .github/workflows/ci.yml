@@ -59,7 +59,7 @@ jobs:
           token: ${{ secrets.MEROXA_MACHINE }}
           repository: meroxa/acceptance
           path: acceptance
-      - name: Build and Run
+      - name: Build And Run
         working-directory: ./acceptance
         env:
           MEROXA_AUTH_CLIENT_ID: ${{ secrets.AUTH0_ACCEPTANCE_STAGING_CLIENT_ID }}
@@ -79,7 +79,7 @@ jobs:
           BASTION_USER: "ec2-user"
           BASTION_URL: ${{ secrets.TEST_BASTION_URL }}
         run: |
-          docker build -t meroxa/acceptance .
+          docker build -t meroxa/acceptance --build-arg CLI_BRANCH=$GITHUB_HEAD_REF .
           docker run \
             -e MEROXA_AUTH_DOMAIN=${MEROXA_AUTH_DOMAIN} \
             -e MEROXA_AUTH_CLIENT_ID=${MEROXA_AUTH_CLIENT_ID} \
