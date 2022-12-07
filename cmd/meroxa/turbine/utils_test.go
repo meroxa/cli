@@ -3,11 +3,11 @@ package turbine
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGitInit(t *testing.T) {
