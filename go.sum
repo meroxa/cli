@@ -535,8 +535,8 @@ github.com/meroxa/meroxa-go v0.0.0-20221118163012-998deb3e9975 h1:SFEpbZ8ycykpdP
 github.com/meroxa/meroxa-go v0.0.0-20221118163012-998deb3e9975/go.mod h1:OdTP4P/yHcTAqOE86kDXoTTLqC1Vj+/PFMG41kOcmhI=
 github.com/meroxa/turbine-core v0.0.0-20221122200057-1ade45ec6283 h1:keUlfqoYPxA42mSGY7XJPyAIL9NVrvog9pWY12adjUU=
 github.com/meroxa/turbine-core v0.0.0-20221122200057-1ade45ec6283/go.mod h1:qrw2PcHujfryokPSqTspapB4PqSxOcDJhbsYHksaKsI=
-github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf h1:VgotQwcTL+8Xes5AIxawSgUrp5yE9BgTIWPw3cSx7S8=
-github.com/meroxa/turbine-go v0.0.0-20221024125940-a8df16b3bbaf/go.mod h1:AS+QT+Mo6LZ0a437ZqjdbrdM+1WjE6dT0419fD6WJW8=
+github.com/meroxa/turbine-go v1.0.0 h1:5/mLoRbtdefpcC35fG3YZioz1qgrlaHOKh56n2hJ9lQ=
+github.com/meroxa/turbine-go v1.0.0/go.mod h1:RckvcPOI7MJYRw65dzwk+OFjsCMxaFbthqPBzUn6vQA=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
@@ -749,8 +749,8 @@ github.com/syndtr/gocapability v0.0.0-20180916011248-d98352740cb2/go.mod h1:hkRG
 github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG7XYTFWNJGYcbNJQlaLq0fg1yr4J4t/NcTQtrfww=
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
 github.com/tidwall/gjson v1.14.2/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
-github.com/tidwall/gjson v1.14.3 h1:9jvXn7olKEHU1S9vwoMGliaT8jq1vJ7IH/n9zD9Dnlw=
-github.com/tidwall/gjson v1.14.3/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
+github.com/tidwall/gjson v1.14.4 h1:uo0p8EbA09J7RQaflQ1aBRffTR7xedD2bcIVSYxLnkM=
+github.com/tidwall/gjson v1.14.4/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
 github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
 github.com/tidwall/match v1.1.1/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JTxsfmM=
 github.com/tidwall/pretty v1.2.0/go.mod h1:ITEVvHYasfjBbM0u2Pg8T2nJnzm8xPwvNhhsoaGGjNU=
