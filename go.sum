@@ -533,8 +533,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20221118163012-998deb3e9975 h1:SFEpbZ8ycykpdPbMQLUQu9z+72daMQytU1F6UG2pwSU=
 github.com/meroxa/meroxa-go v0.0.0-20221118163012-998deb3e9975/go.mod h1:OdTP4P/yHcTAqOE86kDXoTTLqC1Vj+/PFMG41kOcmhI=
-github.com/meroxa/turbine-core v0.0.0-20221122200057-1ade45ec6283 h1:keUlfqoYPxA42mSGY7XJPyAIL9NVrvog9pWY12adjUU=
-github.com/meroxa/turbine-core v0.0.0-20221122200057-1ade45ec6283/go.mod h1:qrw2PcHujfryokPSqTspapB4PqSxOcDJhbsYHksaKsI=
+github.com/meroxa/turbine-core v0.0.0-20221207171751-d40fdaa07cb8 h1:YvRIFu67fyHpZ8YqSVV1j8ACmZ0ShHZu12LWB05yivM=
+github.com/meroxa/turbine-core v0.0.0-20221207171751-d40fdaa07cb8/go.mod h1:qrw2PcHujfryokPSqTspapB4PqSxOcDJhbsYHksaKsI=
 github.com/meroxa/turbine-go v1.0.0 h1:5/mLoRbtdefpcC35fG3YZioz1qgrlaHOKh56n2hJ9lQ=
 github.com/meroxa/turbine-go v1.0.0/go.mod h1:RckvcPOI7MJYRw65dzwk+OFjsCMxaFbthqPBzUn6vQA=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
