@@ -287,16 +287,43 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 			errMsg = err.Error()
 		}
 		if stdErrMsg != "" {
-			errLog = stdErrMsg
+			// ignore most npm messages
+			errorLogs := trimNonNpmErrorLines(stdErrMsg)
+			if len(errorLogs) > 0 {
+				errLog = errorLogs
+			}
 		} else if errMsg != "" {
 			errLog = errMsg
 		}
-		if stdOutMsg != "" {
-			l.Info(ctx, "\n"+stdOutMsg+"\n")
+		if errLog != "" {
+			if stdOutMsg != "" {
+				l.Info(ctx, "\n"+stdOutMsg+"\n")
+			}
+			return "", errors.New(errLog)
 		}
-		return "", errors.New(errLog)
 	}
 	return stdOutMsg, nil
+}
+
+func trimNonNpmErrorLines(output string) string {
+	ignoreThese := []string{"npm info", "npm timing", "npm http", "npm notice", "npm warn"}
+	allLines := strings.Split(output, "\n")
+	errorLines := []string{}
+
+	for _, line := range allLines {
+		skip := false
+		for _, ignore := range ignoreThese {
+			if strings.HasPrefix(line, ignore) {
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			errorLines = append(errorLines, line)
+		}
+	}
+
+	return strings.Join(errorLines, "\n")
 }
 
 // SwitchToAppDirectory switches temporarily to the application's directory.
