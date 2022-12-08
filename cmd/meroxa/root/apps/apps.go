@@ -78,9 +78,6 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang, path string) (turbine.CL
 	case "py", turbine.Python3, turbine.Python:
 		return turbinePY.New(logger, path), nil
 	case "rb", turbine.Ruby:
-		if !builder.CheckFeatureFlag(turbineRb.TurbineRubyFeatureFlag) {
-			return nil, turbineRb.ErrTurbineRubyFeatureFlag
-		}
 		return turbineRb.New(logger, path), nil
 	}
 	return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
