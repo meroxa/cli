@@ -49,7 +49,7 @@ func TestCreateResourceFlags(t *testing.T) {
 		hidden    bool
 	}{
 		{name: "type", required: true, shorthand: ""},
-		{name: "url", required: true, shorthand: "u"},
+		{name: "url", shorthand: "u"},
 		{name: "username", required: false, shorthand: ""},
 		{name: "password", required: false, shorthand: ""},
 		{name: "ca-cert", required: false, shorthand: ""},
