@@ -96,10 +96,9 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		return err
 	}
 	depsLog := "Downloading dependencies"
-	cmd = exec.Command("go", "mod", "download")
+	cmd = exec.Command("go", "mod", "tidy")
 	if vendor {
 		depsLog += " to vendor"
-		cmd = exec.Command("go", "mod", "vendor")
 	}
 	depsLog += "..."
 	l.StartSpinner("\t", depsLog)
@@ -108,6 +107,15 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		l.StopSpinnerWithStatus(fmt.Sprintf("%s", string(output)), log.Failed)
 		return err
 	}
+	if vendor {
+		cmd = exec.Command("go", "mod", "vendor")
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			l.StopSpinnerWithStatus(fmt.Sprintf("%s", string(output)), log.Failed)
+			return err
+		}
+	}
+
 	l.StopSpinnerWithStatus("Downloaded all other dependencies successfully!", log.Successful)
 	return nil
 }
