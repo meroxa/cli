@@ -1,9 +1,11 @@
 package turbinego
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
@@ -16,7 +18,9 @@ func (t *turbineGoCLI) Upgrade(vendor bool) error {
 		return err
 	}
 
-	err = GoGetDeps(t.logger)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	err = GoGetDeps(ctx, t.logger)
 	if err != nil {
 		return err
 	}

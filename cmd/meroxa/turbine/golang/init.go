@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
@@ -58,7 +59,9 @@ func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		return err
 	}
 
-	err = modulesInit(l, appPath, skipInit, vendor)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	err = modulesInit(ctx, l, appPath, skipInit, vendor)
 	if err != nil {
 		l.StopSpinnerWithStatus("\t", log.Failed)
 		return err
@@ -67,12 +70,12 @@ func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 	return os.Chdir(pwd)
 }
 
-func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
+func modulesInit(ctx context.Context, l log.Logger, appPath string, skipInit, vendor bool) error {
 	if skipInit {
 		return nil
 	}
 
-	cmd := exec.Command("go", "mod", "init")
+	cmd := exec.CommandContext(ctx, "go", "mod", "init")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		l.StopSpinnerWithStatus(fmt.Sprintf("%s", string(output)), log.Failed)
@@ -85,7 +88,7 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 	}
 	l.StopSpinnerWithStatus(successLog+"!", log.Successful)
 
-	err = GoGetDeps(l)
+	err = GoGetDeps(ctx, l)
 	if err != nil {
 		return err
 	}
@@ -96,7 +99,7 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		return err
 	}
 	depsLog := "Downloading dependencies"
-	cmd = exec.Command("go", "mod", "tidy")
+	cmd = exec.CommandContext(ctx, "go", "mod", "tidy")
 	if vendor {
 		depsLog += " to vendor"
 	}
@@ -108,7 +111,7 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		return err
 	}
 	if vendor {
-		cmd = exec.Command("go", "mod", "vendor")
+		cmd = exec.CommandContext(ctx, "go", "mod", "vendor")
 		output, err = cmd.CombinedOutput()
 		if err != nil {
 			l.StopSpinnerWithStatus(fmt.Sprintf("%s", string(output)), log.Failed)

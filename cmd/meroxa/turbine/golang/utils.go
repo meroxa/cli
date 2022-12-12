@@ -1,6 +1,7 @@
 package turbinego
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 
@@ -8,9 +9,9 @@ import (
 )
 
 // GoGetDeps updates the latest Meroxa mods.
-func GoGetDeps(l log.Logger) error {
+func GoGetDeps(ctx context.Context, l log.Logger) error {
 	l.StartSpinner("\t", "Getting latest turbine-go dependency...")
-	cmd := exec.Command("go", "get", "-u", "github.com/meroxa/turbine-go")
+	cmd := exec.CommandContext(ctx, "go", "get", "-u", "github.com/meroxa/turbine-go")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		l.StopSpinnerWithStatus(fmt.Sprintf("%s", string(output)), log.Failed)
