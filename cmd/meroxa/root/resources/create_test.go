@@ -58,6 +58,7 @@ func TestCreateResourceFlags(t *testing.T) {
 		{name: "ssl", required: false, shorthand: ""},
 		{name: "metadata", required: false, shorthand: "m"},
 		{name: "env", required: false},
+		{name: "token", required: false},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
