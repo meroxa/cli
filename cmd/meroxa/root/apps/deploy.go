@@ -55,6 +55,7 @@ type deployApplicationClient interface {
 	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
 	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
@@ -813,6 +814,23 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	}
 }
 
+// tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
+// or whether it's in a non-running state.
+func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
+	app, _ := d.client.GetApplication(ctx, d.appName)
+
+	if app != nil && (app.Status.State != meroxa.ApplicationStateFailed) {
+		appIsReady := fmt.Sprintf("application %q exists in the %q state", d.appName, app.Status.State)
+		msg := fmt.Sprintf("%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appIsReady, d.appName)
+		return errors.New(msg)
+	}
+	resp, _ := d.client.DeleteApplicationEntities(ctx, d.appName)
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
+	}
+	return nil
+}
+
 //nolint:gocyclo,funlen
 func (d *Deploy) Execute(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
@@ -873,6 +891,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			}
 			return err
 		}
+	}
+
+	// ⚠️ This is only until we re-deploy applications applying only the changes made
+	if err := d.tearDownExistingResources(ctx); err != nil {
+		return err
 	}
 
 	err = d.prepareDeployment(ctx)
