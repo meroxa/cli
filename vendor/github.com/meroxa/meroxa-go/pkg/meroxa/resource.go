@@ -33,6 +33,7 @@ type Credentials struct {
 	ClientCert    string `json:"client_cert"`
 	ClientCertKey string `json:"client_cert_key"`
 	UseSSL        bool   `json:"ssl"`
+	Token         string `json:"token"`
 }
 
 // CreateResourceInput represents the input for a Meroxa Resource type we're creating within the Meroxa API

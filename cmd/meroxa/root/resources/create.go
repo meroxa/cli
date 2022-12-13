@@ -42,7 +42,7 @@ type Create struct {
 
 	flags struct {
 		Type     string `long:"type"        short:""  usage:"resource type"        required:"true"`
-		URL      string `long:"url"         short:"u" usage:"resource url"         required:"true"`
+		URL      string `long:"url"         short:"u" usage:"resource url"`
 		Metadata string `long:"metadata"    short:"m" usage:"resource metadata"`
 
 		// TODO: Add support to builder to create flags with an alias (--env | --environment)
@@ -57,6 +57,7 @@ type Create struct {
 		SSL           bool   `long:"ssl"         short:"" usage:"use SSL"`
 		SSHURL        string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
 		SSHPrivateKey string `long:"ssh-private-key"     short:"" usage:"SSH tunneling private key"`
+		Token         string `long:"token"     short:"" usage:"API Token"`
 	}
 }
 
@@ -152,6 +153,10 @@ func (c *Create) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
+	if c.flags.Type != string(meroxa.ResourceTypeNotion) && c.flags.URL == "" {
+		return fmt.Errorf("required flag(s) \"url\" not set")
+	}
+
 	// If the environment specified is not the common environment.
 	if c.flags.Environment != "" && c.flags.Environment != string(meroxa.EnvironmentTypeCommon) {
 		err := builder.CheckCMDFeatureFlag(c, &environments.Environments{})
@@ -181,6 +186,7 @@ func (c *Create) Execute(ctx context.Context) error {
 			ClientCert:    c.flags.ClientCert,
 			ClientCertKey: c.flags.ClientKey,
 			UseSSL:        c.flags.SSL,
+			Token:         c.flags.Token,
 		}
 	}
 
@@ -225,5 +231,6 @@ func (c *Create) hasCredentials() bool {
 		c.flags.CaCert != "" ||
 		c.flags.ClientCert != "" ||
 		c.flags.ClientKey != "" ||
+		c.flags.Token != "" ||
 		c.flags.SSL
 }

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const functionsBasePath = "/v1/functions"
@@ -30,6 +31,8 @@ type Function struct {
 	Status       FunctionStatus     `json:"status"`
 	Pipeline     PipelineIdentifier `json:"pipeline"`
 	Logs         string             `json:"logs"` // CLI includes what's returned by GetFunctionLogs
+	CreatedAt    time.Time          `json:"created_at"`
+	UpdatedAt    time.Time          `json:"updated_at"`
 }
 
 type FunctionStatus struct {

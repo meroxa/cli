@@ -22,6 +22,7 @@ const (
 	ResourceTypeCosmosdb       ResourceType = "cosmosdb"
 	ResourceTypeKafka          ResourceType = "kafka"
 	ResourceTypeConfluentCloud ResourceType = "confluentcloud"
+	ResourceTypeNotion         ResourceType = "notion"
 )
 
 // ListResourceTypes returns the list of supported resources
