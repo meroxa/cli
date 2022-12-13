@@ -894,7 +894,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	// ⚠️ This is only until we re-deploy applications applying only the changes made
-	if err := d.tearDownExistingResources(ctx); err != nil {
+	if err = d.tearDownExistingResources(ctx); err != nil {
 		return err
 	}
 

@@ -1168,6 +1168,7 @@ func TestTeardown(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	logger := log.NewTestLogger()
 	appName := "my-app"
+	//nolint:lll
 	err := fmt.Errorf("application %q exists in the %q state\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appName, "running", appName)
 
 	tests := []struct {
