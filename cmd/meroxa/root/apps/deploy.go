@@ -819,9 +819,12 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	app, _ := d.client.GetApplication(ctx, d.appName)
 
-	if app != nil && (app.Status.State != meroxa.ApplicationStateFailed) {
-		appIsReady := fmt.Sprintf("application %q exists in the %q state", d.appName, app.Status.State)
-		msg := fmt.Sprintf("%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appIsReady, d.appName)
+	if app != nil && app.Status.State != meroxa.ApplicationStateFailed {
+		appExists := fmt.Sprintf("application %q exists in the %q state", d.appName, app.Status.State)
+		msg := fmt.Sprintf(
+			"%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application",
+			appExists,
+			d.appName)
 		return errors.New(msg)
 	}
 	resp, _ := d.client.DeleteApplicationEntities(ctx, d.appName)
@@ -870,6 +873,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	defer cleanup()
 
+	// ⚠️ This is only until we re-deploy applications applying only the changes made
+	if err = d.tearDownExistingResources(ctx); err != nil {
+		return err
+	}
+
 	d.specVersion = d.flags.Spec
 	if d.specVersion == "" && d.lang == turbine.Ruby {
 		d.specVersion = ir.LatestSpecVersion
@@ -891,11 +899,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			}
 			return err
 		}
-	}
-
-	// ⚠️ This is only until we re-deploy applications applying only the changes made
-	if err = d.tearDownExistingResources(ctx); err != nil {
-		return err
 	}
 
 	err = d.prepareDeployment(ctx)
