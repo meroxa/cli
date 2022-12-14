@@ -184,9 +184,9 @@ func GitInit(ctx context.Context, appPath string) error {
 		return errors.New("path is required")
 	}
 
-	oldWay := checkGitVersion(ctx)
+	isGitOlderThan228 := checkGitVersion(ctx)
 
-	if !oldWay {
+	if !isGitOlderThan228 {
 		cmd := exec.CommandContext(ctx, "git", "config", "--global", "init.defaultBranch", "main")
 		cmd.Path = appPath
 		_ = cmd.Run()
@@ -198,7 +198,7 @@ func GitInit(ctx context.Context, appPath string) error {
 		return fmt.Errorf(string(output))
 	}
 
-	if oldWay {
+	if isGitOlderThan228 {
 		cmd := exec.CommandContext(ctx, "git", "checkout", "-b", "main")
 		cmd.Path = appPath
 		_ = cmd.Run()
@@ -207,18 +207,16 @@ func GitInit(ctx context.Context, appPath string) error {
 }
 
 func checkGitVersion(ctx context.Context) bool {
-	// prior to 2.28
-	old := true
-	// looks like "git version 2.38.1"
 	cmd := exec.CommandContext(ctx, "git", "version")
 	out, _ := cmd.CombinedOutput()
+	// looks like "git version 2.38.1"
 	r := regexp.MustCompile("git version ([0-9.]+)")
 	matches := r.FindStringSubmatch(string(out))
 	if len(matches) > 0 {
 		comparison := semver.Compare("2.28", matches[1])
-		old = comparison >= 1
+		return comparison >= 1
 	}
-	return old
+	return true
 }
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
