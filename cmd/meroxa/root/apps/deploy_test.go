@@ -1162,3 +1162,83 @@ func TestUploadFile(t *testing.T) {
 		})
 	}
 }
+
+func TestTeardown(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	logger := log.NewTestLogger()
+	appName := "my-app"
+	//nolint:lll
+	err := fmt.Errorf("application %q exists in the %q state\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appName, "running", appName)
+
+	tests := []struct {
+		name         string
+		meroxaClient func() meroxa.Client
+		err          error
+	}{
+		{
+			name: "No need to teardown",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().
+					GetApplication(ctx, appName).
+					Return(nil, nil)
+				client.EXPECT().
+					DeleteApplicationEntities(ctx, appName).
+					Return(nil, nil)
+				return client
+			},
+			err: nil,
+		},
+		{
+			name: "No need to teardown running app",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().
+					GetApplication(ctx, appName).
+					Return(&meroxa.Application{Status: meroxa.ApplicationStatus{
+						State: meroxa.ApplicationStateRunning,
+					}}, nil)
+				return client
+			},
+			err: err,
+		},
+		{
+			name: "Teardown failed app",
+			meroxaClient: func() meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().
+					GetApplication(ctx, appName).
+					Return(&meroxa.Application{Status: meroxa.ApplicationStatus{
+						State: meroxa.ApplicationStateFailed,
+					}}, nil)
+				client.EXPECT().
+					DeleteApplicationEntities(ctx, appName).
+					Return(nil, nil)
+				return client
+			},
+			err: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			//cfg := config.NewInMemoryConfig()
+			//cfg.Set(global.UserAccountUUID, accountUUID)
+			d := &Deploy{
+				client:  tc.meroxaClient(),
+				logger:  logger,
+				appName: appName,
+				//	config:     cfg,
+			}
+
+			err := d.tearDownExistingResources(ctx)
+			if err != nil {
+				require.NotEmpty(t, tc.err)
+				require.Equal(t, tc.err, err)
+			} else {
+				require.Empty(t, tc.err)
+			}
+		})
+	}
+}
