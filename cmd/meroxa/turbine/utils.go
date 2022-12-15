@@ -192,23 +192,20 @@ func GitInit(ctx context.Context, appPath string) error {
 	if !isGitOlderThan228 {
 		cmd := exec.CommandContext(ctx, "git", "config", "--global", "init.defaultBranch", "main")
 		cmd.Path = appPath
-		out, err := cmd.CombinedOutput()
-		if err != nil {
+		if out, err := cmd.CombinedOutput(); err != nil {
 			return errors.New(string(out))
 		}
 	}
 
 	cmd := exec.CommandContext(ctx, "git", "init", appPath)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf(string(output))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf(string(out))
 	}
 
 	if isGitOlderThan228 {
 		cmd := exec.CommandContext(ctx, "git", "checkout", "-b", "main")
 		cmd.Path = appPath
-		out, err := cmd.CombinedOutput()
-		if err != nil {
+		if out, err := cmd.CombinedOutput(); err != nil {
 			return errors.New(string(out))
 		}
 	}
