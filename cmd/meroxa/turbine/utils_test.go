@@ -3,6 +3,7 @@ package turbine
 import (
 	"context"
 	"errors"
+	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
 
@@ -42,6 +43,7 @@ func TestGitInit(t *testing.T) {
 }
 
 func TestCheckGitVersion(t *testing.T) {
-	val := checkGitVersion(context.Background())
+	val, err := checkGitVersion(context.Background())
+	require.NoError(t, err)
 	assert.False(t, val)
 }
