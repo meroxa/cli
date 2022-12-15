@@ -137,7 +137,9 @@ func (i *Init) Execute(ctx context.Context) error {
 
 	i.logger.StartSpinner("\t", "Running git initialization...")
 	if err = i.turbineCLI.GitInit(ctx, i.path+"/"+name); err != nil {
-		i.logger.StopSpinnerWithStatus("\t", log.Failed)
+		i.logger.StopSpinnerWithStatus(
+			"\tThe final step to 'git init' the Application repo failed. Please complete this step manually.",
+			log.Failed)
 		return err
 	}
 	i.logger.StopSpinnerWithStatus("Git initialized successfully!", log.Successful)

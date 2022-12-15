@@ -184,12 +184,18 @@ func GitInit(ctx context.Context, appPath string) error {
 		return errors.New("path is required")
 	}
 
-	isGitOlderThan228 := checkGitVersion(ctx)
+	isGitOlderThan228, err := checkGitVersion(ctx)
+	if err != nil {
+		return err
+	}
 
 	if !isGitOlderThan228 {
 		cmd := exec.CommandContext(ctx, "git", "config", "--global", "init.defaultBranch", "main")
 		cmd.Path = appPath
-		_ = cmd.Run()
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return errors.New(string(out))
+		}
 	}
 
 	cmd := exec.CommandContext(ctx, "git", "init", appPath)
@@ -201,22 +207,28 @@ func GitInit(ctx context.Context, appPath string) error {
 	if isGitOlderThan228 {
 		cmd := exec.CommandContext(ctx, "git", "checkout", "-b", "main")
 		cmd.Path = appPath
-		_ = cmd.Run()
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return errors.New(string(out))
+		}
 	}
 	return nil
 }
 
-func checkGitVersion(ctx context.Context) bool {
+func checkGitVersion(ctx context.Context) (bool, error) {
 	cmd := exec.CommandContext(ctx, "git", "version")
-	out, _ := cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return false, errors.New(string(out))
+	}
 	// looks like "git version 2.38.1"
 	r := regexp.MustCompile("git version ([0-9.]+)")
 	matches := r.FindStringSubmatch(string(out))
 	if len(matches) > 0 {
 		comparison := semver.Compare("2.28", matches[1])
-		return comparison >= 1
+		return comparison >= 1, nil
 	}
-	return true
+	return true, nil
 }
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.
