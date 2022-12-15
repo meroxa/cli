@@ -42,11 +42,10 @@ type Run struct {
 }
 
 var (
-	_ builder.CommandWithDocs        = (*Run)(nil)
-	_ builder.CommandWithFlags       = (*Run)(nil)
-	_ builder.CommandWithExecute     = (*Run)(nil)
-	_ builder.CommandWithLogger      = (*Run)(nil)
-	_ builder.CommandWithFeatureFlag = (*Run)(nil)
+	_ builder.CommandWithDocs    = (*Run)(nil)
+	_ builder.CommandWithFlags   = (*Run)(nil)
+	_ builder.CommandWithExecute = (*Run)(nil)
+	_ builder.CommandWithLogger  = (*Run)(nil)
 )
 
 func (*Run) Usage() string {
@@ -70,10 +69,6 @@ func (r *Run) Logger(logger log.Logger) {
 
 func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
-}
-
-func (r *Run) FeatureFlag() (string, error) {
-	return turbineRB.TurbineRubyFeatureFlag, turbineRB.ErrTurbineRubyFeatureFlag
 }
 
 func (r *Run) Execute(ctx context.Context) error {
@@ -110,8 +105,8 @@ func (r *Run) Execute(ctx context.Context) error {
 		}
 		return r.turbineCLI.Run(ctx)
 	case "rb", turbine.Ruby:
-		if err = builder.CheckCMDFeatureFlag(r, r); err != nil {
-			return err
+		if !builder.CheckFeatureFlag(turbineRB.TurbineRubyFeatureFlag) {
+			return turbineRB.ErrTurbineRubyFeatureFlag
 		}
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbineRB.New(r.logger, r.path)
