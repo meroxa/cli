@@ -23,6 +23,11 @@ func TestGitInit(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		if tt.path != "" {
+			err := os.Mkdir(tt.path, os.ModePerm)
+			require.NoError(t, err)
+		}
+
 		err := GitInit(context.Background(), tt.path)
 		if err != nil {
 			if tt.err == nil {
