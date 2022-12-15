@@ -32,6 +32,7 @@ require (
 	github.com/meroxa/turbine-go v1.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
+	golang.org/x/mod v0.7.0
 	google.golang.org/grpc v1.51.0
 	google.golang.org/protobuf v1.28.1
 )

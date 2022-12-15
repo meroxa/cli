@@ -13,6 +13,8 @@ import (
 	"regexp"
 	"strings"
 
+	"golang.org/x/mod/semver"
+
 	"github.com/meroxa/cli/log"
 )
 
@@ -182,16 +184,47 @@ func GitInit(ctx context.Context, appPath string) error {
 		return errors.New("path is required")
 	}
 
-	cmd := exec.Command("git", "config", "--global", "init.defaultBranch", "main")
-	cmd.Path = appPath
-	_ = cmd.Run()
-
-	cmd = exec.Command("git", "init", appPath)
-	output, err := cmd.CombinedOutput()
+	isGitOlderThan228, err := checkGitVersion(ctx)
 	if err != nil {
-		return fmt.Errorf(string(output))
+		return err
+	}
+
+	if !isGitOlderThan228 {
+		cmd := exec.CommandContext(ctx, "git", "config", "--global", "init.defaultBranch", "main")
+		if out, err := cmd.CombinedOutput(); err != nil {
+			return errors.New(string(out))
+		}
+	}
+
+	cmd := exec.CommandContext(ctx, "git", "init", appPath)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf(string(out))
+	}
+
+	if isGitOlderThan228 {
+		cmd := exec.CommandContext(ctx, "git", "checkout", "-b", "main")
+		cmd.Dir = appPath
+		if out, err := cmd.CombinedOutput(); err != nil {
+			return errors.New(string(out))
+		}
 	}
 	return nil
+}
+
+func checkGitVersion(ctx context.Context) (bool, error) {
+	cmd := exec.CommandContext(ctx, "git", "version")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return false, errors.New(string(out))
+	}
+	// looks like "git version 2.38.1"
+	r := regexp.MustCompile("git version ([0-9.]+)")
+	matches := r.FindStringSubmatch(string(out))
+	if len(matches) > 0 {
+		comparison := semver.Compare("2.28", matches[1])
+		return comparison >= 1, nil
+	}
+	return true, nil
 }
 
 // GitChecks prints warnings about uncommitted tracked and untracked files.

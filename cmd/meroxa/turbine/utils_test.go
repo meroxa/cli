@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGitInit(t *testing.T) {
@@ -21,6 +23,11 @@ func TestGitInit(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		if tt.path != "" {
+			err := os.Mkdir(tt.path, os.ModePerm)
+			require.NoError(t, err)
+		}
+
 		err := GitInit(context.Background(), tt.path)
 		if err != nil {
 			if tt.err == nil {
@@ -38,4 +45,10 @@ func TestGitInit(t *testing.T) {
 	}
 
 	os.RemoveAll(testDir)
+}
+
+func TestCheckGitVersion(t *testing.T) {
+	val, err := checkGitVersion(context.Background())
+	require.NoError(t, err)
+	assert.False(t, val)
 }
