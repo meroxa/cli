@@ -70,6 +70,7 @@ func (u *Upgrade) Flags() []builder.Flag {
 	return builder.BuildFlags(&u.flags)
 }
 
+//nolint:gocyclo
 func (u *Upgrade) Execute(ctx context.Context) error {
 	var err error
 	if u.config == nil {
@@ -90,24 +91,19 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 		u.logger.StopSpinnerWithStatus(fmt.Sprintf("Determined the details of the %q Application", u.config.Name), log.Successful)
 	}
 
-	lang := u.config.Language
-	vendor, _ := strconv.ParseBool(u.config.Vendor)
-	switch lang {
+	switch u.config.Language {
 	case "go", turbine.GoLang:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbineGo.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(vendor)
 	case "js", turbine.JavaScript, turbine.NodeJs:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbineJS.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(vendor)
 	case "py", turbine.Python3, turbine.Python:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbinePY.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(vendor)
 	case "ub", turbine.Ruby:
 		if !builder.CheckFeatureFlag(turbineRB.TurbineRubyFeatureFlag) {
 			return turbineRB.ErrTurbineRubyFeatureFlag
@@ -115,11 +111,11 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbineRB.New(u.logger, u.path)
 		}
-		err = u.turbineCLI.Upgrade(vendor)
 	default:
-		return fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
+		return fmt.Errorf("language %q not supported. %s", u.config.Language, LanguageNotSupportedError)
 	}
-	if err != nil {
+	vendor, _ := strconv.ParseBool(u.config.Vendor)
+	if err = u.turbineCLI.Upgrade(vendor); err != nil {
 		return err
 	}
 
@@ -138,8 +134,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 			},
 		}
 	}
-	err = u.run.Execute(ctx)
-	if err != nil {
+	if err = u.run.Execute(ctx); err != nil {
 		u.logger.Error(ctx, buf.String())
 		u.logger.StopSpinnerWithStatus("Upgrades were not entirely successful."+
 			" Fix any issues before adding and committing all upgrades.", log.Failed)
