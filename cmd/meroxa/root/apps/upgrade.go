@@ -27,6 +27,7 @@ import (
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
+	turbineRB "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
 )
 
@@ -105,6 +106,14 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 	case "py", turbine.Python3, turbine.Python:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbinePY.New(u.logger, u.path)
+		}
+		err = u.turbineCLI.Upgrade(vendor)
+	case "ub", turbine.Ruby:
+		if !builder.CheckFeatureFlag(turbineRB.TurbineRubyFeatureFlag) {
+			return turbineRB.ErrTurbineRubyFeatureFlag
+		}
+		if u.turbineCLI == nil {
+			u.turbineCLI = turbineRB.New(u.logger, u.path)
 		}
 		err = u.turbineCLI.Upgrade(vendor)
 	default:
