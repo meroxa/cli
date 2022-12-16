@@ -71,8 +71,9 @@ $ meroxa resource create sourcedb \
       --ssh-private-key string   SSH tunneling private key
       --ssh-url string           SSH tunneling address
       --ssl                      use SSL
+      --token string             API Token
       --type string              resource type (required)
-  -u, --url string               resource url (required)
+  -u, --url string               resource url
       --username string          username
 ```
 
