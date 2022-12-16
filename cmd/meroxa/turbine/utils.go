@@ -195,7 +195,7 @@ func GitInit(ctx context.Context, appPath string) error {
 	}
 
 	if !isGitOlderThan228 {
-		cmd := exec.CommandContext(ctx, "git", "config", "init.defaultBranch", "main")
+		cmd = exec.CommandContext(ctx, "git", "config", "init.defaultBranch", "main")
 		cmd.Dir = appPath
 		if out, err := cmd.CombinedOutput(); err != nil {
 			return errors.New(string(out))
