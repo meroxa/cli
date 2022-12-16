@@ -8,11 +8,6 @@ import (
 )
 
 func ResourceTable(res *meroxa.Resource) string {
-	tunnel := "N/A"
-	if res.SSHTunnel != nil {
-		tunnel = "SSH"
-	}
-
 	mainTable := simpletable.New()
 	mainTable.Body.Cells = [][]*simpletable.Cell{
 		{
@@ -27,20 +22,24 @@ func ResourceTable(res *meroxa.Resource) string {
 			{Align: simpletable.AlignRight, Text: "Type:"},
 			{Text: string(res.Type)},
 		},
-		{
+	}
+	if res.URL != "" {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "URL:"},
 			{Text: res.URL},
-		},
-		{
+		})
+	}
+	if res.SSHTunnel != nil {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "Tunnel:"},
-			{Text: tunnel},
-		},
-		{
-			{Align: simpletable.AlignRight, Text: "State:"},
-			{Text: string(res.Status.State)},
-		},
+			{Text: "SSH"},
+		})
 	}
 
+	mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+		{Align: simpletable.AlignRight, Text: "State:"},
+		{Text: string(res.Status.State)},
+	})
 	if res.Status.Details != "" {
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "State details:"},
