@@ -3,6 +3,7 @@ package ir
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/heimdalr/dag"
@@ -23,6 +24,11 @@ const (
 
 	LatestSpecVersion = "0.2.0"
 )
+
+var specVersions = []string{
+	"0.1.1",
+	LatestSpecVersion,
+}
 
 type DeploymentSpec struct {
 	mu          sync.Mutex
@@ -71,11 +77,18 @@ type TurbineSpec struct {
 	Version  string `json:"version"`
 }
 
-func ValidateSpecVersion(specVersion string) error {
-	if specVersion != LatestSpecVersion {
-		return fmt.Errorf("spec version %q is not a supported. use version %q instead", specVersion, LatestSpecVersion)
+func ValidateSpecVersion(ver string) error {
+	for _, v := range specVersions {
+		if v == ver {
+			return nil
+		}
 	}
-	return nil
+
+	return fmt.Errorf(
+		"spec version %q is invalid, supported versions: %s",
+		ver,
+		strings.Join(specVersions, ", "),
+	)
 }
 
 func (d *DeploymentSpec) SetImageForFunctions(image string) {
