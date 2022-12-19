@@ -1,128 +1,194 @@
 {
-	"$schema": "https://json-schema.org/draft/2019-09/schema#",
-	"$id": "https://api.meroxa.io/spec/turbine.ir.schema.json",
-	"title": "Turbine intermediate representation schema",
-	"type": "object",
-	"properties": {
-		"connectors": {
-			"type": "array",
-			"items": [
-				{
-					"type": "object",
-					"properties": {
-						"collection": {
-							"type": "string",
-							"minLength": 1
-						},
-						"type": {
-							"type": "string",
-							"enum": ["source", "destination" ]
-						},
-						"resource": {
-							"type": "string",
-							"minLength": 1
-						},
-						"config": {
-							"type": "object"
-						}
-					},
-					"required": [
-						"collection",
-						"type",
-						"resource"
-					]
-				}
-			],
-			"contains": {
-				"type": "object",
-				"properties": {
-					"collection": {
-						"type": "string"
-					},
-					"type": {
-						"type": "string",
-						"pattern": "^source$"
-					},
-					"resource": {
-						"type": "string"
-					},
-					"config": {
-						"type": "object"
-					}
-				},
-				"required": ["type"]
-			},
-			"maxContains": 1,
-			"minItems": 1,
-			"uniqueItems": true
-		},
-		"functions": {
-			"type": "array",
-			"items": [
-				{
-					"type": "object",
-					"properties": {
-						"name": {
-							"type": "string",
-							"pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$"
-						},
-						"image": {
-							"type": "string",
-							"minLength": 1
-						}
-					},
-					"required": [ "name", "image" ]
-				}
-			],
-			"minItems": 0,
-			"maxItems": 1,
-			"uniqueItems": true
-		},
-		"secrets": {
-			"type": "object"
-		},
-		"definition": {
-			"description": "The extra details about the spec",
-			"type": "object",
-			"properties": {
-				"git_sha": {
-					"description": "The git sha used to generate the spec",
-					"type": "string"
-				},
-				"metadata": {
-					"description": "The metadata associated with the spec",
-					"type": "object",
-					"properties": {
-						"turbine": {
-							"description": "The turbine details",
-							"type": "object",
-							"properties": {
-								"language": {
-									"description": "The language used to create deployment",
-									"type": "string",
-									"enum": ["golang", "js", "py", "ruby" ]
-								},
-								"version": {
-									"description": "The version of language used to create deployment",
-									"type": "string",
-									"minLength": 1
-								}
-							},
-							"required": [ "language", "version" ]
-						},
-						"spec_version": {
-							"description": "The spec version",
-							"type": "string"
-						}
-					},
-					"required": [ "turbine", "spec_version" ]
-				}
-			},
-			"required": [ "git_sha", "metadata" ]
-		}
-	},
-  	"required": [
-		"connectors",
-		"definition"
-	]
+    "$schema": "https://json-schema.org/draft/2019-09/schema#",
+    "$id": "https://api.meroxa.io/spec/turbine.ir.schema.json",
+    "title": "Turbine intermediate representation schema",
+    "type": "object",
+    "properties": {
+        "connectors": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "collection": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "uuid": {
+                            "type": "string",
+                            "minLength": 36,
+                            "maxLength": 36
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "source",
+                                "destination"
+                            ]
+                        },
+                        "resource": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "config": {
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "collection",
+                        "type",
+                        "resource"
+                    ]
+                }
+            ],
+            "contains": {
+                "type": "object",
+                "properties": {
+                    "collection": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "pattern": "^source$"
+                    },
+                    "resource": {
+                        "type": "string"
+                    },
+                    "config": {
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "type"
+                ]
+            },
+            "maxContains": 1,
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "functions": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "uuid": {
+                            "type": "string",
+                            "minLength": 36,
+                            "maxLength": 36
+                        },
+                        "name": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$"
+                        },
+                        "image": {
+                            "type": "string",
+                            "minLength": 1
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "image"
+                    ]
+                }
+            ],
+            "uniqueItems": true
+        },
+        "streams": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$"
+                        },
+                        "from_uuid": {
+                            "type": "string",
+                            "minLength": 36,
+                            "maxLength": 36
+                        },
+                        "to_uuid": {
+                            "type": "string",
+                            "minLength": 36,
+                            "maxLength": 36
+                        },
+                        "uuid": {
+                            "type": "string",
+                            "minLength": 36,
+                            "maxLength": 36
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "from_uuid",
+                        "to_uuid",
+                        "uuid"
+                    ]
+                }
+            ],
+            "uniqueItems": true
+        },
+        "secrets": {
+            "type": "object"
+        },
+        "definition": {
+            "description": "The extra details about the spec",
+            "type": "object",
+            "properties": {
+                "git_sha": {
+                    "description": "The git sha used to generate the spec",
+                    "type": "string"
+                },
+                "metadata": {
+                    "description": "The metadata associated with the spec",
+                    "type": "object",
+                    "properties": {
+                        "turbine": {
+                            "description": "The turbine details",
+                            "type": "object",
+                            "properties": {
+                                "language": {
+                                    "description": "The language used to create deployment",
+                                    "type": "string",
+                                    "enum": [
+                                        "golang",
+                                        "js",
+                                        "py",
+                                        "ruby"
+                                    ]
+                                },
+                                "version": {
+                                    "description": "The version of language used to create deployment",
+                                    "type": "string",
+                                    "minLength": 1
+                                }
+                            },
+                            "required": [
+                                "language",
+                                "version"
+                            ]
+                        },
+                        "spec_version": {
+                            "description": "The spec version",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "turbine",
+                        "spec_version"
+                    ]
+                }
+            },
+            "required": [
+                "git_sha",
+                "metadata"
+            ]
+        }
+    },
+    "required": [
+        "connectors",
+        "definition"
+    ]
 }
