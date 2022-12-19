@@ -150,7 +150,7 @@ func Test_Deploy(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			spec, err := tc.cli.Deploy(ctx, "image", "app", "git_sha", "0.1.1", "accountUUID")
+			spec, err := tc.cli.Deploy(ctx, "image", "app", "git_sha", "0.2.0", "accountUUID")
 			if tc.wantErr != nil && !strings.Contains(err.Error(), tc.wantErr.Error()) {
 				t.Fatalf("want: %v, got: %v", tc.wantErr, err)
 			}
