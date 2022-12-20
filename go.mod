@@ -28,7 +28,7 @@ require (
 	github.com/briandowns/spinner v1.19.0
 	github.com/docker/docker v20.10.22+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-core v0.0.0-20221207171751-d40fdaa07cb8
+	github.com/meroxa/turbine-core v0.0.0-20221219202059-331a639bddb1
 	github.com/meroxa/turbine-go v1.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
@@ -52,12 +52,14 @@ require (
 	github.com/docker/distribution v2.8.0+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/heimdalr/dag v1.2.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jedib0t/go-pretty/v6 v6.4.2 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect

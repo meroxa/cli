@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/meroxa/turbine-core/pkg/ir"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -72,23 +73,32 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 		}
 	}
 
-	s.deploymentSpec.Connectors = append(
-		s.deploymentSpec.Connectors,
-		ir.ConnectorSpec{
-			Collection: request.GetCollection(),
-			Resource:   request.Resource.GetName(),
-			Type:       ir.ConnectorSource,
-			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
-		},
-	)
+	sourceConnector := ir.ConnectorSpec{
+		UUID:       uuid.New().String(),
+		Collection: request.GetCollection(),
+		Resource:   request.Resource.GetName(),
+		Type:       ir.ConnectorSource,
+		Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
+	}
 
-	return &pb.Collection{}, nil
+	if err := s.deploymentSpec.AddSource(&sourceConnector); err != nil {
+		return nil, err
+	}
+
+	return &pb.Collection{
+		Name:   request.Collection,
+		Stream: sourceConnector.UUID,
+	}, nil
 }
 
 func (s *recordService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	// This function may be called zero or more times.
 	if request.GetTargetCollection() == "" {
 		return empty(), fmt.Errorf("please provide a collection name to 'write'")
+	}
+	source := request.GetSourceCollection()
+	if source == nil {
+		return empty(), fmt.Errorf("please provide a collection name to 'write' from ")
 	}
 
 	s.resources = append(s.resources, &pb.Resource{
@@ -97,27 +107,55 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 		Collection:  request.TargetCollection,
 	})
 
-	s.deploymentSpec.Connectors = append(
-		s.deploymentSpec.Connectors,
-		ir.ConnectorSpec{
-			Collection: request.GetTargetCollection(),
-			Resource:   request.Resource.GetName(),
-			Type:       ir.ConnectorDestination,
-			Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
-		},
-	)
+	destinationConnector := ir.ConnectorSpec{
+		UUID:       uuid.New().String(),
+		Collection: request.GetTargetCollection(),
+		Resource:   request.GetResource().GetName(),
+		Type:       ir.ConnectorDestination,
+		Config:     resourceConfigsToMap(request.GetConfigs().GetConfig()),
+	}
+	if err := s.deploymentSpec.AddDestination(&destinationConnector); err != nil {
+		return nil, err
+	}
+
+	if err := s.deploymentSpec.AddStream(&ir.StreamSpec{
+		UUID:     uuid.New().String(),
+		FromUUID: source.Stream,
+		ToUUID:   destinationConnector.UUID,
+		Name:     source.Stream + "_" + destinationConnector.UUID,
+	}); err != nil {
+		return nil, err
+	}
 
 	return empty(), nil
 }
 
 func (s *recordService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
 	p := request.GetProcess()
-	s.deploymentSpec.Functions = append(
-		s.deploymentSpec.Functions,
-		ir.FunctionSpec{
-			Name: strings.ToLower(p.GetName()),
-		})
-	return &pb.Collection{}, nil
+
+	collection := request.GetCollection()
+	function := ir.FunctionSpec{
+		Name: strings.ToLower(p.GetName()),
+		UUID: uuid.New().String(),
+	}
+
+	if err := s.deploymentSpec.AddFunction(&function); err != nil {
+		return nil, err
+	}
+
+	if err := s.deploymentSpec.AddStream(&ir.StreamSpec{
+		UUID:     uuid.New().String(),
+		FromUUID: collection.Stream,
+		ToUUID:   function.UUID,
+		Name:     collection.Stream + "_" + function.UUID,
+	}); err != nil {
+		return nil, err
+	}
+
+	return &pb.Collection{
+		Name:   collection.Name,
+		Stream: function.UUID,
+	}, nil
 }
 
 func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
@@ -142,6 +180,10 @@ func (s *recordService) GetSpec(ctx context.Context, in *pb.GetSpecRequest) (*pb
 			return nil, fmt.Errorf("cannot set function image since spec has no functions")
 		}
 		s.deploymentSpec.SetImageForFunctions(image)
+	}
+
+	if err := s.deploymentSpec.ValidateDAG(); err != nil {
+		return nil, err
 	}
 
 	spec, err := s.deploymentSpec.Marshal()
