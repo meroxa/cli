@@ -2,14 +2,11 @@ package turbinejs
 
 import (
 	"context"
-
-	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
 // Run calls turbine-js to exercise the app.
 func (t *turbineJsCLI) Run(ctx context.Context) (err error) {
-	cmd := RunTurbineJS(ctx, "test", t.appPath)
-	stdOut, err := utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+	stdOut, err := RunTurbineJS(ctx, t.logger, "test", t.appPath)
 	t.logger.Info(ctx, stdOut)
 	return err
 }

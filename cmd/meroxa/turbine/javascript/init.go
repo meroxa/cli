@@ -7,8 +7,7 @@ import (
 )
 
 func (t *turbineJsCLI) Init(ctx context.Context, name string) error {
-	cmd := RunTurbineJS(ctx, "generate", name, t.appPath)
-	_, err := utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+	_, err := RunTurbineJS(ctx, t.logger, "generate", name, t.appPath)
 	return err
 }
 
