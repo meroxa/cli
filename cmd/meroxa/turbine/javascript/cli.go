@@ -3,6 +3,7 @@ package turbinejs
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -19,9 +20,20 @@ func New(l log.Logger, appPath string) turbine.CLI {
 	return &turbineJsCLI{logger: l, appPath: appPath}
 }
 
-func RunTurbineJS(ctx context.Context, params ...string) (cmd *exec.Cmd) {
+func RunTurbineJS(ctx context.Context, l log.Logger, params ...string) (string, error) {
 	args := getTurbineJSBinary(params)
-	return executeTurbineJSCommand(ctx, args)
+	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
+	return turbine.RunCmdWithErrorDetection(ctx, cmd, l)
+}
+
+func RunTurbineJSWithEnvVars(ctx context.Context, l log.Logger, envs map[string]string, params ...string) (string, error) {
+	args := getTurbineJSBinary(params)
+	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
+	cmd.Env = os.Environ()
+	for key, value := range envs {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", key, value))
+	}
+	return turbine.RunCmdWithErrorDetection(ctx, cmd, l)
 }
 
 func getTurbineJSBinary(params []string) []string {
@@ -33,8 +45,4 @@ func getTurbineJSBinary(params []string) []string {
 	args := []string{"npx", "--yes", turbineJSBinary}
 	args = append(args, params...)
 	return args
-}
-
-func executeTurbineJSCommand(ctx context.Context, params []string) *exec.Cmd {
-	return exec.CommandContext(ctx, params[0], params[1:]...) //nolint:gosec
 }

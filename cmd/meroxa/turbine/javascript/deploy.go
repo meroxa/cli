@@ -3,9 +3,7 @@ package turbinejs
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -17,23 +15,22 @@ var (
 )
 
 func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
-	cmd := RunTurbineJS(ctx, "hasfunctions", t.appPath)
-	output, err := cmd.CombinedOutput()
+	output, err := RunTurbineJS(ctx, t.logger, "hasfunctions", t.appPath)
 	if err != nil {
 		err = fmt.Errorf(
 			"unable to determine if the Meroxa Application at %s has a Process; %s",
 			t.appPath,
-			string(output))
+			err)
 		return false, err
 	}
 
-	isNeeded, err := utils.GetTurbineResponseFromOutput(string(output))
+	isNeeded, err := utils.GetTurbineResponseFromOutput(output)
 	if err != nil {
-		err := fmt.Errorf(
+		fmtErr := fmt.Errorf(
 			"unable to determine if the Meroxa Application at %s has a Process; %s",
 			t.appPath,
-			string(output))
-		return false, err
+			err)
+		return false, fmtErr
 	}
 	return strconv.ParseBool(isNeeded)
 }
@@ -49,19 +46,17 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		params = append(params, specVersion)
 	}
 
-	cmd := RunTurbineJS(ctx, params...)
-
 	accessToken, _, err := global.GetUserToken()
 	if err != nil {
 		return deploymentSpec, err
 	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(
-		cmd.Env,
-		fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken),
-		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
-
-	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+	output, err = RunTurbineJSWithEnvVars(
+		ctx,
+		t.logger,
+		map[string]string{
+			"MEROXA_ACCESS_TOKEN":   accessToken,
+			utils.AccountUUIDEnvVar: accountUUID},
+		params...)
 	if err != nil {
 		return deploymentSpec, err
 	}
@@ -80,20 +75,19 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 func (t *turbineJsCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
 	var resources []utils.ApplicationResource
 
-	cmd := RunTurbineJS(ctx, "listresources", t.appPath)
-	output, err := cmd.CombinedOutput()
+	output, err := RunTurbineJS(ctx, t.logger, "listresources", t.appPath)
 	if err != nil {
-		return resources, errors.New(string(output))
+		return resources, err
 	}
-	list, err := utils.GetTurbineResponseFromOutput(string(output))
+	list, err := utils.GetTurbineResponseFromOutput(output)
 	if err == nil && list != "" {
 		// ignores any lines that are not intended to be part of the response
-		output = []byte(list)
+		output = list
 	}
 
-	if err := json.Unmarshal(output, &resources); err != nil {
+	if err := json.Unmarshal([]byte(output), &resources); err != nil {
 		// fall back if not json
-		return utils.GetResourceNamesFromString(string(output)), nil
+		return utils.GetResourceNamesFromString(output), nil
 	}
 
 	return resources, nil
@@ -108,10 +102,9 @@ func (t *turbineJsCLI) GitChecks(ctx context.Context) error {
 }
 
 func (t *turbineJsCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
-	cmd := RunTurbineJS(ctx, "clibuild", t.appPath)
-	output, err := cmd.CombinedOutput()
+	_, err := RunTurbineJS(ctx, t.logger, "clibuild", t.appPath)
 	if err != nil {
-		return "", fmt.Errorf("unable to create Dockerfile at %s; %s", t.appPath, string(output))
+		return "", fmt.Errorf("unable to create Dockerfile at %s; %s", t.appPath, err)
 	}
 
 	return t.appPath, err
