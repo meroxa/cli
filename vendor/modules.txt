@@ -31,7 +31,7 @@ github.com/Microsoft/hcsshim/osversion
 # github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 ## explicit
 github.com/alexeyco/simpletable
-# github.com/briandowns/spinner v1.19.0
+# github.com/briandowns/spinner v1.20.0
 ## explicit; go 1.14
 github.com/briandowns/spinner
 # github.com/cased/cased-go v1.0.4
@@ -351,8 +351,12 @@ golang.org/x/oauth2/internal
 ## explicit; go 1.17
 golang.org/x/sys/execabs
 golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
+# golang.org/x/term v0.3.0
+## explicit; go 1.17
+golang.org/x/term
 # golang.org/x/text v0.5.0
 ## explicit; go 1.17
 golang.org/x/text/runes
