@@ -43,13 +43,11 @@ github.com/chzyer/readline
 # github.com/containerd/cgroups v1.0.4
 ## explicit; go 1.17
 github.com/containerd/cgroups/stats/v1
-# github.com/containerd/containerd v1.5.13
+# github.com/containerd/containerd v1.5.16
 ## explicit; go 1.17
 github.com/containerd/containerd/log
 github.com/containerd/containerd/pkg/userns
 github.com/containerd/containerd/sys
-# github.com/containerd/continuity v0.3.0
-## explicit; go 1.17
 # github.com/cpuguy83/go-md2man/v2 v2.0.2
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man
