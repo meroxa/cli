@@ -2,35 +2,27 @@ package turbinego
 
 import (
 	"context"
-	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 
-	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
 // Run will build a go binary and will run it.
 func (t *turbineGoCLI) Run(ctx context.Context) error {
-	appName, err := utils.GetAppNameFromAppJSON(ctx, t.logger, t.appPath)
-	if err != nil {
-		return err
-	}
-
 	// building is a requirement prior to running for go apps
-	if err = t.Build(ctx, appName, false); err != nil {
+	if err := t.Build(ctx, t.appName, false); err != nil {
 		return err
 	}
 
-	cmd := exec.CommandContext(ctx, t.appPath+"/"+appName) //nolint:gosec
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		t.logger.Error(ctx, string(output))
-		return fmt.Errorf("run failed")
-	}
-	t.logger.Info(ctx, string(output))
-	return nil
+	go t.runServer.Run(ctx)
+	defer t.runServer.GracefulStop()
+
+	cmd := NewTurbineGoCmd(t.appPath, t.appName, TurbineCommandRun, map[string]string{
+		"TURBINE_CORE_SERVER": t.grpcListenAddress,
+	})
+	return turbine.RunCMD(ctx, t.logger, cmd)
 }
 
 // RunCleanup removes any dangling binaries.

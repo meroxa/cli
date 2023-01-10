@@ -197,7 +197,7 @@ github.com/meroxa/turbine-core/pkg/app
 github.com/meroxa/turbine-core/pkg/ir
 github.com/meroxa/turbine-core/pkg/server
 github.com/meroxa/turbine-core/pkg/server/internal
-# github.com/meroxa/turbine-go v1.0.0
+# github.com/meroxa/turbine-go v1.0.0 => ../turbine-go
 ## explicit; go 1.18
 github.com/meroxa/turbine-go
 github.com/meroxa/turbine-go/deploy
@@ -453,3 +453,4 @@ gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/meroxa/turbine-go => ../turbine-go

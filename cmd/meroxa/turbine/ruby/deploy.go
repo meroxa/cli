@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/internal"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
@@ -17,7 +18,7 @@ func (t *turbineRbCLI) CleanUpBuild(ctx context.Context) {
 }
 
 func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
-	cmd := internal.NewTurbineCmd(t.appPath,
+	cmd := internal.NewTurbineRbCmd(t.appPath,
 		internal.TurbineCommandBuild,
 		map[string]string{})
 	return t.appPath, utils.RunCMD(ctx, t.logger, cmd)
@@ -26,7 +27,7 @@ func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, appName string) (st
 func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	go t.recordServer.Run(ctx)
 
-	cmd := internal.NewTurbineCmd(t.appPath,
+	cmd := internal.NewTurbineRbCmd(t.appPath,
 		internal.TurbineCommandRecord,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
@@ -48,7 +49,7 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 		return nil, err
 	}
 
-	t.recordClient = recordClient{
+	t.recordClient = turbine.RecordClient{
 		ClientConn:           conn,
 		TurbineServiceClient: pb.NewTurbineServiceClient(conn),
 	}

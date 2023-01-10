@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/mock"
 	"github.com/meroxa/cli/log"
 )
@@ -29,7 +30,7 @@ func Test_Run(t *testing.T) {
 			name: "fail to find app",
 			cli: &turbineRbCLI{
 				appPath: "/tmp",
-				runServer: func() turbineServer {
+				runServer: func() turbine.TurbineServer {
 					m := mock.NewMockturbineServer(ctrl)
 					m.EXPECT().
 						Run(gomock.Any()).
@@ -47,7 +48,7 @@ func Test_Run(t *testing.T) {
 			name: "fail to start command",
 			cli: &turbineRbCLI{
 				appPath: "/nonexistentdir",
-				runServer: func() turbineServer {
+				runServer: func() turbine.TurbineServer {
 					m := mock.NewMockturbineServer(ctrl)
 					m.EXPECT().
 						Run(gomock.Any()).
@@ -75,7 +76,7 @@ func Test_Run(t *testing.T) {
 
 					return tempdir
 				}(),
-				runServer: func() turbineServer {
+				runServer: func() turbine.TurbineServer {
 					m := mock.NewMockturbineServer(ctrl)
 					m.EXPECT().
 						Run(gomock.Any()).

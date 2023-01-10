@@ -9,7 +9,7 @@ import (
 )
 
 func Test_NewTurbineCmd(t *testing.T) {
-	cmd := internal.NewTurbineCmd("/my/path",
+	cmd := internal.NewTurbineRbCmd("/my/path",
 		internal.TurbineCommandRun,
 		map[string]string{
 			"foo": "bar",

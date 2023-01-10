@@ -2,126 +2,61 @@ package turbinego
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"os"
-	"os/exec"
-	"path"
-	"regexp"
-	"strings"
+	"time"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	turbineGo "github.com/meroxa/turbine-go/deploy"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
 func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
-	deploymentSpec := ""
-	args := []string{
-		"--deploy",
-		"--appname",
-		appName,
-		"--gitsha",
-		gitSha,
-	}
-
-	if specVersion != "" {
-		args = append(args, "--spec", specVersion)
-	}
-
-	if imageName != "" {
-		args = append(args, "--imagename", imageName)
-	}
-	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), args...) //nolint:gosec
-
-	accessToken, refreshToken, err := global.GetUserToken()
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.recordClient.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
 	if err != nil {
-		return deploymentSpec, err
-	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(
-		cmd.Env,
-		fmt.Sprintf("ACCESS_TOKEN=%s", accessToken),
-		fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken),
-		fmt.Sprintf("MEROXA_DEBUG=%s", os.Getenv("MEROXA_DEBUG")),
-		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
-
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		if strings.Contains(string(output), "flag provided but not defined") {
-			return deploymentSpec, errors.New(utils.IncompatibleTurbineVersion)
-		}
-		return deploymentSpec, errors.New(string(output))
+		return "", err
 	}
 
-	if specVersion != "" {
-		deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
-		if err != nil {
-			err = fmt.Errorf("unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
-		}
-	}
-
-	return deploymentSpec, err
+	return string(resp.Spec), nil
 }
 
 func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
-	var resources []utils.ApplicationResource
-
-	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), "--listresources") //nolint:gosec
-	output, err := cmd.CombinedOutput()
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.recordClient.ListResources(ctx, &emptypb.Empty{})
 	if err != nil {
-		return resources, errors.New(string(output))
+		return nil, err
 	}
-	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err == nil && list != "" {
-		// ignores any lines that are not intended to be part of the response
-		output = []byte(list)
+	var resources []utils.ApplicationResource
+	for _, r := range resp.Resources {
+		resources = append(resources, utils.ApplicationResource{
+			Name:        r.Name,
+			Destination: r.Destination,
+			Source:      r.Source,
+			Collection:  r.Collection,
+		})
 	}
-
-	if err := json.Unmarshal(output, &resources); err != nil {
-		// fall back if not json
-		return utils.GetResourceNamesFromString(string(output)), nil
-	}
-
 	return resources, nil
+
 }
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
 // this is currently based on the number of functions.
 func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
-	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), "--listfunctions") //nolint:gosec
-
-	accessToken, refreshToken, err := global.GetUserToken()
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.recordClient.HasFunctions(ctx, &emptypb.Empty{})
 	if err != nil {
 		return false, err
 	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(string(output))
-		return false, fmt.Errorf("build failed")
-	}
-	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err == nil && list != "" {
-		// ignores any lines that are not intended to be part of the response
-		list = strings.Trim(list, "[]")
-		if list == "" {
-			return false, nil
-		}
-
-		hasFunctions := len(strings.Split(list, ",")) > 0
-		return hasFunctions, nil
-	}
-
-	re := regexp.MustCompile(`\[(.+?)]`)
-	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function.
-	hasFunctions := len(re.FindAllString(string(output), -1)) > 0
-
-	return hasFunctions, nil
+	return resp.Value, nil
 }
 
 func (t *turbineGoCLI) GetGitSha(ctx context.Context) (string, error) {
@@ -141,5 +76,34 @@ func (t *turbineGoCLI) CleanUpBuild(ctx context.Context) {
 }
 
 func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	return func() {}, nil
+	go t.recordServer.Run(ctx)
+
+	cmd := NewTurbineGoCmd(t.appPath, t.appName, TurbineCommandRun, map[string]string{
+		"TURBINE_CORE_SERVER": t.grpcListenAddress,
+	})
+
+	if err := utils.RunCMD(ctx, t.logger, cmd); err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	conn, err := grpc.DialContext(
+		ctx,
+		t.grpcListenAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+
+	t.recordClient = utils.RecordClient{
+		ClientConn:           conn,
+		TurbineServiceClient: pb.NewTurbineServiceClient(conn),
+	}
+
+	return func() {
+		t.recordClient.Close()
+		t.recordServer.GracefulStop()
+	}, nil
+
 }

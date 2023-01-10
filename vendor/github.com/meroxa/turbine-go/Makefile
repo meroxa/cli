@@ -28,7 +28,7 @@ test:
 		./...
 
 gomod:
-	go mod vendor && go mod tidy
+	go mod tidy && go mod vendor 
 
 lint:
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v

@@ -14,6 +14,8 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/log"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -32,6 +34,16 @@ For guidance on updating to the latest version, visit:
 https://docs.meroxa.com/beta-overview#updated-meroxa-cli-and-outdated-turbine-library`
 )
 
+type TurbineServer interface {
+	Run(context.Context)
+	GracefulStop()
+}
+
+type RecordClient struct {
+	*grpc.ClientConn
+	pb.TurbineServiceClient
+}
+
 type AppConfig struct {
 	Name        string            `json:"name"`
 	Environment string            `json:"environment"`
@@ -48,6 +60,18 @@ type ApplicationResource struct {
 	Source      bool   `json:"source"`
 	Destination bool   `json:"destination"`
 	Collection  string `json:"collection"`
+}
+
+func NewTurbineCmd(cmd *exec.Cmd, appPath string, env map[string]string) *exec.Cmd {
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Dir = appPath
+	cmd.Env = os.Environ()
+
+	for k, v := range env {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+	}
+	return cmd
 }
 
 // GetResourceNamesFromString provides backward compatibility with turbine-go
@@ -261,11 +285,14 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 
 func RunCMD(ctx context.Context, logger log.Logger, cmd *exec.Cmd) error {
 	if err := cmd.Start(); err != nil {
+		fmt.Println("start---")
+
 		logger.Errorf(ctx, err.Error())
 		return err
 	}
 
 	if err := cmd.Wait(); err != nil {
+		fmt.Println("wait---")
 		logger.Errorf(ctx, err.Error())
 		return err
 	}

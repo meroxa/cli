@@ -535,8 +535,6 @@ github.com/meroxa/meroxa-go v0.0.0-20221213234938-21f713e84834 h1:QV74sMw7tXBJ6x
 github.com/meroxa/meroxa-go v0.0.0-20221213234938-21f713e84834/go.mod h1:OdTP4P/yHcTAqOE86kDXoTTLqC1Vj+/PFMG41kOcmhI=
 github.com/meroxa/turbine-core v0.0.0-20221207171751-d40fdaa07cb8 h1:YvRIFu67fyHpZ8YqSVV1j8ACmZ0ShHZu12LWB05yivM=
 github.com/meroxa/turbine-core v0.0.0-20221207171751-d40fdaa07cb8/go.mod h1:qrw2PcHujfryokPSqTspapB4PqSxOcDJhbsYHksaKsI=
-github.com/meroxa/turbine-go v1.0.0 h1:5/mLoRbtdefpcC35fG3YZioz1qgrlaHOKh56n2hJ9lQ=
-github.com/meroxa/turbine-go v1.0.0/go.mod h1:RckvcPOI7MJYRw65dzwk+OFjsCMxaFbthqPBzUn6vQA=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

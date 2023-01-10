@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
@@ -30,7 +31,7 @@ func Test_NeedsToBuild(t *testing.T) {
 		{
 			name: "Has function",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						HasFunctions(gomock.Any(), &emptypb.Empty{}).
@@ -38,7 +39,7 @@ func Test_NeedsToBuild(t *testing.T) {
 						Return(&wrapperspb.BoolValue{
 							Value: true,
 						}, nil)
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
@@ -49,7 +50,7 @@ func Test_NeedsToBuild(t *testing.T) {
 		{
 			name: "Doesn't have function",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						HasFunctions(gomock.Any(), &emptypb.Empty{}).
@@ -57,7 +58,7 @@ func Test_NeedsToBuild(t *testing.T) {
 						Return(&wrapperspb.BoolValue{
 							Value: false,
 						}, nil)
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
@@ -68,13 +69,13 @@ func Test_NeedsToBuild(t *testing.T) {
 		{
 			name: "fail to get function info",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						HasFunctions(gomock.Any(), &emptypb.Empty{}).
 						Times(1).
 						Return(nil, errors.New("something went wrong"))
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
@@ -109,7 +110,7 @@ func Test_Deploy(t *testing.T) {
 		{
 			name: "get spec",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						GetSpec(gomock.Any(), &pb.GetSpecRequest{
@@ -119,7 +120,7 @@ func Test_Deploy(t *testing.T) {
 						Return(&pb.GetSpecResponse{
 							Spec: []byte("spec"),
 						}, nil)
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
@@ -130,7 +131,7 @@ func Test_Deploy(t *testing.T) {
 		{
 			name: "fail to get spec",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						GetSpec(gomock.Any(), &pb.GetSpecRequest{
@@ -138,7 +139,7 @@ func Test_Deploy(t *testing.T) {
 						}).
 						Times(1).
 						Return(nil, errors.New("something went wrong"))
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
@@ -173,7 +174,7 @@ func Test_GetResources(t *testing.T) {
 		{
 			name: "get spec",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						ListResources(gomock.Any(), &emptypb.Empty{}).
@@ -188,7 +189,7 @@ func Test_GetResources(t *testing.T) {
 								},
 							},
 						}, nil)
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
@@ -206,13 +207,13 @@ func Test_GetResources(t *testing.T) {
 		{
 			name: "fail to list resources",
 			cli: &turbineRbCLI{
-				recordClient: func() recordClient {
+				recordClient: func() turbine.RecordClient {
 					m := mock.NewMockTurbineServiceClient(ctrl)
 					m.EXPECT().
 						ListResources(gomock.Any(), &emptypb.Empty{}).
 						Times(1).
 						Return(nil, errors.New("something went wrong"))
-					return recordClient{
+					return turbine.RecordClient{
 						TurbineServiceClient: m,
 					}
 				}(),
