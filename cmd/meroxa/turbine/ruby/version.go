@@ -12,7 +12,7 @@ func (t *turbineRbCLI) GetVersion(ctx context.Context) (string, error) {
 	cmd := exec.Command("ruby", []string{
 		"-r", "rubygems",
 		"-r", fmt.Sprintf("%s/app", t.appPath),
-		"-e", `'puts Gem.loaded_specs["turbin_rb"].version.version'`,
+		"-e", `'puts Gem.loaded_specs["turbine_rb"].version.version'`,
 	}...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
