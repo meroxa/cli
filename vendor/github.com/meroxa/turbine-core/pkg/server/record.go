@@ -14,15 +14,17 @@ import (
 
 type recordService struct {
 	pb.UnimplementedTurbineServiceServer
-	deploymentSpec ir.DeploymentSpec
+	deploymentSpec *ir.DeploymentSpec
 	resources      []*pb.Resource
 }
 
 func NewRecordService() *recordService {
-	return &recordService{}
+	return &recordService{
+		deploymentSpec: &ir.DeploymentSpec{},
+	}
 }
 
-func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
+func (s *recordService) Init(_ context.Context, request *pb.InitRequest) (*emptypb.Empty, error) {
 	if err := request.Validate(); err != nil {
 		return nil, err
 	}
@@ -40,7 +42,7 @@ func (s *recordService) Init(ctx context.Context, request *pb.InitRequest) (*emp
 	return empty(), nil
 }
 
-func (s *recordService) GetResource(ctx context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *recordService) GetResource(_ context.Context, request *pb.GetResourceRequest) (*pb.Resource, error) {
 	r := &pb.Resource{
 		Name: request.GetName(),
 	}
@@ -55,7 +57,7 @@ func resourceConfigsToMap(configs []*pb.Config) map[string]interface{} {
 	return m
 }
 
-func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
+func (s *recordService) ReadCollection(_ context.Context, request *pb.ReadCollectionRequest) (*pb.Collection, error) {
 	if request.GetCollection() == "" {
 		return &pb.Collection{}, fmt.Errorf("please provide a collection name to 'read'")
 	}
@@ -91,7 +93,7 @@ func (s *recordService) ReadCollection(ctx context.Context, request *pb.ReadColl
 	}, nil
 }
 
-func (s *recordService) WriteCollectionToResource(ctx context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *recordService) WriteCollectionToResource(_ context.Context, request *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
 	// This function may be called zero or more times.
 	if request.GetTargetCollection() == "" {
 		return empty(), fmt.Errorf("please provide a collection name to 'write'")
@@ -130,7 +132,7 @@ func (s *recordService) WriteCollectionToResource(ctx context.Context, request *
 	return empty(), nil
 }
 
-func (s *recordService) AddProcessToCollection(ctx context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *recordService) AddProcessToCollection(_ context.Context, request *pb.ProcessCollectionRequest) (*pb.Collection, error) {
 	p := request.GetProcess()
 
 	collection := request.GetCollection()
@@ -158,7 +160,7 @@ func (s *recordService) AddProcessToCollection(ctx context.Context, request *pb.
 	}, nil
 }
 
-func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
+func (s *recordService) RegisterSecret(_ context.Context, secret *pb.Secret) (*emptypb.Empty, error) {
 	if s.deploymentSpec.Secrets == nil {
 		s.deploymentSpec.Secrets = map[string]string{}
 	}
@@ -166,15 +168,15 @@ func (s *recordService) RegisterSecret(ctx context.Context, secret *pb.Secret) (
 	return empty(), nil
 }
 
-func (s *recordService) HasFunctions(ctx context.Context, in *emptypb.Empty) (*wrapperspb.BoolValue, error) {
+func (s *recordService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
 	return wrapperspb.Bool(len(s.deploymentSpec.Functions) > 0), nil
 }
 
-func (s *recordService) ListResources(ctx context.Context, in *emptypb.Empty) (*pb.ListResourcesResponse, error) {
+func (s *recordService) ListResources(_ context.Context, _ *emptypb.Empty) (*pb.ListResourcesResponse, error) {
 	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }
 
-func (s *recordService) GetSpec(ctx context.Context, in *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
+func (s *recordService) GetSpec(_ context.Context, in *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
 	if image := in.GetImage(); image != "" {
 		if len(s.deploymentSpec.Functions) == 0 {
 			return nil, fmt.Errorf("cannot set function image since spec has no functions")
@@ -182,7 +184,7 @@ func (s *recordService) GetSpec(ctx context.Context, in *pb.GetSpecRequest) (*pb
 		s.deploymentSpec.SetImageForFunctions(image)
 	}
 
-	if err := s.deploymentSpec.ValidateDAG(); err != nil {
+	if _, err := s.deploymentSpec.BuildDAG(); err != nil {
 		return nil, err
 	}
 

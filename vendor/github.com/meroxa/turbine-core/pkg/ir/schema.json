@@ -16,7 +16,7 @@
                         },
                         "uuid": {
                             "type": "string",
-                            "minLength": 36,
+                            "minLength": 0,
                             "maxLength": 36
                         },
                         "type": {
@@ -74,7 +74,7 @@
                     "properties": {
                         "uuid": {
                             "type": "string",
-                            "minLength": 36,
+                            "minLength": 0,
                             "maxLength": 36
                         },
                         "name": {
@@ -92,6 +92,8 @@
                     ]
                 }
             ],
+            "minItems": 0,
+			"maxItems": 1,
             "uniqueItems": true
         },
         "streams": {
@@ -102,7 +104,7 @@
                     "properties": {
                         "name": {
                             "type": "string",
-                            "pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$"
+                            "minLength": 1
                         },
                         "from_uuid": {
                             "type": "string",
@@ -116,7 +118,7 @@
                         },
                         "uuid": {
                             "type": "string",
-                            "minLength": 36,
+                            "minLength": 0,
                             "maxLength": 36
                         }
                     },
