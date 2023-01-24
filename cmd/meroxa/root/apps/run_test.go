@@ -94,24 +94,7 @@ func TestRunExecute(t *testing.T) {
 				Name:     "ruby-test",
 				Language: turbine.Ruby,
 			},
-			features: map[string]bool{
-				"ruby_implementation": true,
-			},
 		},
-		{
-			desc: "Execute Ruby Run (Missing feature)",
-			cli:  mockturbinecli.NewMockCLI(mockCtrl),
-			config: turbine.AppConfig{
-				Name:     "ruby-test",
-				Language: turbine.Ruby,
-			},
-			features: map[string]bool{
-				"ruby_implementation": false,
-			},
-			err: fmt.Errorf(`no access to the Meroxa Turbine Ruby feature.
-Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sme`),
-		},
-
 		{
 			desc: "Execute Python Run with an error",
 			cli: func() turbine.CLI {

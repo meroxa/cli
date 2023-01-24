@@ -70,7 +70,6 @@ func (u *Upgrade) Flags() []builder.Flag {
 	return builder.BuildFlags(&u.flags)
 }
 
-//nolint:gocyclo
 func (u *Upgrade) Execute(ctx context.Context) error {
 	var err error
 	if u.config == nil {
@@ -104,10 +103,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbinePY.New(u.logger, u.path)
 		}
-	case "ub", turbine.Ruby:
-		if !builder.CheckFeatureFlag(turbineRB.TurbineRubyFeatureFlag) {
-			return turbineRB.ErrTurbineRubyFeatureFlag
-		}
+	case "rb", turbine.Ruby:
 		if u.turbineCLI == nil {
 			u.turbineCLI = turbineRB.New(u.logger, u.path)
 		}

@@ -105,9 +105,6 @@ func (r *Run) Execute(ctx context.Context) error {
 		}
 		return r.turbineCLI.Run(ctx)
 	case "rb", turbine.Ruby:
-		if !builder.CheckFeatureFlag(turbineRB.TurbineRubyFeatureFlag) {
-			return turbineRB.ErrTurbineRubyFeatureFlag
-		}
 		if r.turbineCLI == nil {
 			r.turbineCLI = turbineRB.New(r.logger, r.path)
 		}
