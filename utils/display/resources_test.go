@@ -120,7 +120,7 @@ func TestResourcesTableWithoutHeaders(t *testing.T) {
 
 var types = []meroxa.ResourceType{
 	{
-		Name:         "postgres",
+		Name:         string(meroxa.ResourceTypePostgres),
 		ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 		FormConfig: map[string]interface{}{
 			meroxa.ResourceTypeFormConfigHumanReadableKey: "PostgreSQL",

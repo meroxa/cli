@@ -135,10 +135,14 @@ func ResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) string {
 	betaResourceTypes := []string{}
 
 	for _, t := range types {
+		val := fmt.Sprintf("%s", t.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])
+		if val == "" {
+			continue
+		}
 		if t.ReleaseStage == meroxa.ResourceTypeReleaseStageGA {
-			gaResourceTypes = append(gaResourceTypes, fmt.Sprintf("%s", t.FormConfig["label"]))
+			gaResourceTypes = append(gaResourceTypes, val)
 		} else if t.ReleaseStage == meroxa.ResourceTypeReleaseStageBeta {
-			betaResourceTypes = append(betaResourceTypes, fmt.Sprintf("%s", t.FormConfig["label"]))
+			betaResourceTypes = append(betaResourceTypes, val)
 		}
 	}
 	sort.Strings(gaResourceTypes)
@@ -158,7 +162,7 @@ func ResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) string {
 	for _, t := range gaResourceTypes {
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: t},
-			{Align: simpletable.AlignRight, Text: string(meroxa.ResourceTypeReleaseStageGA)},
+			{Align: simpletable.AlignLeft, Text: string(meroxa.ResourceTypeReleaseStageGA)},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -166,7 +170,7 @@ func ResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) string {
 	for _, t := range betaResourceTypes {
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: t},
-			{Align: simpletable.AlignRight, Text: string(meroxa.ResourceTypeReleaseStageBeta)},
+			{Align: simpletable.AlignLeft, Text: string(meroxa.ResourceTypeReleaseStageBeta)},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)

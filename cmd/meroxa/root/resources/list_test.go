@@ -131,49 +131,49 @@ func TestListResourceTypesExecution(t *testing.T) {
 
 	var types = []meroxa.ResourceType{
 		{
-			Name:         "postgres",
+			Name:         string(meroxa.ResourceTypePostgres),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "PostgreSQL",
 			},
 		},
 		{
-			Name:         "s3",
+			Name:         string(meroxa.ResourceTypeS3),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "AWS S3",
 			},
 		},
 		{
-			Name:         "redshift",
+			Name:         string(meroxa.ResourceTypeRedshift),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "AWS Redshift",
 			},
 		},
 		{
-			Name:         "mysql",
+			Name:         string(meroxa.ResourceTypeMysql),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "MySQL",
 			},
 		},
 		{
-			Name:         "url",
+			Name:         string(meroxa.ResourceTypeUrl),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "Generic HTTP",
 			},
 		},
 		{
-			Name:         "mongodb",
+			Name:         string(meroxa.ResourceTypeMongodb),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "MongoDB",
 			},
 		},
 		{
-			Name:         "elasticsearch",
+			Name:         string(meroxa.ResourceTypeElasticsearch),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
 			FormConfig: map[string]interface{}{
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "Elasticsearch",
