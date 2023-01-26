@@ -197,7 +197,7 @@ github.com/mattn/go-runewidth
 # github.com/mattn/go-shellwords v1.0.12
 ## explicit; go 1.13
 github.com/mattn/go-shellwords
-# github.com/meroxa/meroxa-go v0.0.0-20221213234938-21f713e84834 => ../meroxa-go
+# github.com/meroxa/meroxa-go v0.0.0-20230126220607-d36f4f5f36a4
 ## explicit; go 1.17
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
@@ -466,4 +466,3 @@ gopkg.in/ini.v1
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# github.com/meroxa/meroxa-go => ../meroxa-go
