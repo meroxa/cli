@@ -2,9 +2,9 @@ package display
 
 import (
 	"fmt"
-
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"sort"
 )
 
 func ResourceTable(res *meroxa.Resource) string {
@@ -128,20 +128,43 @@ func PrintResourcesTable(resources []*meroxa.Resource, hideHeaders bool) {
 	fmt.Println(ResourcesTable(resources, hideHeaders))
 }
 
-func ResourceTypesTable(types []string, hideHeaders bool) string {
+func ResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) string {
+	gaResourceTypes := []string{}
+	betaResourceTypes := []string{}
+
+	for _, t := range types {
+		if t.ReleaseStage == meroxa.ResourceTypeReleaseStageGA {
+			gaResourceTypes = append(gaResourceTypes, fmt.Sprintf("%s", t.FormConfig["label"]))
+		} else if t.ReleaseStage == meroxa.ResourceTypeReleaseStageBeta {
+			betaResourceTypes = append(betaResourceTypes, fmt.Sprintf("%s", t.FormConfig["label"]))
+		}
+	}
+	sort.Strings(gaResourceTypes)
+	sort.Strings(betaResourceTypes)
+
 	table := simpletable.New()
 
 	if !hideHeaders {
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "TYPES"},
+				{Align: simpletable.AlignRight, Text: "Resource Type"},
+				{Align: simpletable.AlignLeft, Text: "Release Stage"},
 			},
 		}
 	}
 
-	for _, t := range types {
+	for _, t := range gaResourceTypes {
 		r := []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: t},
+			{Align: simpletable.AlignRight, Text: string(meroxa.ResourceTypeReleaseStageGA)},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+	for _, t := range betaResourceTypes {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: t},
+			{Align: simpletable.AlignRight, Text: string(meroxa.ResourceTypeReleaseStageBeta)},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -150,6 +173,6 @@ func ResourceTypesTable(types []string, hideHeaders bool) string {
 	return table.String()
 }
 
-func PrintResourceTypesTable(types []string, hideHeaders bool) {
+func PrintResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) {
 	fmt.Println(ResourceTypesTable(types, hideHeaders))
 }

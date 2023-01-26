@@ -43,7 +43,7 @@ type CreateResourceInput struct {
 	Metadata    map[string]interface{}  `json:"metadata,omitempty"`
 	Name        string                  `json:"name,omitempty"`
 	SSHTunnel   *ResourceSSHTunnelInput `json:"ssh_tunnel,omitempty"`
-	Type        ResourceType            `json:"type"`
+	Type        ResourceTypeName        `json:"type"`
 	URL         string                  `json:"url"`
 }
 
@@ -66,7 +66,7 @@ type ResourceStatus struct {
 // Resource represents the Meroxa Resource type within the Meroxa API
 type Resource struct {
 	UUID        string                 `json:"uuid"`
-	Type        ResourceType           `json:"type"`
+	Type        ResourceTypeName       `json:"type"`
 	Name        string                 `json:"name"`
 	URL         string                 `json:"url"`
 	Credentials *Credentials           `json:"credentials,omitempty"`

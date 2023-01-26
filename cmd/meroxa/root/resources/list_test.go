@@ -129,16 +129,70 @@ func TestListResourceTypesExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	var types = []string{
-		"postgres",
-		"s3",
-		"redshift",
-		"mysql",
-		"url",
-		"mongodb",
-		"elasticsearch",
-		"snowflakedb",
-		"bigquery",
+	var types = []meroxa.ResourceType{
+		{
+			Name:         "postgres",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "PostgreSQL",
+			},
+		},
+		{
+			Name:         "s3",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "AWS S3",
+			},
+		},
+		{
+			Name:         "redshift",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "AWS Redshift",
+			},
+		},
+		{
+			Name:         "mysql",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "MySQL",
+			},
+		},
+		{
+			Name:         "url",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "Generic HTTP",
+			},
+		},
+		{
+			Name:         "mongodb",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "MongoDB",
+			},
+		},
+		{
+			Name:         "elasticsearch",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "Elasticsearch",
+			},
+		},
+		{
+			Name:         "snowflakedb",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "Snowflake",
+			},
+		},
+		{
+			Name:         "bigquery",
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "Google BigQuery",
+			},
+		},
 	}
 
 	client.
@@ -167,7 +221,7 @@ func TestListResourceTypesExecution(t *testing.T) {
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotTypes []string
+	var gotTypes []meroxa.ResourceType
 	err = json.Unmarshal([]byte(gotJSONOutput), &gotTypes)
 
 	if err != nil {

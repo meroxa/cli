@@ -18,7 +18,6 @@ package resources
 
 import (
 	"context"
-
 	"github.com/meroxa/cli/utils/display"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -38,7 +37,7 @@ var (
 
 type listResourcesClient interface {
 	ListResources(ctx context.Context) ([]*meroxa.Resource, error)
-	ListResourceTypes(ctx context.Context) ([]string, error)
+	ListResourceTypes(ctx context.Context) ([]meroxa.ResourceType, error)
 }
 
 type List struct {
@@ -79,10 +78,7 @@ func (l *List) Execute(ctx context.Context) error {
 
 	// What used to be `meroxa list resource-types`
 	if l.flags.Types || l.flags.Type || l.ListTypes {
-		var rTypes []string
-
-		rTypes, err = l.client.ListResourceTypes(ctx)
-
+		rTypes, err := l.client.ListResourceTypes(ctx)
 		if err != nil {
 			return err
 		}
@@ -90,6 +86,8 @@ func (l *List) Execute(ctx context.Context) error {
 		l.logger.JSON(ctx, rTypes)
 		l.logger.Info(ctx, display.ResourceTypesTable(rTypes, l.hideHeaders))
 
+		output := "\n ✨ View a complete list of available and upcoming resources in the dashboard: https://dashboard.meroxa.io/resources/catalog"
+		l.logger.Info(ctx, output)
 		return nil
 	}
 
