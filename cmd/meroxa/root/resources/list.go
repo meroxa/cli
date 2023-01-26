@@ -18,10 +18,10 @@ package resources
 
 import (
 	"context"
-	"github.com/meroxa/cli/utils/display"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -74,8 +74,6 @@ func (l *List) Aliases() []string {
 }
 
 func (l *List) Execute(ctx context.Context) error {
-	var err error
-
 	// What used to be `meroxa list resource-types`
 	if l.flags.Types || l.flags.Type || l.ListTypes {
 		rTypes, err := l.client.ListResourceTypes(ctx)

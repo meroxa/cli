@@ -179,20 +179,6 @@ func TestListResourceTypesExecution(t *testing.T) {
 				meroxa.ResourceTypeFormConfigHumanReadableKey: "Elasticsearch",
 			},
 		},
-		{
-			Name:         "snowflakedb",
-			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
-			FormConfig: map[string]interface{}{
-				meroxa.ResourceTypeFormConfigHumanReadableKey: "Snowflake",
-			},
-		},
-		{
-			Name:         "bigquery",
-			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
-			FormConfig: map[string]interface{}{
-				meroxa.ResourceTypeFormConfigHumanReadableKey: "Google BigQuery",
-			},
-		},
 	}
 
 	client.

@@ -2,9 +2,11 @@ package display
 
 import (
 	"fmt"
-	"github.com/alexeyco/simpletable"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"sort"
+
+	"github.com/alexeyco/simpletable"
+
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 func ResourceTable(res *meroxa.Resource) string {
