@@ -137,7 +137,8 @@ func (c *Create) Execute(ctx context.Context) error {
 	if environment.Status.State != meroxa.EnvironmentStatePreflightSuccess {
 		details := display.EnvironmentPreflightTable(environment)
 		c.logger.Errorf(ctx,
-			"Environment %q could not be provisioned because it failed the preflight checks\n%s\n",
+			"Environment %q could not be provisioned because it failed the preflight checks\n%s\n"+
+				"After adding the missing permissions run: `meroxa environments repair environment_name_or_uuid`\n",
 			environment.Name,
 			details)
 	} else {
