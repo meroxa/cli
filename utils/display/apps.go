@@ -13,34 +13,53 @@ type AppExtendedConnector struct {
 	Logs      string
 }
 
+func itShouldEnvInfo(env meroxa.ApplicationEnvironment) bool {
+	return env.Type != "" && env.Type != meroxa.EnvironmentTypeCommon
+}
+
 func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	if len(apps) == 0 {
 		return ""
 	}
 
+	withEnvironment := false
+
 	table := simpletable.New()
-	if !hideHeaders {
-		table.Header = &simpletable.Header{
-			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "UUID"},
-				{Align: simpletable.AlignCenter, Text: "NAME"},
-				{Align: simpletable.AlignCenter, Text: "LANGUAGE"},
-				{Align: simpletable.AlignCenter, Text: "GIT SHA"},
-				{Align: simpletable.AlignCenter, Text: "STATE"},
-			},
-		}
-	}
 
 	for _, app := range apps {
 		r := []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: app.UUID},
-			{Align: simpletable.AlignCenter, Text: app.Name},
-			{Align: simpletable.AlignCenter, Text: app.Language},
-			{Align: simpletable.AlignCenter, Text: app.GitSha},
-			{Align: simpletable.AlignCenter, Text: string(app.Status.State)},
+			{Align: simpletable.AlignLeft, Text: app.UUID},
+			{Align: simpletable.AlignLeft, Text: app.Name},
+			{Align: simpletable.AlignLeft, Text: app.Language},
+			{Align: simpletable.AlignLeft, Text: app.GitSha},
+			{Align: simpletable.AlignLeft, Text: string(app.Status.State)},
 		}
 
+		env, err := app.Environment.GetNameOrUUID()
+
+		if err == nil && itShouldEnvInfo(app.Environment) {
+			withEnvironment = true
+			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: env})
+		}
 		table.Body.Cells = append(table.Body.Cells, r)
+	}
+
+	if !hideHeaders {
+		cells := []*simpletable.Cell{
+			{Align: simpletable.AlignCenter, Text: "UUID"},
+			{Align: simpletable.AlignCenter, Text: "NAME"},
+			{Align: simpletable.AlignCenter, Text: "LANGUAGE"},
+			{Align: simpletable.AlignCenter, Text: "GIT SHA"},
+			{Align: simpletable.AlignCenter, Text: "STATE"},
+		}
+
+		if withEnvironment {
+			cells = append(cells, &simpletable.Cell{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"})
+		}
+
+		table.Header = &simpletable.Header{
+			Cells: cells,
+		}
 	}
 
 	table.SetStyle(simpletable.StyleCompact)

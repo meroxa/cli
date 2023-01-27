@@ -18,12 +18,6 @@ const (
 	textContentType = "text/plain"
 )
 
-// EnvironmentIdentifier represents either value as a unique key for a Meroxa Environment
-type EnvironmentIdentifier struct {
-	UUID string `json:"uuid,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
 // EntityIdentifier represents one or both values for a Meroxa Entity
 type EntityIdentifier struct {
 	UUID string `json:"uuid,omitempty"`
