@@ -115,7 +115,6 @@ type Client interface {
 	IntrospectResource(ctx context.Context, nameOrID string) (*ResourceIntrospection, error)
 
 	ListResourceTypes(ctx context.Context) ([]string, error)
-	ListResourceTypesV2(ctx context.Context) ([]ResourceType, error)
 
 	CreateSource(ctx context.Context) (*Source, error)
 
