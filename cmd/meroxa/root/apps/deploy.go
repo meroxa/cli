@@ -70,6 +70,7 @@ type Deploy struct {
 		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
 		DockerHubUserName        string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
 		DockerHubAccessToken     string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
+		Environment              string `long:"env" usage:"environment (name or UUID) where application will be deployed to" hidden:"true"`
 		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
 		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
