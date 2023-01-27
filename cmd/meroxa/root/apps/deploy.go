@@ -868,6 +868,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
+	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby at the moment)
 	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
 	if err != nil {
 		return err
@@ -883,16 +884,20 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if d.specVersion == "" && d.lang == turbine.Ruby {
 		d.specVersion = ir.LatestSpecVersion
 	}
+
+	// Intermediate Representation Workflow (if using --spec on apps deploy)
 	if d.specVersion != "" {
-		// Intermediate Representation Workflow
 		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
 			return err
 		}
+
 		// Creates application
 		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
-			Name:     d.appName,
-			Language: d.lang,
-			GitSha:   gitSha})
+			Name:        d.appName,
+			Language:    d.lang,
+			GitSha:      gitSha,
+			Environment: meroxa.EntityIdentifier{Name: d.flags.Environment},
+		})
 		if err != nil {
 			if strings.Contains(err.Error(), "already exists") {
 				msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
