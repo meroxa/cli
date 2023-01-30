@@ -1246,8 +1246,6 @@ func TestTeardown(t *testing.T) {
 }
 
 func Test_validateFlags(t *testing.T) {
-	ctx := context.Background()
-
 	tests := []struct {
 		name     string
 		specFlag string
@@ -1288,7 +1286,7 @@ func Test_validateFlags(t *testing.T) {
 			d.flags.Spec = tc.specFlag
 			d.flags.Environment = tc.envFlag
 
-			err := d.validateFlags(ctx)
+			err := d.validateFlags()
 			if tc.wantErr != nil {
 				require.Equal(t, err, tc.wantErr)
 			} else {
