@@ -734,10 +734,10 @@ func (mr *MockClientMockRecorder) ListPipelines(ctx interface{}) *gomock.Call {
 }
 
 // ListResourceTypes mocks base method.
-func (m *MockClient) ListResourceTypes(ctx context.Context) ([]string, error) {
+func (m *MockClient) ListResourceTypes(ctx context.Context) ([]meroxa.ResourceType, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListResourceTypes", ctx)
-	ret0, _ := ret[0].([]string)
+	ret0, _ := ret[0].([]meroxa.ResourceType)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
