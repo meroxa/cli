@@ -83,6 +83,9 @@ func (l *List) Execute(ctx context.Context) error {
 
 		l.logger.JSON(ctx, rTypes)
 		l.logger.Info(ctx, display.ResourceTypesTable(rTypes, l.hideHeaders))
+
+		output := "\n ✨ View a complete list of available and upcoming resources in the dashboard: https://dashboard.meroxa.io/resources/new"
+		l.logger.Info(ctx, output)
 		return nil
 	}
 
