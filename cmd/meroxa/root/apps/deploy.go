@@ -835,8 +835,22 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
+// validateFlags take care of some possible incompatibilities between flag values
+func (d *Deploy) validateFlags(ctx context.Context) error {
+	if d.flags.Spec == "" && d.flags.Environment != "" {
+		return fmt.Errorf(
+			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
+			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
+	}
+	return nil
+}
+
 //nolint:gocyclo,funlen
 func (d *Deploy) Execute(ctx context.Context) error {
+	if err := d.validateFlags(ctx); err != nil {
+		return err
+	}
+
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
