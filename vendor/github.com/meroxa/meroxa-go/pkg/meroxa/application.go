@@ -74,11 +74,10 @@ type ApplicationLogs struct {
 
 // CreateApplicationInput represents the input for a Meroxa Application create operation in the API
 type CreateApplicationInput struct {
-	Name        string           `json:"name"`
-	Language    string           `json:"language"`
-	GitSha      string           `json:"git_sha,omitempty"`
-	Pipeline    EntityIdentifier `json:"pipeline,omitempty"`
-	Environment EntityIdentifier `json:"environment,omitempty"`
+	Name     string           `json:"name"`
+	Language string           `json:"language"`
+	GitSha   string           `json:"git_sha,omitempty"`
+	Pipeline EntityIdentifier `json:"pipeline,omitempty"`
 }
 
 type ApplicationStatus struct {

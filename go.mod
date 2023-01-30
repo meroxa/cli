@@ -31,6 +31,7 @@ require (
 	github.com/meroxa/turbine-core v0.0.0-20230113145603-c7b1554653fa
 	github.com/meroxa/turbine-go v1.0.0
 	github.com/stretchr/testify v1.8.1
+	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.7.0
 	google.golang.org/grpc v1.52.3
 	google.golang.org/protobuf v1.28.1
@@ -95,4 +96,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/meroxa/meroxa-go => ../meroxa-go
