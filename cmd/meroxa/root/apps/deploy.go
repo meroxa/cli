@@ -893,11 +893,16 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 		// Creates application
 		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
-			Name:        d.appName,
-			Language:    d.lang,
-			GitSha:      gitSha,
-			Environment: meroxa.EntityIdentifier{Name: d.flags.Environment},
+			Name:     d.appName,
+			Language: d.lang,
+			GitSha:   gitSha,
 		})
+
+		if d.flags.Environment != "" {
+			app.Environment = meroxa.ApplicationEnvironment{
+				EntityIdentifier: meroxa.EntityIdentifier{Name: d.flags.Environment},
+			}
+		}
 		if err != nil {
 			if strings.Contains(err.Error(), "already exists") {
 				msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
