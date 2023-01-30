@@ -105,6 +105,10 @@ func AppTable(app *meroxa.Application) string {
 	if subTable != "" {
 		output += "\n" + subTable
 	}
+	subTable = appEnvironmentTable(app.Environment)
+	if subTable != "" {
+		output += "\n" + subTable
+	}
 	subTable = appFunctionsTable(app.Functions)
 	if subTable != "" {
 		output += "\n" + subTable
@@ -147,6 +151,20 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 		}
 		status = ""
 	}
+
+	return subTable
+}
+
+func appEnvironmentTable(env meroxa.ApplicationEnvironment) string {
+	if !itShouldEnvInfo(env) {
+		return ""
+	}
+	subTable := "\tEnvironment\n"
+
+	subTable += fmt.Sprintf("\t    %s\n", env.Name)
+	subTable += fmt.Sprintf("\t\t\t\t%5s:\t\t\t%s\n", "UUID", env.UUID)
+	subTable += fmt.Sprintf("\t\t\t\t %5s:  %s\n", "Provider", env.Provider)
+	subTable += fmt.Sprintf("\t\t\t\t%5s:\t\t\t%s\n", "Type", env.Type)
 
 	return subTable
 }
