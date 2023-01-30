@@ -114,7 +114,7 @@ type Client interface {
 	ValidateResource(ctx context.Context, nameOrID string) (*Resource, error)
 	IntrospectResource(ctx context.Context, nameOrID string) (*ResourceIntrospection, error)
 
-	ListResourceTypes(ctx context.Context) ([]ResourceType, error)
+	ListResourceTypes(ctx context.Context) ([]string, error)
 
 	CreateSource(ctx context.Context) (*Source, error)
 
