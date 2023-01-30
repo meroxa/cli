@@ -23,10 +23,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/cli/utils"
+
+	"github.com/meroxa/cli/log"
+
 	"github.com/golang/mock/gomock"
 
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
@@ -36,53 +38,101 @@ func TestListAppsExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
 
-	aa := &meroxa.Application{
-		Name:     "my-app",
-		UUID:     "531428f7-4e86-4094-8514-d397d49026f7",
-		Language: turbine.GoLang,
-		Status:   meroxa.ApplicationStatus{State: meroxa.ApplicationStateRunning},
+	testCases := []struct {
+		desc                 string
+		apps                 func() []*meroxa.Application
+		shouldErrorOnEnvInfo func(string) bool
+	}{
+		{
+			desc: "With applications with no environment",
+			apps: func() []*meroxa.Application {
+				aa := utils.GenerateApplication("")
+				return []*meroxa.Application{&aa}
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return strings.Contains(output, "ENVIRONMENT")
+			},
+		},
+		{
+			desc: "With applications in a common environment",
+			apps: func() []*meroxa.Application {
+				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypeCommon, "")
+				return []*meroxa.Application{&aa}
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return strings.Contains(output, "ENVIRONMENT")
+			},
+		},
+		{
+			desc: "With applications in a private environment",
+			apps: func() []*meroxa.Application {
+				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypePrivate, meroxa.EnvironmentProviderAws)
+				return []*meroxa.Application{&aa}
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return !strings.Contains(output, "ENVIRONMENT")
+			},
+		},
+		{
+			desc: "With applications in a self-hosted environment",
+			apps: func() []*meroxa.Application {
+				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypeSelfHosted, "")
+				return []*meroxa.Application{&aa}
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return !strings.Contains(output, "ENVIRONMENT")
+			},
+		},
 	}
 
-	apps := []*meroxa.Application{aa}
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			logger := log.NewTestLogger()
+			apps := tc.apps()
 
-	client.
-		EXPECT().
-		ListApplications(ctx).
-		Return(apps, nil)
+			client.
+				EXPECT().
+				ListApplications(ctx).
+				Return(apps, nil)
 
-	l := &List{
-		client: client,
-		logger: logger,
-	}
+			l := &List{
+				client: client,
+				logger: logger,
+			}
 
-	err := l.Execute(ctx)
+			err := l.Execute(ctx)
 
-	if err != nil {
-		t.Fatalf("not expected error, got \"%s\"", err.Error())
-	}
+			if err != nil {
+				t.Fatalf("not expected error, got \"%s\"", err.Error())
+			}
 
-	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppsTable(apps, false)
+			gotLeveledOutput := logger.LeveledOutput()
+			wantLeveledOutput := display.AppsTable(apps, false)
 
-	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
-		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
-	}
+			if tc.shouldErrorOnEnvInfo(wantLeveledOutput) {
+				t.Fatalf("expected output:\n%s\n to include environment information", wantLeveledOutput)
+			}
 
-	gotJSONOutput := logger.JSONOutput()
-	var gotApps []*meroxa.Application
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotApps)
+			if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
+				t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+			}
 
-	var lp []*meroxa.Application
+			gotJSONOutput := logger.JSONOutput()
+			var gotApps []*meroxa.Application
+			err = json.Unmarshal([]byte(gotJSONOutput), &gotApps)
 
-	lp = append(lp, apps...)
+			var lp []*meroxa.Application
 
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
+			lp = append(lp, apps...)
 
-	if !reflect.DeepEqual(gotApps, lp) {
-		t.Fatalf("expected \"%v\", got \"%v\"", apps, gotApps)
+			if err != nil {
+				t.Fatalf("not expected error, got %q", err.Error())
+			}
+
+			if !reflect.DeepEqual(gotApps, lp) {
+				t.Fatalf("expected \"%v\", got \"%v\"", apps, gotApps)
+			}
+		})
 	}
 }
