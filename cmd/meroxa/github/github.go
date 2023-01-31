@@ -73,7 +73,11 @@ func getContentHomebrewFormula(ctx context.Context) (string, error) {
 // and extracts its version number.
 func parseVersionFromFormulaFile(content string) string {
 	r := regexp.MustCompile(`version "(\d+.\d+.\d+)"`)
-	return r.FindStringSubmatch(content)[1]
+	matches := r.FindStringSubmatch(content)
+	if len(matches) >= 2 { //nolint:gomnd
+		return matches[1]
+	}
+	return ""
 }
 
 // GetLatestCLITag fetches the content formula file from GitHub and then parses its version.
