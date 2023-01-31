@@ -835,9 +835,11 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
-// validateFlags take care of some possible incompatibilities between flag values.
-func (d *Deploy) validateFlags() error {
-	if d.flags.Spec == "" && d.flags.Environment != "" {
+// validateEnvironmentFlagCompatibility takes care of some possible incompatibilities between flag values and languages.
+// Turbine Ruby will use a spec'ed version internally so --spec is not required when using environments which is
+// currently only available for those deployments using IR.
+func (d *Deploy) validateEnvironmentFlagCompatibility() error {
+	if d.flags.Spec == "" && d.flags.Environment != "" && d.lang != turbine.Ruby {
 		return fmt.Errorf(
 			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
@@ -845,20 +847,26 @@ func (d *Deploy) validateFlags() error {
 	return nil
 }
 
-//nolint:gocyclo,funlen
-func (d *Deploy) Execute(ctx context.Context) error {
-	if err := d.validateFlags(); err != nil {
-		return err
-	}
-
+// runValidations will perform the relevant validations in the order that's necessary.
+func (d *Deploy) runValidations(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
 
+	return d.validateEnvironmentFlagCompatibility()
+}
+
+//nolint:gocyclo,funlen
+func (d *Deploy) Execute(ctx context.Context) error {
 	var (
 		app *meroxa.Application
 		err error
 	)
+
+	err = d.runValidations(ctx)
+	if err != nil {
+		return err
+	}
 
 	if d.turbineCLI == nil {
 		d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path)
