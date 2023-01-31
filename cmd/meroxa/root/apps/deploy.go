@@ -912,19 +912,17 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
 			return err
 		}
-
-		// Creates application
-		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
+		appInput := &meroxa.CreateApplicationInput{
 			Name:     d.appName,
 			Language: d.lang,
 			GitSha:   gitSha,
-		})
-
-		if d.flags.Environment != "" {
-			app.Environment = meroxa.ApplicationEnvironment{
-				EntityIdentifier: meroxa.EntityIdentifier{Name: d.flags.Environment},
-			}
 		}
+		// Creates application
+		if d.flags.Environment != "" {
+			appInput.Environment = &meroxa.EntityIdentifier{Name: d.flags.Environment}
+		}
+		app, err = d.client.CreateApplicationV2(ctx, appInput)
+
 		if err != nil {
 			if strings.Contains(err.Error(), "already exists") {
 				msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
