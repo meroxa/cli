@@ -748,6 +748,21 @@ func (mr *MockClientMockRecorder) ListResourceTypes(ctx interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceTypes", reflect.TypeOf((*MockClient)(nil).ListResourceTypes), ctx)
 }
 
+// ListResourceTypesV2 mocks base method.
+func (m *MockClient) ListResourceTypesV2(ctx context.Context) ([]meroxa.ResourceType, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListResourceTypesV2", ctx)
+	ret0, _ := ret[0].([]meroxa.ResourceType)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListResourceTypesV2 indicates an expected call of ListResourceTypesV2.
+func (mr *MockClientMockRecorder) ListResourceTypesV2(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListResourceTypesV2", reflect.TypeOf((*MockClient)(nil).ListResourceTypesV2), ctx)
+}
+
 // ListResources mocks base method.
 func (m *MockClient) ListResources(ctx context.Context) ([]*meroxa.Resource, error) {
 	m.ctrl.T.Helper()

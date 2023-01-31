@@ -147,7 +147,7 @@ func (c *Create) Execute(ctx context.Context) error {
 	var env string
 
 	input := meroxa.CreateResourceInput{
-		Type:     meroxa.ResourceType(c.flags.Type),
+		Type:     meroxa.ResourceTypeName(c.flags.Type),
 		Name:     c.args.Name,
 		URL:      c.flags.URL,
 		Metadata: nil,
