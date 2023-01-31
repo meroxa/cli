@@ -129,21 +129,61 @@ func TestListResourceTypesExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	var types = []string{
-		"postgres",
-		"s3",
-		"redshift",
-		"mysql",
-		"url",
-		"mongodb",
-		"elasticsearch",
-		"snowflakedb",
-		"bigquery",
+	var types = []meroxa.ResourceType{
+		{
+			Name:         string(meroxa.ResourceTypePostgres),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "PostgreSQL",
+			},
+		},
+		{
+			Name:         string(meroxa.ResourceTypeS3),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "AWS S3",
+			},
+		},
+		{
+			Name:         string(meroxa.ResourceTypeRedshift),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "AWS Redshift",
+			},
+		},
+		{
+			Name:         string(meroxa.ResourceTypeMysql),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "MySQL",
+			},
+		},
+		{
+			Name:         string(meroxa.ResourceTypeUrl),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "Generic HTTP",
+			},
+		},
+		{
+			Name:         string(meroxa.ResourceTypeMongodb),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "MongoDB",
+			},
+		},
+		{
+			Name:         string(meroxa.ResourceTypeElasticsearch),
+			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+			FormConfig: map[string]interface{}{
+				meroxa.ResourceTypeFormConfigHumanReadableKey: "Elasticsearch",
+			},
+		},
 	}
 
 	client.
 		EXPECT().
-		ListResourceTypes(ctx).
+		ListResourceTypesV2(ctx).
 		Return(types, nil)
 
 	l := &List{
@@ -167,7 +207,7 @@ func TestListResourceTypesExecution(t *testing.T) {
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotTypes []string
+	var gotTypes []meroxa.ResourceType
 	err = json.Unmarshal([]byte(gotJSONOutput), &gotTypes)
 
 	if err != nil {

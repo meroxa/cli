@@ -19,10 +19,9 @@ package resources
 import (
 	"context"
 
-	"github.com/meroxa/cli/utils/display"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -38,7 +37,7 @@ var (
 
 type listResourcesClient interface {
 	ListResources(ctx context.Context) ([]*meroxa.Resource, error)
-	ListResourceTypes(ctx context.Context) ([]string, error)
+	ListResourceTypesV2(ctx context.Context) ([]meroxa.ResourceType, error)
 }
 
 type List struct {
@@ -75,21 +74,15 @@ func (l *List) Aliases() []string {
 }
 
 func (l *List) Execute(ctx context.Context) error {
-	var err error
-
 	// What used to be `meroxa list resource-types`
 	if l.flags.Types || l.flags.Type || l.ListTypes {
-		var rTypes []string
-
-		rTypes, err = l.client.ListResourceTypes(ctx)
-
+		rTypes, err := l.client.ListResourceTypesV2(ctx)
 		if err != nil {
 			return err
 		}
 
 		l.logger.JSON(ctx, rTypes)
 		l.logger.Info(ctx, display.ResourceTypesTable(rTypes, l.hideHeaders))
-
 		return nil
 	}
 
