@@ -133,10 +133,13 @@ func TestResourceTypesTable(t *testing.T) {
 		PrintResourceTypesTable(types, false)
 	})
 
-	if !strings.Contains(out, "Resource Type") {
-		t.Errorf("table headers is missing")
+	if !strings.Contains(out, "NAME") {
+		t.Errorf("NAME table headers is missing")
 	}
-	if !strings.Contains(out, "Release Stage") {
+	if !strings.Contains(out, "TYPE") {
+		t.Errorf("TYPE table headers is missing")
+	}
+	if !strings.Contains(out, "RELEASE STAGE") {
 		t.Errorf("table headers is missing")
 	}
 
@@ -154,11 +157,14 @@ func TestResourceTypesTableWithoutHeaders(t *testing.T) {
 		PrintResourceTypesTable(types, true)
 	})
 
-	if strings.Contains(out, "Resource Type") {
-		t.Errorf("table headers unexpected")
+	if strings.Contains(out, "NAME") {
+		t.Errorf("NAME table headers unexpected")
 	}
-	if strings.Contains(out, "Release Stage") {
-		t.Errorf("table headers unexpected")
+	if strings.Contains(out, "TYPE") {
+		t.Errorf("TYPE table headers unexpected")
+	}
+	if strings.Contains(out, "RELEASE STAGE") {
+		t.Errorf("RELEASE STAGE table headers unexpected")
 	}
 
 	for _, rType := range types {
