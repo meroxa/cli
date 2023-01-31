@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/meroxa/turbine-core/pkg/ir"
+
 	"strings"
 	"testing"
 
@@ -39,6 +41,7 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "spec", required: false, hidden: true},
 		{name: "skip-collection-validation", required: false, hidden: false},
 		{name: "verbose", required: false, hidden: true},
+		{name: "env", required: false, hidden: true},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})
@@ -1238,6 +1241,58 @@ func TestTeardown(t *testing.T) {
 				require.Equal(t, tc.err, err)
 			} else {
 				require.Empty(t, tc.err)
+			}
+		})
+	}
+}
+
+func Test_validateFlags(t *testing.T) {
+	tests := []struct {
+		name     string
+		specFlag string
+		envFlag  string
+		lang     string
+		wantErr  error
+	}{
+		{
+			name: "Without --spec and without --env flags regardless of language",
+		},
+		{
+			name:     "With --spec and without --env flags regardless of language",
+			specFlag: ir.SpecVersion_0_2_0,
+		},
+		{
+			name:     "With --spec and with --env flags regardless of language",
+			specFlag: ir.SpecVersion_0_2_0,
+			envFlag:  "my-env",
+		},
+		{
+			name:    "Without --spec and with --env flags if language is ruby",
+			envFlag: "my-env",
+			lang:    turbine.Ruby,
+		},
+		{
+			name:    "Without --spec and with --env flags if language is not ruby",
+			envFlag: "my-env",
+			lang:    turbine.GoLang,
+			wantErr: fmt.Errorf(
+				"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
+				ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			d := &Deploy{}
+			d.flags.Spec = tc.specFlag
+			d.flags.Environment = tc.envFlag
+			d.lang = tc.lang
+
+			err := d.validateEnvironmentFlagCompatibility()
+			if tc.wantErr != nil {
+				require.Equal(t, err, tc.wantErr)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}

@@ -70,6 +70,7 @@ type Deploy struct {
 		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
 		DockerHubUserName        string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
 		DockerHubAccessToken     string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
+		Environment              string `long:"env" usage:"environment (name or UUID) where application will be deployed to" hidden:"true"`
 		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
 		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
@@ -834,16 +835,38 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 	return nil
 }
 
-//nolint:gocyclo,funlen
-func (d *Deploy) Execute(ctx context.Context) error {
+// validateEnvironmentFlagCompatibility takes care of some possible incompatibilities between flag values and languages.
+// Turbine Ruby will use a spec'ed version internally so --spec is not required when using environments which is
+// currently only available for those deployments using IR.
+func (d *Deploy) validateEnvironmentFlagCompatibility() error {
+	if d.flags.Spec == "" && d.flags.Environment != "" && d.lang != turbine.Ruby {
+		return fmt.Errorf(
+			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
+			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
+	}
+	return nil
+}
+
+// runValidations will perform the relevant validations in the order that's necessary.
+func (d *Deploy) runValidations(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
 
+	return d.validateEnvironmentFlagCompatibility()
+}
+
+//nolint:gocyclo,funlen
+func (d *Deploy) Execute(ctx context.Context) error {
 	var (
 		app *meroxa.Application
 		err error
 	)
+
+	err = d.runValidations(ctx)
+	if err != nil {
+		return err
+	}
 
 	if d.turbineCLI == nil {
 		d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path)
@@ -867,6 +890,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
+	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby at the moment)
 	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
 	if err != nil {
 		return err
@@ -882,16 +906,25 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if d.specVersion == "" && d.lang == turbine.Ruby {
 		d.specVersion = ir.LatestSpecVersion
 	}
+
+	// Intermediate Representation Workflow (if using --spec on apps deploy)
 	if d.specVersion != "" {
-		// Intermediate Representation Workflow
 		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
 			return err
 		}
+
 		// Creates application
 		app, err = d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
 			Name:     d.appName,
 			Language: d.lang,
-			GitSha:   gitSha})
+			GitSha:   gitSha,
+		})
+
+		if d.flags.Environment != "" {
+			app.Environment = meroxa.ApplicationEnvironment{
+				EntityIdentifier: meroxa.EntityIdentifier{Name: d.flags.Environment},
+			}
+		}
 		if err != nil {
 			if strings.Contains(err.Error(), "already exists") {
 				msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
