@@ -118,37 +118,60 @@ func TestResourcesTableWithoutHeaders(t *testing.T) {
 	}
 }
 
-func TestResourceTypesTable(t *testing.T) {
-	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
+var types = []meroxa.ResourceType{
+	{
+		Name:         string(meroxa.ResourceTypePostgres),
+		ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
+		FormConfig: map[string]interface{}{
+			meroxa.ResourceTypeFormConfigHumanReadableKey: "PostgreSQL",
+		},
+	},
+}
 
+func TestResourceTypesTable(t *testing.T) {
 	out := utils.CaptureOutput(func() {
 		PrintResourceTypesTable(types, false)
 	})
 
-	if !strings.Contains(out, "TYPES") {
+	if !strings.Contains(out, "NAME") {
+		t.Errorf("NAME table headers is missing")
+	}
+	if !strings.Contains(out, "TYPE") {
+		t.Errorf("TYPE table headers is missing")
+	}
+	if !strings.Contains(out, "RELEASE STAGE") {
 		t.Errorf("table headers is missing")
 	}
 
 	for _, rType := range types {
-		if !strings.Contains(out, rType) {
-			t.Errorf("%s, not found", rType)
+		if !strings.Contains(
+			out,
+			fmt.Sprintf("%s", rType.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])) {
+			t.Errorf("%s, not found", rType.Name)
 		}
 	}
 }
 
 func TestResourceTypesTableWithoutHeaders(t *testing.T) {
-	types := []string{"postgres", "s3", "redshift", "mysql", "jdbc", "url", "mongodb"}
 	out := utils.CaptureOutput(func() {
 		PrintResourceTypesTable(types, true)
 	})
 
-	if strings.Contains(out, "TYPES") {
-		t.Errorf("table header should not be displayed")
+	if strings.Contains(out, "NAME") {
+		t.Errorf("NAME table headers unexpected")
+	}
+	if strings.Contains(out, "TYPE") {
+		t.Errorf("TYPE table headers unexpected")
+	}
+	if strings.Contains(out, "RELEASE STAGE") {
+		t.Errorf("RELEASE STAGE table headers unexpected")
 	}
 
 	for _, rType := range types {
-		if !strings.Contains(out, rType) {
-			t.Errorf("%s, not found", rType)
+		if !strings.Contains(
+			out,
+			fmt.Sprintf("%s", rType.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])) {
+			t.Errorf("%s, not found", rType.Name)
 		}
 	}
 }

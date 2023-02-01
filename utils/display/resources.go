@@ -2,8 +2,10 @@ package display
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/alexeyco/simpletable"
+
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -128,20 +130,54 @@ func PrintResourcesTable(resources []*meroxa.Resource, hideHeaders bool) {
 	fmt.Println(ResourcesTable(resources, hideHeaders))
 }
 
-func ResourceTypesTable(types []string, hideHeaders bool) string {
+func ResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) string {
+	gaResourceNames := []string{}
+	gaResourceTypes := make(map[string]string)
+	betaResourceNames := []string{}
+	betaResourceTypes := make(map[string]string)
+
+	for _, t := range types {
+		val := fmt.Sprintf("%s", t.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])
+		if val == "" {
+			continue
+		}
+		if t.ReleaseStage == meroxa.ResourceTypeReleaseStageGA {
+			gaResourceNames = append(gaResourceNames, val)
+			gaResourceTypes[val] = t.Name
+		} else if t.ReleaseStage == meroxa.ResourceTypeReleaseStageBeta {
+			betaResourceNames = append(betaResourceNames, val)
+			betaResourceTypes[val] = t.Name
+		}
+	}
+	sort.Strings(gaResourceNames)
+	sort.Strings(betaResourceNames)
+
 	table := simpletable.New()
 
 	if !hideHeaders {
 		table.Header = &simpletable.Header{
 			Cells: []*simpletable.Cell{
-				{Align: simpletable.AlignCenter, Text: "TYPES"},
+				{Align: simpletable.AlignCenter, Text: "NAME"},
+				{Align: simpletable.AlignCenter, Text: "TYPE"},
+				{Align: simpletable.AlignCenter, Text: "RELEASE STAGE"},
 			},
 		}
 	}
 
-	for _, t := range types {
+	for _, t := range gaResourceNames {
 		r := []*simpletable.Cell{
-			{Align: simpletable.AlignRight, Text: t},
+			{Align: simpletable.AlignLeft, Text: t},
+			{Align: simpletable.AlignLeft, Text: gaResourceTypes[t]},
+			{Align: simpletable.AlignLeft, Text: string(meroxa.ResourceTypeReleaseStageGA)},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, r)
+	}
+	for _, t := range betaResourceNames {
+		r := []*simpletable.Cell{
+			{Align: simpletable.AlignLeft, Text: t},
+			{Align: simpletable.AlignLeft, Text: betaResourceTypes[t]},
+			{Align: simpletable.AlignLeft, Text: string(meroxa.ResourceTypeReleaseStageBeta)},
 		}
 
 		table.Body.Cells = append(table.Body.Cells, r)
@@ -150,6 +186,6 @@ func ResourceTypesTable(types []string, hideHeaders bool) string {
 	return table.String()
 }
 
-func PrintResourceTypesTable(types []string, hideHeaders bool) {
+func PrintResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) {
 	fmt.Println(ResourceTypesTable(types, hideHeaders))
 }
