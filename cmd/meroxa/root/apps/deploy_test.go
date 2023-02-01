@@ -229,43 +229,45 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 	}
 }
 
-func TestGetResourceCheckErrorMessage(t *testing.T) {
+func Test_validateResource(t *testing.T) {
+	appResources := []turbine.ApplicationResource{
+		{Name: "nozzle"},
+		{Name: "engine"},
+	}
 	testCases := []struct {
-		name                 string
-		resources            []turbine.ApplicationResource
-		resourceState        string
-		expectedErrorMessage string
+		name        string
+		envName     string
+		resourceEnv string
+		state       string
+		wantErr     error
 	}{
 		{
-			name: "getResourceCheckErrorMessage returns an empty response if all resources are found and available",
-			resources: []turbine.ApplicationResource{
-				{
-					Name: "nozzle",
-				},
-				{
-					Name: "engine",
-				},
-			},
-			resourceState:        "ready",
-			expectedErrorMessage: "",
+			name:  "resources are valid",
+			state: "ready",
 		},
 		{
-			name: "getResourceCheckErrorMessage returns an error response if resources are unavailable",
-			resources: []turbine.ApplicationResource{
-				{
-					Name: "nozzle",
-				},
-				{
-					Name: "engine",
-				},
-			},
-			resourceState:        "",
-			expectedErrorMessage: "resource \"nozzle\" is not ready and usable; resource \"engine\" is not ready and usable",
+			name:        "resources are valid in an env",
+			state:       "ready",
+			envName:     "test-env",
+			resourceEnv: "test-env",
+		},
+		{
+			name:    "invalid when resources are not available",
+			wantErr: errors.New(`resource "nozzle" is not ready and usable; resource "engine" is not ready and usable`),
+		},
+		{
+			name:        "invalid when environment does not match",
+			wantErr:     errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`),
+			state:       "ready",
+			envName:     "test-env",
+			resourceEnv: "wrong-env",
 		},
 	}
 
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
@@ -276,24 +278,38 @@ func TestGetResourceCheckErrorMessage(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			firstName := "nozzle"
-			secondName := "engine"
-
-			firstResource := utils.GenerateResourceWithNameAndStatus(firstName, tc.resourceState)
-			secondResource := utils.GenerateResourceWithNameAndStatus(secondName, tc.resourceState)
+			r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, tc.state)
+			r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, tc.state)
 
 			client.
 				EXPECT().
-				GetResourceByNameOrID(ctx, firstResource.Name).
-				Return(&firstResource, nil)
+				GetResourceByNameOrID(ctx, r1.Name).
+				Return(&r1, nil)
 
 			client.
 				EXPECT().
-				GetResourceByNameOrID(ctx, secondResource.Name).
-				Return(&secondResource, nil)
+				GetResourceByNameOrID(ctx, r2.Name).
+				Return(&r2, nil)
 
-			result := d.getResourceCheckErrorMessage(ctx, tc.resources)
-			assert.Equal(t, tc.expectedErrorMessage, result)
+			if tc.envName != "" {
+				d.flags.Environment = tc.envName
+			}
+
+			if tc.resourceEnv != "" {
+				r1.Environment = &meroxa.EntityIdentifier{
+					Name: tc.resourceEnv,
+				}
+				r2.Environment = &meroxa.EntityIdentifier{
+					Name: tc.resourceEnv,
+				}
+			}
+
+			err := d.validateResources(ctx, appResources)
+			if tc.wantErr != nil {
+				assert.Equal(t, tc.wantErr.Error(), err.Error())
+			} else {
+				assert.True(t, err == nil)
+			}
 		})
 	}
 }
