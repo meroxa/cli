@@ -18,6 +18,7 @@ package global
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,22 +36,61 @@ const (
 func GetMeroxaAPIURL() string {
 	return getEnvVal([]string{"MEROXA_API_URL"}, "https://api.meroxa.io")
 }
+
 func GetMeroxaAuthAudience() string {
 	return getEnvVal([]string{"MEROXA_AUTH_AUDIENCE", "MEROXA_AUDIENCE"}, "https://api.meroxa.io/v1")
 }
+
 func GetMeroxaAuthDomain() string {
 	return getEnvVal([]string{"MEROXA_AUTH_DOMAIN", "MEROXA_DOMAIN"}, "auth.meroxa.io")
 }
+
 func GetMeroxaAuthClientID() string {
 	return getEnvVal([]string{"MEROXA_AUTH_CLIENT_ID", "MEROXA_CLIENT_ID"}, "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
 }
+
 func GetLocalTurbineJSSetting() string {
 	return getEnvVal([]string{"MEROXA_USE_LOCAL_TURBINE_JS"}, "false")
+}
+
+func getMeroxaAuthCallbackPort() string {
+	return getEnvVal([]string{MeroxaAuthCallbackPort}, "21900")
+}
+
+// getMeroxaAuthCallbackHost will return the callback host.
+// Note: If port is desired, it'll need to be included here.
+func getMeroxaAuthCallbackHost() string {
+	defaultHost := fmt.Sprintf("localhost:%s", getMeroxaAuthCallbackPort())
+	// check if port was included or not
+	return getEnvVal([]string{MeroxaAuthCallbackHost}, defaultHost)
+}
+
+func getMeroxaAuthCallbackProtocol() string {
+	return getEnvVal([]string{MeroxaAuthCallbackProtocol}, "http")
+}
+
+// GetMeroxaAuthCallbackURL will return either the user configured oauth callback url
+// or a default one: "http://localhost:21900/oauth/callback".
+func GetMeroxaAuthCallbackURL() string {
+	callback := url.URL{
+		Scheme: getMeroxaAuthCallbackProtocol(),
+		Host:   getMeroxaAuthCallbackHost(),
+		Path:   "/oauth/callback",
+	}
+	return getEnvVal([]string{MeroxaAuthCallbackURL}, callback.String())
 }
 
 // getEnvVal returns the value of either the first existing key specified in keys, or defaultVal if none were present.
 func getEnvVal(keys []string, defaultVal string) string {
 	for _, key := range keys {
+		if Config != nil {
+			// First tries to return the value from the meroxa configuration file
+			if val := Config.GetString(key); val != "" {
+				return val
+			}
+		}
+
+		/// Tries to fetch it from the environment if not.
 		if val, ok := os.LookupEnv(key); ok {
 			return val
 		}

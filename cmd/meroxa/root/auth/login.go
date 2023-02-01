@@ -38,10 +38,6 @@ import (
 	cv "github.com/nirasan/go-oauth-pkce-code-verifier"
 )
 
-const (
-	callbackURL = "http://localhost:21900/oauth/callback"
-)
-
 var (
 	_ builder.CommandWithDocs    = (*Login)(nil)
 	_ builder.CommandWithLogger  = (*Login)(nil)
@@ -183,12 +179,13 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audienc
 
 func (l *Login) login(ctx context.Context) error {
 	l.logger.Infof(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
+	l.logger.Infof(ctx, global.GetMeroxaAuthCallbackURL())
 	l.authorizeUser(
 		ctx,
 		global.GetMeroxaAuthClientID(),
 		global.GetMeroxaAuthDomain(),
 		global.GetMeroxaAuthAudience(),
-		callbackURL,
+		global.GetMeroxaAuthCallbackURL(),
 	)
 	return nil
 }
