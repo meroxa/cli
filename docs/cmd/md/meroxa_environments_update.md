@@ -17,7 +17,7 @@ meroxa env update my-env --name new-name --config aws_access_key_id=my_access_ke
 ### Options
 
 ```
-  -c, --config strings   updated environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)
+  -c, --config strings   updated environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)
   -h, --help             help for update
       --name string      updated environment name, when specified
   -y, --yes              skip confirmation prompt
