@@ -53,7 +53,7 @@ type Update struct {
 
 	flags struct {
 		Name   string   `long:"name" usage:"updated environment name, when specified"`
-		Config []string `short:"c" long:"config" usage:"updated environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_access_secret=my_access_secret)"` //nolint:lll
+		Config []string `short:"c" long:"config" usage:"updated environment configuration based on type and provider (e.g.: --config aws_access_key_id=my_access_key --config aws_secret_access_key=my_access_secret)"` //nolint:lll
 	}
 
 	envCfg map[string]interface{}
