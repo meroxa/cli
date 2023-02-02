@@ -257,7 +257,7 @@ func Test_validateResource(t *testing.T) {
 		},
 		{
 			name:        "invalid when environment does not match",
-			wantErr:     errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`),
+			wantErr:     errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
 			state:       "ready",
 			envName:     "test-env",
 			resourceEnv: "wrong-env",
