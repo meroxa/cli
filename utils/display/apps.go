@@ -13,10 +13,6 @@ type AppExtendedConnector struct {
 	Logs      string
 }
 
-func itShouldEnvInfo(env meroxa.ApplicationEnvironment) bool {
-	return env.Type != "" && env.Type != meroxa.EnvironmentTypeCommon
-}
-
 func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	if len(apps) == 0 {
 		return ""
@@ -37,7 +33,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 
 		env, err := app.Environment.GetNameOrUUID()
 
-		if err == nil && itShouldEnvInfo(app.Environment) {
+		if err == nil {
 			withEnvironment = true
 			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: env})
 		}
@@ -105,6 +101,7 @@ func AppTable(app *meroxa.Application) string {
 	if subTable != "" {
 		output += "\n" + subTable
 	}
+
 	subTable = appEnvironmentTable(app.Environment)
 	if subTable != "" {
 		output += "\n" + subTable
@@ -155,16 +152,11 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 	return subTable
 }
 
-func appEnvironmentTable(env meroxa.ApplicationEnvironment) string {
-	if !itShouldEnvInfo(env) {
-		return ""
-	}
+func appEnvironmentTable(env meroxa.EntityIdentifier) string {
 	subTable := "\tEnvironment\n"
 
 	subTable += fmt.Sprintf("\t    %s\n", env.Name)
-	subTable += fmt.Sprintf("\t\t\t\t%5s:\t\t\t%s\n", "UUID", env.UUID)
-	subTable += fmt.Sprintf("\t\t\t\t %5s:  %s\n", "Provider", env.Provider)
-	subTable += fmt.Sprintf("\t\t\t\t%5s:\t\t\t%s\n", "Type", env.Type)
+	subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", env.UUID)
 
 	return subTable
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -35,12 +36,6 @@ type ApplicationResource struct {
 	Collection   ResourceCollection `json:"collection,omitempty"`
 }
 
-type ApplicationEnvironment struct {
-	EntityIdentifier
-	Provider EnvironmentProvider `json:"provider"`
-	Type     EnvironmentType     `json:"type"`
-}
-
 type EntityDetails struct {
 	EntityIdentifier
 	ResourceUUID string `json:"resource_uuid,omitempty"`
@@ -50,20 +45,20 @@ type EntityDetails struct {
 
 // Application represents the Meroxa Application type within the Meroxa API
 type Application struct {
-	UUID        string                 `json:"uuid"`
-	Name        string                 `json:"name"`
-	Language    string                 `json:"language"`
-	GitSha      string                 `json:"git_sha,omitempty"`
-	Status      ApplicationStatus      `json:"status,omitempty"`
-	Environment ApplicationEnvironment `json:"environment,omitempty"`
-	Pipeline    EntityDetails          `json:"pipeline,omitempty"`
-	Connectors  []EntityDetails        `json:"connectors,omitempty"`
-	Functions   []EntityDetails        `json:"functions,omitempty"`
-	Resources   []ApplicationResource  `json:"resources,omitempty"`
-	Deployments []EntityIdentifier     `json:"deployments,omitempty"`
-	CreatedAt   time.Time              `json:"created_at"`
-	UpdatedAt   time.Time              `json:"updated_at"`
-	DeletedAt   time.Time              `json:"deleted_at,omitempty"`
+	UUID        string                `json:"uuid"`
+	Name        string                `json:"name"`
+	Language    string                `json:"language"`
+	GitSha      string                `json:"git_sha,omitempty"`
+	Status      ApplicationStatus     `json:"status,omitempty"`
+	Environment EntityIdentifier      `json:"environment,omitempty"`
+	Pipeline    EntityDetails         `json:"pipeline,omitempty"`
+	Connectors  []EntityDetails       `json:"connectors,omitempty"`
+	Functions   []EntityDetails       `json:"functions,omitempty"`
+	Resources   []ApplicationResource `json:"resources,omitempty"`
+	Deployments []EntityIdentifier    `json:"deployments,omitempty"`
+	CreatedAt   time.Time             `json:"created_at"`
+	UpdatedAt   time.Time             `json:"updated_at"`
+	DeletedAt   time.Time             `json:"deleted_at,omitempty"`
 }
 
 type ApplicationLogs struct {
@@ -205,6 +200,10 @@ func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Applic
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(a)
+	fmt.Println(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body) // response body is []byte
+	fmt.Println(string(body))
 
 	return a, nil
 }
@@ -245,6 +244,7 @@ func (c *client) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*Ap
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(l)
 
 	return l, nil
 }
