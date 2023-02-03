@@ -238,6 +238,7 @@ func Test_validateResource(t *testing.T) {
 	appResources := []turbine.ApplicationResource{
 		{Name: "nozzle"},
 		{Name: "engine"},
+		{Name: "engine"}, // should be dedupped in all cases.
 	}
 	testCases := []struct {
 		name        string

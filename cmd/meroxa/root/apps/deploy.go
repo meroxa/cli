@@ -567,6 +567,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 
 func (d *Deploy) validateResources(ctx context.Context, rr []turbine.ApplicationResource) error {
 	var errs []error
+	validated := make(map[string]bool)
 
 	wrapNotFound := func(name string, err error) error {
 		if strings.Contains(err.Error(), "could not find") {
@@ -576,6 +577,11 @@ func (d *Deploy) validateResources(ctx context.Context, rr []turbine.Application
 	}
 
 	for _, r := range rr {
+		// dedup resources for validation
+		if _, ok := validated[r.Name]; ok {
+			continue
+		}
+
 		resource, err := d.client.GetResourceByNameOrID(ctx, r.Name)
 		// order is important
 		switch {
@@ -606,6 +612,8 @@ func (d *Deploy) validateResources(ctx context.Context, rr []turbine.Application
 				resource.Environment.Name,
 			))
 		}
+
+		validated[r.Name] = true
 	}
 
 	return wrapErrors(errs)
