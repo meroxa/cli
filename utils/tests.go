@@ -51,7 +51,7 @@ func GenerateResourceWithNameAndStatus(resourceName, resourceState string) merox
 	return newResource
 }
 
-// Add environment to resource
+// Add environment to resource.
 func ResourceWithEnvironment(r meroxa.Resource, env string) meroxa.Resource {
 	r.Environment = &meroxa.EntityIdentifier{
 		UUID: "424ec647-9f0f-45a5-8e4b-3e0441f12444",
