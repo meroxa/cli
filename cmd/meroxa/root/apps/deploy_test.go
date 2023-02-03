@@ -287,7 +287,7 @@ func Test_validateResource(t *testing.T) {
 			}(),
 		},
 		{
-			name: "invalid when resources are not available",
+			name:    "invalid when resources are not available",
 			deploy: func() *Deploy {
 				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "")
 				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "")
@@ -304,7 +304,7 @@ func Test_validateResource(t *testing.T) {
 			wantErr: errors.New(`resource "nozzle" is not ready and usable; resource "engine" is not ready and usable`),
 		},
 		{
-			name: "invalid when envs do not match",
+			name:        "invalid when envs do not match",
 			deploy: func() *Deploy {
 				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
 				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
@@ -323,10 +323,10 @@ func Test_validateResource(t *testing.T) {
 
 				return d
 			}(),
-			wantErr: errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
+			wantErr:     errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
 		},
 		{
-			name: "invalid when env is common and resource in not",
+			name:        "invalid when env is common and resource in not",
 			deploy: func() *Deploy {
 				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
 				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
@@ -344,7 +344,7 @@ func Test_validateResource(t *testing.T) {
 
 				return d
 			}(),
-			wantErr: errors.New(`resource "nozzle" is in common env, but app is in "wrong-env"; resource "engine" is in common env, but app is in "wrong-env"`), //nolint:lll
+			wantErr:     errors.New(`resource "nozzle" is in "wrong-env", but app is in common; resource "engine" is in "wrong-env", but app is in common`), //nolint:lll
 		},
 	}
 

@@ -592,7 +592,7 @@ func (d *Deploy) validateResources(ctx context.Context, rr []turbine.Application
 		// app is provisioned in common env, but resource was added at self hosted env
 		case d.flags.Environment == "" && resource.Environment != nil:
 			errs = append(errs, fmt.Errorf(
-				"resource %q is in common env, but app is in %q",
+				"resource %q is in %q, but app is in common",
 				r.Name,
 				resource.Environment.Name,
 			))
