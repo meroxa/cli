@@ -583,12 +583,21 @@ func (d *Deploy) validateResources(ctx context.Context, rr []turbine.Application
 			errs = append(errs, wrapNotFound(r.Name, err))
 		case resource.Status.State != meroxa.ResourceStateReady:
 			errs = append(errs, fmt.Errorf("resource %q is not ready and usable", r.Name))
+		// app is provisioned in common env, but resource was added at self hosted env
+		case d.flags.Environment == "" && resource.Environment != nil:
+			errs = append(errs, fmt.Errorf(
+				"resource %q is in common env, but app is in %q",
+				r.Name,
+				resource.Environment.Name,
+			))
+		// app is provisioned in an env, but resource is in common env
 		case d.flags.Environment != "" && resource.Environment == nil:
 			errs = append(errs, fmt.Errorf(
 				"resource %q is not in app env %q, but in common",
 				r.Name,
 				d.flags.Environment,
 			))
+		// app is provisioned in an env, but resource is in different self hosted env
 		case d.flags.Environment != "" && resource.Environment.Name != d.flags.Environment:
 			errs = append(errs, fmt.Errorf(
 				"resource %q is not in app env %q, but in %q",
@@ -631,6 +640,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		return err
 	}
 
+	d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
 	return nil
 }
 

@@ -230,12 +230,18 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 }
 
 func Test_validateResource(t *testing.T) {
+
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	appResources := []turbine.ApplicationResource{
 		{Name: "nozzle"},
 		{Name: "engine"},
 	}
 	testCases := []struct {
 		name        string
+		deploy      *Deploy
 		envName     string
 		resourceEnv string
 		state       string
@@ -244,67 +250,106 @@ func Test_validateResource(t *testing.T) {
 		{
 			name:  "resources are valid",
 			state: "ready",
+			deploy: func() *Deploy {
+				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
+				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
+
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
+				client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
+
+				return &Deploy{
+					client: client,
+					logger: log.NewTestLogger(),
+				}
+			}(),
 		},
 		{
-			name:        "resources are valid in an env",
-			state:       "ready",
-			envName:     "test-env",
-			resourceEnv: "test-env",
+			name: "resources are valid in an env",
+			deploy: func() *Deploy {
+				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
+				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
+				r1.Environment = &meroxa.EntityIdentifier{Name: "my-env"}
+				r2.Environment = &meroxa.EntityIdentifier{Name: "my-env"}
+
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
+				client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
+
+				d := &Deploy{
+					client: client,
+					logger: log.NewTestLogger(),
+				}
+				d.flags.Environment = "my-env"
+
+				return d
+			}(),
 		},
 		{
-			name:    "invalid when resources are not available",
+			name: "invalid when resources are not available",
+			deploy: func() *Deploy {
+				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "")
+				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "")
+
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
+				client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
+
+				return &Deploy{
+					client: client,
+					logger: log.NewTestLogger(),
+				}
+			}(),
 			wantErr: errors.New(`resource "nozzle" is not ready and usable; resource "engine" is not ready and usable`),
 		},
 		{
-			name:        "invalid when environment does not match",
-			wantErr:     errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
-			state:       "ready",
-			envName:     "test-env",
-			resourceEnv: "wrong-env",
+			name: "invalid when envs do not match",
+			deploy: func() *Deploy {
+				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
+				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
+				r1.Environment = &meroxa.EntityIdentifier{Name: "wrong-env"}
+				r2.Environment = &meroxa.EntityIdentifier{Name: "wrong-env"}
+
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
+				client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
+
+				d := &Deploy{
+					client: client,
+					logger: log.NewTestLogger(),
+				}
+				d.flags.Environment = "test-env"
+
+				return d
+			}(),
+			wantErr: errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
 		},
-	}
+		{
+			name: "invalid when env is common and resource in not",
+			deploy: func() *Deploy {
+				r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
+				r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
+				r1.Environment = &meroxa.EntityIdentifier{Name: "wrong-env"}
+				r2.Environment = &meroxa.EntityIdentifier{Name: "wrong-env"}
 
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
+				client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
 
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
+				d := &Deploy{
+					client: client,
+					logger: log.NewTestLogger(),
+				}
 
-	d := &Deploy{
-		client: client,
-		logger: logger,
+				return d
+			}(),
+			wantErr: errors.New(`resource "nozzle" is in common env, but app is in "wrong-env"; resource "engine" is in common env, but app is in "wrong-env"`), //nolint:lll
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, tc.state)
-			r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, tc.state)
-
-			client.
-				EXPECT().
-				GetResourceByNameOrID(ctx, r1.Name).
-				Return(&r1, nil)
-
-			client.
-				EXPECT().
-				GetResourceByNameOrID(ctx, r2.Name).
-				Return(&r2, nil)
-
-			if tc.envName != "" {
-				d.flags.Environment = tc.envName
-			}
-
-			if tc.resourceEnv != "" {
-				r1.Environment = &meroxa.EntityIdentifier{
-					Name: tc.resourceEnv,
-				}
-				r2.Environment = &meroxa.EntityIdentifier{
-					Name: tc.resourceEnv,
-				}
-			}
-
-			err := d.validateResources(ctx, appResources)
+			err := tc.deploy.validateResources(ctx, appResources)
 			if tc.wantErr != nil {
 				assert.Equal(t, tc.wantErr.Error(), err.Error())
 			} else {
