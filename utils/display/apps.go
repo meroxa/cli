@@ -37,6 +37,9 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 			withEnvironment = true
 			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: env})
 		}
+		if withEnvironment == true && err != nil {
+			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: "common"})
+		}
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
 
@@ -102,10 +105,13 @@ func AppTable(app *meroxa.Application) string {
 		output += "\n" + subTable
 	}
 
-	subTable = appEnvironmentTable(app.Environment)
-	if subTable != "" {
-		output += "\n" + subTable
+	if _, ok := app.Environment.GetNameOrUUID(); ok == nil {
+		subTable = appEnvironmentTable(app.Environment)
+		if subTable != "" {
+			output += "\n" + subTable
+		}
 	}
+
 	subTable = appFunctionsTable(app.Functions)
 	if subTable != "" {
 		output += "\n" + subTable

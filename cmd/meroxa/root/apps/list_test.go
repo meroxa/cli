@@ -55,13 +55,14 @@ func TestListAppsExecution(t *testing.T) {
 			},
 		},
 		{
-			desc: "With applications in a common environment",
+			desc: "With applications in a private and common environment",
 			apps: func() []*meroxa.Application {
-				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypeCommon, "")
-				return []*meroxa.Application{&aa}
+				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypePrivate, meroxa.EnvironmentProviderAws)
+				aa2 := utils.GenerateApplication("")
+				return []*meroxa.Application{&aa, &aa2}
 			},
 			shouldErrorOnEnvInfo: func(output string) bool {
-				return strings.Contains(output, "ENVIRONMENT")
+				return !strings.Contains(output, "ENVIRONMENT")
 			},
 		},
 		{
@@ -85,7 +86,6 @@ func TestListAppsExecution(t *testing.T) {
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
 			logger := log.NewTestLogger()

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -200,11 +199,6 @@ func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Applic
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(a)
-	fmt.Println(resp.Body)
-	body, err := ioutil.ReadAll(resp.Body) // response body is []byte
-	fmt.Println(string(body))
-
 	return a, nil
 }
 
@@ -244,7 +238,6 @@ func (c *client) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*Ap
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(l)
 
 	return l, nil
 }
