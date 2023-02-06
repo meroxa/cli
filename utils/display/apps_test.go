@@ -59,16 +59,6 @@ func TestAppDescribeTable(t *testing.T) {
 			},
 		},
 		{
-			desc: "Application with a common environment",
-			app: func() *meroxa.Application {
-				a := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypeCommon, "")
-				return &a
-			},
-			shouldErrorOnEnvInfo: func(output string) bool {
-				return strings.Contains(output, "Environment")
-			},
-		},
-		{
 			desc: "Application with in a private environment",
 			app: func() *meroxa.Application {
 				a := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypePrivate, meroxa.EnvironmentProviderAws)

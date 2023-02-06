@@ -196,12 +196,11 @@ func GenerateApplication(state meroxa.ApplicationState) meroxa.Application {
 func GenerateApplicationWithEnv(
 	state meroxa.ApplicationState,
 	envType meroxa.EnvironmentType,
-	provider meroxa.EnvironmentProvider) meroxa.Application {
+	provider meroxa.EnvironmentProvider,
+) meroxa.Application {
 	app := GenerateApplication(state)
-	app.Environment = meroxa.ApplicationEnvironment{
-		EntityIdentifier: meroxa.EntityIdentifier{UUID: uuid.NewString(), Name: "my-env"},
-		Provider:         provider,
-		Type:             envType,
+	app.Environment = &meroxa.EntityIdentifier{
+		UUID: uuid.NewString(), Name: "my-env",
 	}
 	return app
 }

@@ -13,16 +13,10 @@ type AppExtendedConnector struct {
 	Logs      string
 }
 
-func itShouldEnvInfo(env meroxa.ApplicationEnvironment) bool {
-	return env.Type != "" && env.Type != meroxa.EnvironmentTypeCommon
-}
-
 func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 	if len(apps) == 0 {
 		return ""
 	}
-
-	withEnvironment := false
 
 	table := simpletable.New()
 
@@ -35,12 +29,12 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 			{Align: simpletable.AlignLeft, Text: string(app.Status.State)},
 		}
 
-		env, err := app.Environment.GetNameOrUUID()
-
-		if err == nil && itShouldEnvInfo(app.Environment) {
-			withEnvironment = true
-			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: env})
+		if app.Environment != nil && app.Environment.Name != "" {
+			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: app.Environment.Name})
+		} else {
+			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: string(meroxa.EnvironmentTypeCommon)})
 		}
+
 		table.Body.Cells = append(table.Body.Cells, r)
 	}
 
@@ -51,10 +45,7 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 			{Align: simpletable.AlignCenter, Text: "LANGUAGE"},
 			{Align: simpletable.AlignCenter, Text: "GIT SHA"},
 			{Align: simpletable.AlignCenter, Text: "STATE"},
-		}
-
-		if withEnvironment {
-			cells = append(cells, &simpletable.Cell{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"})
+			{Align: simpletable.AlignCenter, Text: "ENVIRONMENT"},
 		}
 
 		table.Header = &simpletable.Header{
@@ -105,10 +96,16 @@ func AppTable(app *meroxa.Application) string {
 	if subTable != "" {
 		output += "\n" + subTable
 	}
-	subTable = appEnvironmentTable(app.Environment)
-	if subTable != "" {
-		output += "\n" + subTable
+
+	if app.Environment != nil {
+		if _, ok := app.Environment.GetNameOrUUID(); ok == nil {
+			subTable = appEnvironmentTable(app.Environment)
+			if subTable != "" {
+				output += "\n" + subTable
+			}
+		}
 	}
+
 	subTable = appFunctionsTable(app.Functions)
 	if subTable != "" {
 		output += "\n" + subTable
@@ -155,16 +152,11 @@ func appResourcesTable(resources []meroxa.ApplicationResource, connectors []mero
 	return subTable
 }
 
-func appEnvironmentTable(env meroxa.ApplicationEnvironment) string {
-	if !itShouldEnvInfo(env) {
-		return ""
-	}
+func appEnvironmentTable(env *meroxa.EntityIdentifier) string {
 	subTable := "\tEnvironment\n"
 
 	subTable += fmt.Sprintf("\t    %s\n", env.Name)
-	subTable += fmt.Sprintf("\t\t\t\t%5s:\t\t\t%s\n", "UUID", env.UUID)
-	subTable += fmt.Sprintf("\t\t\t\t %5s:  %s\n", "Provider", env.Provider)
-	subTable += fmt.Sprintf("\t\t\t\t%5s:\t\t\t%s\n", "Type", env.Type)
+	subTable += fmt.Sprintf("\t\t%5s:   %s\n", "UUID", env.UUID)
 
 	return subTable
 }
