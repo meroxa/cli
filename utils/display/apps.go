@@ -29,11 +29,8 @@ func AppsTable(apps []*meroxa.Application, hideHeaders bool) string {
 			{Align: simpletable.AlignLeft, Text: string(app.Status.State)},
 		}
 
-		if app.Environment != nil {
-			env, err := app.Environment.GetNameOrUUID()
-			if err == nil {
-				r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: env})
-			}
+		if app.Environment != nil && app.Environment.Name != "" {
+			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: app.Environment.Name})
 		} else {
 			r = append(r, &simpletable.Cell{Align: simpletable.AlignLeft, Text: string(meroxa.EnvironmentTypeCommon)})
 		}
