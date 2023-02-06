@@ -45,13 +45,13 @@ func TestListAppsExecution(t *testing.T) {
 		shouldErrorOnEnvInfo func(string) bool
 	}{
 		{
-			desc: "With applications with no environment",
+			desc: "With applications with common environment",
 			apps: func() []*meroxa.Application {
 				aa := utils.GenerateApplication("")
 				return []*meroxa.Application{&aa}
 			},
 			shouldErrorOnEnvInfo: func(output string) bool {
-				return strings.Contains(output, "ENVIRONMENT")
+				return !strings.Contains(output, "ENVIRONMENT") && !strings.Contains(output, "common")
 			},
 		},
 		{

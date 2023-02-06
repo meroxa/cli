@@ -49,7 +49,7 @@ type Application struct {
 	Language    string                `json:"language"`
 	GitSha      string                `json:"git_sha,omitempty"`
 	Status      ApplicationStatus     `json:"status,omitempty"`
-	Environment EntityIdentifier      `json:"environment,omitempty"`
+	Environment *EntityIdentifier     `json:"environment,omitempty"`
 	Pipeline    EntityDetails         `json:"pipeline,omitempty"`
 	Connectors  []EntityDetails       `json:"connectors,omitempty"`
 	Functions   []EntityDetails       `json:"functions,omitempty"`
