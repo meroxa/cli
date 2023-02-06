@@ -482,6 +482,12 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 		return "", nil
 	}
 
+	// Prevent creation of function in an Env
+	if d.flags.Environment != "" {
+		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		return "", errors.New("cannot deploy an application with a functions to an environment")
+	}
+
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
 
 	d.localDeploy.Lang = d.lang

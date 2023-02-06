@@ -848,6 +848,68 @@ func TestGetPlatformImage(t *testing.T) {
 	}
 }
 
+func TestGetAppImage(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	logger := log.NewTestLogger()
+	appName := "my-app"
+
+	tests := []struct {
+		name           string
+		meroxaClient   func() meroxa.Client
+		mockTurbineCLI func() turbine.CLI
+		err            error
+	}{
+		{
+			name: "Don't build app image when for app with no function",
+			meroxaClient: func() meroxa.Client {
+				return mock.NewMockClient(ctrl)
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					NeedsToBuild(ctx, appName).
+					Return(false, nil)
+				return mockTurbineCLI
+			},
+		},
+		{
+			name: "Fail to build app image when deploying to an environment",
+			meroxaClient: func() meroxa.Client {
+				return mock.NewMockClient(ctrl)
+			},
+			mockTurbineCLI: func() turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					NeedsToBuild(ctx, appName).
+					Return(true, nil)
+				return mockTurbineCLI
+			},
+			err: errors.New("cannot deploy an application with a functions to an environment"),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			d := &Deploy{
+				client:     tc.meroxaClient(),
+				turbineCLI: tc.mockTurbineCLI(),
+				logger:     logger,
+				appName:    appName,
+			}
+			d.flags.Environment = "my-env"
+
+			_, err := d.getAppImage(ctx)
+			if err != nil {
+				require.NotNil(t, tc.err)
+				require.Equal(t, tc.err, err)
+			} else {
+				require.Empty(t, tc.err)
+			}
+		})
+	}
+}
+
 func TestPrepareAppName(t *testing.T) {
 	ctx := context.Background()
 	appName := "my-app"
