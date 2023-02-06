@@ -885,7 +885,7 @@ func TestGetAppImage(t *testing.T) {
 					Return(true, nil)
 				return mockTurbineCLI
 			},
-			err: errors.New("cannot deploy an application with a functions to an environment"),
+			err: errors.New("cannot deploy an application with a function to an environment"),
 		},
 	}
 
