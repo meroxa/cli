@@ -229,71 +229,93 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 	}
 }
 
-func TestGetResourceCheckErrorMessage(t *testing.T) {
-	testCases := []struct {
-		name                 string
-		resources            []turbine.ApplicationResource
-		resourceState        string
-		expectedErrorMessage string
-	}{
-		{
-			name: "getResourceCheckErrorMessage returns an empty response if all resources are found and available",
-			resources: []turbine.ApplicationResource{
-				{
-					Name: "nozzle",
-				},
-				{
-					Name: "engine",
-				},
-			},
-			resourceState:        "ready",
-			expectedErrorMessage: "",
-		},
-		{
-			name: "getResourceCheckErrorMessage returns an error response if resources are unavailable",
-			resources: []turbine.ApplicationResource{
-				{
-					Name: "nozzle",
-				},
-				{
-					Name: "engine",
-				},
-			},
-			resourceState:        "",
-			expectedErrorMessage: "resource \"nozzle\" is not ready and usable; resource \"engine\" is not ready and usable",
-		},
-	}
-
+func Test_validateResource(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
+	defer ctrl.Finish()
 
-	d := &Deploy{
-		client: client,
-		logger: logger,
+	appResources := []turbine.ApplicationResource{
+		{Name: "nozzle"},
+		{Name: "engine"},
+		{Name: "engine"}, // should be dedupped in all cases.
+	}
+	r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
+	r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
+
+	mockDeploy := func(r1, r2 meroxa.Resource) *Deploy {
+		client := mock.NewMockClient(ctrl)
+		client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
+		client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
+		return &Deploy{
+			client: client,
+			logger: log.NewTestLogger(),
+		}
+	}
+
+	testCases := []struct {
+		name        string
+		deploy      *Deploy
+		envName     string
+		resourceEnv string
+		state       string
+		wantErr     error
+	}{
+		{
+			name:   "resources are valid",
+			state:  "ready",
+			deploy: mockDeploy(r1, r2),
+		},
+		{
+			name: "resources are valid in an env",
+			deploy: func() *Deploy {
+				d := mockDeploy(
+					utils.ResourceWithEnvironment(r1, "my-env"),
+					utils.ResourceWithEnvironment(r2, "my-env"),
+				)
+				d.flags.Environment = "my-env"
+
+				return d
+			}(),
+		},
+		{
+			name: "invalid when resources are not available",
+			deploy: mockDeploy(
+				utils.GenerateResourceWithNameAndStatus(appResources[0].Name, ""),
+				utils.GenerateResourceWithNameAndStatus(appResources[1].Name, ""),
+			),
+			wantErr: errors.New(`resource "nozzle" is not ready and usable; resource "engine" is not ready and usable`),
+		},
+		{
+			name: "invalid when envs do not match",
+			deploy: func() *Deploy {
+				d := mockDeploy(
+					utils.ResourceWithEnvironment(r1, "wrong-env"),
+					utils.ResourceWithEnvironment(r2, "wrong-env"),
+				)
+				d.flags.Environment = "test-env"
+
+				return d
+			}(),
+			wantErr: errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
+		},
+		{
+			name: "invalid when env is common and resource in not",
+			deploy: mockDeploy(
+				utils.ResourceWithEnvironment(r1, "wrong-env"),
+				utils.ResourceWithEnvironment(r2, "wrong-env"),
+			),
+			wantErr: errors.New(`resource "nozzle" is in "wrong-env", but app is in common; resource "engine" is in "wrong-env", but app is in common`), //nolint:lll
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			firstName := "nozzle"
-			secondName := "engine"
-
-			firstResource := utils.GenerateResourceWithNameAndStatus(firstName, tc.resourceState)
-			secondResource := utils.GenerateResourceWithNameAndStatus(secondName, tc.resourceState)
-
-			client.
-				EXPECT().
-				GetResourceByNameOrID(ctx, firstResource.Name).
-				Return(&firstResource, nil)
-
-			client.
-				EXPECT().
-				GetResourceByNameOrID(ctx, secondResource.Name).
-				Return(&secondResource, nil)
-
-			result := d.getResourceCheckErrorMessage(ctx, tc.resources)
-			assert.Equal(t, tc.expectedErrorMessage, result)
+			err := tc.deploy.validateResources(ctx, appResources)
+			if tc.wantErr != nil {
+				assert.Equal(t, tc.wantErr.Error(), err.Error())
+			} else {
+				assert.True(t, err == nil)
+			}
 		})
 	}
 }

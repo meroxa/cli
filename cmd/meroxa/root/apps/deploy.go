@@ -528,8 +528,10 @@ func (d *Deploy) validateLanguage() error {
 // validateAppJSON will validate app JSON provided by customer has the right formation including supported language
 // TODO: Extract some of this logic this turbine-core so we centralize language support in one place.
 func (d *Deploy) validateAppJSON(ctx context.Context) error {
-	var err error
-	var config turbine.AppConfig
+	var (
+		err    error
+		config turbine.AppConfig
+	)
 
 	d.logger.Info(ctx, "Validating your app.json...")
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
@@ -541,56 +543,86 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		return err
 	}
 
-	if d.appConfig == nil {
-		d.lang, err = turbine.GetLangFromAppJSON(ctx, d.logger, d.path)
-		if err != nil {
-			return err
-		}
-		d.configAppName, err = turbine.GetAppNameFromAppJSON(ctx, d.logger, d.path)
-		if err != nil {
-			return err
-		}
-		config, err = turbine.ReadConfigFile(d.path)
-		d.appConfig = &config
-		if err != nil {
-			return err
-		}
-
-		if d.gitBranch, err = turbine.GetGitBranch(d.path); err != nil {
-			return err
-		}
-		d.appName = d.prepareAppName(ctx)
+	// exit early if app config is loaded
+	if d.appConfig != nil {
+		return d.validateLanguage()
 	}
 
-	if err = d.validateLanguage(); err != nil {
+	d.lang, err = turbine.GetLangFromAppJSON(ctx, d.logger, d.path)
+	if err != nil {
 		return err
 	}
+
+	d.configAppName, err = turbine.GetAppNameFromAppJSON(ctx, d.logger, d.path)
+	if err != nil {
+		return err
+	}
+	config, err = turbine.ReadConfigFile(d.path)
+	if err != nil {
+		return err
+	}
+	d.appConfig = &config
+
+	if d.gitBranch, err = turbine.GetGitBranch(d.path); err != nil {
+		return err
+	}
+	d.appName = d.prepareAppName(ctx)
 
 	return nil
 }
 
-func (d *Deploy) getResourceCheckErrorMessage(ctx context.Context, resources []turbine.ApplicationResource) string {
-	var errStr string
-	for _, r := range resources {
-		resource, err := d.client.GetResourceByNameOrID(ctx, r.Name)
-		if err != nil {
-			if errStr != "" {
-				errStr += "; "
-			}
+func (d *Deploy) validateResources(ctx context.Context, rr []turbine.ApplicationResource) error {
+	var errs []error
+	validated := make(map[string]bool)
 
-			if strings.Contains(err.Error(), "could not find") {
-				errStr += fmt.Sprintf("could not find resource %q", r.Name)
-			} else {
-				errStr += err.Error()
-			}
-		} else if resource.Status.State != meroxa.ResourceStateReady {
-			if errStr != "" {
-				errStr += "; "
-			}
-			errStr += fmt.Sprintf("resource %q is not ready and usable", r.Name)
+	wrapNotFound := func(name string, err error) error {
+		if strings.Contains(err.Error(), "could not find") {
+			return fmt.Errorf("could not find resource %q", name)
 		}
+		return err
 	}
-	return errStr
+
+	for _, r := range rr {
+		// dedup resources for validation
+		if _, ok := validated[r.Name]; ok {
+			continue
+		}
+
+		resource, err := d.client.GetResourceByNameOrID(ctx, r.Name)
+		// order is important
+		switch {
+		case err != nil:
+			errs = append(errs, wrapNotFound(r.Name, err))
+		case resource.Status.State != meroxa.ResourceStateReady:
+			errs = append(errs, fmt.Errorf("resource %q is not ready and usable", r.Name))
+		// app is provisioned in common env, but resource was added at self hosted env
+		case d.flags.Environment == "" && resource.Environment != nil:
+			errs = append(errs, fmt.Errorf(
+				"resource %q is in %q, but app is in common",
+				r.Name,
+				resource.Environment.Name,
+			))
+		// app is provisioned in an env, but resource is in common env
+		case d.flags.Environment != "" && resource.Environment == nil:
+			errs = append(errs, fmt.Errorf(
+				"resource %q is not in app env %q, but in common",
+				r.Name,
+				d.flags.Environment,
+			))
+		// app is provisioned in an env, but resource is in different self hosted env
+		case d.flags.Environment != "" && resource.Environment.Name != d.flags.Environment:
+			errs = append(errs, fmt.Errorf(
+				"resource %q is not in app env %q, but in %q",
+				r.Name,
+				d.flags.Environment,
+				resource.Environment.Name,
+			))
+		}
+
+		validated[r.Name] = true
+	}
+
+	return wrapErrors(errs)
 }
 
 func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
@@ -607,18 +639,19 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 		return errors.New("no resources defined in your Turbine app")
 	}
 
-	if errStr := d.getResourceCheckErrorMessage(ctx, resources); errStr != "" {
-		errStr += ";\n\n ⚠️  Run 'meroxa resources list' to verify that the resource names " +
-			"defined in your Turbine app are identical to the resources you have created on the Meroxa Platform before deploying again"
+	if err := d.validateResources(ctx, resources); err != nil {
 		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
-		return fmt.Errorf("%s", errStr)
+		return fmt.Errorf("%w;\n\n%s", err, resourceInvalidError)
 	}
 
-	if !d.flags.SkipCollectionValidation {
-		if err := d.validateCollections(ctx, resources); err != nil {
-			d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
-			return err
-		}
+	if d.flags.SkipCollectionValidation {
+		d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
+		return nil
+	}
+
+	if err := d.validateCollections(ctx, resources); err != nil {
+		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
+		return err
 	}
 
 	d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
@@ -995,4 +1028,17 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	d.logger.JSON(ctx, app)
 	return nil
+}
+
+func wrapErrors(errs []error) error {
+	if len(errs) == 0 {
+		return nil
+	}
+
+	err := errs[0]
+	for _, e := range errs[1:] {
+		err = fmt.Errorf("%w; %v", err, e)
+	}
+
+	return err
 }
