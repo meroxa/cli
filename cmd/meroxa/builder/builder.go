@@ -503,8 +503,8 @@ func buildCommandAutoUpdate(cmd *cobra.Command) {
 
 			github.Client = &http.Client{}
 			latestCLIVersion, err := github.GetLatestCLITag(cmd.Context())
-			if err != nil {
-				return err
+			if err != nil || latestCLIVersion == "" {
+				return nil
 			}
 
 			if global.Version != latestCLIVersion {
