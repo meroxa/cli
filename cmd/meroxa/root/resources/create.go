@@ -157,8 +157,7 @@ func (c *Create) Execute(ctx context.Context) error {
 		return fmt.Errorf("required flag(s) \"url\" not set")
 	}
 
-	// If the environment specified is not the common environment.
-	if c.flags.Environment != "" && c.flags.Environment != string(meroxa.EnvironmentTypeCommon) {
+	if c.flags.Environment != "" {
 		err := builder.CheckCMDFeatureFlag(c, &environments.Environments{})
 		if err != nil {
 			return err
