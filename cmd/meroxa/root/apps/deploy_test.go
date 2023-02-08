@@ -41,7 +41,7 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "spec", required: false, hidden: true},
 		{name: "skip-collection-validation", required: false, hidden: false},
 		{name: "verbose", required: false, hidden: true},
-		{name: "env", required: false, hidden: true},
+		{name: "env", required: false, hidden: false},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})

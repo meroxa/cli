@@ -521,6 +521,8 @@ _meroxa_apps_deploy()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--env=")
+    two_word_flags+=("--env")
     flags+=("--help")
     flags+=("-h")
     flags+=("--path=")
