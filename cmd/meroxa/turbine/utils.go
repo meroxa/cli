@@ -264,9 +264,9 @@ func GetGitSha(appPath string) (string, error) {
 	// Gets latest git sha
 	cmd := exec.Command("git", "rev-parse", "HEAD")
 	cmd.Dir = appPath
-	output, err := cmd.Output()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%s: %v", cmd.String(), string(output))
 	}
 
 	return string(output), nil
