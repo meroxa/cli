@@ -184,6 +184,7 @@ func TestGitChecks(t *testing.T) {
 				return appPath, nil
 			},
 			branch: "main",
+			//nolint:revive
 			shaErr: fmt.Errorf(
 				`/usr/bin/git rev-parse HEAD: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
 Use '--' to separate paths from revisions, like this:
@@ -563,7 +564,10 @@ func TestCleanupDockerfile(t *testing.T) {
 }
 
 func makeTmpDir() (string, error) {
-	basePath := "/tmp"
+	basePath := os.Getenv("GITHUB_WORKSPACE")
+	if basePath == "" {
+		basePath = "/tmp"
+	}
 	dirName := uuid.NewString()
 	appPath := filepath.Join(basePath, dirName)
 	err := os.MkdirAll(appPath, os.ModePerm)
