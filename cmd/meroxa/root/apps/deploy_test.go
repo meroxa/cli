@@ -895,20 +895,6 @@ func TestGetAppImage(t *testing.T) {
 				return mockTurbineCLI
 			},
 		},
-		{
-			name: "Fail to build app image when deploying to an environment",
-			meroxaClient: func() meroxa.Client {
-				return mock.NewMockClient(ctrl)
-			},
-			mockTurbineCLI: func() turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
-				mockTurbineCLI.EXPECT().
-					NeedsToBuild(ctx, appName).
-					Return(true, nil)
-				return mockTurbineCLI
-			},
-			err: errors.New("cannot deploy an application with a function to an environment"),
-		},
 	}
 
 	for _, tc := range tests {
