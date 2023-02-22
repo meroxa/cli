@@ -60,6 +60,7 @@ type deployApplicationClient interface {
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
 	CreateSource(ctx context.Context) (*meroxa.Source, error)
+	CreateSourceV2(ctx context.Context, input *meroxa.CreateSourceInputV2) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	AddHeader(key, value string)
@@ -201,10 +202,20 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
+// getAppSource will return the proper destination where the application source will be uploaded and fetched.
+func (d *Deploy) getAppSource(ctx context.Context) (*meroxa.Source, error) {
+	if env := d.flags.Environment; env != "" {
+		sourceInput := meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
+		return d.client.CreateSourceV2(ctx, &sourceInput)
+	}
+
+	return d.client.CreateSource(ctx)
+}
+
 func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
 
-	s, err := d.client.CreateSource(ctx)
+	s, err := d.getAppSource(ctx)
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source")
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
