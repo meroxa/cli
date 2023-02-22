@@ -75,25 +75,27 @@ func TestGitChecks(t *testing.T) {
 			setup: func() (string, error) {
 				appPath, err := makeTmpDir()
 				if err != nil {
-					return "", err
+					return "", fmt.Errorf("1 %v", err)
 				}
 
 				err = GitInit(ctx, appPath)
 				if err != nil {
-					return "", err
+					return "", fmt.Errorf("2 %v", err)
 				}
 
 				// create file
 				dockerfilePath := filepath.Join(appPath, "Dockerfile")
 				err = os.WriteFile(dockerfilePath, []byte(""), 0644)
-				require.NoError(t, err)
+				if err != nil {
+					return "", fmt.Errorf("3 %v", err)
+				}
 
 				// add file
 				cmd := exec.Command("git", "add", "Dockerfile")
 				cmd.Dir = appPath
 				output, err := cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s", string(output), err)
+					return "", fmt.Errorf("4 %s: %s", string(output), err)
 				}
 
 				// commit file
@@ -101,7 +103,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err = cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s", string(output), err)
+					return "", fmt.Errorf("5 %s: %s", string(output), err)
 				}
 
 				return appPath, nil
@@ -124,7 +126,9 @@ func TestGitChecks(t *testing.T) {
 				// create file
 				dockerfilePath := filepath.Join(appPath, "Dockerfile")
 				err = os.WriteFile(dockerfilePath, []byte(""), 0644)
-				require.NoError(t, err)
+				if err != nil {
+					return "", err
+				}
 
 				// feature branch
 				cmd := exec.Command("git", "checkout", "-b", "unit-test")
@@ -153,7 +157,9 @@ func TestGitChecks(t *testing.T) {
 				// create second file
 				makefilePath := filepath.Join(appPath, "Makefile")
 				err = os.WriteFile(makefilePath, []byte(""), 0644)
-				require.NoError(t, err)
+				if err != nil {
+					return "", err
+				}
 
 				// add second file
 				cmd = exec.Command("git", "add", "Makefile")
