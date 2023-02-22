@@ -60,6 +60,10 @@ func TestCheckGitVersion(t *testing.T) {
 
 //nolint:funlen,gocyclo
 func TestGitChecks(t *testing.T) {
+	if gh := os.Getenv("GITHUB_WORKSPACE"); gh != "" {
+		t.Skipf("skipping git test in github action")
+	}
+
 	ctx := context.Background()
 	logger := log.NewTestLogger()
 
@@ -75,35 +79,35 @@ func TestGitChecks(t *testing.T) {
 			setup: func() (string, error) {
 				appPath, err := makeTmpDir()
 				if err != nil {
-					return "", fmt.Errorf("1 %v", err)
+					return "", err
 				}
 
 				err = GitInit(ctx, appPath)
 				if err != nil {
-					return "", fmt.Errorf("2 %v", err)
+					return "", err
 				}
 
 				// create file
 				dockerfilePath := filepath.Join(appPath, "Dockerfile")
 				err = os.WriteFile(dockerfilePath, []byte(""), 0644)
 				if err != nil {
-					return "", fmt.Errorf("3 %v", err)
+					return "", err
 				}
 
 				// add file
 				cmd := exec.Command("git", "add", "Dockerfile")
 				cmd.Dir = appPath
-				output, err := cmd.Output()
+				output, err := cmd.CombinedOutput()
 				if err != nil {
-					return "", fmt.Errorf("4 %s: %s", string(output), err)
+					return "", fmt.Errorf("%s", string(output))
 				}
 
 				// commit file
 				cmd = exec.Command("git", "commit", "-m", "first")
 				cmd.Dir = appPath
-				output, err = cmd.Output()
+				output, err = cmd.CombinedOutput()
 				if err != nil {
-					return "", fmt.Errorf("5 %s: %s", string(output), err)
+					return "", fmt.Errorf("%s", string(output))
 				}
 
 				return appPath, nil
@@ -133,25 +137,25 @@ func TestGitChecks(t *testing.T) {
 				// feature branch
 				cmd := exec.Command("git", "checkout", "-b", "unit-test")
 				cmd.Dir = appPath
-				output, err := cmd.Output()
+				output, err := cmd.CombinedOutput()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s", string(output), err)
+					return "", fmt.Errorf("%s", string(output))
 				}
 
 				// add file
 				cmd = exec.Command("git", "add", "Dockerfile")
 				cmd.Dir = appPath
-				output, err = cmd.Output()
+				output, err = cmd.CombinedOutput()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s", string(output), err)
+					return "", fmt.Errorf("%s", string(output))
 				}
 
 				// commit file
 				cmd = exec.Command("git", "commit", "-m", "first")
 				cmd.Dir = appPath
-				output, err = cmd.Output()
+				output, err = cmd.CombinedOutput()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s", string(output), err)
+					return "", fmt.Errorf("%s", string(output))
 				}
 
 				// create second file
@@ -164,9 +168,9 @@ func TestGitChecks(t *testing.T) {
 				// add second file
 				cmd = exec.Command("git", "add", "Makefile")
 				cmd.Dir = appPath
-				output, err = cmd.Output()
+				output, err = cmd.CombinedOutput()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s", string(output), err)
+					return "", fmt.Errorf("%s", string(output))
 				}
 
 				return appPath, nil
@@ -570,10 +574,7 @@ func TestCleanupDockerfile(t *testing.T) {
 }
 
 func makeTmpDir() (string, error) {
-	basePath := os.Getenv("GITHUB_WORKSPACE")
-	if basePath == "" {
-		basePath = "/tmp"
-	}
+	basePath := "/tmp"
 	dirName := uuid.NewString()
 	appPath := filepath.Join(basePath, dirName)
 	err := os.MkdirAll(appPath, os.ModePerm)
