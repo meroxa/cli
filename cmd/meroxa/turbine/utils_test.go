@@ -109,7 +109,7 @@ func TestGitChecks(t *testing.T) {
 			branch: "main",
 		},
 		{
-			desc: "Fail uncommiteed changes",
+			desc: "Fail uncommitted changes",
 			setup: func() (string, error) {
 				appPath, err := makeTmpDir()
 				if err != nil {
@@ -188,7 +188,8 @@ func TestGitChecks(t *testing.T) {
 				`/usr/bin/git rev-parse HEAD: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
 Use '--' to separate paths from revisions, like this:
 'git <command> [<revision>...] -- [<file>...]'
-HEAD`),
+HEAD
+`),
 		},
 	}
 	for _, tc := range tests {
