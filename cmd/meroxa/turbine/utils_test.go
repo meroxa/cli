@@ -58,6 +58,7 @@ func TestCheckGitVersion(t *testing.T) {
 	assert.False(t, val)
 }
 
+//nolint:funlen,gocyclo
 func TestGitChecks(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
@@ -92,7 +93,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err := cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s\n", string(output), err)
+					return "", fmt.Errorf("%s: %s", string(output), err)
 				}
 
 				// commit file
@@ -100,7 +101,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err = cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s\n", string(output), err)
+					return "", fmt.Errorf("%s: %s", string(output), err)
 				}
 
 				return appPath, nil
@@ -130,7 +131,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err := cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s\n", string(output), err)
+					return "", fmt.Errorf("%s: %s", string(output), err)
 				}
 
 				// add file
@@ -138,7 +139,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err = cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s\n", string(output), err)
+					return "", fmt.Errorf("%s: %s", string(output), err)
 				}
 
 				// commit file
@@ -146,7 +147,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err = cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s\n", string(output), err)
+					return "", fmt.Errorf("%s: %s", string(output), err)
 				}
 
 				// create second file
@@ -159,7 +160,7 @@ func TestGitChecks(t *testing.T) {
 				cmd.Dir = appPath
 				output, err = cmd.Output()
 				if err != nil {
-					return "", fmt.Errorf("%s: %s\n", string(output), err)
+					return "", fmt.Errorf("%s: %s", string(output), err)
 				}
 
 				return appPath, nil
@@ -183,7 +184,11 @@ func TestGitChecks(t *testing.T) {
 				return appPath, nil
 			},
 			branch: "main",
-			shaErr: fmt.Errorf("/usr/bin/git rev-parse HEAD: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\nHEAD\n"),
+			shaErr: fmt.Errorf(
+				`/usr/bin/git rev-parse HEAD: fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
+HEAD`),
 		},
 	}
 	for _, tc := range tests {
@@ -255,7 +260,8 @@ func TestReadAndWriteConfigFile(t *testing.T) {
 				Vendor:     "false",
 				ModuleInit: "true",
 			},
-			err: fmt.Errorf("open #nope$/app.json: no such file or directory\nunable to update app.json file on path \"#nope$\". Maybe try using a different value for `--path`"),
+			err: fmt.Errorf(`open #nope$/app.json: no such file or directory
+unable to update app.json file on path "#nope$". Maybe try using a different value for ` + "`" + "--path" + "`"),
 		},
 	}
 
@@ -268,10 +274,9 @@ func TestReadAndWriteConfigFile(t *testing.T) {
 				}
 				assert.Equal(t, tc.err, err)
 				return
-			} else {
-				require.NoError(t, err)
-				require.NoError(t, tc.err)
 			}
+			require.NoError(t, err)
+			require.NoError(t, tc.err)
 
 			lang, err := GetLangFromAppJSON(ctx, logger, tc.path)
 			require.NoError(t, err)
