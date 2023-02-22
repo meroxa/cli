@@ -118,6 +118,7 @@ type Client interface {
 	ListResourceTypesV2(ctx context.Context) ([]ResourceType, error)
 
 	CreateSource(ctx context.Context) (*Source, error)
+	CreateSourceV2(ctx context.Context, input *CreateSourceInputV2) (*Source, error)
 
 	ListTransforms(ctx context.Context) ([]*Transform, error)
 

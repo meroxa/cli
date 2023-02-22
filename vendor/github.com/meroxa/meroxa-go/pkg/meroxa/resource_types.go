@@ -9,8 +9,8 @@ import (
 type ResourceTypeName string
 type ResourceTypeReleaseStage string
 
-const ResourcesTypeBasePath = "/v1/resource-types"
-const V2ResourcesTypeBasePath = "/v2/resource-types"
+const ResourcesTypeBasePathV1 = "/v1/resource-types"
+const ResourcesTypeBasePathV2 = "/v2/resource-types"
 
 const ResourceTypeFormConfigHumanReadableKey = "label"
 
@@ -110,7 +110,7 @@ type ResourceType struct {
 
 // ListResourceTypes returns the list of supported resource types.
 func (c *client) ListResourceTypes(ctx context.Context) ([]string, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, ResourcesTypeBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, ResourcesTypeBasePathV1, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (c *client) ListResourceTypes(ctx context.Context) ([]string, error) {
 
 // ListResourceTypesV2 returns the list of supported resource types as objects.
 func (c *client) ListResourceTypesV2(ctx context.Context) ([]ResourceType, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, V2ResourcesTypeBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, ResourcesTypeBasePathV2, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
