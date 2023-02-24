@@ -10,8 +10,9 @@ const sourcesBasePathV1 = "/v1/sources"
 const sourcesBasePathV2 = "/v2/sources"
 
 type Source struct {
-	GetUrl string `json:"get_url"`
-	PutUrl string `json:"put_url"`
+	GetUrl      string            `json:"get_url"`
+	PutUrl      string            `json:"put_url"`
+	Environment *EntityIdentifier `json:"environment,omitempty"`
 }
 
 type CreateSourceInputV2 struct {
