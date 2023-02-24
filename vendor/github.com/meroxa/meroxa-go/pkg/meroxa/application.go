@@ -19,8 +19,8 @@ const (
 	ApplicationStateFailed      ApplicationState = "failed"
 )
 
-const applicationsBasePath = "/v1/applications"
-const v2applicationsBasePath = "/v2/applications"
+const applicationsBasePathV1 = "/v1/applications"
+const applicationsBasePathV2 = "/v2/applications"
 
 type ResourceCollection struct {
 	Name        string `json:"name,omitempty"`
@@ -81,7 +81,7 @@ type ApplicationStatus struct {
 }
 
 func (c *client) CreateApplication(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePathV1, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (c *client) CreateApplication(ctx context.Context, input *CreateApplication
 }
 
 func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicationInput) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, v2applicationsBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, applicationsBasePathV2, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +119,7 @@ func (c *client) CreateApplicationV2(ctx context.Context, input *CreateApplicati
 }
 
 func (c *client) DeleteApplication(ctx context.Context, nameOrUUID string) error {
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, nameOrUUID), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -130,7 +130,7 @@ func (c *client) DeleteApplication(ctx context.Context, nameOrUUID string) error
 // DeleteApplicationEntities does a bit more than DeleteApplication. Its main purpose is to remove underneath's app resources
 // even in the event the application didn't exist.
 func (c *client) DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error) {
-	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePath, nameOrUUID), nil, nil, nil)
+	respAppDelete, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return respAppDelete, err
 	}
@@ -184,7 +184,7 @@ func (c *client) DeleteApplicationEntities(ctx context.Context, nameOrUUID strin
 }
 
 func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePath, nameOrUUID), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func (c *client) GetApplication(ctx context.Context, nameOrUUID string) (*Applic
 }
 
 func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, applicationsBasePathV1, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +223,7 @@ func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
 }
 
 func (c *client) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/logs", applicationsBasePath, nameOrUUID), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/logs", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -287,6 +287,21 @@ func (mr *MockClientMockRecorder) CreateSource(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSource", reflect.TypeOf((*MockClient)(nil).CreateSource), ctx)
 }
 
+// CreateSourceV2 mocks base method.
+func (m *MockClient) CreateSourceV2(ctx context.Context, input *meroxa.CreateSourceInputV2) (*meroxa.Source, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSourceV2", ctx, input)
+	ret0, _ := ret[0].(*meroxa.Source)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSourceV2 indicates an expected call of CreateSourceV2.
+func (mr *MockClientMockRecorder) CreateSourceV2(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSourceV2", reflect.TypeOf((*MockClient)(nil).CreateSourceV2), ctx, input)
+}
+
 // DeleteApplication mocks base method.
 func (m *MockClient) DeleteApplication(ctx context.Context, nameOrUUID string) error {
 	m.ctrl.T.Helper()

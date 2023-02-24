@@ -895,20 +895,6 @@ func TestGetAppImage(t *testing.T) {
 				return mockTurbineCLI
 			},
 		},
-		{
-			name: "Fail to build app image when deploying to an environment",
-			meroxaClient: func() meroxa.Client {
-				return mock.NewMockClient(ctrl)
-			},
-			mockTurbineCLI: func() turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
-				mockTurbineCLI.EXPECT().
-					NeedsToBuild(ctx, appName).
-					Return(true, nil)
-				return mockTurbineCLI
-			},
-			err: errors.New("cannot deploy an application with a function to an environment"),
-		},
 	}
 
 	for _, tc := range tests {
@@ -1378,6 +1364,67 @@ func Test_validateFlags(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
+		})
+	}
+}
+
+func TestDeploy_getAppSource(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	sourceGetURL := "http://foo.bar"
+
+	tests := []struct {
+		name         string
+		envFlag      string
+		meroxaClient func(string) meroxa.Client
+	}{
+		{
+			name:    "when deploying with an environment",
+			envFlag: "my-env",
+			meroxaClient: func(env string) meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+				}))
+
+				input := meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
+				client.EXPECT().
+					CreateSourceV2(ctx, &input).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
+
+				return client
+			},
+		},
+		{
+			name: "when deploying without an environment",
+			meroxaClient: func(env string) meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+				}))
+
+				client.EXPECT().
+					CreateSource(ctx).
+					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
+
+				return client
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			d := &Deploy{
+				client: tc.meroxaClient(tc.envFlag),
+			}
+			d.flags.Environment = tc.envFlag
+
+			s, err := d.getAppSource(ctx)
+			require.NoError(t, err)
+			assert.NotEmpty(t, s.GetUrl)
+			assert.NotEmpty(t, s.PutUrl)
 		})
 	}
 }
