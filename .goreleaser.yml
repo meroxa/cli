@@ -40,7 +40,7 @@ brews:
 scoop:
   bucket:
     owner: meroxa
-    name: scoop_manifests
+    name: scoop-manifests
     branch: main
   folder: meroxa
   homepage:  https://meroxa.io
