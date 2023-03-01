@@ -37,6 +37,19 @@ brews:
       zsh_completion.install "etc/completion/meroxa.completion.zsh" => "meroxa"
       fish_completion.install "etc/completion/meroxa.completion.fish"
       man.install "etc/man/man1"
+scoop:
+  bucket:
+    owner: meroxa
+    name: scoop-manifests
+    branch: main
+  folder: meroxa
+  homepage:  https://meroxa.io
+  description: The Meroxa CLI
+  license: "Apache 2.0"
+  commit_author:
+      name: meroxa-machine
+      email: machine@meroxa.io
+  commit_msg_template: "Scoop update for {{ .ProjectName }} version {{ .Tag }}"
 checksum:
   name_template: 'checksums.txt'
 snapshot:
