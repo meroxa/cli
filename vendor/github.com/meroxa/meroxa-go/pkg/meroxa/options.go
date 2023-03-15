@@ -83,7 +83,7 @@ func WithAuthentication(conf *oauth2.Config, accessToken, refreshToken string, o
 // WithAccountUUID sets the http client to use for requests.
 func WithAccountUUID(accountUUID string) Option {
 	return func(r *Requester) error {
-		if r.headers == nil {
+		if len(r.headers) == 0 {
 			r.headers = make(http.Header)
 		}
 		r.headers.Add(meroxaAccountUUIDHeader, accountUUID)
@@ -94,7 +94,7 @@ func WithAccountUUID(accountUUID string) Option {
 // WithHeader allows for setting a generic header to use for requests.
 func WithHeader(key, value string) Option {
 	return func(r *Requester) error {
-		if r.headers == nil {
+		if len(r.headers) == 0 {
 			r.headers = make(http.Header)
 		}
 		r.headers.Add(key, value)
