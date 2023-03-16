@@ -167,7 +167,7 @@ func (c *client) AddHeader(key, value string) {
 }
 
 func (r *Requester) AddHeader(key, value string) {
-	if r.headers == nil {
+	if len(r.headers) == 0 {
 		r.headers = make(http.Header)
 	}
 	r.headers.Add(key, value)
@@ -208,7 +208,7 @@ func (r *Requester) newRequest(ctx context.Context, method, path string, body in
 	}
 
 	// add global headers to request
-	if r.headers != nil {
+	if len(r.headers) > 0 {
 		req.Header = r.headers
 	}
 	req.Header.Add("Content-Type", jsonContentType)

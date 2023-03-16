@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cristalhq/jwt/v3"
+	jwt "github.com/cristalhq/jwt/v3"
 	"golang.org/x/oauth2"
 )
 

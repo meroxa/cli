@@ -106,6 +106,10 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
 			},
 			{
+				{Align: simpletable.AlignRight, Text: "AWS ECR Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ECR, " ; ")},
+			},
+			{
 				{Align: simpletable.AlignRight, Text: "AWS EKS Permissions Status:"},
 				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EKS, " ; ")},
 			},
@@ -168,6 +172,10 @@ func EnvironmentPreflightTable(environment *meroxa.Environment) string {
 			{
 				{Align: simpletable.AlignRight, Text: "AWS EC2 Permissions Status:"},
 				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
+			},
+			{
+				{Align: simpletable.AlignRight, Text: "AWS ECR Permissions Status:"},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ECR, " ; ")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS EKS Permissions Status:"},

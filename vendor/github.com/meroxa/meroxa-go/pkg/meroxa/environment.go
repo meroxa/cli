@@ -33,6 +33,7 @@ type PreflightPermissions struct {
 	MSK            []string `json:"msk"`
 	EKS            []string `json:"eks"`
 	EC2            []string `json:"ec2"`
+	ECR            []string `json:"ecr"`
 	KMS            []string `json:"kms"`
 	IAM            []string `json:"iam"`
 	Cloudformation []string `json:"cloudformation"`
