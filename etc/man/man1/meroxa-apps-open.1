@@ -3,27 +3,27 @@
 
 .SH NAME
 .PP
-meroxa-apps-upgrade - Upgrade a Turbine Data Application (Beta)
+meroxa-apps-open - Open the link to a Turbine Data Application in the Dashboard (Beta)
 
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps upgrade [--path pwd] [flags]\fP
+\fBmeroxa apps open [--path pwd] [flags]\fP
 
 
 .SH DESCRIPTION
 .PP
-Upgrade a Turbine Data Application (Beta)
+Open the link to a Turbine Data Application in the Dashboard (Beta)
 
 
 .SH OPTIONS
 .PP
 \fB-h\fP, \fB--help\fP[=false]
-	help for upgrade
+	help for open
 
 .PP
 \fB--path\fP=""
-	path where application exists (current directory as default)
+	Path to the app directory (default is local directory)
 
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
@@ -49,7 +49,9 @@ Upgrade a Turbine Data Application (Beta)
 .RS
 
 .nf
-meroxa apps upgrade --path ~/code
+meroxa apps open # assumes that the Application is in the current directory
+meroxa apps open --path /my/app
+meroxa apps open NAMEorUUID
 
 .fi
 .RE

@@ -693,6 +693,36 @@ _meroxa_apps_logs()
     noun_aliases=()
 }
 
+_meroxa_apps_open()
+{
+    last_command="meroxa_apps_open"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--path=")
+    two_word_flags+=("--path")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
 _meroxa_apps_remove()
 {
     last_command="meroxa_apps_remove"
@@ -806,6 +836,7 @@ _meroxa_apps()
         command_aliases+=("log")
         aliashash["log"]="logs"
     fi
+    commands+=("open")
     commands+=("remove")
     if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
         command_aliases+=("delete")
