@@ -36,8 +36,6 @@ import (
 
 func TestListAppsExecution(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
 
 	testCases := []struct {
 		desc                 string
@@ -88,6 +86,8 @@ func TestListAppsExecution(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			client := mock.NewMockClient(ctrl)
 			logger := log.NewTestLogger()
 			apps := tc.apps()
 

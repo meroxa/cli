@@ -231,8 +231,6 @@ func TestValidateLocalDeploymentConfig(t *testing.T) {
 
 func Test_validateResource(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	appResources := []turbine.ApplicationResource{
 		{Name: "nozzle"},
@@ -242,7 +240,7 @@ func Test_validateResource(t *testing.T) {
 	r1 := utils.GenerateResourceWithNameAndStatus(appResources[0].Name, "ready")
 	r2 := utils.GenerateResourceWithNameAndStatus(appResources[1].Name, "ready")
 
-	mockDeploy := func(r1, r2 meroxa.Resource) *Deploy {
+	mockDeploy := func(ctrl *gomock.Controller, r1, r2 meroxa.Resource) *Deploy {
 		client := mock.NewMockClient(ctrl)
 		client.EXPECT().GetResourceByNameOrID(ctx, r1.Name).Return(&r1, nil)
 		client.EXPECT().GetResourceByNameOrID(ctx, r2.Name).Return(&r2, nil)
@@ -254,63 +252,75 @@ func Test_validateResource(t *testing.T) {
 
 	testCases := []struct {
 		name        string
-		deploy      *Deploy
+		deploy      func(ctrl *gomock.Controller) *Deploy
 		envName     string
 		resourceEnv string
 		state       string
 		wantErr     error
 	}{
 		{
-			name:   "resources are valid",
-			state:  "ready",
-			deploy: mockDeploy(r1, r2),
+			name:  "resources are valid",
+			state: "ready",
+			deploy: func(ctrl *gomock.Controller) *Deploy {
+				return mockDeploy(ctrl, r1, r2)
+			},
 		},
 		{
 			name: "resources are valid in an env",
-			deploy: func() *Deploy {
+			deploy: func(ctrl *gomock.Controller) *Deploy {
 				d := mockDeploy(
+					ctrl,
 					utils.ResourceWithEnvironment(r1, "my-env"),
 					utils.ResourceWithEnvironment(r2, "my-env"),
 				)
 				d.flags.Environment = "my-env"
 
 				return d
-			}(),
+			},
 		},
 		{
 			name: "invalid when resources are not available",
-			deploy: mockDeploy(
-				utils.GenerateResourceWithNameAndStatus(appResources[0].Name, ""),
-				utils.GenerateResourceWithNameAndStatus(appResources[1].Name, ""),
-			),
+			deploy: func(ctrl *gomock.Controller) *Deploy {
+				return mockDeploy(
+					ctrl,
+					utils.GenerateResourceWithNameAndStatus(appResources[0].Name, ""),
+					utils.GenerateResourceWithNameAndStatus(appResources[1].Name, ""),
+				)
+			},
 			wantErr: errors.New(`resource "nozzle" is not ready and usable; resource "engine" is not ready and usable`),
 		},
 		{
 			name: "invalid when envs do not match",
-			deploy: func() *Deploy {
+			deploy: func(ctrl *gomock.Controller) *Deploy {
 				d := mockDeploy(
+					ctrl,
 					utils.ResourceWithEnvironment(r1, "wrong-env"),
 					utils.ResourceWithEnvironment(r2, "wrong-env"),
 				)
 				d.flags.Environment = "test-env"
 
 				return d
-			}(),
+			},
 			wantErr: errors.New(`resource "nozzle" is not in app env "test-env", but in "wrong-env"; resource "engine" is not in app env "test-env", but in "wrong-env"`), //nolint:lll
 		},
 		{
 			name: "invalid when env is common and resource in not",
-			deploy: mockDeploy(
-				utils.ResourceWithEnvironment(r1, "wrong-env"),
-				utils.ResourceWithEnvironment(r2, "wrong-env"),
-			),
+			deploy: func(ctrl *gomock.Controller) *Deploy {
+				return mockDeploy(
+					ctrl,
+					utils.ResourceWithEnvironment(r1, "wrong-env"),
+					utils.ResourceWithEnvironment(r2, "wrong-env"),
+				)
+			},
 			wantErr: errors.New(`resource "nozzle" is in "wrong-env", but app is in common; resource "engine" is in "wrong-env", but app is in common`), //nolint:lll
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.deploy.validateResources(ctx, appResources)
+			ctrl := gomock.NewController(t)
+			d := tc.deploy(ctrl)
+			err := d.validateResources(ctx, appResources)
 			if tc.wantErr != nil {
 				assert.Equal(t, tc.wantErr.Error(), err.Error())
 			} else {
@@ -467,18 +477,17 @@ func TestValidateCollections(t *testing.T) {
 		},
 	}
 
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
-	logger := log.NewTestLogger()
-
-	d := &Deploy{
-		client: client,
-		logger: logger,
-	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			ctrl := gomock.NewController(t)
+			client := mock.NewMockClient(ctrl)
+			logger := log.NewTestLogger()
+
+			d := &Deploy{
+				client: client,
+				logger: logger,
+			}
 			apps := []*meroxa.Application{
 				{
 					Name: "application-name",
@@ -570,7 +579,6 @@ func TestValidateLanguage(t *testing.T) {
 //nolint:funlen // this is a test function, splitting it would duplicate code
 func TestDeployApp(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
 	logger := log.NewTestLogger()
 	appName := "my-app"
 	imageName := "doc.ker:latest"
@@ -585,18 +593,18 @@ func TestDeployApp(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		meroxaClient   func() meroxa.Client
-		mockTurbineCLI func(string) turbine.CLI
+		meroxaClient   func(*gomock.Controller) meroxa.Client
+		mockTurbineCLI func(*gomock.Controller, string) turbine.CLI
 		version        string
 		err            error
 	}{
 		{
 			name: "Successfully deploy app pre IR",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				return client
 			},
-			mockTurbineCLI: func(version string) turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
@@ -608,7 +616,7 @@ func TestDeployApp(t *testing.T) {
 		},
 		{
 			name: "Successfully deploy app with IR",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				input := &meroxa.CreateDeploymentInput{
 					Application: meroxa.EntityIdentifier{Name: appName},
@@ -621,7 +629,7 @@ func TestDeployApp(t *testing.T) {
 					Return(&meroxa.Deployment{}, nil)
 				return client
 			},
-			mockTurbineCLI: func(version string) turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
@@ -634,11 +642,11 @@ func TestDeployApp(t *testing.T) {
 		},
 		{
 			name: "Fail to call Turbine deploy",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				return client
 			},
-			mockTurbineCLI: func(version string) turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
@@ -650,7 +658,7 @@ func TestDeployApp(t *testing.T) {
 		},
 		{
 			name: "Fail to create deployment",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -663,7 +671,7 @@ func TestDeployApp(t *testing.T) {
 					Return(&meroxa.Deployment{}, err)
 				return client
 			},
-			mockTurbineCLI: func(version string) turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
@@ -677,11 +685,12 @@ func TestDeployApp(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			cfg := config.NewInMemoryConfig()
 			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
-				client:     tc.meroxaClient(),
-				turbineCLI: tc.mockTurbineCLI(tc.version),
+				client:     tc.meroxaClient(ctrl),
+				turbineCLI: tc.mockTurbineCLI(ctrl, tc.version),
 				logger:     logger,
 				appName:    appName,
 				config:     cfg,
@@ -701,7 +710,6 @@ func TestDeployApp(t *testing.T) {
 //nolint:funlen // this is a test function, splitting it would duplicate code
 func TestGetPlatformImage(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
 	logger := log.NewTestLogger()
 	buildUUID := uuid.NewString()
 	sourcePutURL := "http://foo.bar"
@@ -712,13 +720,13 @@ func TestGetPlatformImage(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		meroxaClient   func() meroxa.Client
-		mockTurbineCLI func() turbine.CLI
+		meroxaClient   func(*gomock.Controller) meroxa.Client
+		mockTurbineCLI func(*gomock.Controller) turbine.CLI
 		err            error
 	}{
 		{
 			name: "Successfully build image",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
@@ -737,7 +745,7 @@ func TestGetPlatformImage(t *testing.T) {
 					Return(&meroxa.Build{Uuid: buildUUID, Status: meroxa.BuildStatus{State: "complete"}}, nil)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
@@ -751,7 +759,7 @@ func TestGetPlatformImage(t *testing.T) {
 		},
 		{
 			name: "Fail to create source",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -759,7 +767,7 @@ func TestGetPlatformImage(t *testing.T) {
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, err)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				return mockTurbineCLI
 			},
@@ -767,7 +775,7 @@ func TestGetPlatformImage(t *testing.T) {
 		},
 		{
 			name: "Fail to upload source",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -775,7 +783,7 @@ func TestGetPlatformImage(t *testing.T) {
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
@@ -786,7 +794,7 @@ func TestGetPlatformImage(t *testing.T) {
 		},
 		{
 			name: "Fail to create build",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -802,7 +810,7 @@ func TestGetPlatformImage(t *testing.T) {
 					Return(&meroxa.Build{Uuid: buildUUID}, err)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
@@ -816,7 +824,7 @@ func TestGetPlatformImage(t *testing.T) {
 		},
 		{
 			name: "Fail to build",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -836,7 +844,7 @@ func TestGetPlatformImage(t *testing.T) {
 					Return(&meroxa.Build{Uuid: buildUUID, Status: meroxa.BuildStatus{State: "error"}}, nil)
 				return client
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
@@ -852,9 +860,10 @@ func TestGetPlatformImage(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			d := &Deploy{
-				client:     tc.meroxaClient(),
-				turbineCLI: tc.mockTurbineCLI(),
+				client:     tc.meroxaClient(ctrl),
+				turbineCLI: tc.mockTurbineCLI(ctrl),
 				logger:     logger,
 				appName:    appName,
 			}
@@ -872,22 +881,21 @@ func TestGetPlatformImage(t *testing.T) {
 
 func TestGetAppImage(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
 	logger := log.NewTestLogger()
 	appName := "my-app"
 
 	tests := []struct {
 		name           string
-		meroxaClient   func() meroxa.Client
-		mockTurbineCLI func() turbine.CLI
+		meroxaClient   func(*gomock.Controller) meroxa.Client
+		mockTurbineCLI func(*gomock.Controller) turbine.CLI
 		err            error
 	}{
 		{
 			name: "Don't build app image when for app with no function",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				return mock.NewMockClient(ctrl)
 			},
-			mockTurbineCLI: func() turbine.CLI {
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
 				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					NeedsToBuild(ctx, appName).
@@ -899,9 +907,10 @@ func TestGetAppImage(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			d := &Deploy{
-				client:     tc.meroxaClient(),
-				turbineCLI: tc.mockTurbineCLI(),
+				client:     tc.meroxaClient(ctrl),
+				turbineCLI: tc.mockTurbineCLI(ctrl),
 				logger:     logger,
 				appName:    appName,
 			}
@@ -967,21 +976,20 @@ func TestPrepareAppName(t *testing.T) {
 //nolint:funlen
 func TestWaitForDeployment(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
 	appName := "unit-test"
 	outputLogs := []string{"just getting started", "going well", "nailed it"}
 	uuid := "does-not-matter"
 
 	tests := []struct {
 		name         string
-		meroxaClient func() meroxa.Client
+		meroxaClient func(*gomock.Controller) meroxa.Client
 		wantOutput   func() string
 		verboseFlag  bool
 		err          error
 	}{
 		{
 			name: "Deployment finishes successfully immediately (no verbose flag)",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -999,7 +1007,7 @@ func TestWaitForDeployment(t *testing.T) {
 		},
 		{
 			name: "Deployment finishes successfully immediately (with verbose flag)",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -1018,7 +1026,7 @@ func TestWaitForDeployment(t *testing.T) {
 		},
 		{
 			name: "Deployment finishes successfully over time (no verbose flag)",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				first := client.EXPECT().
@@ -1053,7 +1061,7 @@ func TestWaitForDeployment(t *testing.T) {
 		},
 		{
 			name: "Deployment finishes successfully over time (with verbose flag)",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				first := client.EXPECT().
@@ -1095,7 +1103,7 @@ func TestWaitForDeployment(t *testing.T) {
 		},
 		{
 			name: "Deployment immediately failed (no verbose flag)",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -1119,7 +1127,7 @@ func TestWaitForDeployment(t *testing.T) {
 		},
 		{
 			name: "Deployment immediately failed (with verbose flag)",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -1140,7 +1148,7 @@ func TestWaitForDeployment(t *testing.T) {
 		},
 		{
 			name: "Failed to get latest deployment",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
@@ -1155,9 +1163,10 @@ func TestWaitForDeployment(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			logger := log.NewTestLogger()
 			d := &Deploy{
-				client:  tc.meroxaClient(),
+				client:  tc.meroxaClient(ctrl),
 				logger:  logger,
 				appName: appName,
 			}
@@ -1238,7 +1247,6 @@ func TestUploadFile(t *testing.T) {
 
 func TestTeardown(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
 	logger := log.NewTestLogger()
 	appName := "my-app"
 	//nolint:lll
@@ -1246,12 +1254,12 @@ func TestTeardown(t *testing.T) {
 
 	tests := []struct {
 		name         string
-		meroxaClient func() meroxa.Client
+		meroxaClient func(*gomock.Controller) meroxa.Client
 		err          error
 	}{
 		{
 			name: "No need to teardown",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				client.EXPECT().
 					GetApplication(ctx, appName).
@@ -1265,7 +1273,7 @@ func TestTeardown(t *testing.T) {
 		},
 		{
 			name: "No need to teardown running app",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				client.EXPECT().
 					GetApplication(ctx, appName).
@@ -1278,7 +1286,7 @@ func TestTeardown(t *testing.T) {
 		},
 		{
 			name: "Teardown failed app",
-			meroxaClient: func() meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				client.EXPECT().
 					GetApplication(ctx, appName).
@@ -1296,10 +1304,11 @@ func TestTeardown(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			//cfg := config.NewInMemoryConfig()
 			//cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
-				client:  tc.meroxaClient(),
+				client:  tc.meroxaClient(ctrl),
 				logger:  logger,
 				appName: appName,
 				//	config:     cfg,
@@ -1370,18 +1379,17 @@ func Test_validateFlags(t *testing.T) {
 
 func TestDeploy_getAppSource(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
 	sourceGetURL := "http://foo.bar"
 
 	tests := []struct {
 		name         string
 		envFlag      string
-		meroxaClient func(string) meroxa.Client
+		meroxaClient func(*gomock.Controller, string) meroxa.Client
 	}{
 		{
 			name:    "when deploying with an environment",
 			envFlag: "my-env",
-			meroxaClient: func(env string) meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller, env string) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1398,7 +1406,7 @@ func TestDeploy_getAppSource(t *testing.T) {
 		},
 		{
 			name: "when deploying without an environment",
-			meroxaClient: func(env string) meroxa.Client {
+			meroxaClient: func(ctrl *gomock.Controller, env string) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1416,8 +1424,9 @@ func TestDeploy_getAppSource(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			d := &Deploy{
-				client: tc.meroxaClient(tc.envFlag),
+				client: tc.meroxaClient(ctrl, tc.envFlag),
 			}
 			d.flags.Environment = tc.envFlag
 

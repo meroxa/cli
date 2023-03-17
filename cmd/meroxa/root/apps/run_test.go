@@ -54,25 +54,23 @@ func TestRunAppFlags(t *testing.T) {
 
 func TestRunExecute(t *testing.T) {
 	ctx := context.Background()
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
 
-	mockCli := func() turbine.CLI {
-		mock := mockturbinecli.NewMockCLI(mockCtrl)
+	mockCli := func(ctrl *gomock.Controller) turbine.CLI {
+		mock := mockturbinecli.NewMockCLI(ctrl)
 		mock.EXPECT().Run(ctx)
 		return mock
 	}
 
 	tests := []struct {
 		desc     string
-		cli      turbine.CLI
+		cli      func(ctrl *gomock.Controller) turbine.CLI
 		config   turbine.AppConfig
 		features map[string]bool
 		err      error
 	}{
 		{
 			desc: "Execute Javascript run successfully",
-			cli:  mockCli(),
+			cli:  mockCli,
 			config: turbine.AppConfig{
 				Name:     "js-test",
 				Language: turbine.JavaScript,
@@ -81,7 +79,7 @@ func TestRunExecute(t *testing.T) {
 		},
 		{
 			desc: "Execute Golang run successfully",
-			cli:  mockCli(),
+			cli:  mockCli,
 			config: turbine.AppConfig{
 				Name:     "go-test",
 				Language: turbine.GoLang,
@@ -89,7 +87,7 @@ func TestRunExecute(t *testing.T) {
 		},
 		{
 			desc: "Execute Ruby Run successfully",
-			cli:  mockCli(),
+			cli:  mockCli,
 			config: turbine.AppConfig{
 				Name:     "ruby-test",
 				Language: turbine.Ruby,
@@ -97,11 +95,11 @@ func TestRunExecute(t *testing.T) {
 		},
 		{
 			desc: "Execute Python Run with an error",
-			cli: func() turbine.CLI {
-				mock := mockturbinecli.NewMockCLI(mockCtrl)
+			cli: func(ctrl *gomock.Controller) turbine.CLI {
+				mock := mockturbinecli.NewMockCLI(ctrl)
 				mock.EXPECT().Run(ctx).Return(fmt.Errorf("not good"))
 				return mock
-			}(),
+			},
 			config: turbine.AppConfig{
 				Name:     "py-test",
 				Language: turbine.Python,
@@ -112,10 +110,11 @@ func TestRunExecute(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
 			u := &Run{
 				logger:     log.NewTestLogger(),
 				config:     &tt.config,
-				turbineCLI: tt.cli,
+				turbineCLI: tt.cli(ctrl),
 			}
 
 			if global.Config == nil {
