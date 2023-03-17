@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	TurbineJSVersion = "1.3.5"
+	TurbineJSVersion = "1.3.8"
 )
 
 func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
