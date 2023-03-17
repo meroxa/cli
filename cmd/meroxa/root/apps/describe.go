@@ -83,7 +83,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	var turbineLibVersion string
 	nameOrUUID := d.args.NameOrUUID
 	if nameOrUUID != "" && d.flags.Path != "" {
-		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
+		return fmt.Errorf("supply either NameOrUUID argument or --path flag")
 	}
 
 	if nameOrUUID == "" {

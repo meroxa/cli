@@ -76,7 +76,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 	var turbineLibVersion string
 	nameOrUUID := r.args.NameOrUUID
 	if nameOrUUID != "" && r.flags.Path != "" {
-		return fmt.Errorf("supply either NamrOrUUID argument or path flag")
+		return fmt.Errorf("supply either NameOrUUID argument or --path flag")
 	}
 
 	if nameOrUUID == "" {
