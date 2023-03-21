@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps/
 ---
 ## meroxa apps
 
-Manage Turbine Data Applications (Beta)
+Manage Turbine Data Applications
 
 ### Options
 

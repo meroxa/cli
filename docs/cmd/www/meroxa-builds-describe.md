@@ -30,5 +30,5 @@ meroxa builds describe [UUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa (Beta)
+* [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa
 

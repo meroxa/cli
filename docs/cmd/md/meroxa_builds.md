@@ -1,6 +1,6 @@
 ## meroxa builds
 
-Inspect Process Builds on Meroxa (Beta)
+Inspect Process Builds on Meroxa
 
 ### Options
 

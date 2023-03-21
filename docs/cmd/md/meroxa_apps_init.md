@@ -39,5 +39,5 @@ meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

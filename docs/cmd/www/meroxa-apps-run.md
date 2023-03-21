@@ -43,5 +43,5 @@ meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

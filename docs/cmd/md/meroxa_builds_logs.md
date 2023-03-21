@@ -23,5 +23,5 @@ meroxa builds logs [UUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa (Beta)
+* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa
 

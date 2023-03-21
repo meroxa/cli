@@ -38,5 +38,5 @@ meroxa apps logs my-turbine-application
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 
