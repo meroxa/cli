@@ -1,6 +1,6 @@
 ## meroxa apps describe
 
-Describe a Turbine Data Application (Beta)
+Describe a Turbine Data Application
 
 ### Synopsis
 

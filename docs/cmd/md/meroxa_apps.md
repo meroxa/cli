@@ -20,13 +20,13 @@ Manage Turbine Data Applications (Beta)
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa apps deploy](meroxa_apps_deploy.md)	 - Deploy a Turbine Data Application (Beta)
-* [meroxa apps describe](meroxa_apps_describe.md)	 - Describe a Turbine Data Application (Beta)
-* [meroxa apps init](meroxa_apps_init.md)	 - Initialize a Turbine Data Application (Beta)
-* [meroxa apps list](meroxa_apps_list.md)	 - List Turbine Data Applications (Beta)
-* [meroxa apps logs](meroxa_apps_logs.md)	 - View relevant logs to the state of the given Turbine Data Application (Beta)
-* [meroxa apps open](meroxa_apps_open.md)	 - Open the link to a Turbine Data Application in the Dashboard (Beta)
-* [meroxa apps remove](meroxa_apps_remove.md)	 - Remove a Turbine Data Application (Beta)
-* [meroxa apps run](meroxa_apps_run.md)	 - Execute a Turbine Data Application locally (Beta)
-* [meroxa apps upgrade](meroxa_apps_upgrade.md)	 - Upgrade a Turbine Data Application (Beta)
+* [meroxa apps deploy](meroxa_apps_deploy.md)	 - Deploy a Turbine Data Application
+* [meroxa apps describe](meroxa_apps_describe.md)	 - Describe a Turbine Data Application
+* [meroxa apps init](meroxa_apps_init.md)	 - Initialize a Turbine Data Application
+* [meroxa apps list](meroxa_apps_list.md)	 - List Turbine Data Applications
+* [meroxa apps logs](meroxa_apps_logs.md)	 - View relevant logs to the state of the given Turbine Data Application
+* [meroxa apps open](meroxa_apps_open.md)	 - Open the link to a Turbine Data Application in the Dashboard
+* [meroxa apps remove](meroxa_apps_remove.md)	 - Remove a Turbine Data Application
+* [meroxa apps run](meroxa_apps_run.md)	 - Execute a Turbine Data Application locally
+* [meroxa apps upgrade](meroxa_apps_upgrade.md)	 - Upgrade a Turbine Data Application
 

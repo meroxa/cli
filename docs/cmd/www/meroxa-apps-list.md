@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-list/
 ---
 ## meroxa apps list
 
-List Turbine Data Applications (Beta)
+List Turbine Data Applications
 
 ```
 meroxa apps list [flags]

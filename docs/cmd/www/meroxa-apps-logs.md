@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-logs/
 ---
 ## meroxa apps logs
 
-View relevant logs to the state of the given Turbine Data Application (Beta)
+View relevant logs to the state of the given Turbine Data Application
 
 ### Synopsis
 

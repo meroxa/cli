@@ -1,6 +1,6 @@
 ## meroxa apps remove
 
-Remove a Turbine Data Application (Beta)
+Remove a Turbine Data Application
 
 ### Synopsis
 

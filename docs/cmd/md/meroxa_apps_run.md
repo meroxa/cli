@@ -1,6 +1,6 @@
 ## meroxa apps run
 
-Execute a Turbine Data Application locally (Beta)
+Execute a Turbine Data Application locally
 
 ### Synopsis
 

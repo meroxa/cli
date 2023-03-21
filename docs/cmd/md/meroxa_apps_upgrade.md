@@ -1,6 +1,6 @@
 ## meroxa apps upgrade
 
-Upgrade a Turbine Data Application (Beta)
+Upgrade a Turbine Data Application
 
 ```
 meroxa apps upgrade [--path pwd] [flags]
