@@ -4,9 +4,9 @@ import (
 	"context"
 )
 
-func (t *turbineRbCLI) Build(ctx context.Context, appName string, platform bool) error {
+func (t *turbineRbCLI) Build(_ context.Context, _ string, _ bool) error {
 	return nil
 }
 
-func (t *turbineRbCLI) CleanUpBinaries(ctx context.Context, appName string) {
+func (t *turbineRbCLI) CleanUpBinaries(_ context.Context, _ string) {
 }

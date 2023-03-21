@@ -8,7 +8,7 @@ import (
 )
 
 // GetVersion will return the version of turbine-rb dependency of a given app.
-func (t *turbineRbCLI) GetVersion(ctx context.Context) (string, error) {
+func (t *turbineRbCLI) GetVersion(_ context.Context) (string, error) {
 	cmd := exec.Command("ruby", []string{
 		"-r", "rubygems",
 		"-r", fmt.Sprintf("%s/app", t.appPath),

@@ -5,13 +5,13 @@ import (
 )
 
 // Build has nothing to do for turbine-js.
-func (t *turbineJsCLI) Build(ctx context.Context, appName string, platform bool) error {
+func (t *turbineJsCLI) Build(_ context.Context, _ string, _ bool) error {
 	return nil
 }
 
-func (t *turbineJsCLI) CleanUpTempBuildLocation(ctx context.Context) error {
+func (t *turbineJsCLI) CleanUpTempBuildLocation(_ context.Context) error {
 	return nil
 }
 
-func (t *turbineJsCLI) CleanUpBinaries(ctx context.Context, appName string) {
+func (t *turbineJsCLI) CleanUpBinaries(_ context.Context, _ string) {
 }

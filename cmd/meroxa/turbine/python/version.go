@@ -10,7 +10,7 @@ import (
 )
 
 // GetVersion calls turbine-py to get its version used by the given app.
-func (t *turbinePyCLI) GetVersion(ctx context.Context) (string, error) {
+func (t *turbinePyCLI) GetVersion(_ context.Context) (string, error) {
 	cmd := exec.Command("turbine-py", "version", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {

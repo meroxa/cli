@@ -61,7 +61,7 @@ func TestAppDescribeTable(t *testing.T) {
 		{
 			desc: "Application with in a private environment",
 			app: func() *meroxa.Application {
-				a := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypePrivate, meroxa.EnvironmentProviderAws)
+				a := utils.GenerateApplicationWithEnv("")
 				return &a
 			},
 			shouldErrorOnEnvInfo: func(output string) bool {
@@ -71,7 +71,7 @@ func TestAppDescribeTable(t *testing.T) {
 		{
 			desc: "Application with in a private environment",
 			app: func() *meroxa.Application {
-				a := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypeSelfHosted, "")
+				a := utils.GenerateApplicationWithEnv("")
 				return &a
 			},
 			shouldErrorOnEnvInfo: func(output string) bool {

@@ -19,7 +19,7 @@ type jsonLogger struct {
 	l *log.Logger
 }
 
-func (l *jsonLogger) JSON(ctx context.Context, data interface{}) {
+func (l *jsonLogger) JSON(_ context.Context, data interface{}) {
 	if raw, ok := data.(string); ok {
 		l.l.Print(raw)
 		return

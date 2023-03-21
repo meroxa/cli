@@ -41,8 +41,8 @@ func (ld *LocalDeploy) getAuthConfig() string {
 	return base64.URLEncoding.EncodeToString(authConfigBytes)
 }
 
-// GetDockerImageName Will create the image via DockerHub.
-func (ld *LocalDeploy) GetDockerImageName(ctx context.Context, l log.Logger, appPath, appName, lang string) (string, error) {
+// GetDockerImageName will create the image via DockerHub.
+func (ld *LocalDeploy) GetDockerImageName(ctx context.Context, l log.Logger, appPath, appName string) (string, error) {
 	l.Info(ctx, "\t  Using DockerHub...")
 	// fqImageName will be eventually taken from the build endpoint.
 	fqImageName := ld.DockerHubUserNameEnv + "/" + appName

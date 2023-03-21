@@ -12,11 +12,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (t *turbineRbCLI) CleanUpBuild(ctx context.Context) {
+func (t *turbineRbCLI) CleanUpBuild(_ context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandBuild,
 		map[string]string{})
@@ -59,7 +59,7 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 	}, nil
 }
 
-func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
+func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	resp, err := t.recordClient.HasFunctions(ctx, &emptypb.Empty{})
@@ -70,7 +70,7 @@ func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 	return resp.Value, nil
 }
 
-func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
+func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	resp, err := t.recordClient.GetSpec(ctx, &pb.GetSpecRequest{
@@ -83,7 +83,7 @@ func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 	return string(resp.Spec), nil
 }
 
-func (t *turbineRbCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
+func (t *turbineRbCLI) GetResources(ctx context.Context, _ string) ([]utils.ApplicationResource, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	resp, err := t.recordClient.ListResources(ctx, &emptypb.Empty{})
@@ -103,7 +103,7 @@ func (t *turbineRbCLI) GetResources(ctx context.Context, appName string) ([]util
 }
 
 func (t *turbineRbCLI) GetGitSha(ctx context.Context) (string, error) {
-	return utils.GetGitSha(t.appPath)
+	return utils.GetGitSha(ctx, t.appPath)
 }
 
 func (t *turbineRbCLI) GitChecks(ctx context.Context) error {

@@ -55,7 +55,7 @@ func TestListAppsExecution(t *testing.T) {
 		{
 			desc: "With applications in a private and common environment",
 			apps: func() []*meroxa.Application {
-				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypePrivate, meroxa.EnvironmentProviderAws)
+				aa := utils.GenerateApplicationWithEnv("")
 				aa2 := utils.GenerateApplication("")
 				return []*meroxa.Application{&aa, &aa2}
 			},
@@ -66,7 +66,7 @@ func TestListAppsExecution(t *testing.T) {
 		{
 			desc: "With applications in a private environment",
 			apps: func() []*meroxa.Application {
-				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypePrivate, meroxa.EnvironmentProviderAws)
+				aa := utils.GenerateApplicationWithEnv("")
 				return []*meroxa.Application{&aa}
 			},
 			shouldErrorOnEnvInfo: func(output string) bool {
@@ -76,7 +76,7 @@ func TestListAppsExecution(t *testing.T) {
 		{
 			desc: "With applications in a self-hosted environment",
 			apps: func() []*meroxa.Application {
-				aa := utils.GenerateApplicationWithEnv("", meroxa.EnvironmentTypeSelfHosted, "")
+				aa := utils.GenerateApplicationWithEnv("")
 				return []*meroxa.Application{&aa}
 			},
 			shouldErrorOnEnvInfo: func(output string) bool {

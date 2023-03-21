@@ -38,56 +38,56 @@ type leveledLogger struct {
 	level Level
 }
 
-func (l *leveledLogger) Debug(ctx context.Context, msg string) {
+func (l *leveledLogger) Debug(_ context.Context, msg string) {
 	if !l.checkLevel(Debug) {
 		return // skip
 	}
 	l.l.Print(msg)
 }
 
-func (l *leveledLogger) Debugf(ctx context.Context, fmt string, args ...interface{}) {
+func (l *leveledLogger) Debugf(_ context.Context, fmt string, args ...interface{}) {
 	if !l.checkLevel(Debug) {
 		return // skip
 	}
 	l.l.Printf(fmt, args...)
 }
 
-func (l *leveledLogger) Info(ctx context.Context, msg string) {
+func (l *leveledLogger) Info(_ context.Context, msg string) {
 	if !l.checkLevel(Info) {
 		return // skip
 	}
 	l.l.Print(msg)
 }
 
-func (l *leveledLogger) Infof(ctx context.Context, fmt string, args ...interface{}) {
+func (l *leveledLogger) Infof(_ context.Context, fmt string, args ...interface{}) {
 	if !l.checkLevel(Info) {
 		return // skip
 	}
 	l.l.Printf(fmt, args...)
 }
 
-func (l *leveledLogger) Warn(ctx context.Context, msg string) {
+func (l *leveledLogger) Warn(_ context.Context, msg string) {
 	if !l.checkLevel(Warn) {
 		return // skip
 	}
 	l.l.Print(msg)
 }
 
-func (l *leveledLogger) Warnf(ctx context.Context, fmt string, args ...interface{}) {
+func (l *leveledLogger) Warnf(_ context.Context, fmt string, args ...interface{}) {
 	if !l.checkLevel(Warn) {
 		return // skip
 	}
 	l.l.Printf(fmt, args...)
 }
 
-func (l *leveledLogger) Error(ctx context.Context, msg string) {
+func (l *leveledLogger) Error(_ context.Context, msg string) {
 	if !l.checkLevel(Error) {
 		return // skip
 	}
 	l.l.Print(msg)
 }
 
-func (l *leveledLogger) Errorf(ctx context.Context, fmt string, args ...interface{}) {
+func (l *leveledLogger) Errorf(_ context.Context, fmt string, args ...interface{}) {
 	if !l.checkLevel(Error) {
 		return // skip
 	}

@@ -38,6 +38,6 @@ func (*Nop) Usage() string {
 	return ""
 }
 
-func (*Nop) Execute(ctx context.Context) error {
+func (*Nop) Execute(_ context.Context) error {
 	return nil
 }

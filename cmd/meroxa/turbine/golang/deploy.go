@@ -125,21 +125,21 @@ func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, 
 }
 
 func (t *turbineGoCLI) GetGitSha(ctx context.Context) (string, error) {
-	return utils.GetGitSha(t.appPath)
+	return utils.GetGitSha(ctx, t.appPath)
 }
 
 func (t *turbineGoCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName string) (string, error) {
 	return t.appPath, turbineGo.CreateDockerfile(appName, t.appPath)
 }
 
-func (t *turbineGoCLI) CleanUpBuild(ctx context.Context) {
+func (t *turbineGoCLI) CleanUpBuild(_ context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+func (t *turbineGoCLI) SetupForDeploy(_ context.Context, _ string) (func(), error) {
 	return func() {}, nil
 }
