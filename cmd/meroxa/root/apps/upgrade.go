@@ -58,7 +58,6 @@ func (*Upgrade) Docs() builder.Docs {
 	return builder.Docs{
 		Short:   "Upgrade a Turbine Data Application",
 		Example: `meroxa apps upgrade --path ~/code`,
-		Beta:    true,
 	}
 }
 

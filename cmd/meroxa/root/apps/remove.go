@@ -68,7 +68,6 @@ or the Application specified by the given name or UUID identifier.`,
 		Example: `meroxa apps remove # assumes that the Application is in the current directory
 meroxa apps remove --path /my/app
 meroxa apps remove NAME`,
-		Beta: true,
 	}
 }
 

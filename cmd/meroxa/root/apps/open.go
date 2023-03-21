@@ -69,7 +69,6 @@ func (o *Open) Docs() builder.Docs {
 		Example: `meroxa apps open # assumes that the Application is in the current directory
 meroxa apps open --path /my/app
 meroxa apps open NAMEorUUID`,
-		Beta: true,
 	}
 }
 

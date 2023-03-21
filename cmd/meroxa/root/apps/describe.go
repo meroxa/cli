@@ -75,7 +75,6 @@ or the Application specified by the given name or UUID identifier.`,
 		Example: `meroxa apps describe # assumes that the Application is in the current directory
 meroxa apps describe --path /my/app
 meroxa apps describe NAMEorUUID`,
-		Beta: true,
 	}
 }
 

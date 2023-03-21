@@ -51,7 +51,6 @@ func (l *List) Usage() string {
 func (l *List) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "List Turbine Data Applications",
-		Beta:  true,
 	}
 }
 
