@@ -1,6 +1,6 @@
 ## meroxa builds describe
 
-Describe a Meroxa Process Build (Beta)
+Describe a Meroxa Process Build
 
 ```
 meroxa builds describe [UUID] [flags]

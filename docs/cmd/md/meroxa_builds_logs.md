@@ -1,6 +1,6 @@
 ## meroxa builds logs
 
-List a Meroxa Process Build's Logs (Beta)
+List a Meroxa Process Build's Logs
 
 ```
 meroxa builds logs [UUID] [flags]

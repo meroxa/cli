@@ -20,6 +20,6 @@ Inspect Process Builds on Meroxa (Beta)
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa builds describe](meroxa_builds_describe.md)	 - Describe a Meroxa Process Build (Beta)
-* [meroxa builds logs](meroxa_builds_logs.md)	 - List a Meroxa Process Build's Logs (Beta)
+* [meroxa builds describe](meroxa_builds_describe.md)	 - Describe a Meroxa Process Build
+* [meroxa builds logs](meroxa_builds_logs.md)	 - List a Meroxa Process Build's Logs
 
