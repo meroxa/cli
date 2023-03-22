@@ -119,7 +119,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	d.logger.JSON(ctx, app)
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.Name)
-	d.logger.Info(ctx, fmt.Sprintf("\n ✨ To visualize your application, visit %s", dashboardURL))
+	d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your application, visit %s", dashboardURL))
 	return nil
 }
 
