@@ -722,6 +722,7 @@ func TestGetPlatformImage(t *testing.T) {
 		name           string
 		meroxaClient   func(*gomock.Controller) meroxa.Client
 		mockTurbineCLI func(*gomock.Controller) turbine.CLI
+		env            string
 		err            error
 	}{
 		{
@@ -743,6 +744,57 @@ func TestGetPlatformImage(t *testing.T) {
 				client.EXPECT().
 					GetBuild(ctx, buildUUID).
 					Return(&meroxa.Build{Uuid: buildUUID, Status: meroxa.BuildStatus{State: "complete"}}, nil)
+				return client
+			},
+			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
+				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI.EXPECT().
+					CreateDockerfile(ctx, appName).
+					Return(buildPath, nil)
+				mockTurbineCLI.EXPECT().
+					CleanUpBuild(ctx).
+					Return()
+				return mockTurbineCLI
+			},
+			err: nil,
+		},
+		{
+			name: "Successfully build image with env",
+			env:  "my-env",
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+				}))
+				input := meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: "my-env"}}
+
+				client.EXPECT().
+					CreateSourceV2(ctx, &input).
+					Return(&meroxa.Source{
+						GetUrl:      sourceGetURL,
+						PutUrl:      server.URL,
+						Environment: &meroxa.EntityIdentifier{Name: "my-env"},
+					}, nil)
+
+				client.EXPECT().
+					CreateBuild(ctx, &meroxa.CreateBuildInput{
+						SourceBlob: meroxa.SourceBlob{
+							Url: sourceGetURL,
+						},
+						Environment: &meroxa.EntityIdentifier{
+							Name: "my-env",
+						},
+					}).
+					Return(&meroxa.Build{Uuid: buildUUID, Environment: &meroxa.EntityIdentifier{Name: "my-env"}}, nil)
+
+				client.EXPECT().
+					GetBuild(ctx, buildUUID).
+					Return(&meroxa.Build{
+						Uuid:   buildUUID,
+						Status: meroxa.BuildStatus{State: "complete"},
+						Environment: &meroxa.EntityIdentifier{
+							Name: "my-env"},
+					}, nil)
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
@@ -866,6 +918,9 @@ func TestGetPlatformImage(t *testing.T) {
 				turbineCLI: tc.mockTurbineCLI(ctrl),
 				logger:     logger,
 				appName:    appName,
+			}
+			if tc.env != "" {
+				d.flags.Environment = tc.env
 			}
 
 			_, err := d.getPlatformImage(ctx)
