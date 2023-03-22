@@ -33,6 +33,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -227,9 +228,18 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
 	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
+
+	if d.flags.Environment != "" {
+		_, err = uuid.Parse(d.flags.Environment)
+		switch {
+		case err == nil:
+			buildInput.Environment = &meroxa.EntityIdentifier{UUID: d.flags.Environment}
+		default:
+			buildInput.Environment = &meroxa.EntityIdentifier{Name: d.flags.Environment}
+		}
+	}
 
 	build, err := d.client.CreateBuild(ctx, buildInput)
 	if err != nil {
