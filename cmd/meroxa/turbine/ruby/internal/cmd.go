@@ -9,7 +9,7 @@ import (
 
 type TurbineCommand string
 
-var (
+const (
 	TurbineCommandRun    TurbineCommand = "TurbineRb.run"
 	TurbineCommandRecord TurbineCommand = "TurbineRb.record"
 	TurbineCommandBuild  TurbineCommand = "TurbineRb.build"
