@@ -117,7 +117,7 @@ func (f *Sync) Logger(logger log.Logger) {
 
 func (f *Sync) ParseArgs(args []string) error {
 	if len(args) < 1 {
-		return errors.New("requires function name")
+		return errors.New("requires resource name")
 	}
 
 	f.args.NameOrUUID = args[0]
