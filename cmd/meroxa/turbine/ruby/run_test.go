@@ -5,18 +5,23 @@ import (
 	"errors"
 	"os"
 	"path"
-	"strings"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/mock"
 	"github.com/meroxa/cli/log"
 )
 
 func Test_Run(t *testing.T) {
-	ctx := context.Background()
-
-	tempdir := t.TempDir()
+	var (
+		ctx           = context.Background()
+		tempdir       = t.TempDir()
+		serverStarted = make(chan bool)
+	)
 
 	tests := []struct {
 		name    string
@@ -32,6 +37,9 @@ func Test_Run(t *testing.T) {
 						m := mock.NewMockturbineServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
+							DoAndReturn(func(_ context.Context) {
+								serverStarted <- true
+							}).
 							Times(1)
 						m.EXPECT().
 							GracefulStop().
@@ -52,6 +60,9 @@ func Test_Run(t *testing.T) {
 						m := mock.NewMockturbineServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
+							DoAndReturn(func(_ context.Context) {
+								serverStarted <- true
+							}).
 							Times(1)
 						m.EXPECT().
 							GracefulStop().
@@ -70,7 +81,7 @@ func Test_Run(t *testing.T) {
 					appPath: func() string {
 						if err := os.WriteFile(
 							path.Join(tempdir, "app.rb"),
-							[]byte(`class Turbine; def self.run; puts "it ran"; end; end`),
+							[]byte(`class TurbineRb; def self.run; puts "it ran"; end; end`),
 							0644,
 						); err != nil {
 							t.Fatal(err)
@@ -82,6 +93,9 @@ func Test_Run(t *testing.T) {
 						m := mock.NewMockturbineServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
+							DoAndReturn(func(_ context.Context) {
+								serverStarted <- true
+							}).
 							Times(1)
 						m.EXPECT().
 							GracefulStop().
@@ -99,8 +113,17 @@ func Test_Run(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			c := tc.cli(ctrl)
 			err := c.Run(ctx)
-			if tc.wantErr != nil && !strings.Contains(err.Error(), tc.wantErr.Error()) {
-				t.Fatalf("want: %v, got: %v", tc.wantErr, err)
+
+			time.AfterFunc(2*time.Second, func() { serverStarted <- false })
+			if ok := <-serverStarted; !ok {
+				t.Fatal("runserver failed to start")
+			}
+
+			if tc.wantErr != nil {
+				require.Error(t, err)
+				assert.Equal(t, err.Error(), tc.wantErr.Error())
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
