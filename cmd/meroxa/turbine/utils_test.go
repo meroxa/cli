@@ -212,7 +212,7 @@ HEAD
 			require.NoError(t, err)
 			assert.Equal(t, tc.branch, branch)
 
-			_, err = GetGitSha(path)
+			_, err = GetGitSha(ctx, path)
 			if err != nil {
 				if tc.shaErr == nil {
 					t.Fatalf("unepxected error: %v", err)

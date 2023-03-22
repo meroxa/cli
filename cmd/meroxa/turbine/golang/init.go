@@ -13,7 +13,7 @@ import (
 	turbinego "github.com/meroxa/turbine-go/init"
 )
 
-func (t *turbineGoCLI) Init(ctx context.Context, name string) error {
+func (t *turbineGoCLI) Init(_ context.Context, name string) error {
 	err := turbinego.Init(name, t.appPath)
 	if err != nil {
 		t.logger.StopSpinnerWithStatus("\t", log.Failed)

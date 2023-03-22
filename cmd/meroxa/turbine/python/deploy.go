@@ -17,7 +17,7 @@ import (
 )
 
 // NeedsToBuild determines if the app has functions or not.
-func (t *turbinePyCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
+func (t *turbinePyCLI) NeedsToBuild(_ context.Context, _ string) (bool, error) {
 	cmd := exec.Command("turbine-py", "hasFunctions", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -83,7 +83,7 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
-func (t *turbinePyCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
+func (t *turbinePyCLI) GetResources(ctx context.Context, _ string) ([]utils.ApplicationResource, error) {
 	var resources []utils.ApplicationResource
 
 	cmd := exec.CommandContext(ctx, "turbine-py", "listResources", t.appPath)
@@ -106,14 +106,14 @@ func (t *turbinePyCLI) GetResources(ctx context.Context, appName string) ([]util
 }
 
 func (t *turbinePyCLI) GetGitSha(ctx context.Context) (string, error) {
-	return utils.GetGitSha(t.appPath)
+	return utils.GetGitSha(ctx, t.appPath)
 }
 
 func (t *turbinePyCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
 	cmd := exec.CommandContext(ctx, "turbine-py", "clibuild", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -142,6 +142,6 @@ func (t *turbinePyCLI) CleanUpBuild(ctx context.Context) {
 	}
 }
 
-func (t *turbinePyCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+func (t *turbinePyCLI) SetupForDeploy(_ context.Context, _ string) (func(), error) {
 	return func() {}, nil
 }

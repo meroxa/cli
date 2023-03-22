@@ -498,7 +498,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	d.localDeploy.Lang = d.lang
 	d.localDeploy.AppName = d.appName
 	if d.localDeploy.Enabled {
-		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName, d.lang)
+		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName)
 		if err != nil {
 			return "", err
 		}

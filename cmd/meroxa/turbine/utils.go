@@ -85,7 +85,7 @@ func GetPath(flag string) (string, error) {
 }
 
 // GetLangFromAppJSON returns specified language in users' app.json.
-func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
+func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
 	l.StartSpinner("\t", "Determining application language from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
@@ -102,7 +102,7 @@ func GetLangFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, 
 }
 
 // GetAppNameFromAppJSON returns specified app name in users' app.json.
-func GetAppNameFromAppJSON(ctx context.Context, l log.Logger, pwd string) (string, error) {
+func GetAppNameFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
 	l.StartSpinner("\t", "Reading application name from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
@@ -260,9 +260,9 @@ func GitMainBranch(branch string) bool {
 }
 
 // GetGitSha will return the latest gitSha that will be used to create an application.
-func GetGitSha(appPath string) (string, error) {
+func GetGitSha(ctx context.Context, appPath string) (string, error) {
 	// Gets latest git sha
-	cmd := exec.Command("git", "rev-parse", "HEAD")
+	cmd := exec.CommandContext(ctx, "git", "rev-parse", "HEAD")
 	cmd.Dir = appPath
 	output, err := cmd.CombinedOutput()
 	if err != nil {

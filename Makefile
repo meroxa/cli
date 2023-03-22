@@ -37,6 +37,7 @@ fig:
 
 .PHONY: lint
 lint:
+	docker pull golangci/golangci-lint:latest
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
 
 .PHONY: mock

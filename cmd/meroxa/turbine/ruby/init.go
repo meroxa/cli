@@ -7,7 +7,7 @@ import (
 	"github.com/meroxa/turbine-core/pkg/app"
 )
 
-func (t *turbineRbCLI) Init(ctx context.Context, appName string) error {
+func (t *turbineRbCLI) Init(_ context.Context, appName string) error {
 	return app.NewAppInit(appName, utils.Ruby, t.appPath).Init()
 }
 

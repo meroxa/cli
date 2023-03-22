@@ -10,7 +10,7 @@ import (
 const turbinePYVersion = "1.5.3"
 
 // Upgrade fetches the latest Meroxa dependencies.
-func (t *turbinePyCLI) Upgrade(vendor bool) error {
+func (t *turbinePyCLI) Upgrade(_ bool) error {
 	cmd := exec.Command("grep", "turbine-py==", "requirements.txt")
 	cmd.Dir = t.appPath
 	err := cmd.Run()

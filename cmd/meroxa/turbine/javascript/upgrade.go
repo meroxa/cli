@@ -8,7 +8,7 @@ import (
 )
 
 // Upgrade fetches the latest Meroxa dependencies.
-func (t *turbineJsCLI) Upgrade(vendor bool) error {
+func (t *turbineJsCLI) Upgrade(_ bool) error {
 	cmd := exec.Command("grep", "turbine-js", "package.json")
 	cmd.Dir = t.appPath
 	err := cmd.Wait()
