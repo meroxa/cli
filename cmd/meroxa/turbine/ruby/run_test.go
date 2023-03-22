@@ -16,6 +16,7 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
+//nolint:funlen
 func Test_Run(t *testing.T) {
 	var (
 		ctx           = context.Background()
