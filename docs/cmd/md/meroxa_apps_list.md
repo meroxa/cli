@@ -1,6 +1,6 @@
 ## meroxa apps list
 
-List Turbine Data Applications (Beta)
+List Turbine Data Applications
 
 ```
 meroxa apps list [flags]
@@ -24,5 +24,5 @@ meroxa apps list [flags]
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

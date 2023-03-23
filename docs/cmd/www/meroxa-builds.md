@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-builds/
 ---
 ## meroxa builds
 
-Inspect Process Builds on Meroxa (Beta)
+Inspect Process Builds on Meroxa
 
 ### Options
 
@@ -27,6 +27,6 @@ Inspect Process Builds on Meroxa (Beta)
 ### SEE ALSO
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
-* [meroxa builds describe](/cli/cmd/meroxa-builds-describe/)	 - Describe a Meroxa Process Build (Beta)
-* [meroxa builds logs](/cli/cmd/meroxa-builds-logs/)	 - List a Meroxa Process Build's Logs (Beta)
+* [meroxa builds describe](/cli/cmd/meroxa-builds-describe/)	 - Describe a Meroxa Process Build
+* [meroxa builds logs](/cli/cmd/meroxa-builds-logs/)	 - List a Meroxa Process Build's Logs
 

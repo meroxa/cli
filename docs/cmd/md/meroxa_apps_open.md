@@ -1,6 +1,6 @@
 ## meroxa apps open
 
-Open the link to a Turbine Data Application in the Dashboard (Beta)
+Open the link to a Turbine Data Application in the Dashboard
 
 ```
 meroxa apps open [--path pwd] [flags]
@@ -32,5 +32,5 @@ meroxa apps open NAMEorUUID
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

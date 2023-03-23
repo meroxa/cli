@@ -1,6 +1,6 @@
 ## meroxa apps logs
 
-View relevant logs to the state of the given Turbine Data Application (Beta)
+View relevant logs to the state of the given Turbine Data Application
 
 ### Synopsis
 
@@ -38,5 +38,5 @@ meroxa apps logs my-turbine-application
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-builds-logs/
 ---
 ## meroxa builds logs
 
-List a Meroxa Process Build's Logs (Beta)
+List a Meroxa Process Build's Logs
 
 ```
 meroxa builds logs [UUID] [flags]
@@ -30,5 +30,5 @@ meroxa builds logs [UUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa (Beta)
+* [meroxa builds](/cli/cmd/meroxa-builds/)	 - Inspect Process Builds on Meroxa
 

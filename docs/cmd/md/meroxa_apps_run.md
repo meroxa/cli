@@ -1,6 +1,6 @@
 ## meroxa apps run
 
-Execute a Turbine Data Application locally (Beta)
+Execute a Turbine Data Application locally
 
 ### Synopsis
 
@@ -36,5 +36,5 @@ meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

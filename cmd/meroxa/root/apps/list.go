@@ -51,7 +51,6 @@ func (l *List) Usage() string {
 func (l *List) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "List Turbine Data Applications",
-		Beta:  true,
 	}
 }
 
@@ -69,7 +68,7 @@ func (l *List) Execute(ctx context.Context) error {
 	l.logger.JSON(ctx, apps)
 	l.logger.Info(ctx, display.AppsTable(apps, l.hideHeaders))
 
-	output := " ✨ To visualize your applications, visit https://dashboard.meroxa.io/apps"
+	output := " ✨ To view your applications, visit https://dashboard.meroxa.io/apps"
 	l.logger.Info(ctx, output)
 	return nil
 }

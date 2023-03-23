@@ -41,7 +41,6 @@ func (*Builds) Aliases() []string {
 func (*Builds) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Inspect Process Builds on Meroxa",
-		Beta:  true,
 	}
 }
 

@@ -75,7 +75,6 @@ or the Application specified by the given name or UUID identifier.`,
 		Example: `meroxa apps describe # assumes that the Application is in the current directory
 meroxa apps describe --path /my/app
 meroxa apps describe NAMEorUUID`,
-		Beta: true,
 	}
 }
 
@@ -120,7 +119,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	d.logger.JSON(ctx, app)
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", app.Name)
-	d.logger.Info(ctx, fmt.Sprintf("\n ✨ To visualize your application, visit %s", dashboardURL))
+	d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your application, visit %s", dashboardURL))
 	return nil
 }
 

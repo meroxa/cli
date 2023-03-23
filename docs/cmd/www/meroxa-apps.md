@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps/
 ---
 ## meroxa apps
 
-Manage Turbine Data Applications (Beta)
+Manage Turbine Data Applications
 
 ### Options
 
@@ -27,13 +27,13 @@ Manage Turbine Data Applications (Beta)
 ### SEE ALSO
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
-* [meroxa apps deploy](/cli/cmd/meroxa-apps-deploy/)	 - Deploy a Turbine Data Application (Beta)
-* [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Turbine Data Application (Beta)
-* [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Turbine Data Application (Beta)
-* [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Turbine Data Applications (Beta)
-* [meroxa apps logs](/cli/cmd/meroxa-apps-logs/)	 - View relevant logs to the state of the given Turbine Data Application (Beta)
-* [meroxa apps open](/cli/cmd/meroxa-apps-open/)	 - Open the link to a Turbine Data Application in the Dashboard (Beta)
-* [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Remove a Turbine Data Application (Beta)
-* [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Turbine Data Application locally (Beta)
-* [meroxa apps upgrade](/cli/cmd/meroxa-apps-upgrade/)	 - Upgrade a Turbine Data Application (Beta)
+* [meroxa apps deploy](/cli/cmd/meroxa-apps-deploy/)	 - Deploy a Turbine Data Application
+* [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Turbine Data Application
+* [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Turbine Data Application
+* [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Turbine Data Applications
+* [meroxa apps logs](/cli/cmd/meroxa-apps-logs/)	 - View relevant logs to the state of the given Turbine Data Application
+* [meroxa apps open](/cli/cmd/meroxa-apps-open/)	 - Open the link to a Turbine Data Application in the Dashboard
+* [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Remove a Turbine Data Application
+* [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Turbine Data Application locally
+* [meroxa apps upgrade](/cli/cmd/meroxa-apps-upgrade/)	 - Upgrade a Turbine Data Application
 

@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-upgrade/
 ---
 ## meroxa apps upgrade
 
-Upgrade a Turbine Data Application (Beta)
+Upgrade a Turbine Data Application
 
 ```
 meroxa apps upgrade [--path pwd] [flags]
@@ -37,5 +37,5 @@ meroxa apps upgrade --path ~/code
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

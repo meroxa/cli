@@ -1,6 +1,6 @@
 ## meroxa builds describe
 
-Describe a Meroxa Process Build (Beta)
+Describe a Meroxa Process Build
 
 ```
 meroxa builds describe [UUID] [flags]
@@ -23,5 +23,5 @@ meroxa builds describe [UUID] [flags]
 
 ### SEE ALSO
 
-* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa (Beta)
+* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa
 

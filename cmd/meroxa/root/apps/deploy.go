@@ -116,7 +116,6 @@ If deployment was successful, you should expect an application you'll be able to
 		Example: `meroxa apps deploy # assumes you run it from the app directory
 meroxa apps deploy --path ./my-app
 `,
-		Beta: true,
 	}
 }
 
@@ -1032,7 +1031,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", d.appName)
-	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To visualize your application, visit %s",
+	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To view your application, visit %s",
 		d.appName, dashboardURL)
 
 	if d.flags.Verbose {

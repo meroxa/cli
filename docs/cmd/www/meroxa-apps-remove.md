@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-remove/
 ---
 ## meroxa apps remove
 
-Remove a Turbine Data Application (Beta)
+Remove a Turbine Data Application
 
 ### Synopsis
 
@@ -46,5 +46,5 @@ meroxa apps remove NAME
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

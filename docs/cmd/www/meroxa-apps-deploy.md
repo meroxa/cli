@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-deploy/
 ---
 ## meroxa apps deploy
 
-Deploy a Turbine Data Application (Beta)
+Deploy a Turbine Data Application
 
 ### Synopsis
 
@@ -48,5 +48,5 @@ meroxa apps deploy --path ./my-app
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

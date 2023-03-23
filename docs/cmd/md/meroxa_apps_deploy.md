@@ -1,6 +1,6 @@
 ## meroxa apps deploy
 
-Deploy a Turbine Data Application (Beta)
+Deploy a Turbine Data Application
 
 ### Synopsis
 
@@ -41,5 +41,5 @@ meroxa apps deploy --path ./my-app
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications (Beta)
+* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 

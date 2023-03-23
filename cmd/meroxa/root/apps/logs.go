@@ -77,7 +77,6 @@ or the Application specified by the given name or UUID identifier.`,
 		Example: `meroxa apps logs # assumes that the Application is in the current directory
 meroxa apps logs --path /my/app
 meroxa apps logs my-turbine-application`,
-		Beta: true,
 	}
 }
 

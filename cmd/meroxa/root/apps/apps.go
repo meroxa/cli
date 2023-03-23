@@ -51,7 +51,6 @@ func (*Apps) Usage() string {
 func (*Apps) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Manage Turbine Data Applications",
-		Beta:  true,
 	}
 }
 
