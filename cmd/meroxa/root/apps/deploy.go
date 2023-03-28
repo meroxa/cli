@@ -206,7 +206,13 @@ func (d *Deploy) Logger(logger log.Logger) {
 func (d *Deploy) getAppSource(ctx context.Context) (*meroxa.Source, error) {
 	var sourceInput meroxa.CreateSourceInputV2
 	if env := d.flags.Environment; env != "" {
-		sourceInput = meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
+		_, err := uuid.Parse(d.flags.Environment)
+		switch {
+		case err == nil:
+			sourceInput = meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{UUID: env}}
+		default:
+			sourceInput = meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
+		}
 	}
 	return d.client.CreateSourceV2(ctx, &sourceInput)
 }
