@@ -204,12 +204,11 @@ func (d *Deploy) Logger(logger log.Logger) {
 
 // getAppSource will return the proper destination where the application source will be uploaded and fetched.
 func (d *Deploy) getAppSource(ctx context.Context) (*meroxa.Source, error) {
+	var sourceInput meroxa.CreateSourceInputV2
 	if env := d.flags.Environment; env != "" {
-		sourceInput := meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
-		return d.client.CreateSourceV2(ctx, &sourceInput)
+		sourceInput = meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
 	}
-
-	return d.client.CreateSource(ctx)
+	return d.client.CreateSourceV2(ctx, &sourceInput)
 }
 
 func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
