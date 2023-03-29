@@ -726,15 +726,15 @@ func TestGetPlatformImage(t *testing.T) {
 		err            error
 	}{
 		{
-			name: "Successfully build image",
+			name: "Successfully build image with no env",
 			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 				}))
-
+				input := meroxa.CreateSourceInputV2{}
 				client.EXPECT().
-					CreateSource(ctx).
+					CreateSourceV2(ctx, &input).
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				client.EXPECT().
@@ -813,9 +813,9 @@ func TestGetPlatformImage(t *testing.T) {
 			name: "Fail to create source",
 			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
-
+				input := meroxa.CreateSourceInputV2{}
 				client.EXPECT().
-					CreateSource(ctx).
+					CreateSourceV2(ctx, &input).
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, err)
 				return client
 			},
@@ -829,9 +829,9 @@ func TestGetPlatformImage(t *testing.T) {
 			name: "Fail to upload source",
 			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
-
+				input := meroxa.CreateSourceInputV2{}
 				client.EXPECT().
-					CreateSource(ctx).
+					CreateSourceV2(ctx, &input).
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: sourcePutURL}, nil)
 				return client
 			},
@@ -848,13 +848,12 @@ func TestGetPlatformImage(t *testing.T) {
 			name: "Fail to create build",
 			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
 				client := mock.NewMockClient(ctrl)
-
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 				}))
-
+				input := meroxa.CreateSourceInputV2{}
 				client.EXPECT().
-					CreateSource(ctx).
+					CreateSourceV2(ctx, &input).
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				client.EXPECT().
@@ -882,9 +881,9 @@ func TestGetPlatformImage(t *testing.T) {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 				}))
-
+				input := meroxa.CreateSourceInputV2{}
 				client.EXPECT().
-					CreateSource(ctx).
+					CreateSourceV2(ctx, &input).
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				client.EXPECT().
@@ -1467,9 +1466,10 @@ func TestDeploy_getAppSource(t *testing.T) {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusOK)
 				}))
+				input := meroxa.CreateSourceInputV2{}
 
 				client.EXPECT().
-					CreateSource(ctx).
+					CreateSourceV2(ctx, &input).
 					Return(&meroxa.Source{GetUrl: sourceGetURL, PutUrl: server.URL}, nil)
 
 				return client
