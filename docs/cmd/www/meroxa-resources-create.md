@@ -98,7 +98,7 @@ $ meroxa resources create slack \
   -h, --help                      help for create
   -m, --metadata string           resource metadata
       --password string           password
-      --private-key-file string   Path to private key file
+      --private-key-file string   path to private key file
       --ssh-private-key string    SSH tunneling private key
       --ssh-url string            SSH tunneling address
       --ssl                       use SSL

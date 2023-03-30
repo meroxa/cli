@@ -58,7 +58,7 @@ type Create struct {
 		SSL            bool   `long:"ssl"              short:"" usage:"use SSL"`
 		SSHURL         string `long:"ssh-url"          short:"" usage:"SSH tunneling address"`
 		SSHPrivateKey  string `long:"ssh-private-key"  short:"" usage:"SSH tunneling private key"`
-		PrivateKeyFile string `long:"private-key-file" short:"" usage:"Path to private key file"`
+		PrivateKeyFile string `long:"private-key-file" short:"" usage:"path to private key file"`
 		Token          string `long:"token"            short:"" usage:"API Token"`
 	}
 }
@@ -209,22 +209,8 @@ func (c *Create) Execute(ctx context.Context) error {
 		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
-	if c.flags.PrivateKeyFile != "" {
-		if c.flags.SSHPrivateKey == "" {
-			key, err := getPrivateKeyFromFile(c.flags.PrivateKeyFile)
-			if err != nil {
-				return err
-			}
-			c.flags.SSHPrivateKey = key
-
-			if c.flags.Type == string(meroxa.ResourceTypeSnowflake) {
-				if c.flags.Password != "" {
-					c.logger.Warnf(ctx, "ignoring value of --ssh-private-key-file (%s) in favor of value of --password", c.flags.PrivateKeyFile)
-				} else {
-					c.flags.Password = key
-				}
-			}
-		}
+	if err := c.handlePrivateKeyFlags(ctx); err != nil {
+		return err
 	}
 
 	if c.hasCredentials() {
@@ -284,11 +270,24 @@ func (c *Create) hasCredentials() bool {
 		c.flags.SSL
 }
 
-func getPrivateKeyFromFile(path string) (string, error) {
-	bytes, err := os.ReadFile(path)
-	if err != nil {
-		return "", fmt.Errorf("could not find SSH private key at %q."+
-			" Try a different path`", path)
+func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
+	path := c.flags.PrivateKeyFile
+	if path != "" && c.flags.SSHPrivateKey == "" {
+		bytes, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("could not find SSH private key at %q."+
+				" Try a different path`", path)
+		}
+		key := string(bytes)
+		c.flags.SSHPrivateKey = key
+
+		if c.flags.Type == string(meroxa.ResourceTypeSnowflake) {
+			if c.flags.Password != "" {
+				c.logger.Warnf(ctx, "ignoring value of --ssh-private-key-file (%s) in favor of value of --password", c.flags.PrivateKeyFile)
+			} else {
+				c.flags.Password = key
+			}
+		}
 	}
-	return string(bytes), nil
+	return nil
 }

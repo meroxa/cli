@@ -379,47 +379,47 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 	tests := []struct {
 		name                     string
 		inputType                string
-		inputSshPrivateKeyFlag   string
+		inputSSHPrivateKeyFlag   string
 		inputPasswordFlag        string
 		inputPrivateKeyFileFlag  string
 		expectedPassword         string
-		expectedSshPrivateKeyVal string
+		expectedSSHPrivateKeyVal string
 	}{
 		{
 			name:                     "create postgres resource with SSH Tunnel --ssh-private-key",
 			inputType:                string(meroxa.ResourceTypePostgres),
-			inputSshPrivateKeyFlag:   keyVal,
+			inputSSHPrivateKeyFlag:   keyVal,
 			expectedPassword:         "",
-			expectedSshPrivateKeyVal: keyVal,
+			expectedSSHPrivateKeyVal: keyVal,
 		},
 		{
 			name:                     "create postgres resource with SSH Tunnel --private-key-file",
 			inputType:                string(meroxa.ResourceTypePostgres),
 			inputPrivateKeyFileFlag:  keyFile,
 			expectedPassword:         "",
-			expectedSshPrivateKeyVal: keyVal,
+			expectedSSHPrivateKeyVal: keyVal,
 		},
 		{
 			name:                     "create postgres resource with both SSH flags",
 			inputType:                string(meroxa.ResourceTypePostgres),
 			inputPrivateKeyFileFlag:  keyFile,
-			inputSshPrivateKeyFlag:   keyVal,
+			inputSSHPrivateKeyFlag:   keyVal,
 			expectedPassword:         "",
-			expectedSshPrivateKeyVal: keyVal,
+			expectedSSHPrivateKeyVal: keyVal,
 		},
 		{
 			name:                     "create snowflake resource with --password",
 			inputType:                string(meroxa.ResourceTypeSnowflake),
 			inputPasswordFlag:        keyVal,
 			expectedPassword:         keyVal,
-			expectedSshPrivateKeyVal: "",
+			expectedSSHPrivateKeyVal: "",
 		},
 		{
 			name:                     "create snowflake resource with --private-key-file",
 			inputPrivateKeyFileFlag:  keyFile,
 			inputType:                string(meroxa.ResourceTypeSnowflake),
 			expectedPassword:         keyVal,
-			expectedSshPrivateKeyVal: keyVal,
+			expectedSSHPrivateKeyVal: keyVal,
 		},
 		{
 			name:                     "create snowflake resource with both secret flags",
@@ -427,7 +427,7 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 			inputPrivateKeyFileFlag:  keyFile,
 			inputType:                string(meroxa.ResourceTypeSnowflake),
 			expectedPassword:         keyVal,
-			expectedSshPrivateKeyVal: keyVal,
+			expectedSSHPrivateKeyVal: keyVal,
 		},
 	}
 
@@ -453,7 +453,7 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 			c.flags.Type = tc.inputType
 			c.flags.URL = "anything"
 			c.flags.Password = tc.inputPasswordFlag
-			c.flags.SSHPrivateKey = tc.inputSshPrivateKeyFlag
+			c.flags.SSHPrivateKey = tc.inputSSHPrivateKeyFlag
 			c.flags.PrivateKeyFile = tc.inputPrivateKeyFileFlag
 
 			err := c.Execute(ctx)
@@ -461,7 +461,7 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 				t.Fatalf("not expected error, got %q", err.Error())
 			}
 
-			assert.Equalf(t, tc.expectedSshPrivateKeyVal, c.flags.SSHPrivateKey, "mistach in private key flag value")
+			assert.Equalf(t, tc.expectedSSHPrivateKeyVal, c.flags.SSHPrivateKey, "mistach in private key flag value")
 			assert.Equalf(t, tc.expectedPassword, c.flags.Password, "mismatch in password flag value")
 		})
 	}
