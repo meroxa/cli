@@ -276,7 +276,7 @@ func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
 		bytes, err := os.ReadFile(path)
 		if err != nil {
 			return fmt.Errorf("could not find SSH private key at %q."+
-				" Try a different path`", path)
+				" Try a different path", path)
 		}
 		key := string(bytes)
 		c.flags.SSHPrivateKey = key
