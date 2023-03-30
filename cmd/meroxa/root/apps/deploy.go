@@ -60,7 +60,6 @@ type deployApplicationClient interface {
 	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
 	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
-	CreateSource(ctx context.Context) (*meroxa.Source, error)
 	CreateSourceV2(ctx context.Context, input *meroxa.CreateSourceInputV2) (*meroxa.Source, error)
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
