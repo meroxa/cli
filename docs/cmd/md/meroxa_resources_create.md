@@ -60,6 +60,7 @@ $ meroxa resources create store \
 $ meroxa resources create warehouse \
 	--type redshift \
 	-u "$REDSHIFT_URL" \
+    --ssh-url ssh://user@password@example.elb.us-east-1.amazonaws.com:22 \
 	--private-key-file ~/.ssh/my-key
 
 $ meroxa resources create datalake \
