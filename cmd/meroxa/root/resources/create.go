@@ -186,7 +186,9 @@ func (c *Create) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
-	if c.flags.Type != string(meroxa.ResourceTypeNotion) && c.flags.URL == "" {
+	if (c.flags.Type != string(meroxa.ResourceTypeNotion) &&
+		c.flags.Type != string(meroxa.ResourceTypeSpireMaritimeAIS)) &&
+		c.flags.URL == "" {
 		return fmt.Errorf("required flag(s) \"url\" not set")
 	}
 

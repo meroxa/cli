@@ -466,3 +466,64 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateResourceURLFlag(t *testing.T) {
+	tests := []struct {
+		description  string
+		resourceType string
+		client       func(*gomock.Controller) *mock.MockClient
+		wantErr      error
+	}{
+		{
+			description:  "Do not require URL for Notion",
+			resourceType: string(meroxa.ResourceTypeNotion),
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{}, nil).Times(1)
+				return client
+			},
+		},
+		{
+			description:  "Do not require URL for Spire Maritime AIS",
+			resourceType: string(meroxa.ResourceTypeSpireMaritimeAIS),
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{}, nil).Times(1)
+				return client
+			},
+		},
+		{
+			description:  "Require URL for one of the rest of the types",
+			resourceType: string(meroxa.ResourceTypePostgres),
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				return client
+			},
+			wantErr: fmt.Errorf(`required flag(s) "url" not set`),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.description, func(t *testing.T) {
+			ctx := context.Background()
+			ctrl := gomock.NewController(t)
+			logger := log.NewTestLogger()
+			c := &Create{
+				client: tc.client(ctrl),
+				logger: logger,
+			}
+			c.args.Name = "my-resource"
+			c.flags.Type = tc.resourceType
+
+			err := c.Execute(ctx)
+			if err != nil {
+				if tc.wantErr == nil {
+					t.Fatalf("unexpected error: %v", err)
+				}
+				assert.Equal(t, tc.wantErr.Error(), err.Error())
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
