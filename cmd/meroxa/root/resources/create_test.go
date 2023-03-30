@@ -4,10 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -59,6 +64,9 @@ func TestCreateResourceFlags(t *testing.T) {
 		{name: "metadata", required: false, shorthand: "m"},
 		{name: "env", required: false},
 		{name: "token", required: false},
+		{name: "ssh-url", required: false},
+		{name: "ssh-private-key", required: false},
+		{name: "private-key-file", required: false},
 	}
 
 	c := builder.BuildCobraCommand(&Create{})
@@ -356,5 +364,105 @@ Sign up for the Beta here: https://share.hsforms.com/1Uq6UYoL8Q6eV5QzSiyIQkAc2sm
 
 	if gotError != wantError {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantError, gotError)
+	}
+}
+
+func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
+	ctx := context.Background()
+	logger := log.NewTestLogger()
+
+	keyVal := "super-secret"
+	keyFile := filepath.Join("/tmp", uuid.NewString())
+	err := os.WriteFile(keyFile, []byte(keyVal), 0600)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name                     string
+		inputType                string
+		inputSshPrivateKeyFlag   string
+		inputPasswordFlag        string
+		inputPrivateKeyFileFlag  string
+		expectedPassword         string
+		expectedSshPrivateKeyVal string
+	}{
+		{
+			name:                     "create postgres resource with SSH Tunnel --ssh-private-key",
+			inputType:                string(meroxa.ResourceTypePostgres),
+			inputSshPrivateKeyFlag:   keyVal,
+			expectedPassword:         "",
+			expectedSshPrivateKeyVal: keyVal,
+		},
+		{
+			name:                     "create postgres resource with SSH Tunnel --private-key-file",
+			inputType:                string(meroxa.ResourceTypePostgres),
+			inputPrivateKeyFileFlag:  keyFile,
+			expectedPassword:         "",
+			expectedSshPrivateKeyVal: keyVal,
+		},
+		{
+			name:                     "create postgres resource with both SSH flags",
+			inputType:                string(meroxa.ResourceTypePostgres),
+			inputPrivateKeyFileFlag:  keyFile,
+			inputSshPrivateKeyFlag:   keyVal,
+			expectedPassword:         "",
+			expectedSshPrivateKeyVal: keyVal,
+		},
+		{
+			name:                     "create snowflake resource with --password",
+			inputType:                string(meroxa.ResourceTypeSnowflake),
+			inputPasswordFlag:        keyVal,
+			expectedPassword:         keyVal,
+			expectedSshPrivateKeyVal: "",
+		},
+		{
+			name:                     "create snowflake resource with --private-key-file",
+			inputPrivateKeyFileFlag:  keyFile,
+			inputType:                string(meroxa.ResourceTypeSnowflake),
+			expectedPassword:         keyVal,
+			expectedSshPrivateKeyVal: keyVal,
+		},
+		{
+			name:                     "create snowflake resource with both secret flags",
+			inputPasswordFlag:        keyVal,
+			inputPrivateKeyFileFlag:  keyFile,
+			inputType:                string(meroxa.ResourceTypeSnowflake),
+			expectedPassword:         keyVal,
+			expectedSshPrivateKeyVal: keyVal,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			client := mock.NewMockClient(ctrl)
+
+			c := &Create{
+				client: client,
+				logger: logger,
+			}
+
+			client.
+				EXPECT().
+				CreateResource(
+					ctx,
+					gomock.Any(),
+				).
+				Return(&meroxa.Resource{}, nil)
+
+			c.args.Name = "my-resource"
+			c.flags.Type = tc.inputType
+			c.flags.URL = "anything"
+			c.flags.Password = tc.inputPasswordFlag
+			c.flags.SSHPrivateKey = tc.inputSshPrivateKeyFlag
+			c.flags.PrivateKeyFile = tc.inputPrivateKeyFileFlag
+
+			err := c.Execute(ctx)
+			if err != nil {
+				t.Fatalf("not expected error, got %q", err.Error())
+			}
+
+			assert.Equalf(t, tc.expectedSshPrivateKeyVal, c.flags.SSHPrivateKey, "mistach in private key flag value")
+			assert.Equalf(t, tc.expectedPassword, c.flags.Password, "mismatch in password flag value")
+		})
 	}
 }
