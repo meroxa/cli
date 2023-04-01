@@ -137,8 +137,12 @@ func ResourceTypesTable(types []meroxa.ResourceType, hideHeaders bool) string {
 	betaResourceTypes := make(map[string]string)
 
 	for _, t := range types {
-		val := fmt.Sprintf("%s", t.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])
-		if val == "" {
+		label, ok := t.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey]
+		if !ok {
+			continue
+		}
+		val, ok := label.(string)
+		if !ok {
 			continue
 		}
 		if t.ReleaseStage == meroxa.ResourceTypeReleaseStageGA {
