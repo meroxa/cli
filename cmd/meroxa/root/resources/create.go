@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -49,15 +50,16 @@ type Create struct {
 		Environment string `long:"env" usage:"environment (name or UUID) where resource will be created"`
 
 		// credentials
-		Username      string `long:"username"    short:"" usage:"username"`
-		Password      string `long:"password"    short:"" usage:"password"`
-		CaCert        string `long:"ca-cert"     short:"" usage:"trusted certificates for verifying resource"`
-		ClientCert    string `long:"client-cert" short:"" usage:"client certificate for authenticating to the resource"`
-		ClientKey     string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
-		SSL           bool   `long:"ssl"         short:"" usage:"use SSL"`
-		SSHURL        string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
-		SSHPrivateKey string `long:"ssh-private-key"     short:"" usage:"SSH tunneling private key"`
-		Token         string `long:"token"     short:"" usage:"API Token"`
+		Username       string `long:"username"         short:"" usage:"username"`
+		Password       string `long:"password"         short:"" usage:"password"`
+		CaCert         string `long:"ca-cert"          short:"" usage:"trusted certificates for verifying resource"`
+		ClientCert     string `long:"client-cert"      short:"" usage:"client certificate for authenticating to the resource"`
+		ClientKey      string `long:"client-key"       short:"" usage:"client private key for authenticating to the resource"`
+		SSL            bool   `long:"ssl"              short:"" usage:"use SSL"`
+		SSHURL         string `long:"ssh-url"          short:"" usage:"SSH tunneling address"`
+		SSHPrivateKey  string `long:"ssh-private-key"  short:"" usage:"SSH tunneling private key"`
+		PrivateKeyFile string `long:"private-key-file" short:"" usage:"path to private key file"`
+		Token          string `long:"token"            short:"" usage:"API Token"`
 	}
 }
 
@@ -82,41 +84,72 @@ func (c *Create) Docs() builder.Docs {
 
 		// TODO: Provide example with `--env` once it's not behind a feature flag
 		Example: `
-$ meroxa resources create store --type postgres -u "$DATABASE_URL" --metadata '{"logical_replication":"true"}'
-$ meroxa resources create datalake --type s3 -u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
-$ meroxa resources create warehouse --type redshift -u "$REDSHIFT_URL"
-$ meroxa resources create slack --type url -u "$WEBHOOK_URL"
-$ meroxa resource create mysqldb \
-    --type mysql \
-    --url "mysql://$MYSQL_USER:$MYSQL_PASS@$MYSQL_URL:$MYSQL_PORT/$MYSQL_DB"
+$ meroxa resource create mybigquery \
+    --type bigquery \
+    -u "bigquery://$GCP_PROJECT_ID/$GCP_DATASET_NAME" \
+    --client-key "$(cat $GCP_SERVICE_ACCOUNT_JSON_FILE)"
 
-$ meroxa resource create mongo \
-    --type mongodb \
-    -u "mongodb://$MONGO_USER:$MONGO_PASS@$MONGO_URL:$MONGO_PORT"
+$ meroxa resource create sourcedb \
+	--type confluentcloud \
+	--url kafka+sasl+ssl://$API_KEY:$API_SECRET@<$BOOTSTRAP_SERVER>?sasl_mechanism=plain
+
+$ meroxa resource create meteor \
+	--type cosmosdb \
+	--url cosmosdb://user:pass@org.documents.azure.com:443/pluto
 
 $ meroxa resource create elasticsearch \
     --type elasticsearch \
     -u "https://$ES_USER:$ES_PASS@$ES_URL:$ES_PORT" \
     --metadata '{"index.prefix": "$ES_INDEX","incrementing.field.name": "$ES_INCREMENTING_FIELD"}'
 
-$ meroxa resource create mybigquery \
-    --type bigquery \
-    -u "bigquery://$GCP_PROJECT_ID/$GCP_DATASET_NAME" \
-    --client-key "$(cat $GCP_SERVICE_ACCOUNT_JSON_FILE)"
+$ meroxa resource create sourcedb \
+	--type kafka \
+	--url kafka+sasl+ssl://$KAFKA_USER:$KAFKA_PASS@<$BOOTSTRAP_SERVER>?sasl_mechanism=plain
+
+$ meroxa resource create mongo \
+    --type mongodb \
+    -u "mongodb://$MONGO_USER:$MONGO_PASS@$MONGO_URL:$MONGO_PORT"
+
+$ meroxa resource create mysqldb \
+    --type mysql \
+    --url "mysql://$MYSQL_USER:$MYSQL_PASS@$MYSQL_URL:$MYSQL_PORT/$MYSQL_DB"
+
+$ meroxa resource create workspace \
+	--type notion \
+	--token AbCdEfG123456
+
+$ meroxa resource create workspace \
+	--type oracledb \
+	--url oracle://user:password@host.com:1521/database
+
+$ meroxa resources create store \
+	--type postgres \
+	-u "$DATABASE_URL" \
+	--metadata '{"logical_replication":"true"}'
+
+$ meroxa resources create warehouse \
+	--type redshift \
+	-u "$REDSHIFT_URL" \
+    --ssh-url ssh://user@password@example.elb.us-east-1.amazonaws.com:22 \
+	--private-key-file ~/.ssh/my-key
+
+$ meroxa resources create datalake \
+	--type s3 \
+	-u "s3://$AWS_ACCESS_KEY_ID:$AWS_ACCESS_KEY_SECRET@us-east-1/meroxa-demos"
 
 $ meroxa resource create snowflake \
     --type snowflakedb \
     -u "snowflake://$SNOWFLAKE_URL/meroxa_db/stream_data" \
     --username meroxa_user \
-    --password $SNOWFLAKE_PRIVATE_KEY
+    --private-key-file /Users/me/.ssh/snowflake_ed25519
 
-$ meroxa resource create sourcedb \
-	--type kafka \
-	--url kafka+sasl+ssl://$KAFKA_USER:$KAFKA_PASS@<$BOOTSTRAP_SERVER>?sasl_mechanism=plain
+$ meroxa resource create hr \
+	--type sqlserver \
+	--url "sqlserver://$MSSQL_USER:$MSSQL_PASS@$MSSQL_URL:$MSSQL_PORT/$MSSQL_DB"
 
-$ meroxa resource create sourcedb \
-	--type confluentcloud \
-	--url kafka+sasl+ssl://$API_KEY:$API_SECRET@<$BOOTSTRAP_SERVER>?sasl_mechanism=plain`,
+$ meroxa resources create slack \
+	--type url \
+	-u "$WEBHOOK_URL"`,
 	}
 }
 
@@ -177,6 +210,10 @@ func (c *Create) Execute(ctx context.Context) error {
 		env = string(meroxa.EnvironmentTypeCommon)
 	}
 
+	if err := c.handlePrivateKeyFlags(ctx); err != nil {
+		return err
+	}
+
 	if c.hasCredentials() {
 		input.Credentials = &meroxa.Credentials{
 			Username:      c.flags.Username,
@@ -232,4 +269,26 @@ func (c *Create) hasCredentials() bool {
 		c.flags.ClientKey != "" ||
 		c.flags.Token != "" ||
 		c.flags.SSL
+}
+
+func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
+	path := c.flags.PrivateKeyFile
+	if path != "" && c.flags.SSHPrivateKey == "" {
+		bytes, err := os.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("could not find SSH private key at %q."+
+				" Try a different path", path)
+		}
+		key := string(bytes)
+		c.flags.SSHPrivateKey = key
+
+		if c.flags.Type == string(meroxa.ResourceTypeSnowflake) {
+			if c.flags.Password != "" {
+				c.logger.Warnf(ctx, "ignoring value of --ssh-private-key-file (%s) in favor of value of --password", c.flags.PrivateKeyFile)
+			} else {
+				c.flags.Password = key
+			}
+		}
+	}
+	return nil
 }
