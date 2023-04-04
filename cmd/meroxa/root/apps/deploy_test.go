@@ -1555,7 +1555,7 @@ func Test_validateEnvExists(t *testing.T) {
 				d.flags.Environment = "your-env"
 				return d
 			},
-			wantErr: fmt.Errorf(`Environment "your-env" does not exist.`),
+			wantErr: fmt.Errorf(`environment "your-env" does not exist`),
 		},
 		{
 			desc: "failed to retrieve environment",
@@ -1571,7 +1571,7 @@ func Test_validateEnvExists(t *testing.T) {
 				d.flags.Environment = "your-env"
 				return d
 			},
-			wantErr: fmt.Errorf(`Unable to retrieve environment "your-env": boom`),
+			wantErr: fmt.Errorf(`unable to retrieve environment "your-env": boom`),
 		},
 	}
 
@@ -1587,5 +1587,4 @@ func Test_validateEnvExists(t *testing.T) {
 			}
 		})
 	}
-
 }

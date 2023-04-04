@@ -917,9 +917,9 @@ func (d *Deploy) validateEnvironmentFlagCompatibility() error {
 func (d *Deploy) validateEnvExists(ctx context.Context) error {
 	if _, err := d.client.GetEnvironment(ctx, d.env.nameOrUUID()); err != nil {
 		if strings.Contains(err.Error(), "could not find environment") {
-			return fmt.Errorf("Environment %q does not exist.", d.flags.Environment)
+			return fmt.Errorf("environment %q does not exist", d.flags.Environment)
 		}
-		return fmt.Errorf("Unable to retrieve environment %q: %w", d.flags.Environment, err)
+		return fmt.Errorf("unable to retrieve environment %q: %w", d.flags.Environment, err)
 	}
 	return nil
 }
