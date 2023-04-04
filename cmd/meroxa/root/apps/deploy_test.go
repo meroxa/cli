@@ -324,7 +324,7 @@ func Test_validateResource(t *testing.T) {
 			if tc.wantErr != nil {
 				assert.Equal(t, tc.wantErr.Error(), err.Error())
 			} else {
-				assert.True(t, err == nil)
+				assert.NoError(t, err)
 			}
 		})
 	}
@@ -778,12 +778,8 @@ func TestGetPlatformImage(t *testing.T) {
 
 				client.EXPECT().
 					CreateBuild(ctx, &meroxa.CreateBuildInput{
-						SourceBlob: meroxa.SourceBlob{
-							Url: sourceGetURL,
-						},
-						Environment: &meroxa.EntityIdentifier{
-							Name: "my-env",
-						},
+						SourceBlob:  meroxa.SourceBlob{Url: sourceGetURL},
+						Environment: &meroxa.EntityIdentifier{Name: "my-env"},
 					}).
 					Return(&meroxa.Build{Uuid: buildUUID, Environment: &meroxa.EntityIdentifier{Name: "my-env"}}, nil)
 
@@ -919,7 +915,7 @@ func TestGetPlatformImage(t *testing.T) {
 				appName:    appName,
 			}
 			if tc.env != "" {
-				d.flags.Environment = tc.env
+				d.env = &environment{Name: tc.env}
 			}
 
 			_, err := d.getPlatformImage(ctx)
@@ -1418,7 +1414,9 @@ func Test_validateFlags(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			d := &Deploy{}
 			d.flags.Spec = tc.specFlag
-			d.flags.Environment = tc.envFlag
+			if tc.envFlag != "" {
+				d.env = &environment{Name: tc.envFlag}
+			}
 			d.lang = tc.lang
 
 			err := d.validateEnvironmentFlagCompatibility()
@@ -1483,7 +1481,10 @@ func TestDeploy_getAppSource(t *testing.T) {
 			d := &Deploy{
 				client: tc.meroxaClient(ctrl, tc.envFlag),
 			}
-			d.flags.Environment = tc.envFlag
+			if tc.envFlag != "" {
+				d.flags.Environment = tc.envFlag
+				d.env = &environment{Name: tc.envFlag}
+			}
 
 			s, err := d.getAppSource(ctx)
 			require.NoError(t, err)
@@ -1491,4 +1492,100 @@ func TestDeploy_getAppSource(t *testing.T) {
 			assert.NotEmpty(t, s.PutUrl)
 		})
 	}
+}
+
+func Test_envFromFlag(t *testing.T) {
+	tests := []struct {
+		desc             string
+		flag, uuid, name string
+	}{
+		{
+			desc: "with uuid",
+			flag: "543d036e-56af-4ef9-b0a0-f9c55cffac0e",
+			uuid: "543d036e-56af-4ef9-b0a0-f9c55cffac0e",
+		},
+		{
+			desc: "with name",
+			flag: "env-name",
+			name: "env-name",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			e := envFromFlag(tc.flag)
+			assert.Equal(t, e.Name, tc.name)
+			assert.Equal(t, e.UUID, tc.uuid)
+		})
+	}
+}
+
+func Test_validateEnvExists(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		desc    string
+		setup   func(ctrl *gomock.Controller) *Deploy
+		wantErr error
+	}{
+		{
+			desc: "environment is found",
+			setup: func(ctrl *gomock.Controller) *Deploy {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetEnvironment(ctx, "my-env").Return(nil, nil)
+				d := &Deploy{
+					client: client,
+					env:    &environment{Name: "my-env"},
+				}
+				d.flags.Environment = "my-env"
+				return d
+			},
+		},
+		{
+			desc: "environment is not found",
+			setup: func(ctrl *gomock.Controller) *Deploy {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetEnvironment(ctx, "your-env").Return(nil,
+					fmt.Errorf("could not find environment"),
+				)
+				d := &Deploy{
+					client: client,
+					env:    &environment{Name: "your-env"},
+				}
+				d.flags.Environment = "your-env"
+				return d
+			},
+			wantErr: fmt.Errorf(`Environment "your-env" does not exist.`),
+		},
+		{
+			desc: "failed to retrieve environment",
+			setup: func(ctrl *gomock.Controller) *Deploy {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().GetEnvironment(ctx, "your-env").Return(nil,
+					fmt.Errorf("boom"),
+				)
+				d := &Deploy{
+					client: client,
+					env:    &environment{Name: "your-env"},
+				}
+				d.flags.Environment = "your-env"
+				return d
+			},
+			wantErr: fmt.Errorf(`Unable to retrieve environment "your-env": boom`),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			d := tc.setup(gomock.NewController(t))
+			err := d.validateEnvExists(ctx)
+			if tc.wantErr != nil {
+				assert.Error(t, err)
+				assert.Equal(t, err.Error(), tc.wantErr.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+
 }

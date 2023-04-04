@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
 package apps
 
 import (
@@ -56,6 +55,7 @@ type deployApplicationClient interface {
 	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
 	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	GetEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error)
 	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
 	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
@@ -64,6 +64,22 @@ type deployApplicationClient interface {
 	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
 	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	AddHeader(key, value string)
+}
+
+type environment struct {
+	Name string
+	UUID string
+}
+
+func (e *environment) nameOrUUID() string {
+	switch {
+	case e.UUID != "":
+		return e.UUID
+	case e.Name != "":
+		return e.Name
+	default:
+		panic("bad state: name or uuid should be present")
+	}
 }
 
 type Deploy struct {
@@ -90,6 +106,7 @@ type Deploy struct {
 	lang          string
 	fnName        string
 	specVersion   string
+	env           *environment
 }
 
 var (
@@ -203,17 +220,14 @@ func (d *Deploy) Logger(logger log.Logger) {
 
 // getAppSource will return the proper destination where the application source will be uploaded and fetched.
 func (d *Deploy) getAppSource(ctx context.Context) (*meroxa.Source, error) {
-	var sourceInput meroxa.CreateSourceInputV2
-	if env := d.flags.Environment; env != "" {
-		_, err := uuid.Parse(d.flags.Environment)
-		switch {
-		case err == nil:
-			sourceInput = meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{UUID: env}}
-		default:
-			sourceInput = meroxa.CreateSourceInputV2{Environment: &meroxa.EntityIdentifier{Name: env}}
+	in := meroxa.CreateSourceInputV2{}
+	if d.env != nil {
+		in.Environment = &meroxa.EntityIdentifier{
+			UUID: d.env.UUID,
+			Name: d.env.Name,
 		}
 	}
-	return d.client.CreateSourceV2(ctx, &sourceInput)
+	return d.client.CreateSourceV2(ctx, &in)
 }
 
 func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
@@ -233,14 +247,10 @@ func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	}
 	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
 	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
-
-	if d.flags.Environment != "" {
-		_, err = uuid.Parse(d.flags.Environment)
-		switch {
-		case err == nil:
-			buildInput.Environment = &meroxa.EntityIdentifier{UUID: d.flags.Environment}
-		default:
-			buildInput.Environment = &meroxa.EntityIdentifier{Name: d.flags.Environment}
+	if d.env != nil {
+		buildInput.Environment = &meroxa.EntityIdentifier{
+			UUID: d.env.UUID,
+			Name: d.env.Name,
 		}
 	}
 
@@ -605,8 +615,8 @@ func (d *Deploy) validateResources(ctx context.Context, rr []turbine.Application
 		if _, ok := validated[r.Name]; ok {
 			continue
 		}
-
 		resource, err := d.client.GetResourceByNameOrID(ctx, r.Name)
+
 		// order is important
 		switch {
 		case err != nil:
@@ -896,7 +906,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 // Turbine Ruby will use a spec'ed version internally so --spec is not required when using environments which is
 // currently only available for those deployments using IR.
 func (d *Deploy) validateEnvironmentFlagCompatibility() error {
-	if d.flags.Spec == "" && d.flags.Environment != "" && d.lang != turbine.Ruby {
+	if d.flags.Spec == "" && d.env != nil && d.lang != turbine.Ruby {
 		return fmt.Errorf(
 			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
@@ -904,13 +914,31 @@ func (d *Deploy) validateEnvironmentFlagCompatibility() error {
 	return nil
 }
 
+func (d *Deploy) validateEnvExists(ctx context.Context) error {
+	if _, err := d.client.GetEnvironment(ctx, d.env.nameOrUUID()); err != nil {
+		if strings.Contains(err.Error(), "could not find environment") {
+			return fmt.Errorf("Environment %q does not exist.", d.flags.Environment)
+		}
+		return fmt.Errorf("Unable to retrieve environment %q: %w", d.flags.Environment, err)
+	}
+	return nil
+}
+
 // runValidations will perform the relevant validations in the order that's necessary.
-func (d *Deploy) runValidations(ctx context.Context) error {
+func (d *Deploy) validate(ctx context.Context) error {
 	if err := d.validateAppJSON(ctx); err != nil {
 		return err
 	}
 
-	return d.validateEnvironmentFlagCompatibility()
+	if err := d.validateEnvironmentFlagCompatibility(); err != nil {
+		return err
+	}
+
+	if d.env != nil {
+		return d.validateEnvExists(ctx)
+	}
+
+	return nil
 }
 
 //nolint:gocyclo,funlen
@@ -920,14 +948,16 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		err error
 	)
 
-	err = d.runValidations(ctx)
-	if err != nil {
+	if d.flags.Environment != "" {
+		d.env = envFromFlag(d.flags.Environment)
+	}
+
+	if err = d.validate(ctx); err != nil {
 		return err
 	}
 
 	if d.turbineCLI == nil {
-		d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path)
-		if err != nil {
+		if d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path); err != nil {
 			return err
 		}
 	}
@@ -975,8 +1005,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			GitSha:   gitSha,
 		}
 		// Creates application
-		if d.flags.Environment != "" {
-			appInput.Environment = &meroxa.EntityIdentifier{Name: d.flags.Environment}
+		if d.env != nil {
+			appInput.Environment = &meroxa.EntityIdentifier{
+				Name: d.env.Name,
+				UUID: d.env.UUID,
+			}
 		}
 		app, err = d.client.CreateApplicationV2(ctx, appInput)
 
@@ -1059,4 +1092,12 @@ func wrapErrors(errs []error) error {
 	}
 
 	return err
+}
+
+func envFromFlag(nameOrUUID string) *environment {
+	_, err := uuid.Parse(nameOrUUID)
+	if err != nil {
+		return &environment{Name: nameOrUUID}
+	}
+	return &environment{UUID: nameOrUUID}
 }
