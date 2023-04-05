@@ -462,7 +462,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 		specVersion,
 		d.config.GetString(global.UserAccountUUID))
 	if err != nil {
-		fmt.Printf("a\n")
+		fmt.Printf("a: %+v %s\n", err, err.Error())
 		return nil, err
 	}
 	var spec map[string]interface{}
