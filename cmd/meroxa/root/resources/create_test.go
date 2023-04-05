@@ -467,6 +467,7 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 	}
 }
 
+//nolint:funlen
 func TestCreateResourceURLFlag(t *testing.T) {
 	resourceName := "my-resource"
 	tests := []struct {

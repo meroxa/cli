@@ -185,20 +185,8 @@ func (c *Create) Execute(ctx context.Context) error {
 		Metadata: nil,
 	}
 
-	if c.flags.Type == string(meroxa.ResourceTypeNotion) {
-		url := c.flags.URL
-		c.flags.URL = ""
-		if url != "" && url != "https://api.notion.com" {
-			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Notion resource configuration.", url)
-		}
-	} else if c.flags.Type == string(meroxa.ResourceTypeSpireMaritimeAIS) {
-		url := c.flags.URL
-		c.flags.URL = ""
-		if url != "" && url != "https://api.spire.com/graphql" {
-			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Spire Maritime AIS resource configuration.", url)
-		}
-	} else if c.flags.URL == "" {
-		return fmt.Errorf("required flag(s) \"url\" not set")
+	if err := c.processURLFlag(ctx); err != nil {
+		return err
 	}
 	input.URL = c.flags.URL
 
@@ -301,6 +289,25 @@ func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
 				c.flags.Password = key
 			}
 		}
+	}
+	return nil
+}
+
+func (c *Create) processURLFlag(ctx context.Context) error {
+	if c.flags.Type == string(meroxa.ResourceTypeNotion) {
+		url := c.flags.URL
+		c.flags.URL = ""
+		if url != "" && url != "https://api.notion.com" {
+			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Notion resource configuration.", url)
+		}
+	} else if c.flags.Type == string(meroxa.ResourceTypeSpireMaritimeAIS) {
+		url := c.flags.URL
+		c.flags.URL = ""
+		if url != "" && url != "https://api.spire.com/graphql" {
+			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Spire Maritime AIS resource configuration.", url)
+		}
+	} else if c.flags.URL == "" {
+		return fmt.Errorf("required flag(s) \"url\" not set")
 	}
 	return nil
 }
