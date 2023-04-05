@@ -182,15 +182,25 @@ func (c *Create) Execute(ctx context.Context) error {
 	input := meroxa.CreateResourceInput{
 		Type:     meroxa.ResourceTypeName(c.flags.Type),
 		Name:     c.args.Name,
-		URL:      c.flags.URL,
 		Metadata: nil,
 	}
 
-	if (c.flags.Type != string(meroxa.ResourceTypeNotion) &&
-		c.flags.Type != string(meroxa.ResourceTypeSpireMaritimeAIS)) &&
-		c.flags.URL == "" {
+	if c.flags.Type == string(meroxa.ResourceTypeNotion) {
+		url := c.flags.URL
+		c.flags.URL = ""
+		if url != "" && url != "https://api.notion.com" {
+			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Notion resource configuration.", url)
+		}
+	} else if c.flags.Type == string(meroxa.ResourceTypeSpireMaritimeAIS) {
+		url := c.flags.URL
+		c.flags.URL = ""
+		if url != "" && url != "https://api.spire.com/graphql" {
+			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Spire Maritime AIS resource configuration.", url)
+		}
+	} else if c.flags.URL == "" {
 		return fmt.Errorf("required flag(s) \"url\" not set")
 	}
+	input.URL = c.flags.URL
 
 	if c.flags.Environment != "" {
 		err := builder.CheckCMDFeatureFlag(c, &environments.Environments{})

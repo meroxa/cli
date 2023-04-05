@@ -468,10 +468,13 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 }
 
 func TestCreateResourceURLFlag(t *testing.T) {
+	resourceName := "my-resource"
 	tests := []struct {
 		description  string
 		resourceType string
+		url          string
 		client       func(*gomock.Controller) *mock.MockClient
+		wantOutput   string
 		wantErr      error
 	}{
 		{
@@ -479,18 +482,78 @@ func TestCreateResourceURLFlag(t *testing.T) {
 			resourceType: string(meroxa.ResourceTypeNotion),
 			client: func(ctrl *gomock.Controller) *mock.MockClient {
 				client := mock.NewMockClient(ctrl)
-				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{}, nil).Times(1)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{Name: resourceName}, nil).Times(1)
 				return client
 			},
+			wantOutput: `Creating "notion" resource in "common" environment...
+Resource "my-resource" is successfully created!
+`,
+		},
+		{
+			description:  "Allow default URL value for for Notion",
+			resourceType: string(meroxa.ResourceTypeNotion),
+			url:          "https://api.notion.com",
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{Name: resourceName}, nil).Times(1)
+				return client
+			},
+			wantOutput: `Creating "notion" resource in "common" environment...
+Resource "my-resource" is successfully created!
+`,
+		},
+		{
+			description:  "Warn about non-default URL value for for Notion",
+			resourceType: string(meroxa.ResourceTypeNotion),
+			url:          "https://wild.west.api.notion.com",
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{Name: resourceName}, nil).Times(1)
+				return client
+			},
+			wantOutput: `Ignoring API URL override (https://wild.west.api.notion.com) for Notion resource configuration.
+Creating "notion" resource in "common" environment...
+Resource "my-resource" is successfully created!
+`,
 		},
 		{
 			description:  "Do not require URL for Spire Maritime AIS",
 			resourceType: string(meroxa.ResourceTypeSpireMaritimeAIS),
 			client: func(ctrl *gomock.Controller) *mock.MockClient {
 				client := mock.NewMockClient(ctrl)
-				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{}, nil).Times(1)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{Name: resourceName}, nil).Times(1)
 				return client
 			},
+			wantOutput: `Creating "spire_maritime_ais" resource in "common" environment...
+Resource "my-resource" is successfully created!
+`,
+		},
+		{
+			description:  "Allow default URL for Spire Maritime AIS",
+			resourceType: string(meroxa.ResourceTypeSpireMaritimeAIS),
+			url:          "https://api.spire.com/graphql",
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{Name: resourceName}, nil).Times(1)
+				return client
+			},
+			wantOutput: `Creating "spire_maritime_ais" resource in "common" environment...
+Resource "my-resource" is successfully created!
+`,
+		},
+		{
+			description:  "Warn about non-default URL for Spire Maritime AIS",
+			resourceType: string(meroxa.ResourceTypeSpireMaritimeAIS),
+			url:          "https://api.spire.com/ascii",
+			client: func(ctrl *gomock.Controller) *mock.MockClient {
+				client := mock.NewMockClient(ctrl)
+				client.EXPECT().CreateResource(gomock.Any(), gomock.Any()).Return(&meroxa.Resource{Name: resourceName}, nil).Times(1)
+				return client
+			},
+			wantOutput: `Ignoring API URL override (https://api.spire.com/ascii) for Spire Maritime AIS resource configuration.
+Creating "spire_maritime_ais" resource in "common" environment...
+Resource "my-resource" is successfully created!
+`,
 		},
 		{
 			description:  "Require URL for one of the rest of the types",
@@ -499,7 +562,8 @@ func TestCreateResourceURLFlag(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 				return client
 			},
-			wantErr: fmt.Errorf(`required flag(s) "url" not set`),
+			wantErr:    fmt.Errorf(`required flag(s) "url" not set`),
+			wantOutput: "",
 		},
 	}
 
@@ -512,10 +576,14 @@ func TestCreateResourceURLFlag(t *testing.T) {
 				client: tc.client(ctrl),
 				logger: logger,
 			}
-			c.args.Name = "my-resource"
+			c.args.Name = resourceName
 			c.flags.Type = tc.resourceType
+			c.flags.URL = tc.url
 
 			err := c.Execute(ctx)
+			gotLeveledOutput := logger.LeveledOutput()
+			assert.Equal(t, tc.wantOutput, gotLeveledOutput)
+
 			if err != nil {
 				if tc.wantErr == nil {
 					t.Fatalf("unexpected error: %v", err)
