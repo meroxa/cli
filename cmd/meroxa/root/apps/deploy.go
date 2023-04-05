@@ -462,11 +462,13 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 		specVersion,
 		d.config.GetString(global.UserAccountUUID))
 	if err != nil {
+		fmt.Printf("a\n")
 		return nil, err
 	}
 	var spec map[string]interface{}
 	if specStr != "" {
 		if unmarshalErr := json.Unmarshal([]byte(specStr), &spec); unmarshalErr != nil {
+			fmt.Printf("b\n")
 			return nil, fmt.Errorf("failed to parse deployment spec into json")
 		}
 	}
@@ -477,6 +479,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 			SpecVersion: specVersion,
 			Spec:        spec,
 		}
+		fmt.Printf("c\n")
 		return d.client.CreateDeployment(ctx, input)
 	}
 	return nil, nil
