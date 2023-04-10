@@ -51,8 +51,8 @@ func TestUpdateResourceArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.NameOrID {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.NameOrID)
+		if tt.name != cc.args.Name {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.Name)
 		}
 	}
 }
@@ -74,6 +74,7 @@ func TestUpdateResourceFlags(t *testing.T) {
 		{name: "client-cert", required: false, shorthand: ""},
 		{name: "client-key", required: false, shorthand: ""},
 		{name: "ssl", required: false, shorthand: ""},
+		{name: "token", required: false, shorthand: ""},
 	}
 
 	c := builder.BuildCobraCommand(&Update{})
@@ -138,7 +139,7 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.NameOrID = r.Name
+	u.args.Name = r.Name
 	u.flags.Name = newName
 
 	err := u.Execute(ctx)
@@ -150,7 +151,7 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.NameOrID, u.args.NameOrID)
+`, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -194,7 +195,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.NameOrID = r.Name
+	u.args.Name = r.Name
 	u.flags.Metadata = newMetadata
 
 	err := u.Execute(ctx)
@@ -206,7 +207,7 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.NameOrID, u.args.NameOrID)
+`, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -247,7 +248,7 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.NameOrID = r.Name
+	u.args.Name = r.Name
 	u.flags.URL = newURL
 
 	err := u.Execute(ctx)
@@ -259,7 +260,7 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.NameOrID, u.args.NameOrID)
+`, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
@@ -304,7 +305,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 		logger: logger,
 	}
 
-	u.args.NameOrID = r.Name
+	u.args.Name = r.Name
 	u.flags.Username = newUsername
 
 	err := u.Execute(ctx)
@@ -316,7 +317,7 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	gotLeveledOutput := logger.LeveledOutput()
 	wantLeveledOutput := fmt.Sprintf(`Updating resource %q...
 Resource %q is successfully updated!
-`, u.args.NameOrID, u.args.NameOrID)
+`, u.args.Name, u.args.Name)
 
 	if gotLeveledOutput != wantLeveledOutput {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)

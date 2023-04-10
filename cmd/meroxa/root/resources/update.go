@@ -38,13 +38,13 @@ type Update struct {
 	logger log.Logger
 
 	args struct {
-		NameOrID string
+		Name string
 	}
 
 	flags struct {
 		URL      string `long:"url"         short:"u" usage:"new resource url"`
 		Metadata string `long:"metadata"    short:"m" usage:"new resource metadata"`
-		Name     string `long:"name"    usage:"new resource name"`
+		Name     string `long:"name"        usage:"new resource name"`
 
 		// credentials
 		Username   string `long:"username"    short:"" usage:"username"`
@@ -54,6 +54,7 @@ type Update struct {
 		ClientKey  string `long:"client-key"  short:"" usage:"client private key for authenticating to the resource"`
 		SSL        bool   `long:"ssl"         short:"" usage:"use SSL"`
 		SSHURL     string `long:"ssh-url"     short:"" usage:"SSH tunneling address"`
+		Token      string `long:"token"       short:"" usage:"API Token"`
 	}
 }
 
@@ -74,7 +75,7 @@ func (u *Update) Execute(ctx context.Context) error {
 		return errors.New("requires either `--name`, `--url`, `--metadata` or one of the credential flags")
 	}
 
-	u.logger.Infof(ctx, "Updating resource %q...", u.args.NameOrID)
+	u.logger.Infof(ctx, "Updating resource %q...", u.args.Name)
 
 	res := &meroxa.UpdateResourceInput{}
 
@@ -113,10 +114,11 @@ func (u *Update) Execute(ctx context.Context) error {
 			ClientCert:    u.flags.ClientCert,
 			ClientCertKey: u.flags.ClientKey,
 			UseSSL:        u.flags.SSL,
+			Token:         u.flags.Token,
 		}
 	}
 
-	r, err := u.client.UpdateResource(ctx, u.args.NameOrID, res)
+	r, err := u.client.UpdateResource(ctx, u.args.Name, res)
 
 	if err != nil {
 		return err
@@ -150,7 +152,7 @@ func (u *Update) ParseArgs(args []string) error {
 		return errors.New("requires resource name")
 	}
 
-	u.args.NameOrID = args[0]
+	u.args.Name = args[0]
 	return nil
 }
 
@@ -169,5 +171,6 @@ func (u *Update) isUpdatingCredentials() bool {
 		u.flags.CaCert != "" ||
 		u.flags.ClientCert != "" ||
 		u.flags.ClientKey != "" ||
+		u.flags.Token != "" ||
 		u.flags.SSL
 }
