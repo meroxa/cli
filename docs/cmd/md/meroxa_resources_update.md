@@ -22,6 +22,7 @@ meroxa resources update NAME [flags]
       --password string      password
       --ssh-url string       SSH tunneling address
       --ssl                  use SSL
+      --token string         API Token
   -u, --url string           new resource url
       --username string      username
 ```
