@@ -293,8 +293,8 @@ func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
 	return nil
 }
 
-var defaultNotionURL = "https://api.notion.com"
-var defaultSpireMaritimeAisURL = "https://api.spire.com/graphql"
+const defaultNotionURL = "https://api.notion.com"
+const defaultSpireMaritimeAisURL = "https://api.spire.com/graphql"
 
 func (c *Create) processURLFlag(ctx context.Context) error {
 	if c.flags.Type == string(meroxa.ResourceTypeNotion) {
