@@ -76,7 +76,7 @@ func (u *Update) Execute(ctx context.Context) error {
 		return errors.New("requires either `--name`, `--url`, `--metadata` or one of the credential flags")
 	}
 
-	r, err := u.client.GetResourceByNameOrID(ctx, u.flags.Name)
+	r, err := u.client.GetResourceByNameOrID(ctx, u.args.Name)
 	if err != nil {
 		return err
 	}
