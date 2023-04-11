@@ -293,17 +293,20 @@ func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
 	return nil
 }
 
+var defaultNotionUrl = "https://api.notion.com"
+var defaultSpireMaritimeAisUrl = "https://api.spire.com/graphql"
+
 func (c *Create) processURLFlag(ctx context.Context) error {
 	if c.flags.Type == string(meroxa.ResourceTypeNotion) {
 		url := c.flags.URL
 		c.flags.URL = ""
-		if url != "" && url != "https://api.notion.com" {
+		if url != "" && url != defaultNotionUrl {
 			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Notion resource configuration.", url)
 		}
 	} else if c.flags.Type == string(meroxa.ResourceTypeSpireMaritimeAIS) {
 		url := c.flags.URL
 		c.flags.URL = ""
-		if url != "" && url != "https://api.spire.com/graphql" {
+		if url != "" && url != defaultSpireMaritimeAisUrl {
 			c.logger.Warnf(ctx, "Ignoring API URL override (%s) for Spire Maritime AIS resource configuration.", url)
 		}
 	} else if c.flags.URL == "" {

@@ -30,6 +30,7 @@ import (
 )
 
 type updateResourceClient interface {
+	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
 	UpdateResource(ctx context.Context, nameOrID string, resourceToUpdate *meroxa.UpdateResourceInput) (*meroxa.Resource, error)
 }
 
@@ -75,6 +76,11 @@ func (u *Update) Execute(ctx context.Context) error {
 		return errors.New("requires either `--name`, `--url`, `--metadata` or one of the credential flags")
 	}
 
+	r, err := u.client.GetResourceByNameOrID(ctx, u.flags.Name)
+	if err != nil {
+		return err
+	}
+
 	u.logger.Infof(ctx, "Updating resource %q...", u.args.Name)
 
 	res := &meroxa.UpdateResourceInput{}
@@ -86,6 +92,7 @@ func (u *Update) Execute(ctx context.Context) error {
 
 	// If url was provided, update it
 	if u.flags.URL != "" {
+		u.processURLFlag(ctx, string(r.Type))
 		res.URL = u.flags.URL
 	}
 
@@ -118,7 +125,7 @@ func (u *Update) Execute(ctx context.Context) error {
 		}
 	}
 
-	r, err := u.client.UpdateResource(ctx, u.args.Name, res)
+	r, err = u.client.UpdateResource(ctx, u.args.Name, res)
 
 	if err != nil {
 		return err
@@ -173,4 +180,20 @@ func (u *Update) isUpdatingCredentials() bool {
 		u.flags.ClientKey != "" ||
 		u.flags.Token != "" ||
 		u.flags.SSL
+}
+
+func (u *Update) processURLFlag(ctx context.Context, rt string) {
+	if rt == string(meroxa.ResourceTypeNotion) {
+		url := u.flags.URL
+		u.flags.URL = ""
+		if url != "" && url != defaultNotionUrl {
+			u.logger.Warnf(ctx, "Ignoring API URL override (%s) for Notion resource configuration.", url)
+		}
+	} else if rt == string(meroxa.ResourceTypeSpireMaritimeAIS) {
+		url := u.flags.URL
+		u.flags.URL = ""
+		if url != "" && url != defaultSpireMaritimeAisUrl {
+			u.logger.Warnf(ctx, "Ignoring API URL override (%s) for Spire Maritime AIS resource configuration.", url)
+		}
+	}
 }
