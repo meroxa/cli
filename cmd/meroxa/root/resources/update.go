@@ -99,7 +99,7 @@ func (u *Update) Execute(ctx context.Context) error {
 	// If metadata was provided, update it
 	if u.flags.Metadata != "" {
 		var metadata map[string]interface{}
-		err := json.Unmarshal([]byte(u.flags.Metadata), &metadata)
+		err = json.Unmarshal([]byte(u.flags.Metadata), &metadata)
 		if err != nil {
 			return fmt.Errorf("can't parse metadata: %w", err)
 		}
@@ -186,13 +186,13 @@ func (u *Update) processURLFlag(ctx context.Context, rt string) {
 	if rt == string(meroxa.ResourceTypeNotion) {
 		url := u.flags.URL
 		u.flags.URL = ""
-		if url != "" && url != defaultNotionUrl {
+		if url != "" && url != defaultNotionURL {
 			u.logger.Warnf(ctx, "Ignoring API URL override (%s) for Notion resource configuration.", url)
 		}
 	} else if rt == string(meroxa.ResourceTypeSpireMaritimeAIS) {
 		url := u.flags.URL
 		u.flags.URL = ""
-		if url != "" && url != defaultSpireMaritimeAisUrl {
+		if url != "" && url != defaultSpireMaritimeAisURL {
 			u.logger.Warnf(ctx, "Ignoring API URL override (%s) for Spire Maritime AIS resource configuration.", url)
 		}
 	}
