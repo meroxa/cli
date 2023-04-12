@@ -63,6 +63,11 @@ type Create struct {
 	}
 }
 
+const (
+	defaultNotionURL           = "https://api.notion.com"
+	defaultSpireMaritimeAisURL = "https://api.spire.com/graphql"
+)
+
 var (
 	_ builder.CommandWithDocs    = (*Create)(nil)
 	_ builder.CommandWithArgs    = (*Create)(nil)
@@ -292,9 +297,6 @@ func (c *Create) handlePrivateKeyFlags(ctx context.Context) error {
 	}
 	return nil
 }
-
-const defaultNotionURL = "https://api.notion.com"
-const defaultSpireMaritimeAisURL = "https://api.spire.com/graphql"
 
 func (c *Create) processURLFlag(ctx context.Context) error {
 	if c.flags.Type == string(meroxa.ResourceTypeNotion) {
