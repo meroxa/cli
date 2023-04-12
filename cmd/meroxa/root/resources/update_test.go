@@ -131,6 +131,10 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 
 	client.
 		EXPECT().
+		GetResourceByNameOrID(ctx, r.Name).
+		Return(&r, nil)
+	client.
+		EXPECT().
 		UpdateResource(ctx, r.Name, nr).
 		Return(&r, nil)
 
@@ -187,6 +191,10 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 
 	client.
 		EXPECT().
+		GetResourceByNameOrID(ctx, r.Name).
+		Return(&r, nil)
+	client.
+		EXPECT().
 		UpdateResource(ctx, r.Name, nr).
 		Return(&r, nil)
 
@@ -238,6 +246,10 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 		URL: newURL,
 	}
 
+	client.
+		EXPECT().
+		GetResourceByNameOrID(ctx, r.Name).
+		Return(&r, nil)
 	client.
 		EXPECT().
 		UpdateResource(ctx, r.Name, nr).
@@ -295,6 +307,10 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 		Credentials: &newCred,
 	}
 
+	client.
+		EXPECT().
+		GetResourceByNameOrID(ctx, r.Name).
+		Return(&r, nil)
 	client.
 		EXPECT().
 		UpdateResource(ctx, r.Name, nr).
