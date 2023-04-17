@@ -126,6 +126,13 @@ var types = []meroxa.ResourceType{
 			meroxa.ResourceTypeFormConfigHumanReadableKey: "PostgreSQL",
 		},
 	},
+	{
+		Name:         string(meroxa.ResourceTypeGoogleAnalytics),
+		ReleaseStage: meroxa.ResourceTypeReleaseStageDevPreview,
+		FormConfig: map[string]interface{}{
+			meroxa.ResourceTypeFormConfigHumanReadableKey: "Googs",
+		},
+	},
 }
 
 func TestResourceTypesTable(t *testing.T) {
@@ -144,6 +151,9 @@ func TestResourceTypesTable(t *testing.T) {
 	}
 
 	for _, rType := range types {
+		if rType.ReleaseStage == meroxa.ResourceTypeReleaseStageDevPreview && !rType.HasAccess {
+			continue
+		}
 		if !strings.Contains(
 			out,
 			fmt.Sprintf("%s", rType.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])) {
@@ -168,6 +178,9 @@ func TestResourceTypesTableWithoutHeaders(t *testing.T) {
 	}
 
 	for _, rType := range types {
+		if rType.ReleaseStage == meroxa.ResourceTypeReleaseStageDevPreview && !rType.HasAccess {
+			continue
+		}
 		if !strings.Contains(
 			out,
 			fmt.Sprintf("%s", rType.FormConfig[meroxa.ResourceTypeFormConfigHumanReadableKey])) {
