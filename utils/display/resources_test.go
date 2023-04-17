@@ -127,6 +127,14 @@ var types = []meroxa.ResourceType{
 		},
 	},
 	{
+		Name:         string(meroxa.ResourceTypeGoogleSheets),
+		ReleaseStage: meroxa.ResourceTypeReleaseStageDevPreview,
+		HasAccess:    true,
+		FormConfig: map[string]interface{}{
+			meroxa.ResourceTypeFormConfigHumanReadableKey: "Google Sheets",
+		},
+	},
+	{
 		Name:         string(meroxa.ResourceTypeGoogleAnalytics),
 		ReleaseStage: meroxa.ResourceTypeReleaseStageDevPreview,
 		FormConfig: map[string]interface{}{
