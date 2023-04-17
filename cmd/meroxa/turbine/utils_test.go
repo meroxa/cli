@@ -298,7 +298,7 @@ unable to update app.json file on path "#nope$". Maybe try using a different val
 			require.NoError(t, err)
 			require.Equal(t, tc.input.Name, name)
 
-			read, err := ReadConfigFile(tc.path)
+			read, err := ReadAppConfigFile(tc.path)
 			require.NoError(t, err)
 			require.Equal(t, tc.input.Vendor, read.Vendor)
 			require.Equal(t, tc.input.ModuleInit, read.ModuleInit)
@@ -308,7 +308,7 @@ unable to update app.json file on path "#nope$". Maybe try using a different val
 			err = SetModuleInitInAppJSON(tc.path, true)
 			require.NoError(t, err)
 
-			read, err = ReadConfigFile(tc.path)
+			read, err = ReadAppConfigFile(tc.path)
 			require.NoError(t, err)
 			require.Equal(t, "true", read.Vendor)
 			require.Equal(t, "false", read.ModuleInit)

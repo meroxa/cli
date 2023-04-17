@@ -35,6 +35,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/frameworks"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
@@ -98,14 +99,16 @@ type Deploy struct {
 	config        config.Config
 	logger        log.Logger
 	localDeploy   turbine.LocalDeploy
-	turbineCLI    turbine.CLI
+	frameworkCLI  frameworks.CLI
 	appConfig     *turbine.AppConfig
+	flinkConfig   *turbine.FlinkConfig
 	configAppName string
 	appName       string
 	gitBranch     string
 	path          string
 	lang          string
 	fnName        string
+	jarURL        string
 	specVersion   string
 	env           *environment
 }
@@ -231,6 +234,21 @@ func (d *Deploy) getAppSource(ctx context.Context) (*meroxa.Source, error) {
 	return d.client.CreateSourceV2(ctx, &in)
 }
 
+func (d *Deploy) getJarURL(ctx context.Context) (string, error) {
+	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
+
+	s, err := d.getAppSource(ctx)
+	if err != nil {
+		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source")
+		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		return "", err
+	}
+	d.logger.StopSpinnerWithStatus("Platform source fetched", log.Successful)
+
+	dFile := filepath.Join(d.path, d.appName+".jar")
+	return s.GetUrl, uploadFile(ctx, d.logger, dFile, s.PutUrl)
+}
+
 func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
 	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
 
@@ -289,11 +307,11 @@ func (d *Deploy) UploadSource(ctx context.Context, url string) error {
 	)
 
 	d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", d.path))
-	buildPath, err = d.turbineCLI.CreateDockerfile(ctx, d.appName)
+	buildPath, err = d.frameworkCLI.CreateDockerfile(ctx, d.appName)
 	if err != nil {
 		return err
 	}
-	defer d.turbineCLI.CleanUpBuild(ctx)
+	defer d.frameworkCLI.CleanUpBuild(ctx)
 	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
 
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
@@ -465,7 +483,7 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 }
 
 func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
-	specStr, err := d.turbineCLI.Deploy(
+	specStr, err := d.frameworkCLI.Deploy(
 		ctx,
 		imageName,
 		d.appName,
@@ -479,6 +497,13 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 	if specStr != "" {
 		if unmarshalErr := json.Unmarshal([]byte(specStr), &spec); unmarshalErr != nil {
 			return nil, fmt.Errorf("failed to parse deployment spec into json")
+		}
+	}
+	if d.appConfig.Framework == turbine.Flink {
+		if specVersion != "" {
+			return nil, fmt.Errorf("must specify --spec 0.1.2 tp deploy flink job")
+		} else if specVersion != ir.SpecVersion_0_1_2 {
+			return nil, fmt.Errorf("must specify --spec 0.1.2 tp deploy flink job")
 		}
 	}
 	if specVersion != "" {
@@ -496,7 +521,7 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 // buildApp will call any specifics to the turbine library to prepare a directory that's ready
 // to compress, and build, to then later on call the specific command to deploy depending on the language.
 func (d *Deploy) buildApp(ctx context.Context) (err error) {
-	return d.turbineCLI.Build(ctx, d.appName, true)
+	return d.frameworkCLI.Build(ctx, d.appName, true)
 }
 
 // getAppImage will check what type of build needs to perform and ultimately will return the image name to use
@@ -505,7 +530,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	d.logger.StartSpinner("\t", "Checking if application has processes...")
 	var fqImageName string
 
-	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx, d.appName)
+	needsToBuild, err := d.frameworkCLI.NeedsToBuild(ctx, d.appName)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
@@ -586,7 +611,7 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	config, err = turbine.ReadConfigFile(d.path)
+	config, err = turbine.ReadAppConfigFile(d.path)
 	if err != nil {
 		return err
 	}
@@ -659,7 +684,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 
 	d.logger.StartSpinner("\t", resourceCheckMessage)
 
-	resources, err := d.turbineCLI.GetResources(ctx, d.appName)
+	resources, err := d.frameworkCLI.GetResources(ctx, d.appName)
 	if err != nil {
 		return fmt.Errorf("unable to read resource definition from app: %s", err.Error())
 	}
@@ -702,13 +727,17 @@ func (d *Deploy) prepareDeployment(ctx context.Context) error {
 		return err
 	}
 
-	d.fnName, err = d.getAppImage(ctx)
+	if d.appConfig.Framework == turbine.Flink {
+		d.jarURL, err = d.getJarURL(ctx)
+	} else {
+		d.fnName, err = d.getAppImage(ctx)
+	}
 	return err
 }
 
 // validateConfig will validate uncommitted changes and git branch.
 func (d *Deploy) validateGitConfig(ctx context.Context) error {
-	return d.turbineCLI.GitChecks(ctx)
+	return d.frameworkCLI.GitChecks(ctx)
 }
 
 type resourceCollectionPair struct {
@@ -931,6 +960,8 @@ func (d *Deploy) validate(ctx context.Context) error {
 		return err
 	}
 
+	// @TODO validate flink config
+
 	if err := d.validateEnvironmentFlagCompatibility(); err != nil {
 		return err
 	}
@@ -957,13 +988,13 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	if d.turbineCLI == nil {
-		if d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path); err != nil {
+	if d.frameworkCLI == nil {
+		if d.frameworkCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path); err != nil {
 			return err
 		}
 	}
 
-	turbineLibVersion, err := d.turbineCLI.GetVersion(ctx)
+	turbineLibVersion, err := d.frameworkCLI.GetVersion(ctx)
 	if err != nil {
 		return err
 	}
@@ -973,13 +1004,13 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	gitSha, err := d.turbineCLI.GetGitSha(ctx)
+	gitSha, err := d.frameworkCLI.GetGitSha(ctx)
 	if err != nil {
 		return err
 	}
 
 	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby at the moment)
-	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
+	cleanup, err := d.frameworkCLI.SetupForDeploy(ctx, gitSha)
 	if err != nil {
 		return err
 	}
@@ -993,6 +1024,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	d.specVersion = d.flags.Spec
 	if d.specVersion == "" && d.lang == turbine.Ruby {
 		d.specVersion = ir.LatestSpecVersion
+	} else if d.specVersion == "" && d.lang == turbine.Java {
+		d.specVersion = ir.SpecVersion_0_1_2
 	}
 
 	// Intermediate Representation Workflow (if using --spec on apps deploy)
@@ -1024,7 +1057,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	err = d.prepareDeployment(ctx)
-	defer d.turbineCLI.CleanUpBinaries(ctx, d.appName)
+	defer d.frameworkCLI.CleanUpBinaries(ctx, d.appName)
 	if err != nil {
 		return err
 	}

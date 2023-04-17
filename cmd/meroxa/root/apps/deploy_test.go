@@ -689,11 +689,11 @@ func TestDeployApp(t *testing.T) {
 			cfg := config.NewInMemoryConfig()
 			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
-				client:     tc.meroxaClient(ctrl),
-				turbineCLI: tc.mockTurbineCLI(ctrl, tc.version),
-				logger:     logger,
-				appName:    appName,
-				config:     cfg,
+				client:       tc.meroxaClient(ctrl),
+				frameworkCLI: tc.mockTurbineCLI(ctrl, tc.version),
+				logger:       logger,
+				appName:      appName,
+				config:       cfg,
 			}
 
 			_, err := d.deployApp(ctx, imageName, gitSha, tc.version)
@@ -909,10 +909,10 @@ func TestGetPlatformImage(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			d := &Deploy{
-				client:     tc.meroxaClient(ctrl),
-				turbineCLI: tc.mockTurbineCLI(ctrl),
-				logger:     logger,
-				appName:    appName,
+				client:       tc.meroxaClient(ctrl),
+				frameworkCLI: tc.mockTurbineCLI(ctrl),
+				logger:       logger,
+				appName:      appName,
 			}
 			if tc.env != "" {
 				d.env = &environment{Name: tc.env}
@@ -959,10 +959,10 @@ func TestGetAppImage(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			d := &Deploy{
-				client:     tc.meroxaClient(ctrl),
-				turbineCLI: tc.mockTurbineCLI(ctrl),
-				logger:     logger,
-				appName:    appName,
+				client:       tc.meroxaClient(ctrl),
+				frameworkCLI: tc.mockTurbineCLI(ctrl),
+				logger:       logger,
+				appName:      appName,
 			}
 			d.flags.Environment = "my-env"
 

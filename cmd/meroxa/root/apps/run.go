@@ -78,7 +78,7 @@ func (r *Run) Execute(ctx context.Context) error {
 			return err
 		}
 		var config turbine.AppConfig
-		config, err = turbine.ReadConfigFile(r.path)
+		config, err = turbine.ReadAppConfigFile(r.path)
 		r.config = &config
 		if err != nil {
 			return err

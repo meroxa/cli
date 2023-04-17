@@ -91,7 +91,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 			return err
 		}
 
-		config, err := turbine.ReadConfigFile(d.path)
+		config, err := turbine.ReadAppConfigFile(d.path)
 		if err != nil {
 			return err
 		}

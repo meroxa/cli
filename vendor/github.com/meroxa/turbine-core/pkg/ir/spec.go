@@ -25,6 +25,7 @@ const (
 	ConnectorDestination ConnectorType = "destination"
 
 	SpecVersion_0_1_1 = "0.1.1"
+	SpecVersion_0_1_2 = "0.1.2"
 	SpecVersion_0_2_0 = "0.2.0"
 
 	LatestSpecVersion = SpecVersion_0_2_0
@@ -42,6 +43,7 @@ type DeploymentSpec struct {
 	Secrets     map[string]string `json:"secrets,omitempty"`
 	Connectors  []ConnectorSpec   `json:"connectors"`
 	Functions   []FunctionSpec    `json:"functions,omitempty"`
+	FlinkJobs   []FlinkJobSpec    `json:"flink_jobs,omitempty"`
 	Streams     []StreamSpec      `json:"streams,omitempty"`
 	Definition  DefinitionSpec    `json:"definition"`
 }
@@ -65,6 +67,12 @@ type FunctionSpec struct {
 	UUID  string `json:"uuid"`
 	Name  string `json:"name"`
 	Image string `json:"image"`
+}
+
+type FlinkJobSpec struct {
+	UUID   string `json:"uuid"`
+	Name   string `json:"name"`
+	JarURL string `json:"jar_url"`
 }
 
 type DefinitionSpec struct {

@@ -25,6 +25,10 @@ const (
 	Python     = "python"
 	Python3    = "python3"
 	Ruby       = "ruby"
+	Java       = "java"
+
+	Turbine = "turbine"
+	Flink   = "flink"
 
 	isTrue            = "true"
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
@@ -38,9 +42,21 @@ type AppConfig struct {
 	Name        string            `json:"name"`
 	Environment string            `json:"environment"`
 	Language    string            `json:"language"`
+	Framework   string            `json:"framework"`
 	Resources   map[string]string `json:"resources"`
 	Vendor      string            `json:"vendor"`
 	ModuleInit  string            `json:"module_init"`
+}
+
+type Config struct {
+	Name            string                 `json:"name"`
+	Collection      string                 `json:"collection"`
+	ConnectorConfig map[string]interface{} `json:"config"`
+}
+
+type FlinkConfig struct {
+	SourceConfig      *Config `json:"source"`
+	DestinationConfig *Config `json:"destination"`
 }
 
 var prefetched *AppConfig
@@ -87,7 +103,7 @@ func GetPath(flag string) (string, error) {
 // GetLangFromAppJSON returns specified language in users' app.json.
 func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
 	l.StartSpinner("\t", "Determining application language from app.json...")
-	appConfig, err := ReadConfigFile(pwd)
+	appConfig, err := ReadAppConfigFile(pwd)
 	if err != nil {
 		l.StopSpinnerWithStatus("Something went wrong reading your app.json", log.Failed)
 		return "", err
@@ -104,7 +120,7 @@ func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, er
 // GetAppNameFromAppJSON returns specified app name in users' app.json.
 func GetAppNameFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
 	l.StartSpinner("\t", "Reading application name from app.json...")
-	appConfig, err := ReadConfigFile(pwd)
+	appConfig, err := ReadAppConfigFile(pwd)
 	if err != nil {
 		return "", err
 	}
@@ -117,9 +133,24 @@ func GetAppNameFromAppJSON(_ context.Context, l log.Logger, pwd string) (string,
 	return appConfig.Name, nil
 }
 
+// GetFrameworkFromAppJSON returns the framework specified in users' app.json.
+func GetFrameworkFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
+	l.StartSpinner("\t", "Reading framework from app.json...")
+	appConfig, err := ReadAppConfigFile(pwd)
+	if err != nil {
+		return "", err
+	}
+
+	if appConfig.Framework == "" {
+		return Turbine, nil
+	}
+	l.StopSpinnerWithStatus(fmt.Sprintf("Checked your application frameowkr is %q", appConfig.Framework), log.Successful)
+	return appConfig.Framework, nil
+}
+
 // SetModuleInitInAppJSON returns whether to run mod init.
 func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
-	appConfig, err := ReadConfigFile(pwd)
+	appConfig, err := ReadAppConfigFile(pwd)
 	if err != nil {
 		return err
 	}
@@ -133,7 +164,7 @@ func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
 
 // SetVendorInAppJSON returns whether to vendor modules.
 func SetVendorInAppJSON(pwd string, vendor bool) error {
-	appConfig, err := ReadConfigFile(pwd)
+	appConfig, err := ReadAppConfigFile(pwd)
 	if err != nil {
 		return err
 	}
@@ -145,8 +176,8 @@ func SetVendorInAppJSON(pwd string, vendor bool) error {
 	return err
 }
 
-// ReadConfigFile will read the content of an app.json based on path.
-func ReadConfigFile(appPath string) (AppConfig, error) {
+// ReadAppConfigFile will read the content of an app.json based on path.
+func ReadAppConfigFile(appPath string) (AppConfig, error) {
 	var appConfig AppConfig
 
 	if prefetched == nil || os.Getenv("UNIT_TEST") != "" {
@@ -163,6 +194,23 @@ func ReadConfigFile(appPath string) (AppConfig, error) {
 	}
 
 	return *prefetched, nil
+}
+
+// ReadAppConfigFile will read the content of an app.json based on path.
+func ReadFlinkConfigFile(appPath string) (FlinkConfig, error) {
+	var flinkConfig FlinkConfig
+
+	flinkConfigPath := path.Join(appPath, "config.json")
+	flinkConfigBytes, err := os.ReadFile(flinkConfigPath)
+	if err != nil {
+		return flinkConfig, fmt.Errorf("could not find an config.json file on path %q."+
+			" Try a different value for `--path`", appPath)
+	}
+	if err := json.Unmarshal(flinkConfigBytes, &flinkConfig); err != nil {
+		return flinkConfig, err
+	}
+
+	return flinkConfig, nil
 }
 
 func WriteConfigFile(appPath string, cfg AppConfig) error {

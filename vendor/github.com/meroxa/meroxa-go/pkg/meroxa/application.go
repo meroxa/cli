@@ -53,6 +53,7 @@ type Application struct {
 	Pipeline    EntityDetails         `json:"pipeline,omitempty"`
 	Connectors  []EntityDetails       `json:"connectors,omitempty"`
 	Functions   []EntityDetails       `json:"functions,omitempty"`
+	FlinkJobs   []EntityDetails       `json:"flink_jobs,omitempty"`
 	Resources   []ApplicationResource `json:"resources,omitempty"`
 	Deployments []EntityIdentifier    `json:"deployments,omitempty"`
 	CreatedAt   time.Time             `json:"created_at"`
@@ -62,6 +63,7 @@ type Application struct {
 
 type ApplicationLogs struct {
 	FunctionLogs   map[string]string `json:"functions"`
+	FlinkJobLogs   map[string]string `json:"flink_jobs"`
 	ConnectorLogs  map[string]string `json:"connectors"`
 	DeploymentLogs map[string]string `json:"latest_deployment"`
 }

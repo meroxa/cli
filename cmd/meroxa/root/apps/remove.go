@@ -84,7 +84,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 			return err
 		}
 
-		config, err := turbine.ReadConfigFile(r.path)
+		config, err := turbine.ReadAppConfigFile(r.path)
 		if err != nil {
 			return err
 		}

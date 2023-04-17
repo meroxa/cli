@@ -18,6 +18,7 @@ package apps
 
 import (
 	"fmt"
+	"github.com/meroxa/cli/cmd/meroxa/frameworks/flink"
 
 	"github.com/spf13/cobra"
 
@@ -79,6 +80,8 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang, path string) (turbine.CL
 		return turbinePY.New(logger, path), nil
 	case "rb", turbine.Ruby:
 		return turbineRb.New(logger, path), nil
+	case turbine.Java:
+		return flink.New(logger, path), nil
 	}
 	return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
 }

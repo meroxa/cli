@@ -93,7 +93,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 			return err
 		}
 
-		config, err := turbine.ReadConfigFile(l.path)
+		config, err := turbine.ReadAppConfigFile(l.path)
 		if err != nil {
 			return err
 		}

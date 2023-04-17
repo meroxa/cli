@@ -80,7 +80,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 		}
 
 		var config turbine.AppConfig
-		config, err = turbine.ReadConfigFile(u.path)
+		config, err = turbine.ReadAppConfigFile(u.path)
 		u.config = &config
 		if err != nil {
 			u.logger.StopSpinnerWithStatus("\t", log.Failed)

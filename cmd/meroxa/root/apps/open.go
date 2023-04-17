@@ -84,7 +84,7 @@ func (o *Open) Execute(ctx context.Context) error {
 			return err
 		}
 
-		config, err := turbine.ReadConfigFile(o.path)
+		config, err := turbine.ReadAppConfigFile(o.path)
 		if err != nil {
 			return err
 		}
