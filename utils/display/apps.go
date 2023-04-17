@@ -187,6 +187,10 @@ func AppLogsTable(appLogs *meroxa.ApplicationLogs) string {
 		subTable += fmt.Sprintf("\n# Logs for %s function\n\n%s\n", key, logs)
 	}
 
+	for key, logs := range appLogs.FlinkJobLogs {
+		subTable += fmt.Sprintf("\n# Logs for %s flink job\n\n%s\n", key, logs)
+	}
+
 	for key, logs := range appLogs.DeploymentLogs {
 		subTable += fmt.Sprintf("\n# Logs for %s deployment\n\n%s\n", key, logs)
 	}
