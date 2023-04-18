@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"io"
 	"os"
 	"path/filepath"
@@ -25,7 +26,7 @@ type LocalDeploy struct {
 	DockerHubAccessTokenEnv string
 	Enabled                 bool
 	TempPath                string
-	Lang                    string
+	Lang                    ir.Lang
 	AppName                 string
 }
 

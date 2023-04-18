@@ -531,28 +531,28 @@ func TestValidateCollections(t *testing.T) {
 func TestValidateLanguage(t *testing.T) {
 	tests := []struct {
 		name      string
-		languages []string
+		languages []ir.Lang
 		errFormat string
 	}{
 		{
 			name:      "Successfully validate golang",
-			languages: []string{"go", "golang"},
+			languages: []ir.Lang{"go", "golang"},
 		},
 		{
 			name:      "Successfully validate javascript",
-			languages: []string{"js", "javascript", "nodejs"},
+			languages: []ir.Lang{"js", "javascript", "nodejs"},
 		},
 		{
 			name:      "Successfully validate python",
-			languages: []string{"py", "python", "python3"},
+			languages: []ir.Lang{"py", "python", "python3"},
 		},
 		{
 			name:      "Successfully validate ruby",
-			languages: []string{"rb", "ruby"},
+			languages: []ir.Lang{"rb", "ruby"},
 		},
 		{
 			name:      "Reject unsupported languages",
-			languages: []string{"cobol", "crystal", "g@rbAg3"},
+			languages: []ir.Lang{"cobol", "crystal", "g@rbAg3"},
 			errFormat: "language %q not supported. " + LanguageNotSupportedError,
 		},
 	}
@@ -569,7 +569,7 @@ func TestValidateLanguage(t *testing.T) {
 					require.NotEmptyf(t, tc.errFormat, fmt.Sprintf("test failed for %q", lang))
 					require.Equal(t, fmt.Errorf(tc.errFormat, lang), err)
 				} else {
-					require.Emptyf(t, tc.errFormat, "got an unexpected error for input "+lang)
+					require.Emptyf(t, tc.errFormat, fmt.Sprintf("got an unexpected error for input %s", lang))
 				}
 			}
 		})
@@ -1380,7 +1380,7 @@ func Test_validateFlags(t *testing.T) {
 		name     string
 		specFlag string
 		envFlag  string
-		lang     string
+		lang     ir.Lang
 		wantErr  error
 	}{
 		{
@@ -1398,12 +1398,12 @@ func Test_validateFlags(t *testing.T) {
 		{
 			name:    "Without --spec and with --env flags if language is ruby",
 			envFlag: "my-env",
-			lang:    turbine.Ruby,
+			lang:    ir.Ruby,
 		},
 		{
 			name:    "Without --spec and with --env flags if language is not ruby",
 			envFlag: "my-env",
-			lang:    turbine.GoLang,
+			lang:    ir.GoLang,
 			wantErr: fmt.Errorf(
 				"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 				ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0),

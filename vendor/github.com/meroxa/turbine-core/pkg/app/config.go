@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"log"
 	"os"
 	"path"
 )
 
 type Config struct {
-	Name        string            `json:"name"`
-	Environment string            `json:"environment"`
-	Pipeline    string            `json:"pipeline"` // TODO: Eventually remove support for providing a pipeline if we need to
-	Resources   map[string]string `json:"resources"`
-	Language    string            `json:"language"`
+	Name      string            `json:"name"`
+	Pipeline  string            `json:"pipeline"` // TODO: Eventually remove support for providing a pipeline if we need to
+	Resources map[string]string `json:"resources"`
+	Language  ir.Lang           `json:"language"`
 }
 
 // validateAppConfig will check if app.json contains information required

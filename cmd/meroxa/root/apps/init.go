@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
-	"strings"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
@@ -14,6 +11,9 @@ import (
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"regexp"
+	"strings"
 )
 
 type Init struct {
@@ -127,7 +127,7 @@ func (i *Init) Execute(ctx context.Context) error {
 	}
 	i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
 
-	if lang == "go" || lang == turbine.GoLang {
+	if lang == "go" || lang == string(ir.GoLang) {
 		if err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor); err != nil {
 			i.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return err

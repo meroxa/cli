@@ -18,9 +18,6 @@ package apps
 
 import (
 	"fmt"
-
-	"github.com/spf13/cobra"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
@@ -28,6 +25,8 @@ import (
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/spf13/cobra"
 )
 
 type Apps struct{}
@@ -69,7 +68,7 @@ func (*Apps) SubCommands() []*cobra.Command {
 }
 
 // getTurbineCLIFromLanguage will return the appropriate turbine.CLI based on language.
-func getTurbineCLIFromLanguage(logger log.Logger, lang, path string) (turbine.CLI, error) {
+func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (turbine.CLI, error) {
 	switch lang {
 	case "go", turbine.GoLang:
 		return turbineGo.New(logger, path), nil
@@ -87,9 +86,9 @@ type addHeader interface {
 	AddHeader(key, value string)
 }
 
-func addTurbineHeaders(c addHeader, lang, version string) {
-	c.AddHeader("Meroxa-CLI-App-Lang", lang)
-	if lang == turbine.JavaScript {
+func addTurbineHeaders(c addHeader, lang ir.Lang, version string) {
+	c.AddHeader("Meroxa-CLI-App-Lang", string(lang))
+	if lang == ir.JavaScript {
 		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)
 	}
 	c.AddHeader("Meroxa-CLI-App-Version", version)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"go/build"
 	"os"
 	"path/filepath"
@@ -13,7 +14,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -151,7 +151,7 @@ func TestGoInitExecute(t *testing.T) {
 			cc := &Init{}
 			cc.Logger(log.NewTestLogger())
 			cc.flags.Path = tt.path
-			cc.flags.Lang = "golang"
+			cc.flags.Lang = string(ir.GoLang)
 			cc.flags.ModVendor = tt.vendor
 			cc.flags.SkipModInit = tt.skipModInit
 			cc.args.appName = "app-name"
@@ -196,42 +196,42 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 		{
 			desc:     "Successful Javascript init",
 			path:     "/does/not/matter",
-			language: turbine.JavaScript,
+			language: string(ir.JavaScript),
 			name:     "js-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Javascript init",
 			path:     "/does/not/matter",
-			language: turbine.JavaScript,
+			language: string(ir.JavaScript),
 			name:     "js-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Python init",
 			path:     "/does/not/matter",
-			language: turbine.Python,
+			language: string(ir.Python),
 			name:     "py-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Python init",
 			path:     "/does/not/matter",
-			language: turbine.Python,
+			language: string(ir.Python),
 			name:     "py-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Ruby init",
 			path:     "/does/not/matter",
-			language: turbine.Ruby,
+			language: string(ir.Ruby),
 			name:     "rb-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Ruby init",
 			path:     "/does/not/matter",
-			language: turbine.Ruby,
+			language: string(ir.Ruby),
 			name:     "rb-init",
 			err:      fmt.Errorf("not good"),
 		},

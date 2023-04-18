@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"os"
 	"os/exec"
 	"path"
@@ -26,7 +27,6 @@ const (
 	Python3    = "python3"
 	Ruby       = "ruby"
 
-	isTrue            = "true"
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
 
 	IncompatibleTurbineVersion = `your Turbine library version is incompatible with the Meroxa CLI.
@@ -37,7 +37,7 @@ https://docs.meroxa.com/beta-overview#updated-meroxa-cli-and-outdated-turbine-li
 type AppConfig struct {
 	Name        string            `json:"name"`
 	Environment string            `json:"environment"`
-	Language    string            `json:"language"`
+	Language    ir.Lang           `json:"language"`
 	Resources   map[string]string `json:"resources"`
 	Vendor      string            `json:"vendor"`
 	ModuleInit  string            `json:"module_init"`
@@ -85,7 +85,7 @@ func GetPath(flag string) (string, error) {
 }
 
 // GetLangFromAppJSON returns specified language in users' app.json.
-func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
+func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (ir.Lang, error) {
 	l.StartSpinner("\t", "Determining application language from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
