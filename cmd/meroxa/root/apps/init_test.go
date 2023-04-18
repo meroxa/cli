@@ -190,49 +190,49 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 	tests := []struct {
 		desc     string
 		path     string
-		language string
+		language ir.Lang
 		name     string
 		err      error
 	}{
 		{
 			desc:     "Successful Javascript init",
 			path:     "/does/not/matter",
-			language: string(ir.JavaScript),
+			language: ir.JavaScript,
 			name:     "js-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Javascript init",
 			path:     "/does/not/matter",
-			language: string(ir.JavaScript),
+			language: ir.JavaScript,
 			name:     "js-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Python init",
 			path:     "/does/not/matter",
-			language: string(ir.Python),
+			language: ir.Python,
 			name:     "py-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Python init",
 			path:     "/does/not/matter",
-			language: string(ir.Python),
+			language: ir.Python,
 			name:     "py-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Ruby init",
 			path:     "/does/not/matter",
-			language: string(ir.Ruby),
+			language: ir.Ruby,
 			name:     "rb-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Ruby init",
 			path:     "/does/not/matter",
-			language: string(ir.Ruby),
+			language: ir.Ruby,
 			name:     "rb-init",
 			err:      fmt.Errorf("not good"),
 		},
@@ -247,7 +247,7 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 			i.Logger(log.NewTestLogger())
 			i.flags.Path = tt.path
 			i.args.appName = tt.name
-			i.flags.Lang = tt.language
+			i.flags.Lang = string(tt.language)
 
 			mock := mockturbinecli.NewMockCLI(mockCtrl)
 			if tt.err == nil {
