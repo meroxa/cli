@@ -50,8 +50,8 @@
                     "optional": true,
                     "type": "string",
                     "version": 1,
-                    "parameters": { 
-                        "allowed": "true,last,false" 
+                    "parameters": {
+                        "allowed": "true,last,false"
                     },
                     "default": "false",
                     "field": "snapshot"
@@ -168,8 +168,8 @@
                     "optional": true,
                     "type": "string",
                     "version": 1,
-                    "parameters": { 
-                        "allowed": "true,last,false" 
+                    "parameters": {
+                        "allowed": "true,last,false"
                     },
                     "default": "false",
                     "field": "snapshot"
@@ -286,8 +286,8 @@
                     "optional": true,
                     "type": "string",
                     "version": 1,
-                    "parameters": { 
-                        "allowed": "true,last,false" 
+                    "parameters": {
+                        "allowed": "true,last,false"
                     },
                     "default": "false",
                     "field": "snapshot"
