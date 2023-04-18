@@ -200,7 +200,7 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.20
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine-core v0.0.0-20230418154508-0d3c0fab3bd5
+# github.com/meroxa/turbine-core v0.0.0-20230418160851-1dcbf1bccb0a
 ## explicit; go 1.19
 github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core
 github.com/meroxa/turbine-core/pkg/app
@@ -211,7 +211,6 @@ github.com/meroxa/turbine-core/pkg/server/internal
 ## explicit; go 1.18
 github.com/meroxa/turbine-go
 github.com/meroxa/turbine-go/deploy
-github.com/meroxa/turbine-go/init
 # github.com/mitchellh/mapstructure v1.5.0
 ## explicit; go 1.14
 github.com/mitchellh/mapstructure
