@@ -20,12 +20,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"

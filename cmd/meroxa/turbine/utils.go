@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"os"
 	"os/exec"
 	"path"
@@ -14,9 +13,9 @@ import (
 	"regexp"
 	"strings"
 
-	"golang.org/x/mod/semver"
-
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"golang.org/x/mod/semver"
 )
 
 const (

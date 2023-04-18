@@ -4,17 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/meroxa/cli/log"
 )
 
 func TestGitInit(t *testing.T) {

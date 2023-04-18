@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"go/build"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"

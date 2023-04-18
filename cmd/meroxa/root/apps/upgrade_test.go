@@ -3,9 +3,10 @@ package apps
 import (
 	"context"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"strconv"
 	"testing"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/golang/mock/gomock"
 

@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"io"
 	"os"
 	"path/filepath"
@@ -18,6 +17,7 @@ import (
 	"github.com/docker/docker/pkg/archive"
 
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	turbine "github.com/meroxa/turbine-go/deploy"
 )
 
