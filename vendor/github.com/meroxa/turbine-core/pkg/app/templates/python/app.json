@@ -1,5 +1,5 @@
 {
-    "name": "pyappenv",
+    "name": "{{.AppName}}",
     "language": "python",
     "resources": {
         "source_name": "fixtures/demo-cdc.json"
