@@ -1,0 +1,149 @@
+{
+    "users": {
+      "100": {
+        "id": "100",
+        "username": "alice",
+        "email": "alice@example.com"
+      }
+    },
+    "user_activity": [
+      {
+        "key": "1",
+        "value": {
+          "schema": {
+            "name": "user_activity",
+            "optional": false,
+            "type": "struct",
+            "fields": [
+              { "field": "id", "optional": false, "type": "int32" },
+              { "field": "user_id", "optional": true, "type": "int32" },
+              { "field": "email", "optional": true, "type": "string" },
+              { "field": "activity", "optional": true, "type": "string" },
+              {
+                "field": "created_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": false,
+                "type": "int64",
+                "version": 1
+              },
+              {
+                "field": "updated_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": false,
+                "type": "int64",
+                "version": 1
+              },
+              {
+                "field": "deleted_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": true,
+                "type": "int64",
+                "version": 1
+              }
+            ]
+          },
+          "payload": {
+            "activity": "registered",
+            "updated_at": 1643214353680,
+            "user_id": 108,
+            "created_at": 1643214353680,
+            "id": 1,
+            "deleted_at": null,
+            "email": "user8@example.com"
+          }
+        }
+      },
+      {
+        "key": "2",
+        "value": {
+          "schema": {
+            "name": "user_activity",
+            "optional": false,
+            "type": "struct",
+            "fields": [
+              { "field": "id", "optional": false, "type": "int32" },
+              { "field": "user_id", "optional": true, "type": "int32" },
+              { "field": "email", "optional": true, "type": "string" },
+              { "field": "activity", "optional": true, "type": "string" },
+              {
+                "field": "created_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": false,
+                "type": "int64",
+                "version": 1
+              },
+              {
+                "field": "updated_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": false,
+                "type": "int64",
+                "version": 1
+              },
+              {
+                "field": "deleted_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": true,
+                "type": "int64",
+                "version": 1
+              }
+            ]
+          },
+          "payload": {
+            "activity": "logged in",
+            "updated_at": 1643406665288,
+            "user_id": 108,
+            "created_at": 1643406665288,
+            "id": 2,
+            "deleted_at": null,
+            "email": "user8@example.com"
+          }
+        }
+      },
+      {
+        "key": "3",
+        "value": {
+          "schema": {
+            "name": "user_activity",
+            "optional": false,
+            "type": "struct",
+            "fields": [
+              { "field": "id", "optional": false, "type": "int32" },
+              { "field": "user_id", "optional": true, "type": "int32" },
+              { "field": "email", "optional": true, "type": "string" },
+              { "field": "activity", "optional": true, "type": "string" },
+              {
+                "field": "created_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": false,
+                "type": "int64",
+                "version": 1
+              },
+              {
+                "field": "updated_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": false,
+                "type": "int64",
+                "version": 1
+              },
+              {
+                "field": "deleted_at",
+                "name": "org.apache.kafka.connect.data.Timestamp",
+                "optional": true,
+                "type": "int64",
+                "version": 1
+              }
+            ]
+          },
+          "payload": {
+            "activity": "logged in",
+            "updated_at": 1643411169715,
+            "user_id": 108,
+            "created_at": 1643411169715,
+            "id": 3,
+            "deleted_at": null,
+            "email": "user8@example.com"
+          }
+        }
+      }
+    ]
+  }
