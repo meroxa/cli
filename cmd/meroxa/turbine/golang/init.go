@@ -8,18 +8,15 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/meroxa/turbine-core/pkg/app"
+	"github.com/meroxa/turbine-core/pkg/ir"
+
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
-	turbinego "github.com/meroxa/turbine-go/init"
 )
 
-func (t *turbineGoCLI) Init(_ context.Context, name string) error {
-	err := turbinego.Init(name, t.appPath)
-	if err != nil {
-		t.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-	return err
+func (t *turbineGoCLI) Init(_ context.Context, appName string) error {
+	return app.NewAppInit(appName, ir.GoLang, t.appPath).Init()
 }
 
 func (t *turbineGoCLI) GitInit(ctx context.Context, name string) error {
