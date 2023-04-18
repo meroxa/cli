@@ -2,6 +2,7 @@ package app
 
 import (
 	"embed"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,7 +12,7 @@ import (
 
 type AppInit struct {
 	AppName  string
-	Language string
+	Language ir.Lang
 	Path     string
 }
 
@@ -36,7 +37,7 @@ func (a *AppInit) createFixtures() error {
 		return err
 	}
 
-	content, err := templateFS.ReadDir(filepath.Join("templates", a.Language, directory))
+	content, err := templateFS.ReadDir(filepath.Join("templates", string(a.Language), directory))
 	if err != nil {
 		return err
 	}
@@ -54,7 +55,7 @@ func (a *AppInit) createFixtures() error {
 
 // duplicateFile reads from a template and write to a file located to a path provided by the user
 func (a *AppInit) duplicateFile(fileName string) error {
-	t, err := template.ParseFS(templateFS, filepath.Join("templates", a.Language, fileName))
+	t, err := template.ParseFS(templateFS, filepath.Join("templates", string(a.Language), fileName))
 	if err != nil {
 		return err
 	}
@@ -85,7 +86,7 @@ func (a *AppInit) duplicateFile(fileName string) error {
 func (a *AppInit) listTemplateContent() ([]string, []string, error) {
 	var files, directories []string
 
-	content, err := templateFS.ReadDir(filepath.Join("templates", a.Language))
+	content, err := templateFS.ReadDir(filepath.Join("templates", string(a.Language)))
 	if err != nil {
 		return files, directories, err
 	}
@@ -100,7 +101,7 @@ func (a *AppInit) listTemplateContent() ([]string, []string, error) {
 	return files, directories, nil
 }
 
-func NewAppInit(appName, language, path string) *AppInit {
+func NewAppInit(appName string, language ir.Lang, path string) *AppInit {
 	return &AppInit{
 		AppName:  appName,
 		Language: language,

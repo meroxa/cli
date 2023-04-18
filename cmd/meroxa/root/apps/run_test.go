@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/meroxa/turbine-core/pkg/ir"
+
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -73,7 +75,7 @@ func TestRunExecute(t *testing.T) {
 			cli:  mockCli,
 			config: turbine.AppConfig{
 				Name:     "js-test",
-				Language: turbine.JavaScript,
+				Language: ir.JavaScript,
 				Vendor:   "false",
 			},
 		},
@@ -82,7 +84,7 @@ func TestRunExecute(t *testing.T) {
 			cli:  mockCli,
 			config: turbine.AppConfig{
 				Name:     "go-test",
-				Language: turbine.GoLang,
+				Language: ir.GoLang,
 			},
 		},
 		{
@@ -90,7 +92,7 @@ func TestRunExecute(t *testing.T) {
 			cli:  mockCli,
 			config: turbine.AppConfig{
 				Name:     "ruby-test",
-				Language: turbine.Ruby,
+				Language: ir.Ruby,
 			},
 		},
 		{
@@ -102,7 +104,7 @@ func TestRunExecute(t *testing.T) {
 			},
 			config: turbine.AppConfig{
 				Name:     "py-test",
-				Language: turbine.Python,
+				Language: ir.Python,
 			},
 			err: fmt.Errorf("not good"),
 		},

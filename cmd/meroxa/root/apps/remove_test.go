@@ -27,11 +27,12 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/meroxa/turbine-core/pkg/ir"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/mock"
@@ -134,7 +135,7 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 	path := "tmp" + uuid.NewString()
 	i.args.appName = app.Name
 	i.flags.Path = path
-	i.flags.Lang = turbine.GoLang
+	i.flags.Lang = string(ir.GoLang)
 	i.flags.SkipModInit = true
 	i.flags.ModVendor = false
 	err := i.Execute(ctx)
@@ -156,7 +157,7 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 		StatusCode: http.StatusNoContent,
 	}
 
-	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", turbine.GoLang).Times(1)
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.
 		EXPECT().

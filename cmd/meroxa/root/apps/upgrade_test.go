@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/meroxa/turbine-core/pkg/ir"
+
 	"github.com/golang/mock/gomock"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -62,7 +64,7 @@ func TestUpgradeExecute(t *testing.T) {
 			desc: "Successful Javascript upgrade without vendor",
 			config: turbine.AppConfig{
 				Name:     "",
-				Language: turbine.JavaScript,
+				Language: ir.JavaScript,
 				Vendor:   "false",
 			},
 			err: nil,
@@ -71,7 +73,7 @@ func TestUpgradeExecute(t *testing.T) {
 			desc: "Successful Golang upgrade with vendor",
 			config: turbine.AppConfig{
 				Name:     "",
-				Language: turbine.GoLang,
+				Language: ir.GoLang,
 				Vendor:   "true",
 			},
 			err: nil,
@@ -80,7 +82,7 @@ func TestUpgradeExecute(t *testing.T) {
 			desc: "Unsuccessful Python upgrade",
 			config: turbine.AppConfig{
 				Name:     "",
-				Language: turbine.Python,
+				Language: ir.Python,
 				Vendor:   "false",
 			},
 			err: fmt.Errorf("not good"),

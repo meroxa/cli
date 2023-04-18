@@ -10,10 +10,10 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/meroxa/cli/log"
 )
 
 func TestGitInit(t *testing.T) {
@@ -257,7 +257,7 @@ func TestReadAndWriteConfigFile(t *testing.T) {
 			path: appPath,
 			input: AppConfig{
 				Name:       "my-name",
-				Language:   JavaScript,
+				Language:   ir.JavaScript,
 				Vendor:     "false",
 				ModuleInit: "true",
 			},
@@ -268,7 +268,7 @@ func TestReadAndWriteConfigFile(t *testing.T) {
 			path: "#nope$",
 			input: AppConfig{
 				Name:       "my-name2",
-				Language:   Python3,
+				Language:   ir.Python,
 				Vendor:     "false",
 				ModuleInit: "true",
 			},
@@ -282,7 +282,7 @@ unable to update app.json file on path "#nope$". Maybe try using a different val
 			err := WriteConfigFile(tc.path, tc.input)
 			if err != nil {
 				if tc.err == nil {
-					t.Fatalf("unepxected error: %v", err)
+					t.Fatalf("unexpected error: %v", err)
 				}
 				assert.Equal(t, tc.err, err)
 				return

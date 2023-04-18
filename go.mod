@@ -1,6 +1,6 @@
 module github.com/meroxa/cli
 
-go 1.18
+go 1.20
 
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
@@ -28,7 +28,7 @@ require (
 	github.com/briandowns/spinner v1.21.0
 	github.com/docker/docker v20.10.23+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-core v0.0.0-20230113145603-c7b1554653fa
+	github.com/meroxa/turbine-core v0.0.0-20230418154508-0d3c0fab3bd5
 	github.com/meroxa/turbine-go v1.0.0
 	github.com/stretchr/testify v1.8.2
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
@@ -60,7 +60,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/heimdalr/dag v1.2.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jedib0t/go-pretty/v6 v6.4.2 // indirect
+	github.com/jedib0t/go-pretty/v6 v6.4.6 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect

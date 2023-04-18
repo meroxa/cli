@@ -9,11 +9,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/meroxa/turbine-core/pkg/ir"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -151,7 +152,7 @@ func TestGoInitExecute(t *testing.T) {
 			cc := &Init{}
 			cc.Logger(log.NewTestLogger())
 			cc.flags.Path = tt.path
-			cc.flags.Lang = "golang"
+			cc.flags.Lang = string(ir.GoLang)
 			cc.flags.ModVendor = tt.vendor
 			cc.flags.SkipModInit = tt.skipModInit
 			cc.args.appName = "app-name"
@@ -189,49 +190,49 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 	tests := []struct {
 		desc     string
 		path     string
-		language string
+		language ir.Lang
 		name     string
 		err      error
 	}{
 		{
 			desc:     "Successful Javascript init",
 			path:     "/does/not/matter",
-			language: turbine.JavaScript,
+			language: ir.JavaScript,
 			name:     "js-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Javascript init",
 			path:     "/does/not/matter",
-			language: turbine.JavaScript,
+			language: ir.JavaScript,
 			name:     "js-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Python init",
 			path:     "/does/not/matter",
-			language: turbine.Python,
+			language: ir.Python,
 			name:     "py-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Python init",
 			path:     "/does/not/matter",
-			language: turbine.Python,
+			language: ir.Python,
 			name:     "py-init",
 			err:      fmt.Errorf("not good"),
 		},
 		{
 			desc:     "Successful Ruby init",
 			path:     "/does/not/matter",
-			language: turbine.Ruby,
+			language: ir.Ruby,
 			name:     "rb-init",
 			err:      nil,
 		},
 		{
 			desc:     "Unsuccessful Ruby init",
 			path:     "/does/not/matter",
-			language: turbine.Ruby,
+			language: ir.Ruby,
 			name:     "rb-init",
 			err:      fmt.Errorf("not good"),
 		},
@@ -246,7 +247,7 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 			i.Logger(log.NewTestLogger())
 			i.flags.Path = tt.path
 			i.args.appName = tt.name
-			i.flags.Lang = tt.language
+			i.flags.Lang = string(tt.language)
 
 			mock := mockturbinecli.NewMockCLI(mockCtrl)
 			if tt.err == nil {

@@ -104,7 +104,7 @@ type Deploy struct {
 	appName       string
 	gitBranch     string
 	path          string
-	lang          string
+	lang          ir.Lang
 	fnName        string
 	specVersion   string
 	env           *environment
@@ -541,13 +541,13 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 func (d *Deploy) validateLanguage() error {
 	switch d.lang {
 	case "go", turbine.GoLang:
-		d.lang = turbine.GoLang
+		d.lang = ir.GoLang
 	case "js", turbine.JavaScript, turbine.NodeJs:
-		d.lang = turbine.JavaScript
+		d.lang = ir.JavaScript
 	case "py", turbine.Python3, turbine.Python:
-		d.lang = turbine.Python
+		d.lang = ir.Python
 	case "rb", turbine.Ruby:
-		d.lang = turbine.Ruby
+		d.lang = ir.Ruby
 	default:
 		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
 	}
@@ -907,7 +907,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 // Turbine Ruby will use a spec'ed version internally so --spec is not required when using environments which is
 // currently only available for those deployments using IR.
 func (d *Deploy) validateEnvironmentFlagCompatibility() error {
-	if d.flags.Spec == "" && d.env != nil && d.lang != turbine.Ruby {
+	if d.flags.Spec == "" && d.env != nil && d.lang != ir.Ruby {
 		return fmt.Errorf(
 			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
@@ -991,7 +991,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	d.specVersion = d.flags.Spec
-	if d.specVersion == "" && d.lang == turbine.Ruby {
+	if d.specVersion == "" && d.lang == ir.Ruby {
 		d.specVersion = ir.LatestSpecVersion
 	}
 
@@ -1002,7 +1002,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		}
 		appInput := &meroxa.CreateApplicationInput{
 			Name:     d.appName,
-			Language: d.lang,
+			Language: string(d.lang),
 			GitSha:   gitSha,
 		}
 		// Creates application
