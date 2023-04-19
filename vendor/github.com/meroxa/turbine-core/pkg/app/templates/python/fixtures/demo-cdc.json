@@ -1,0 +1,358 @@
+{
+  "collection_name": [
+    {
+      "key": "1",
+      "value": {
+        "schema": {
+            "type": "struct",
+            "fields": [
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "int32" },
+                  { "field": "category", "optional": false, "type": "string" },
+                  { "field": "product_type", "optional": false, "type": "string" },
+                  { "field": "product_name", "optional": false, "type": "string" },
+                  { "field": "stock", "optional": false, "type": "boolean" },
+                  { "field": "product_id", "optional": false, "type": "int32" },
+                  { "field": "shipping_address", "optional": false, "type": "string" },
+                  { "field": "email", "optional": false, "type": "varchar" }
+                ],
+                "optional": true,
+                "name": "resource.public.collection_name.Value",
+                "field": "before"
+              },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "int32" },
+                  { "field": "category", "optional": false, "type": "string" },
+                  { "field": "product_type", "optional": false, "type": "string" },
+                  { "field": "product_name", "optional": false, "type": "string" },
+                  { "field": "stock", "optional": false, "type": "boolean" },
+                  { "field": "product_id", "optional": false, "type": "int32" },
+                  { "field": "shipping_address", "optional": false, "type": "string" },
+                  { "field": "email", "optional": false, "type": "varchar" }
+                ],
+                "optional": true,
+                "name": "resource.public.collection_name.Value",
+                "field": "after"
+              },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "version", "optional": false, "type": "string" },
+                  { "field": "connector", "optional": false, "type": "string" },
+                  { "field": "name", "optional": false, "type": "string" },
+                  { "field": "ts_ms", "optional": false, "type": "int64" },
+                  {
+                    "name": "io.debezium.data.Enum",
+                    "optional": true,
+                    "type": "string",
+                    "version": 1,
+                    "parameters": {
+                        "allowed": "true,last,false"
+                    },
+                    "default": "false",
+                    "field": "snapshot"
+                  },
+                  { "field": "db", "optional": false, "type": "string" },
+                  { "field": "schema", "optional": false, "type": "string" },
+                  { "field": "table", "optional": false, "type": "string" },
+                  { "field": "txId", "optional": true, "type": "int64" },
+                  { "field": "lsn", "optional": true, "type": "int64" },
+                  { "field": "xmin", "optional": true, "type": "int64" }
+                ],
+                "optional": false,
+                "name": "io.debezium.connector.postgresql.Source",
+                "field": "source"
+              },
+              { "field": "op", "optional": false, "type": "string" },
+              { "field": "ts_ms", "optional": true, "type": "int64" },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "string" },
+                  { "field": "total_order", "optional": false, "type": "int64" },
+                  {
+                    "field": "data_collection_order",
+                    "optional": false,
+                    "type": "int64"
+                  }
+                ],
+                "optional": true,
+                "field": "transaction"
+              }
+            ],
+            "optional": false,
+            "name": "resource.public.collection_name.Envelope"
+        },
+        "payload": {
+          "before": null,
+          "after": {
+            "id": 9582724,
+            "category": "camping",
+            "product_type": "sleeping-bag",
+            "product_name": "Forte 35 Sleeping Bag - Womens",
+            "stock": true,
+            "product_id": 361632,
+            "shipping_address": "9718 East Virginia Avenue Silver Spring, MD 20901",
+            "email": "usera@example.com"
+          },
+          "source": {
+            "version": "1.2.5.Final",
+            "connector": "postgresql",
+            "name": "source_name",
+            "ts_ms": 1644362356740,
+            "snapshot": "true",
+            "db": "database",
+            "schema": "public",
+            "table": "collection_name",
+            "lsn": 537810437656,
+            "txId": 8680,
+            "xmin": null
+          },
+          "op": "r",
+          "ts_ms": 1644362356743,
+          "transaction": null
+        }
+      }
+    },
+    {
+      "key": "2",
+      "value": {
+        "schema": {
+            "type": "struct",
+            "fields": [
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "int32" },
+                  { "field": "category", "optional": false, "type": "string" },
+                  { "field": "product_type", "optional": false, "type": "string" },
+                  { "field": "product_name", "optional": false, "type": "string" },
+                  { "field": "stock", "optional": false, "type": "boolean" },
+                  { "field": "product_id", "optional": false, "type": "int32" },
+                  { "field": "shipping_address", "optional": false, "type": "string" },
+                  { "field": "email", "optional": false, "type": "varchar" }
+                ],
+                "optional": true,
+                "name": "resource.public.collection_name.Value",
+                "field": "before"
+              },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "int32" },
+                  { "field": "category", "optional": false, "type": "string" },
+                  { "field": "product_type", "optional": false, "type": "string" },
+                  { "field": "product_name", "optional": false, "type": "string" },
+                  { "field": "stock", "optional": false, "type": "boolean" },
+                  { "field": "product_id", "optional": false, "type": "int32" },
+                  { "field": "shipping_address", "optional": false, "type": "string" },
+                  { "field": "email", "optional": false, "type": "varchar" }
+                ],
+                "optional": true,
+                "name": "resource.public.collection_name.Value",
+                "field": "after"
+              },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "version", "optional": false, "type": "string" },
+                  { "field": "connector", "optional": false, "type": "string" },
+                  { "field": "name", "optional": false, "type": "string" },
+                  { "field": "ts_ms", "optional": false, "type": "int64" },
+                  {
+                    "name": "io.debezium.data.Enum",
+                    "optional": true,
+                    "type": "string",
+                    "version": 1,
+                    "parameters": {
+                        "allowed": "true,last,false"
+                    },
+                    "default": "false",
+                    "field": "snapshot"
+                  },
+                  { "field": "db", "optional": false, "type": "string" },
+                  { "field": "schema", "optional": false, "type": "string" },
+                  { "field": "table", "optional": false, "type": "string" },
+                  { "field": "txId", "optional": true, "type": "int64" },
+                  { "field": "lsn", "optional": true, "type": "int64" },
+                  { "field": "xmin", "optional": true, "type": "int64" }
+                ],
+                "optional": false,
+                "name": "io.debezium.connector.postgresql.Source",
+                "field": "source"
+              },
+              { "field": "op", "optional": false, "type": "string" },
+              { "field": "ts_ms", "optional": true, "type": "int64" },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "string" },
+                  { "field": "total_order", "optional": false, "type": "int64" },
+                  {
+                    "field": "data_collection_order",
+                    "optional": false,
+                    "type": "int64"
+                  }
+                ],
+                "optional": true,
+                "field": "transaction"
+              }
+            ],
+            "optional": false,
+            "name": "resource.public.collection_name.Envelope"
+        },
+        "payload": {
+          "before": null,
+          "after": {
+            "id": 9582725,
+            "category": "camping",
+            "product_type": "sleeping-bag",
+            "product_name": "Cosmic 20 Sleeping Bag - Mens",
+            "stock": true,
+            "product_id": 235367,
+            "shipping_address": "881 South Newbridge Lane Upland, CA 91784",
+            "email": "userb@example.com"
+          },
+          "source": {
+            "version": "1.2.5.Final",
+            "connector": "postgresql",
+            "name": "source_name",
+            "ts_ms": 1644362356740,
+            "snapshot": "true",
+            "db": "database",
+            "schema": "public",
+            "table": "collection_name",
+            "lsn": 537810437656,
+            "txId": 8680,
+            "xmin": null
+          },
+          "op": "r",
+          "ts_ms": 1644362356743,
+          "transaction": null
+        }
+      }
+    },
+    {
+      "key": "3",
+      "value": {
+        "schema": {
+            "type": "struct",
+            "fields": [
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "int32" },
+                  { "field": "category", "optional": false, "type": "string" },
+                  { "field": "product_type", "optional": false, "type": "string" },
+                  { "field": "product_name", "optional": false, "type": "string" },
+                  { "field": "stock", "optional": false, "type": "boolean" },
+                  { "field": "product_id", "optional": false, "type": "int32" },
+                  { "field": "shipping_address", "optional": false, "type": "string" },
+                  { "field": "email", "optional": false, "type": "varchar" }
+                ],
+                "optional": true,
+                "name": "resource.public.collection_name.Value",
+                "field": "before"
+              },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "int32" },
+                  { "field": "category", "optional": false, "type": "string" },
+                  { "field": "product_type", "optional": false, "type": "string" },
+                  { "field": "product_name", "optional": false, "type": "string" },
+                  { "field": "stock", "optional": false, "type": "boolean" },
+                  { "field": "product_id", "optional": false, "type": "int32" },
+                  { "field": "shipping_address", "optional": false, "type": "string" },
+                  { "field": "email", "optional": false, "type": "varchar" }
+                ],
+                "optional": true,
+                "name": "resource.public.collection_name.Value",
+                "field": "after"
+              },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "version", "optional": false, "type": "string" },
+                  { "field": "connector", "optional": false, "type": "string" },
+                  { "field": "name", "optional": false, "type": "string" },
+                  { "field": "ts_ms", "optional": false, "type": "int64" },
+                  {
+                    "name": "io.debezium.data.Enum",
+                    "optional": true,
+                    "type": "string",
+                    "version": 1,
+                    "parameters": {
+                        "allowed": "true,last,false"
+                    },
+                    "default": "false",
+                    "field": "snapshot"
+                  },
+                  { "field": "db", "optional": false, "type": "string" },
+                  { "field": "schema", "optional": false, "type": "string" },
+                  { "field": "table", "optional": false, "type": "string" },
+                  { "field": "txId", "optional": true, "type": "int64" },
+                  { "field": "lsn", "optional": true, "type": "int64" },
+                  { "field": "xmin", "optional": true, "type": "int64" }
+                ],
+                "optional": false,
+                "name": "io.debezium.connector.postgresql.Source",
+                "field": "source"
+              },
+              { "field": "op", "optional": false, "type": "string" },
+              { "field": "ts_ms", "optional": true, "type": "int64" },
+              {
+                "type": "struct",
+                "fields": [
+                  { "field": "id", "optional": false, "type": "string" },
+                  { "field": "total_order", "optional": false, "type": "int64" },
+                  {
+                    "field": "data_collection_order",
+                    "optional": false,
+                    "type": "int64"
+                  }
+                ],
+                "optional": true,
+                "field": "transaction"
+              }
+            ],
+            "optional": false,
+            "name": "resource.public.collection_name.Envelope"
+        },
+        "payload": {
+          "before": null,
+          "after": {
+            "id": 9582726,
+            "category": "camping",
+            "product_type": "sleeping-bag",
+            "product_name": "Zephyr 25 Recycled Sleeping Bag - Kid",
+            "stock": true,
+            "product_id": 203000,
+            "shipping_address": "43 Sunnyslope Street Port Richey, FL 34668",
+            "email": "userc@example.com"
+          },
+          "source": {
+            "version": "1.2.5.Final",
+            "connector": "postgresql",
+            "name": "source_name",
+            "ts_ms": 1644362356740,
+            "snapshot": "true",
+            "db": "database",
+            "schema": "public",
+            "table": "collection_name",
+            "lsn": 537810437656,
+            "txId": 8680,
+            "xmin": null
+          },
+          "op": "r",
+          "ts_ms": 1644362356743,
+          "transaction": null
+        }
+      }
+    }
+  ]
+}
