@@ -11,9 +11,9 @@ import (
 type TurbineCommand string
 
 const (
-	TurbineCommandRun    TurbineCommand = "TurbineRb.run"
-	TurbineCommandRecord TurbineCommand = "TurbineRb.record"
-	TurbineCommandBuild  TurbineCommand = "TurbineRb.build"
+	TurbineCommandRun     TurbineCommand = "TurbineRb.run"
+	TurbineCommandRecord  TurbineCommand = "TurbineRb.record"
+	TurbineCommandBuild   TurbineCommand = "TurbineRb.build"
 	TurbineCommandVersion TurbineCommand = `puts Gem.loaded_specs["turbine_rb"].version.version`
 )
 
