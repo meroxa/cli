@@ -17,7 +17,7 @@ type turbineServer interface {
 	GracefulStop()
 }
 
-type recordClient struct {
+type specBuilderClient struct {
 	*grpc.ClientConn
 	pb.TurbineServiceClient
 }
@@ -25,18 +25,19 @@ type recordClient struct {
 type turbineRbCLI struct {
 	logger            log.Logger
 	appPath           string
-	runServer         turbineServer
-	recordServer      turbineServer
-	recordClient      recordClient
 	grpcListenAddress string
+
+	bs turbineServer
+	bc specBuilderClient
+	rs turbineServer
 }
 
 func New(l log.Logger, appPath string) turbine.CLI {
 	return &turbineRbCLI{
 		logger:            l,
 		appPath:           appPath,
-		runServer:         server.NewRunServer(),
-		recordServer:      server.NewRecordServer(),
+		rs:                server.NewRunServer(),
+		bs:                server.NewSpecBuilderServer(),
 		grpcListenAddress: server.ListenAddress,
 	}
 }

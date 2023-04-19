@@ -1,6 +1,7 @@
 package jsonschema
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -15,28 +16,32 @@ import (
 type Schema struct {
 	Location string // absolute location
 
+	Draft          *Draft // draft used by schema.
+	meta           *Schema
+	vocab          []string
 	dynamicAnchors []*Schema
 
 	// type agnostic validations
-	Format          string
-	format          func(interface{}) bool
-	Always          *bool // always pass/fail. used when booleans are used as schemas in draft-07.
-	Ref             *Schema
-	RecursiveAnchor bool
-	RecursiveRef    *Schema
-	DynamicAnchor   string
-	DynamicRef      *Schema
-	Types           []string      // allowed types.
-	Constant        []interface{} // first element in slice is constant value. note: slice is used to capture nil constant.
-	Enum            []interface{} // allowed values.
-	enumError       string        // error message for enum fail. captured here to avoid constructing error message every time.
-	Not             *Schema
-	AllOf           []*Schema
-	AnyOf           []*Schema
-	OneOf           []*Schema
-	If              *Schema
-	Then            *Schema // nil, when If is nil.
-	Else            *Schema // nil, when If is nil.
+	Format           string
+	format           func(interface{}) bool
+	Always           *bool // always pass/fail. used when booleans are used as schemas in draft-07.
+	Ref              *Schema
+	RecursiveAnchor  bool
+	RecursiveRef     *Schema
+	DynamicAnchor    string
+	DynamicRef       *Schema
+	dynamicRefAnchor string
+	Types            []string      // allowed types.
+	Constant         []interface{} // first element in slice is constant value. note: slice is used to capture nil constant.
+	Enum             []interface{} // allowed values.
+	enumError        string        // error message for enum fail. captured here to avoid constructing error message every time.
+	Not              *Schema
+	AllOf            []*Schema
+	AnyOf            []*Schema
+	OneOf            []*Schema
+	If               *Schema
+	Then             *Schema // nil, when If is nil.
+	Else             *Schema // nil, when If is nil.
 
 	// object validations
 	MinProperties         int      // -1 if not specified.
@@ -74,6 +79,7 @@ type Schema struct {
 	decoder          func(string) ([]byte, error)
 	ContentMediaType string
 	mediaType        func([]byte) error
+	ContentSchema    *Schema
 
 	// number validators
 	Minimum          *big.Rat
@@ -100,10 +106,11 @@ func (s *Schema) String() string {
 	return s.Location
 }
 
-func newSchema(url, floc string, doc interface{}) *Schema {
+func newSchema(url, floc string, draft *Draft, doc interface{}) *Schema {
 	// fill with default values
 	s := &Schema{
 		Location:      url + floc,
+		Draft:         draft,
 		MinProperties: -1,
 		MaxProperties: -1,
 		MinItems:      -1,
@@ -127,6 +134,24 @@ func newSchema(url, floc string, doc interface{}) *Schema {
 		}
 	}
 	return s
+}
+
+func (s *Schema) hasVocab(name string) bool {
+	if s == nil { // during bootstrap
+		return true
+	}
+	if name == "core" {
+		return true
+	}
+	for _, url := range s.vocab {
+		if url == "https://json-schema.org/draft/2019-09/vocab/"+name {
+			return true
+		}
+		if url == "https://json-schema.org/draft/2020-12/vocab/"+name {
+			return true
+		}
+	}
+	return false
 }
 
 // Validate validates given doc, against the json-schema s.
@@ -501,7 +526,7 @@ func (s *Schema) validate(scope []schemaRef, vscope int, spath string, v interfa
 			if s.decoder != nil {
 				b, err := s.decoder(v)
 				if err != nil {
-					errors = append(errors, validationError("contentEncoding", "%s is not %s encoded", quote(v), s.ContentEncoding))
+					errors = append(errors, validationError("contentEncoding", "value is not %s encoded", s.ContentEncoding))
 				} else {
 					content, decoded = b, true
 				}
@@ -514,9 +539,20 @@ func (s *Schema) validate(scope []schemaRef, vscope int, spath string, v interfa
 					errors = append(errors, validationError("contentMediaType", "value is not of mediatype %s", quote(s.ContentMediaType)))
 				}
 			}
+			if decoded && s.ContentSchema != nil {
+				contentJSON, err := unmarshal(bytes.NewReader(content))
+				if err != nil {
+					errors = append(errors, validationError("contentSchema", "value is not valid json"))
+				} else {
+					err := validate(s.ContentSchema, "contentSchema", contentJSON, "")
+					if err != nil {
+						errors = append(errors, err)
+					}
+				}
+			}
 		}
 
-	case json.Number, float64, int, int32, int64:
+	case json.Number, float32, float64, int, int8, int32, int64, uint, uint8, uint32, uint64:
 		// lazy convert to *big.Rat to avoid allocation
 		var numVal *big.Rat
 		num := func() *big.Rat {
@@ -581,7 +617,7 @@ func (s *Schema) validate(scope []schemaRef, vscope int, spath string, v interfa
 	}
 	if s.DynamicRef != nil {
 		sch := s.DynamicRef
-		if sch.DynamicAnchor != "" {
+		if s.dynamicRefAnchor != "" && sch.DynamicAnchor == s.dynamicRefAnchor {
 			// dynamicRef based on scope
 			for i := len(scope) - 1; i >= 0; i-- {
 				sr := scope[i]
@@ -675,13 +711,13 @@ func (s *Schema) validate(scope []schemaRef, vscope int, spath string, v interfa
 		}
 	}
 
-	// UnevaluatedProperties + UnevaluatedItems
+	// unevaluatedProperties + unevaluatedItems
 	switch v := v.(type) {
 	case map[string]interface{}:
 		if s.UnevaluatedProperties != nil {
 			for pname := range result.unevalProps {
 				if pvalue, ok := v[pname]; ok {
-					if err := validate(s.UnevaluatedProperties, "UnevaluatedProperties", pvalue, escape(pname)); err != nil {
+					if err := validate(s.UnevaluatedProperties, "unevaluatedProperties", pvalue, escape(pname)); err != nil {
 						errors = append(errors, err)
 					}
 				}
@@ -691,7 +727,7 @@ func (s *Schema) validate(scope []schemaRef, vscope int, spath string, v interfa
 	case []interface{}:
 		if s.UnevaluatedItems != nil {
 			for i := range result.unevalItems {
-				if err := validate(s.UnevaluatedItems, "UnevaluatedItems", v[i], strconv.Itoa(i)); err != nil {
+				if err := validate(s.UnevaluatedItems, "unevaluatedItems", v[i], strconv.Itoa(i)); err != nil {
 					errors = append(errors, err)
 				}
 			}
@@ -731,7 +767,7 @@ func jsonType(v interface{}) string {
 		return "null"
 	case bool:
 		return "boolean"
-	case json.Number, float64, int, int32, int64:
+	case json.Number, float32, float64, int, int8, int32, int64, uint, uint8, uint32, uint64:
 		return "number"
 	case string:
 		return "string"
@@ -787,7 +823,7 @@ func equals(v1, v2 interface{}) bool {
 
 // escape converts given token to valid json-pointer token
 func escape(token string) string {
-	token = strings.Replace(token, "~", "~0", -1)
-	token = strings.Replace(token, "/", "~1", -1)
+	token = strings.ReplaceAll(token, "~", "~0")
+	token = strings.ReplaceAll(token, "/", "~1")
 	return url.PathEscape(token)
 }

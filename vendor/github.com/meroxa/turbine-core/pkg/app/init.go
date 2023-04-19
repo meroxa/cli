@@ -2,12 +2,13 @@ package app
 
 import (
 	"embed"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 type AppInit struct {
@@ -25,14 +26,14 @@ type AppInitTemplate struct {
 var templateFS embed.FS
 
 func (a *AppInit) createAppDirectory() error {
-	return os.MkdirAll(filepath.Join(a.Path, a.AppName), 0755)
+	return os.MkdirAll(filepath.Join(a.Path, a.AppName), 0o755)
 }
 
 // createFixtures will create exclusively a fixtures folder and its content
 func (a *AppInit) createFixtures() error {
 	directory := "fixtures"
 
-	err := os.Mkdir(filepath.Join(a.Path, a.AppName, directory), 0755)
+	err := os.Mkdir(filepath.Join(a.Path, a.AppName, directory), 0o755)
 	if err != nil {
 		return err
 	}

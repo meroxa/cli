@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"log"
 	"os"
 	"path"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 type Config struct {

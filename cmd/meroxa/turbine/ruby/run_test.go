@@ -34,7 +34,7 @@ func Test_Run(t *testing.T) {
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
 					appPath: "/tmp",
-					runServer: func() turbineServer {
+					rs: func() turbineServer {
 						m := mock.NewMockturbineServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
@@ -57,7 +57,7 @@ func Test_Run(t *testing.T) {
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
 					appPath: "/nonexistentdir",
-					runServer: func() turbineServer {
+					rs: func() turbineServer {
 						m := mock.NewMockturbineServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
@@ -90,7 +90,7 @@ func Test_Run(t *testing.T) {
 
 						return tempdir
 					}(),
-					runServer: func() turbineServer {
+					rs: func() turbineServer {
 						m := mock.NewMockturbineServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).

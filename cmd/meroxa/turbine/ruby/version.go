@@ -3,23 +3,19 @@ package turbinerb
 import (
 	"context"
 	"fmt"
-	"os/exec"
-	"strings"
+
+	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/internal"
 )
 
 // GetVersion will return the version of turbine-rb dependency of a given app.
 func (t *turbineRbCLI) GetVersion(_ context.Context) (string, error) {
-	cmd := exec.Command("ruby", []string{
-		"-r", "rubygems",
-		"-r", fmt.Sprintf("%s/app", t.appPath),
-		"-e", `'puts Gem.loaded_specs["turbine_rb"].version.version'`,
-	}...)
-	output, err := cmd.CombinedOutput()
+	ver, err := internal.RunTurbineCmd(
+		t.appPath,
+		internal.TurbineCommandVersion,
+		map[string]string{},
+	)
 	if err != nil {
-		return "", fmt.Errorf(
-			"unable to determine the turbine-rb version of the Meroxa Application at %s",
-			t.appPath)
+		return "", fmt.Errorf("cannot determine turbine-rb gem version in %s", t.appPath)
 	}
-
-	return strings.TrimSpace(string(output)), nil
+	return ver, nil
 }
