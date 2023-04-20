@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"strings"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/heimdalr/dag"
 )
 
-type ConnectorType string
-type Lang string
+type (
+	ConnectorType string
+	Lang          string
+)
 
 const (
 	GoLang     Lang = "golang"
@@ -95,10 +97,18 @@ func ValidateSpecVersion(ver string) error {
 	)
 }
 
-func (d *DeploymentSpec) SetImageForFunctions(image string) {
+func (d *DeploymentSpec) SetImageForFunctions(image string) error {
+	switch {
+	case image == "" && len(d.Functions) > 0:
+		return fmt.Errorf("empty image for functions")
+	case image != "" && len(d.Functions) == 0:
+		return fmt.Errorf("cannot set image without defined functions")
+	}
+
 	for i := range d.Functions {
 		d.Functions[i].Image = image
 	}
+	return nil
 }
 
 func (d *DeploymentSpec) Marshal() ([]byte, error) {

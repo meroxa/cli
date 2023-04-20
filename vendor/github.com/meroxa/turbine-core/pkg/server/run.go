@@ -92,8 +92,7 @@ func (s *runService) AddProcessToCollection(ctx context.Context, req *pb.Process
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-
-	return req.GetCollection(), nil
+	return req.Collection, nil
 }
 
 func (s *runService) RegisterSecret(ctx context.Context, req *pb.Secret) (*emptypb.Empty, error) {

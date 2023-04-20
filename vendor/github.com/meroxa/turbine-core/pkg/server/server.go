@@ -25,10 +25,14 @@ func NewRunServer() *turbineCoreServer {
 	return &turbineCoreServer{Server: s}
 }
 
-func NewRecordServer() *turbineCoreServer {
+func NewSpecBuilderServer() *turbineCoreServer {
 	s := grpc.NewServer()
-	pb.RegisterTurbineServiceServer(s, NewRecordService())
+	pb.RegisterTurbineServiceServer(s, NewSpecBuilderService())
 	return &turbineCoreServer{Server: s}
+}
+
+func NewRecordServer() *turbineCoreServer {
+	return NewSpecBuilderServer()
 }
 
 func (s *turbineCoreServer) Run(ctx context.Context) {

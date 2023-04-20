@@ -19,12 +19,13 @@ func (t *turbineRbCLI) CleanUpBuild(_ context.Context) {
 func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandBuild,
-		map[string]string{})
+		map[string]string{},
+	)
 	return t.appPath, utils.RunCMD(ctx, t.logger, cmd)
 }
 
 func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	go t.recordServer.Run(ctx)
+	go t.builder.Run(ctx)
 
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandRecord,
@@ -48,21 +49,21 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 		return nil, err
 	}
 
-	t.recordClient = recordClient{
+	t.bc = specBuilderClient{
 		ClientConn:           conn,
 		TurbineServiceClient: pb.NewTurbineServiceClient(conn),
 	}
 
 	return func() {
-		t.recordClient.Close()
-		t.recordServer.GracefulStop()
+		t.bc.Close()
+		t.builder.GracefulStop()
 	}, nil
 }
 
 func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
-	resp, err := t.recordClient.HasFunctions(ctx, &emptypb.Empty{})
+	resp, err := t.bc.HasFunctions(ctx, &emptypb.Empty{})
 	if err != nil {
 		return false, err
 	}
@@ -73,7 +74,7 @@ func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error)
 func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
-	resp, err := t.recordClient.GetSpec(ctx, &pb.GetSpecRequest{
+	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
 		Image: imageName,
 	})
 	if err != nil {
@@ -86,7 +87,7 @@ func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, _, _, _, _ string)
 func (t *turbineRbCLI) GetResources(ctx context.Context, _ string) ([]utils.ApplicationResource, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
-	resp, err := t.recordClient.ListResources(ctx, &emptypb.Empty{})
+	resp, err := t.bc.ListResources(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil, err
 	}

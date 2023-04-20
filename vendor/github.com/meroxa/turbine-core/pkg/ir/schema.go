@@ -3,13 +3,12 @@ package ir
 import (
 	_ "embed"
 	"encoding/json"
+
 	"github.com/santhosh-tekuri/jsonschema/v5"
 )
 
-var (
-	//go:embed schema.json
-	turbineIRSchema string
-)
+//go:embed schema.json
+var turbineIRSchema string
 
 func ValidateSpec(spec []byte, specVersion string) error {
 	err := ValidateSpecVersion(specVersion)

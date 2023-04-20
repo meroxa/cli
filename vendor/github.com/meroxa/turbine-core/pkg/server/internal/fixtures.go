@@ -3,10 +3,11 @@ package internal
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
+	"text/tabwriter"
 	"time"
 
-	"github.com/jedib0t/go-pretty/v6/table"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -58,13 +59,15 @@ func wrapRecord(m fixtureRecord) *pb.Record {
 }
 
 func PrintRecords(name, collection string, rr []*pb.Record) {
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.SetTitle("Destination %s/%s", name, collection)
-	t.AppendHeader(table.Row{"index", "record"})
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.AlignRight|tabwriter.Debug)
+	fmt.Fprintf(w, "Destination %s/%s\n", name, collection)
+	fmt.Fprintf(w, "----------------------\n")
+	fmt.Fprintln(w, "index\trecord")
+	fmt.Fprintln(w, "----\t----")
 	for i, r := range rr {
-		t.AppendRow(table.Row{i, string(r.Value)})
+		fmt.Fprintf(w, "%d\t%s\n", i, string(r.Value))
+		fmt.Fprintln(w, "----\t----")
 	}
-	t.AppendFooter(table.Row{"records written", len(rr)})
-	t.Render()
+	fmt.Fprintf(w, "records written\t%d\n", len(rr))
+	w.Flush()
 }

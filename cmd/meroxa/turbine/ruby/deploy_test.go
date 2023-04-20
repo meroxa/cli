@@ -29,7 +29,7 @@ func Test_NeedsToBuild(t *testing.T) {
 			name: "Has function",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							HasFunctions(gomock.Any(), &emptypb.Empty{}).
@@ -37,7 +37,7 @@ func Test_NeedsToBuild(t *testing.T) {
 							Return(&wrapperspb.BoolValue{
 								Value: true,
 							}, nil)
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
@@ -50,7 +50,7 @@ func Test_NeedsToBuild(t *testing.T) {
 			name: "Doesn't have function",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							HasFunctions(gomock.Any(), &emptypb.Empty{}).
@@ -58,7 +58,7 @@ func Test_NeedsToBuild(t *testing.T) {
 							Return(&wrapperspb.BoolValue{
 								Value: false,
 							}, nil)
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
@@ -71,13 +71,13 @@ func Test_NeedsToBuild(t *testing.T) {
 			name: "fail to get function info",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							HasFunctions(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
 							Return(nil, errors.New("something went wrong"))
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
@@ -114,7 +114,7 @@ func Test_Deploy(t *testing.T) {
 			name: "get spec",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							GetSpec(gomock.Any(), &pb.GetSpecRequest{
@@ -124,7 +124,7 @@ func Test_Deploy(t *testing.T) {
 							Return(&pb.GetSpecResponse{
 								Spec: []byte("spec"),
 							}, nil)
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
@@ -137,7 +137,7 @@ func Test_Deploy(t *testing.T) {
 			name: "fail to get spec",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							GetSpec(gomock.Any(), &pb.GetSpecRequest{
@@ -145,7 +145,7 @@ func Test_Deploy(t *testing.T) {
 							}).
 							Times(1).
 							Return(nil, errors.New("something went wrong"))
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
@@ -182,7 +182,7 @@ func Test_GetResources(t *testing.T) {
 			name: "get spec",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							ListResources(gomock.Any(), &emptypb.Empty{}).
@@ -197,7 +197,7 @@ func Test_GetResources(t *testing.T) {
 									},
 								},
 							}, nil)
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
@@ -217,13 +217,13 @@ func Test_GetResources(t *testing.T) {
 			name: "fail to list resources",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					recordClient: func() recordClient {
+					bc: func() specBuilderClient {
 						m := mock.NewMockTurbineServiceClient(ctrl)
 						m.EXPECT().
 							ListResources(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
 							Return(nil, errors.New("something went wrong"))
-						return recordClient{
+						return specBuilderClient{
 							TurbineServiceClient: m,
 						}
 					}(),
