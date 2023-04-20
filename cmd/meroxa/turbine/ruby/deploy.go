@@ -25,7 +25,7 @@ func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, 
 }
 
 func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	go t.bs.Run(ctx)
+	go t.builder.Run(ctx)
 
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandRecord,
@@ -56,7 +56,7 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 
 	return func() {
 		t.bc.Close()
-		t.bs.GracefulStop()
+		t.builder.GracefulStop()
 	}, nil
 }
 

@@ -8,8 +8,8 @@ import (
 )
 
 func (t *turbineRbCLI) Run(ctx context.Context) error {
-	go t.rs.Run(ctx)
-	defer t.rs.GracefulStop()
+	go t.runner.Run(ctx)
+	defer t.runner.GracefulStop()
 
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandRun,

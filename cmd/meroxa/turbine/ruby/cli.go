@@ -27,17 +27,17 @@ type turbineRbCLI struct {
 	appPath           string
 	grpcListenAddress string
 
-	bs turbineServer
-	bc specBuilderClient
-	rs turbineServer
+	builder turbineServer
+	bc      specBuilderClient
+	runner  turbineServer
 }
 
 func New(l log.Logger, appPath string) turbine.CLI {
 	return &turbineRbCLI{
 		logger:            l,
 		appPath:           appPath,
-		rs:                server.NewRunServer(),
-		bs:                server.NewSpecBuilderServer(),
+		runner:            server.NewRunServer(),
+		builder:           server.NewSpecBuilderServer(),
 		grpcListenAddress: server.ListenAddress,
 	}
 }
