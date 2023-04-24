@@ -4,6 +4,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/cmd/meroxa/turbine/internal"
 	"github.com/meroxa/cli/log"
+
 	"github.com/meroxa/turbine-core/pkg/client"
 	"github.com/meroxa/turbine-core/pkg/server"
 )
