@@ -15,7 +15,6 @@ type turbineRbCLI struct {
 	logger            log.Logger
 	appPath           string
 	grpcListenAddress string
-	spec              *ir.DeploymentSpec
 
 	builder server.Server
 	runner  server.Server
