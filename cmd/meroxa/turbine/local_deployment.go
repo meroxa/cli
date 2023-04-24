@@ -74,7 +74,7 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 
 	// Generate dockerfile
 	if ld.Lang == "golang" {
-		err = turbine.CreateDockerfile(ld.AppName, pwd)
+		err = turbine.CreateDockerfile(ld.AppName, pwd, "")
 		if err != nil {
 			return err
 		}

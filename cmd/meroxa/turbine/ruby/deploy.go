@@ -16,8 +16,10 @@ func (t *turbineRbCLI) CleanUpBuild(_ context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
-	cmd := internal.NewTurbineCmd(t.appPath,
+func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _, _ string) (string, error) {
+	cmd := internal.NewTurbineCmd(
+		ctx,
+		t.appPath,
 		internal.TurbineCommandBuild,
 		map[string]string{},
 	)
@@ -27,7 +29,9 @@ func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, 
 func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
 	go t.builder.Run(ctx)
 
-	cmd := internal.NewTurbineCmd(t.appPath,
+	cmd := internal.NewTurbineCmd(
+		ctx,
+		t.appPath,
 		internal.TurbineCommandRecord,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
@@ -39,6 +43,7 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 		return nil, err
 	}
 
+	// Everything below is common to the other language
 	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
 	if err != nil {
 		return nil, err
@@ -51,7 +56,7 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 	}, nil
 }
 
-func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error) {
+func (t *turbineRbCLI) NeedsToBuild(ctx context.Context) (bool, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	resp, err := t.bc.HasFunctions(ctx, &emptypb.Empty{})
@@ -62,7 +67,7 @@ func (t *turbineRbCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error)
 	return resp.Value, nil
 }
 
-func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
+func (t *turbineRbCLI) GetDeploymentSpec(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
@@ -75,7 +80,7 @@ func (t *turbineRbCLI) Deploy(ctx context.Context, imageName, _, _, _, _ string)
 	return string(resp.Spec), nil
 }
 
-func (t *turbineRbCLI) GetResources(ctx context.Context, _ string) ([]utils.ApplicationResource, error) {
+func (t *turbineRbCLI) GetResources(ctx context.Context) ([]utils.ApplicationResource, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	resp, err := t.bc.ListResources(ctx, &emptypb.Empty{})

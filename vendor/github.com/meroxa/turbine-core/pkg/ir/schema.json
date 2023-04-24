@@ -156,8 +156,8 @@
                                     "type": "string",
                                     "enum": [
                                         "golang",
-                                        "js",
-                                        "py",
+                                        "javascript",
+                                        "python",
                                         "ruby"
                                     ]
                                 },

@@ -1,6 +1,7 @@
 package internal_test
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -9,7 +10,10 @@ import (
 )
 
 func Test_NewTurbineCmd(t *testing.T) {
-	cmd := internal.NewTurbineCmd("/my/path",
+	ctx := context.Background()
+	cmd := internal.NewTurbineCmd(
+		ctx,
+		"/my/path",
 		internal.TurbineCommandRun,
 		map[string]string{
 			"foo": "bar",

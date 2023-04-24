@@ -2,144 +2,122 @@ package turbinego
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 	"os/exec"
-	"path"
-	"regexp"
-	"strings"
+	"time"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
-	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/meroxa/turbine-core/pkg/client"
+
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	turbineGo "github.com/meroxa/turbine-go/deploy"
 )
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
-func (t *turbineGoCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
-	deploymentSpec := ""
-	args := []string{
-		"--deploy",
-		"--appname",
-		appName,
-		"--gitsha",
-		gitSha,
-	}
-
-	if specVersion != "" {
-		args = append(args, "--spec", specVersion)
-	}
-
-	if imageName != "" {
-		args = append(args, "--imagename", imageName)
-	}
-	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), args...) //nolint:gosec
-
-	accessToken, refreshToken, err := global.GetUserToken()
+// TODO: Once all languages are under turbine-core refactor this so it's the same for all languages.
+func (t *turbineGoCLI) GetDeploymentSpec(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
 	if err != nil {
-		return deploymentSpec, err
-	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(
-		cmd.Env,
-		fmt.Sprintf("ACCESS_TOKEN=%s", accessToken),
-		fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken),
-		fmt.Sprintf("MEROXA_DEBUG=%s", os.Getenv("MEROXA_DEBUG")),
-		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
-
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		if strings.Contains(string(output), "flag provided but not defined") {
-			return deploymentSpec, errors.New(utils.IncompatibleTurbineVersion)
-		}
-		return deploymentSpec, errors.New(string(output))
+		return "", err
 	}
 
-	if specVersion != "" {
-		deploymentSpec, err = utils.GetTurbineResponseFromOutput(string(output))
-		if err != nil {
-			err = fmt.Errorf("unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
-		}
-	}
-
-	return deploymentSpec, err
+	return string(resp.Spec), nil
 }
 
-func (t *turbineGoCLI) GetResources(ctx context.Context, appName string) ([]utils.ApplicationResource, error) {
-	var resources []utils.ApplicationResource
-
-	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), "--listresources") //nolint:gosec
-	output, err := cmd.CombinedOutput()
+// TODO: Once all languages are under turbine-core refactor this so it's the same for all languages.
+func (t *turbineGoCLI) GetResources(ctx context.Context) ([]turbine.ApplicationResource, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.ListResources(ctx, &emptypb.Empty{})
 	if err != nil {
-		return resources, errors.New(string(output))
+		return nil, err
 	}
-	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err == nil && list != "" {
-		// ignores any lines that are not intended to be part of the response
-		output = []byte(list)
+	var resources []turbine.ApplicationResource
+	for _, r := range resp.Resources {
+		resources = append(resources, turbine.ApplicationResource{
+			Name:        r.Name,
+			Destination: r.Destination,
+			Source:      r.Source,
+			Collection:  r.Collection,
+		})
 	}
-
-	if err := json.Unmarshal(output, &resources); err != nil {
-		// fall back if not json
-		return utils.GetResourceNamesFromString(string(output)), nil
-	}
-
 	return resources, nil
 }
 
 // NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
 // this is currently based on the number of functions.
-func (t *turbineGoCLI) NeedsToBuild(ctx context.Context, appName string) (bool, error) {
-	cmd := exec.CommandContext(ctx, path.Join(t.appPath, appName), "--listfunctions") //nolint:gosec
-
-	accessToken, refreshToken, err := global.GetUserToken()
+// TODO: Once all languages are under turbine-core refactor this so it's the same for all languages.
+func (t *turbineGoCLI) NeedsToBuild(ctx context.Context) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.HasFunctions(ctx, &emptypb.Empty{})
 	if err != nil {
 		return false, err
 	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, fmt.Sprintf("ACCESS_TOKEN=%s", accessToken), fmt.Sprintf("REFRESH_TOKEN=%s", refreshToken))
 
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(string(output))
-		return false, fmt.Errorf("build failed")
-	}
-	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err == nil && list != "" {
-		// ignores any lines that are not intended to be part of the response
-		list = strings.Trim(list, "[]")
-		if list == "" {
-			return false, nil
-		}
-
-		hasFunctions := len(strings.Split(list, ",")) > 0
-		return hasFunctions, nil
-	}
-
-	re := regexp.MustCompile(`\[(.+?)]`)
-	// stdout is expected as `"2022/03/14 17:33:06 available functions: []` where within [], there will be each function.
-	hasFunctions := len(re.FindAllString(string(output), -1)) > 0
-
-	return hasFunctions, nil
+	return resp.Value, nil
 }
 
 func (t *turbineGoCLI) GetGitSha(ctx context.Context) (string, error) {
-	return utils.GetGitSha(ctx, t.appPath)
+	return turbine.GetGitSha(ctx, t.appPath)
 }
 
 func (t *turbineGoCLI) GitChecks(ctx context.Context) error {
-	return utils.GitChecks(ctx, t.logger, t.appPath)
+	return turbine.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName string) (string, error) {
-	return t.appPath, turbineGo.CreateDockerfile(appName, t.appPath)
+func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName, specVersion string) (string, error) {
+	return t.appPath, turbineGo.CreateDockerfile(appName, t.appPath, specVersion)
 }
 
 func (t *turbineGoCLI) CleanUpBuild(_ context.Context) {
-	utils.CleanupDockerfile(t.logger, t.appPath)
+	turbine.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) SetupForDeploy(_ context.Context, _ string) (func(), error) {
-	return func() {}, nil
+func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+	source := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(source)
+	port := rand.Intn(65535-1024) + 1024 //nolint:gomnd
+	grpcListenAddress := fmt.Sprintf("localhost:%d", port)
+
+	go t.builder.RunWithAddress(ctx, grpcListenAddress)
+
+	// randomizes the port
+
+	cmd := exec.Command("go", []string{
+		"run",
+		"./...",
+		"build",
+		"-gitsha",
+		gitSha,
+		"-turbine-core-server", grpcListenAddress,
+		"-app-path", t.appPath,
+	}...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Dir = t.appPath
+	cmd.Env = os.Environ()
+
+	if err := turbine.RunCMD(ctx, t.logger, cmd); err != nil {
+		return nil, err
+	}
+
+	c, err := client.DialTimeout(grpcListenAddress, time.Second)
+	if err != nil {
+		return nil, err
+	}
+	t.bc = c
+
+	return func() {
+		c.Close()
+		t.builder.GracefulStop()
+	}, nil
 }

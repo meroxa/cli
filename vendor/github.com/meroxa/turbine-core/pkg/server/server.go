@@ -19,6 +19,7 @@ const (
 
 type Server interface {
 	Run(context.Context)
+	RunWithAddress(context.Context, string)
 	GracefulStop()
 }
 
@@ -42,8 +43,8 @@ func NewRecordServer() *turbineCoreServer {
 	return NewSpecBuilderServer()
 }
 
-func (s *turbineCoreServer) Run(ctx context.Context) {
-	listener, err := net.Listen("tcp", ListenAddress)
+func (s *turbineCoreServer) RunWithAddress(_ context.Context, listenAddress string) {
+	listener, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -51,6 +52,10 @@ func (s *turbineCoreServer) Run(ctx context.Context) {
 	if err := s.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+func (s *turbineCoreServer) Run(ctx context.Context) {
+	s.RunWithAddress(ctx, ListenAddress)
 }
 
 func empty() *emptypb.Empty {
