@@ -7,7 +7,6 @@ import (
 	"github.com/meroxa/cli/log"
 
 	"github.com/meroxa/turbine-core/pkg/client"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/meroxa/turbine-core/pkg/server"
 )
 

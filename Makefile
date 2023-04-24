@@ -6,6 +6,7 @@ LDFLAGS        += -X main.GitUntracked=${GIT_UNTRACKED}
 GIT_TAG         = $(shell git describe)
 LDFLAGS        += -X main.GitLatestTag=${GIT_TAG}
 REBUILD_DOCS    ?= true
+MOCKGEN_VER     ?= v1.6.0
 
 .PHONY: build
 build: docs
@@ -40,6 +41,9 @@ lint:
 	docker pull golangci/golangci-lint:latest
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
 
-.PHONY: mock
-mock:
-	mockgen -source cmd/meroxa/turbine/interface.go -package mock > cmd/meroxa/turbine/mock/cli.go
+.PHONY: generate
+generate: mockgen-install
+	go generate ./...
+
+mockgen-install:
+	go install github.com/golang/mock/mockgen@$(MOCKGEN_VER)
