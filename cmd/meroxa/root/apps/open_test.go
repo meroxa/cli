@@ -18,12 +18,14 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -67,48 +69,45 @@ func TestOpenAppFlags(t *testing.T) {
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
-		if cf == nil {
-			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
-
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
-
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
-		}
-
-		if cf.Hidden != f.hidden {
-			if cf.Hidden {
-				t.Fatalf("expected flag \"%s\" not to be hidden", f.name)
-			} else {
-				t.Fatalf("expected flag \"%s\" to be hidden", f.name)
-			}
-		}
+		require.NotNil(t, cf)
+		assert.Equal(t, f.shorthand, cf.Shorthand)
+		assert.Equal(t, f.required, utils.IsFlagRequired(cf))
+		assert.Equal(t, f.hidden, cf.Hidden)
 	}
+}
+
+type mockOpener struct {
+	startURL string
+}
+
+func (m *mockOpener) Start(URL string) error {
+	m.startURL = URL
+	return nil
 }
 
 func TestOpenAppExecution(t *testing.T) {
 	ctx := context.Background()
 
 	testCases := []struct {
-		desc         string
-		appArg       string
-		appFlag      string
-		errSubstring string
+		desc      string
+		appArg    string
+		appFlag   string
+		expectURL string
+		wantErr   error
 	}{
 		{
-			desc:   "Successfully open app link with arg",
-			appArg: "app-name",
+			desc:      "Successfully open app link with arg",
+			appArg:    "app-name",
+			expectURL: "https://dashboard.meroxa.io/apps/app-name/detail",
 		},
 		{
-			desc: "Successfully open app link with flag",
+			desc:      "Successfully open app link with flag",
+			expectURL: "https://dashboard.meroxa.io/apps/my-app/detail",
 		},
 		{
-			desc:         "Fail with bad path",
-			appFlag:      "/tmp",
-			errSubstring: "could not find an app.json file on path",
+			desc:    "Fail with bad path",
+			appFlag: "/tmp",
+			wantErr: errors.New("could not find an app.json file on path"),
 		},
 	}
 	for _, tc := range testCases {
@@ -133,12 +132,12 @@ func TestOpenAppExecution(t *testing.T) {
 			}
 
 			err := cc.Execute(context.Background())
-			if err != nil {
-				t.Fatalf("unexpected error \"%s\"", err)
-			}
+			require.NoError(t, err)
 
+			opener := &mockOpener{}
 			o := &Open{
 				logger: logger,
+				Opener: opener,
 			}
 			if tc.appArg != "" {
 				o.args = struct {
@@ -151,11 +150,11 @@ func TestOpenAppExecution(t *testing.T) {
 			}
 
 			err = o.Execute(ctx)
-			if tc.errSubstring == "" && err != nil {
-				t.Fatalf("not expected error, got \"%s\"", err.Error())
-			} else if err != nil && !strings.Contains(err.Error(), tc.errSubstring) {
-				t.Fatalf("failed to find expected error output(%s):\n%s", tc.errSubstring, err.Error())
+			if tc.wantErr != nil {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.wantErr.Error())
 			}
+			require.Equal(t, opener.startURL, tc.expectURL)
 		})
 	}
 }
