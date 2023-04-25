@@ -28,7 +28,8 @@ func RunTurbineCmd(appPath string, command TurbineCommand, env map[string]string
 func NewTurbineCmd(appPath string, command TurbineCommand, env map[string]string, flags ...string) *exec.Cmd {
 	cmd := exec.Command("ruby", append([]string{
 		"-r", path.Join(appPath, "app"),
-		"-e", string(command)}, flags...)...)
+		"-e", string(command),
+	}, flags...)...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Dir = appPath

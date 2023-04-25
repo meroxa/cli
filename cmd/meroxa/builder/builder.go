@@ -316,9 +316,7 @@ func buildCommandWithNoHeaders(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	var (
-		noHeaders bool
-	)
+	var noHeaders bool
 
 	cmd.Flags().BoolVar(&noHeaders, "no-headers", false, "display output without headers")
 
@@ -390,9 +388,7 @@ func buildCommandWithConfirmWithoutValue(cmd *cobra.Command, c Command) {
 		return
 	}
 
-	var (
-		skip bool
-	)
+	var skip bool
 	cmd.Flags().BoolVarP(&skip, "yes", "y", false, "skip confirmation prompt")
 
 	old := cmd.RunE
@@ -795,7 +791,6 @@ func CheckFeatureFlag(featureFlag string) bool {
 
 func writeConfigFile() error {
 	err := global.Config.WriteConfig()
-
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			err = global.Config.SafeWriteConfig()

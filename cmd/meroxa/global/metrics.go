@@ -158,10 +158,8 @@ func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
 	return event
 }
 
-var (
-	// PublishEvent is a public variable so in builder tests we could overwrite it.
-	PublishEvent = publishEvent
-)
+// PublishEvent is a public variable so in builder tests we could overwrite it.
+var PublishEvent = publishEvent
 
 // PublishEvent will take care of publishing the event to Cased.
 func publishEvent(event cased.AuditEvent) {

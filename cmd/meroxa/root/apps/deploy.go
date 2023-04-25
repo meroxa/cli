@@ -26,9 +26,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"path/filepath"
-
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -305,7 +304,7 @@ func (d *Deploy) UploadSource(ctx context.Context, url string) error {
 
 	d.logger.StartSpinner("\t", fmt.Sprintf("Creating %q in %q to upload to our build service...", buildPath, dFile))
 
-	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0777)) //nolint:gomnd
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0o777)) //nolint:gomnd
 	defer func(fileToWrite *os.File) {
 		if err = fileToWrite.Close(); err != nil {
 			panic(err.Error())

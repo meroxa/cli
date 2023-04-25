@@ -69,11 +69,11 @@ func TestLogsBuildExecution(t *testing.T) {
 
 	l.args.UUID = buildUUID
 
-	var responseDetails = io.NopCloser(bytes.NewReader([]byte(
+	responseDetails := io.NopCloser(bytes.NewReader([]byte(
 		`[2021-04-29T12:16:42Z] Beep boop, robots doing build things`,
 	)))
 
-	var httpResponse = &http.Response{
+	httpResponse := &http.Response{
 		StatusCode: 200,
 		Body:       responseDetails,
 	}
@@ -84,7 +84,6 @@ func TestLogsBuildExecution(t *testing.T) {
 		Return(httpResponse, nil)
 
 	err := l.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

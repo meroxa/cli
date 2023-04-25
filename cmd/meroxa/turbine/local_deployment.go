@@ -97,7 +97,8 @@ func (ld *LocalDeploy) buildImage(ctx context.Context, l log.Logger, pwd, imageN
 		Context:    tar,
 		Dockerfile: "Dockerfile",
 		Remove:     true,
-		Tags:       []string{imageName}}
+		Tags:       []string{imageName},
+	}
 
 	resp, err := cli.ImageBuild(
 		ctx,

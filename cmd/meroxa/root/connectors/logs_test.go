@@ -69,11 +69,11 @@ func TestLogsConnectorExecution(t *testing.T) {
 
 	c.args.NameOrID = connectorName
 
-	var responseDetails = io.NopCloser(bytes.NewReader([]byte(
+	responseDetails := io.NopCloser(bytes.NewReader([]byte(
 		`[2021-04-29T12:16:42Z] Just another log line from my connector`,
 	)))
 
-	var httpResponse = &http.Response{
+	httpResponse := &http.Response{
 		StatusCode: 200,
 		Body:       responseDetails,
 	}
@@ -84,7 +84,6 @@ func TestLogsConnectorExecution(t *testing.T) {
 		Return(httpResponse, nil)
 
 	err := c.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

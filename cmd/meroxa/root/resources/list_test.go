@@ -92,7 +92,6 @@ func TestListResourcesExecution(t *testing.T) {
 	}
 
 	err := l.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -129,7 +128,7 @@ func TestListResourceTypesExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	var types = []meroxa.ResourceType{
+	types := []meroxa.ResourceType{
 		{
 			Name:         string(meroxa.ResourceTypePostgres),
 			ReleaseStage: meroxa.ResourceTypeReleaseStageBeta,
@@ -194,7 +193,6 @@ func TestListResourceTypesExecution(t *testing.T) {
 	l.flags.Types = true
 
 	err := l.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

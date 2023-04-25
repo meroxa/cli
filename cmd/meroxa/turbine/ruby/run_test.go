@@ -85,7 +85,7 @@ func Test_Run(t *testing.T) {
 						if err := os.WriteFile(
 							path.Join(tempdir, "app.rb"),
 							[]byte(`class TurbineRb; def self.run; puts "it ran"; end; end`),
-							0644,
+							0o644,
 						); err != nil {
 							t.Fatal(err)
 						}

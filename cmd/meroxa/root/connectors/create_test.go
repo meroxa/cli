@@ -147,7 +147,6 @@ func TestCreateConnectorExecution(t *testing.T) {
 		Return(&cr, nil)
 
 	err := c.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

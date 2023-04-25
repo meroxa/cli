@@ -96,7 +96,6 @@ func TestListConnectorsExecution(t *testing.T) {
 	}
 
 	err := lc.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

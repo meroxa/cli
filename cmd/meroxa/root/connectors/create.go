@@ -143,7 +143,6 @@ func (c *Create) Execute(ctx context.Context) error {
 	}
 
 	connector, err := c.CreateConnector(ctx)
-
 	if err != nil {
 		return err
 	}

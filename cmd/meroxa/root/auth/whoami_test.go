@@ -48,7 +48,6 @@ func TestWhoAmIExecution(t *testing.T) {
 		Return(&u, nil)
 
 	err := w.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}

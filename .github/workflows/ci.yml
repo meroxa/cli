@@ -46,7 +46,7 @@ jobs:
       - name: Generated files
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          make generate
+          make generate fmt
           git diff --exit-code --numstat
       - name: Run tests
         run: |

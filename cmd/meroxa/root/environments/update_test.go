@@ -20,10 +20,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strings"
-
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -82,7 +81,6 @@ func TestUpdateEnvironmentExecution(t *testing.T) {
 		Return(&e, nil)
 
 	err := r.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

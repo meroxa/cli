@@ -102,7 +102,6 @@ func TestListAppsExecution(t *testing.T) {
 			}
 
 			err := l.Execute(ctx)
-
 			if err != nil {
 				t.Fatalf("not expected error, got \"%s\"", err.Error())
 			}

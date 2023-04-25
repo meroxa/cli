@@ -87,7 +87,6 @@ func TestRemoveAppExecution(t *testing.T) {
 		Return(res, nil)
 
 	err := r.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

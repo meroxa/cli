@@ -147,7 +147,6 @@ func TestUpdateResourceExecutionWithNewName(t *testing.T) {
 	u.flags.Name = newName
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -207,7 +206,6 @@ func TestUpdateResourceExecutionWithNewMetadata(t *testing.T) {
 	u.flags.Metadata = newMetadata
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -264,7 +262,6 @@ func TestUpdateResourceExecutionWithNewURL(t *testing.T) {
 	u.flags.URL = newURL
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -325,7 +322,6 @@ func TestUpdateResourceExecutionWithNewCredentials(t *testing.T) {
 	u.flags.Username = newUsername
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

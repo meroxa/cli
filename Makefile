@@ -20,6 +20,11 @@ install:
 gomod:
 	go mod tidy && go mod vendor
 
+.PHONY: fmt
+fmt: gofumpt
+	gofumpt -l -w .
+
+
 .PHONY: test
 test:
 	go test -v ${GO_TEST_FLAGS} -count=1 -timeout 5m ./...
@@ -47,3 +52,6 @@ generate: mockgen-install
 
 mockgen-install:
 	go install github.com/golang/mock/mockgen@$(MOCKGEN_VER)
+
+gofumpt:
+	go install mvdan.cc/gofumpt@latest

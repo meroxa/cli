@@ -86,7 +86,6 @@ func (c *Connect) Execute(ctx context.Context) error {
 
 	// creates the source connector
 	srcCon, err := cc.CreateConnector(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -98,7 +97,6 @@ func (c *Connect) Execute(ctx context.Context) error {
 	cc.flags.Destination = c.flags.Destination
 
 	destCon, err := cc.CreateConnector(ctx)
-
 	if err != nil {
 		return err
 	}

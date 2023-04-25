@@ -146,7 +146,6 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 		Return(rE, nil)
 
 	err := c.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

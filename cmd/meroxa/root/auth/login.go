@@ -63,7 +63,6 @@ func (l *Login) Docs() builder.Docs {
 func (l *Login) Execute(ctx context.Context) error {
 	// initialize the code verifier
 	err := l.login(ctx)
-
 	if err != nil {
 		return err
 	}
@@ -82,7 +81,7 @@ func (l *Login) Config(cfg config.Config) {
 // AuthorizeUser implements the PKCE OAuth2 flow.
 func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audience, redirectURL string) {
 	// initialize the code verifier
-	var CodeVerifier, _ = cv.CreateCodeVerifier()
+	CodeVerifier, _ := cv.CreateCodeVerifier()
 
 	// Create code_challenge with S256 method
 	codeChallenge := CodeVerifier.CodeChallengeS256()

@@ -132,7 +132,6 @@ func TestUpdatePipelineExecutionWithNewState(t *testing.T) {
 	u.flags.State = string(newState)
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -184,7 +183,6 @@ func TestUpdatePipelineExecutionWithNewName(t *testing.T) {
 	u.flags.Name = newName
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -236,7 +234,6 @@ func TestUpdatePipelineExecutionWithNewMetadata(t *testing.T) {
 	u.flags.Metadata = "{\"key\": \"value\"}"
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

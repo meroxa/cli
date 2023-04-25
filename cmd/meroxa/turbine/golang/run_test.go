@@ -43,7 +43,7 @@ func TestRunCleanup(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.description, func(t *testing.T) {
 			for _, name := range tc.binaries {
-				err := os.WriteFile(name, []byte{}, 0644)
+				err := os.WriteFile(name, []byte{}, 0o644)
 				require.NoError(t, err)
 			}
 

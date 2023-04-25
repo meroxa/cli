@@ -10,9 +10,7 @@ import (
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 )
 
-var (
-	TurbineJSVersion = "1.3.8"
-)
+var TurbineJSVersion = "1.3.8"
 
 func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error) {
 	output, err := RunTurbineJS(ctx, t.logger, "hasfunctions", t.appPath)
@@ -55,7 +53,8 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 		t.logger,
 		map[string]string{
 			"MEROXA_ACCESS_TOKEN":   accessToken,
-			utils.AccountUUIDEnvVar: accountUUID},
+			utils.AccountUUIDEnvVar: accountUUID,
+		},
 		params...)
 	if err != nil {
 		return deploymentSpec, err
