@@ -1,3 +1,5 @@
+//go:generate mockgen -source=interface.go -package=mock -destination=mock/cli_mock.go CLI
+
 package turbine
 
 import (

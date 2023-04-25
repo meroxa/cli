@@ -7,8 +7,8 @@ import (
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/internal"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/meroxa/turbine-core/pkg/client"
+
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -39,23 +39,14 @@ func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-	conn, err := grpc.DialContext(
-		ctx,
-		t.grpcListenAddress,
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
 	if err != nil {
 		return nil, err
 	}
-
-	t.bc = specBuilderClient{
-		ClientConn:           conn,
-		TurbineServiceClient: pb.NewTurbineServiceClient(conn),
-	}
+	t.bc = c
 
 	return func() {
-		t.bc.Close()
+		c.Close()
 		t.builder.GracefulStop()
 	}, nil
 }

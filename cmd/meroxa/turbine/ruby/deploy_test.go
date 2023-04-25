@@ -7,13 +7,17 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
-	"github.com/meroxa/cli/cmd/meroxa/turbine/mock"
-	"github.com/meroxa/cli/log"
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"github.com/stretchr/testify/require"
+
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
+
+	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/log"
+
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/pkg/client"
+	mock_client "github.com/meroxa/turbine-core/pkg/client/mock"
 )
 
 func Test_NeedsToBuild(t *testing.T) {
@@ -29,17 +33,15 @@ func Test_NeedsToBuild(t *testing.T) {
 			name: "Has function",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							HasFunctions(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
 							Return(&wrapperspb.BoolValue{
 								Value: true,
 							}, nil)
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}
@@ -50,17 +52,15 @@ func Test_NeedsToBuild(t *testing.T) {
 			name: "Doesn't have function",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							HasFunctions(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
 							Return(&wrapperspb.BoolValue{
 								Value: false,
 							}, nil)
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}
@@ -71,15 +71,13 @@ func Test_NeedsToBuild(t *testing.T) {
 			name: "fail to get function info",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							HasFunctions(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
 							Return(nil, errors.New("something went wrong"))
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}
@@ -114,8 +112,8 @@ func Test_Deploy(t *testing.T) {
 			name: "get spec",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							GetSpec(gomock.Any(), &pb.GetSpecRequest{
 								Image: "image",
@@ -124,9 +122,7 @@ func Test_Deploy(t *testing.T) {
 							Return(&pb.GetSpecResponse{
 								Spec: []byte("spec"),
 							}, nil)
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}
@@ -137,17 +133,15 @@ func Test_Deploy(t *testing.T) {
 			name: "fail to get spec",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							GetSpec(gomock.Any(), &pb.GetSpecRequest{
 								Image: "image",
 							}).
 							Times(1).
 							Return(nil, errors.New("something went wrong"))
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}
@@ -182,8 +176,8 @@ func Test_GetResources(t *testing.T) {
 			name: "get spec",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							ListResources(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
@@ -197,9 +191,7 @@ func Test_GetResources(t *testing.T) {
 									},
 								},
 							}, nil)
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}
@@ -217,15 +209,13 @@ func Test_GetResources(t *testing.T) {
 			name: "fail to list resources",
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
-					bc: func() specBuilderClient {
-						m := mock.NewMockTurbineServiceClient(ctrl)
+					bc: func() client.Client {
+						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
 							ListResources(gomock.Any(), &emptypb.Empty{}).
 							Times(1).
 							Return(nil, errors.New("something went wrong"))
-						return specBuilderClient{
-							TurbineServiceClient: m,
-						}
+						return m
 					}(),
 					logger: log.NewTestLogger(),
 				}

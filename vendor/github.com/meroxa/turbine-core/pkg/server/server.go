@@ -1,3 +1,5 @@
+//go:generate mockgen -source=server.go -package=mock -destination=mock/server_mock.go Server
+
 package server
 
 import (
@@ -14,6 +16,11 @@ import (
 const (
 	ListenAddress = "localhost:50500"
 )
+
+type Server interface {
+	Run(context.Context)
+	GracefulStop()
+}
 
 type turbineCoreServer struct {
 	*grpc.Server

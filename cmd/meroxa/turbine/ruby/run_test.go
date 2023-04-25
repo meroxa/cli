@@ -12,8 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/meroxa/cli/cmd/meroxa/turbine/ruby/mock"
 	"github.com/meroxa/cli/log"
+
+	"github.com/meroxa/turbine-core/pkg/server"
+	mock_server "github.com/meroxa/turbine-core/pkg/server/mock"
 )
 
 //nolint:funlen
@@ -34,8 +36,8 @@ func Test_Run(t *testing.T) {
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
 					appPath: "/tmp",
-					runner: func() turbineServer {
-						m := mock.NewMockturbineServer(ctrl)
+					runner: func() server.Server {
+						m := mock_server.NewMockServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
 							DoAndReturn(func(_ context.Context) {
@@ -57,8 +59,8 @@ func Test_Run(t *testing.T) {
 			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
 				return &turbineRbCLI{
 					appPath: "/nonexistentdir",
-					runner: func() turbineServer {
-						m := mock.NewMockturbineServer(ctrl)
+					runner: func() server.Server {
+						m := mock_server.NewMockServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
 							DoAndReturn(func(_ context.Context) {
@@ -90,8 +92,8 @@ func Test_Run(t *testing.T) {
 
 						return tempdir
 					}(),
-					runner: func() turbineServer {
-						m := mock.NewMockturbineServer(ctrl)
+					runner: func() server.Server {
+						m := mock_server.NewMockServer(ctrl)
 						m.EXPECT().
 							Run(gomock.Any()).
 							DoAndReturn(func(_ context.Context) {
