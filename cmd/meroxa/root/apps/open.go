@@ -35,7 +35,19 @@ var (
 	_ builder.CommandWithFlags   = (*Open)(nil)
 )
 
+type Opener interface {
+	Start(string) error
+}
+
+type browserOpener struct{}
+
+func (b *browserOpener) Start(URL string) error {
+	return open.Start(URL)
+}
+
 type Open struct {
+	Opener
+
 	logger log.Logger
 	path   string
 
@@ -73,6 +85,10 @@ meroxa apps open NAMEorUUID`,
 }
 
 func (o *Open) Execute(ctx context.Context) error {
+	if o.Opener == nil {
+		o.Opener = &browserOpener{}
+	}
+
 	nameOrUUID := o.args.NameOrUUID
 	if nameOrUUID != "" && o.flags.Path != "" {
 		return fmt.Errorf("supply either NameOrUUID argument or --path flag")
@@ -93,7 +109,7 @@ func (o *Open) Execute(ctx context.Context) error {
 
 	// open a browser window to the application details
 	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", nameOrUUID)
-	err := open.Start(dashboardURL)
+	err := o.Start(dashboardURL)
 	if err != nil {
 		o.logger.Errorf(ctx, "can't open browser to URL %s\n", dashboardURL)
 	}
