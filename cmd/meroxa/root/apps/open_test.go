@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -68,24 +69,10 @@ func TestOpenAppFlags(t *testing.T) {
 
 	for _, f := range expectedFlags {
 		cf := c.Flags().Lookup(f.name)
-		if cf == nil {
-			t.Fatalf("expected flag %q to be present", f.name)
-		}
-
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand %q got %q for flag %q", f.shorthand, cf.Shorthand, f.name)
-		}
-
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag %q to be required", f.name)
-		}
-
-		if cf.Hidden != f.hidden {
-			if cf.Hidden {
-				t.Fatalf("expected flag %q not to be hidden", f.name)
-			}
-			t.Fatalf("expected flag %q to be hidden", f.name)
-		}
+		require.NotNil(t, cf)
+		assert.Equal(t, f.shorthand, cf.Shorthand)
+		assert.Equal(t, f.required, utils.IsFlagRequired(cf))
+		assert.Equal(t, f.hidden, cf.Hidden)
 	}
 }
 
@@ -145,9 +132,7 @@ func TestOpenAppExecution(t *testing.T) {
 			}
 
 			err := cc.Execute(context.Background())
-			if err != nil {
-				t.Fatalf("unexpected error \"%s\"", err)
-			}
+			require.NoError(t, err)
 
 			opener := &mockOpener{}
 			o := &Open{
