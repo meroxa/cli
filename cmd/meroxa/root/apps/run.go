@@ -18,14 +18,9 @@ package apps
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinePy "github.com/meroxa/cli/cmd/meroxa/turbine/python"
-	turbineRB "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
 )
 
@@ -71,6 +66,10 @@ func (r *Run) Flags() []builder.Flag {
 }
 
 func (r *Run) Execute(ctx context.Context) error {
+	if r.turbineCLI != nil {
+		return r.turbineCLI.Run(ctx)
+	}
+
 	var err error
 	if r.config == nil {
 		if r.path, err = turbine.GetPath(r.flags.Path); err != nil {
@@ -81,16 +80,9 @@ func (r *Run) Execute(ctx context.Context) error {
 		}
 	}
 
-	switch lang := r.config.Language; lang {
-	case "go", turbine.GoLang:
-		return turbineGo.New(r.logger, r.path).Run(ctx)
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		return turbineJS.New(r.logger, r.path).Run(ctx)
-	case "py", turbine.Python3, turbine.Python:
-		return turbinePy.New(r.logger, r.path).Run(ctx)
-	case "rb", turbine.Ruby:
-		return turbineRB.New(r.logger, r.path).Run(ctx)
+	if r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, r.config.Language, r.path); err != nil {
+		return err
 	}
 
-	return fmt.Errorf("language %q not supported. %s", r.config.Language, LanguageNotSupportedError)
+	return r.turbineCLI.Run(ctx)
 }
