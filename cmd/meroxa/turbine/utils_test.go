@@ -278,7 +278,7 @@ unable to update app.json file on path "#nope$". Maybe try using a different val
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := WriteConfigFile(tc.path, tc.input)
+			err := WriteConfigFile(tc.path, &tc.input)
 			if err != nil {
 				if tc.err == nil {
 					t.Fatalf("unexpected error: %v", err)
