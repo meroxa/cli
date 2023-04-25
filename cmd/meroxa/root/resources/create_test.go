@@ -373,7 +373,7 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 
 	keyVal := "super-secret"
 	keyFile := filepath.Join("/tmp", uuid.NewString())
-	err := os.WriteFile(keyFile, []byte(keyVal), 0600)
+	err := os.WriteFile(keyFile, []byte(keyVal), 0o600)
 	require.NoError(t, err)
 
 	tests := []struct {

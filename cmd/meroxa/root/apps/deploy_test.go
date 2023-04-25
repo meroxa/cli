@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-
-	"github.com/meroxa/turbine-core/pkg/ir"
-
 	"strings"
 	"testing"
+
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 
@@ -789,7 +788,8 @@ func TestGetPlatformImage(t *testing.T) {
 						Uuid:   buildUUID,
 						Status: meroxa.BuildStatus{State: "complete"},
 						Environment: &meroxa.EntityIdentifier{
-							Name: "my-env"},
+							Name: "my-env",
+						},
 					}, nil)
 				return client
 			},
@@ -1355,8 +1355,8 @@ func TestTeardown(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
-			//cfg := config.NewInMemoryConfig()
-			//cfg.Set(global.UserAccountUUID, accountUUID)
+			// cfg := config.NewInMemoryConfig()
+			// cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
 				client:  tc.meroxaClient(ctrl),
 				logger:  logger,

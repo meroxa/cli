@@ -6,11 +6,10 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"testing"
 
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-
-	"testing"
 )
 
 var (
@@ -132,7 +131,6 @@ func TestSetConfigExecution(t *testing.T) {
 	s.args.keys = setKeys
 
 	err := s.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}

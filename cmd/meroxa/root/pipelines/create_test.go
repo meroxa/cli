@@ -129,7 +129,6 @@ func TestCreatePipelineWithoutEnvironmentExecution(t *testing.T) {
 	c.args.Name = pi.Name
 
 	err := c.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -215,7 +214,6 @@ func TestCreatePipelineWithEnvironmentExecution(t *testing.T) {
 	global.Config.Set(global.UserFeatureFlagsEnv, newFlags)
 
 	err := c.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

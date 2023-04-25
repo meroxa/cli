@@ -129,7 +129,6 @@ func (c *Create) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Provisioning environment...")
 
 	environment, err := c.client.CreateEnvironment(ctx, e)
-
 	if err != nil {
 		return err
 	}

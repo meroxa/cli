@@ -36,7 +36,7 @@ func TransformsTable(transforms []*meroxa.Transform, hideHeaders bool) string {
 			for _, p := range res.Properties {
 				properties = append(properties, p.Name)
 			}
-			var cell = &simpletable.Cell{
+			cell := &simpletable.Cell{
 				Text: strings.Join(properties, ","),
 			}
 

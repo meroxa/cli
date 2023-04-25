@@ -105,7 +105,7 @@ func TestAPIExecution(t *testing.T) {
 
 	bodyResponse := `{ "key": "value" }`
 
-	var httpResponse = &http.Response{
+	httpResponse := &http.Response{
 		Status:     "200 OK",
 		StatusCode: 200,
 		Proto:      "HTTP/1.1",

@@ -107,7 +107,6 @@ func (c *Update) Execute(ctx context.Context) error {
 	c.logger.Infof(ctx, "Updating environment...")
 
 	environment, err := c.client.UpdateEnvironment(ctx, c.args.NameOrUUID, e)
-
 	if err != nil {
 		return err
 	}

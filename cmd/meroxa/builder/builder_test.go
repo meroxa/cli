@@ -30,6 +30,7 @@ var (
 func (c *testCmd) Usage() string {
 	return "cmd1"
 }
+
 func (c *testCmd) Docs() builder.Docs {
 	return builder.Docs{
 		Short:   "short-foo",
@@ -37,14 +38,17 @@ func (c *testCmd) Docs() builder.Docs {
 		Example: "example-baz",
 	}
 }
+
 func (c *testCmd) Aliases() []string {
 	return []string{"foo", "bar"}
 }
+
 func (c *testCmd) Flags() []builder.Flag {
 	return []builder.Flag{
 		{Long: "long-foo", Short: "l", Usage: "test flag", Required: false, Persistent: false, Ptr: &c.flagLongFoo},
 	}
 }
+
 func (c *testCmd) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&subCmd{}),

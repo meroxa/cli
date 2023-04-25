@@ -81,10 +81,10 @@ func (s *Set) Config(cfg config.Config) {
 
 // normalizeKey converts a key such as `myKey` to `MY_KEY`.
 func (s *Set) normalizeKey(key string) string {
-	var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
+	matchFirstCap := regexp.MustCompile("(.)([A-Z][a-z]+)")
 	k := matchFirstCap.ReplaceAllString(key, "${1}_${2}")
 
-	var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
+	matchAllCap := regexp.MustCompile("([a-z0-9])([A-Z])")
 	k = matchAllCap.ReplaceAllString(k, "${1}_${2}")
 	return strings.ToUpper(k)
 }

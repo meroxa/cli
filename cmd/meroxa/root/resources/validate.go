@@ -48,8 +48,7 @@ type Validate struct {
 		Name string
 	}
 
-	flags struct {
-	}
+	flags struct{}
 }
 
 func (u *Validate) Usage() string {

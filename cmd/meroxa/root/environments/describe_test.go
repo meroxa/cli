@@ -20,6 +20,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"reflect"
+	"strings"
+	"testing"
 
 	"github.com/meroxa/cli/utils/display"
 
@@ -28,10 +31,6 @@ import (
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
-
-	"reflect"
-	"strings"
-	"testing"
 )
 
 func TestDescribeEnvironmentArgs(t *testing.T) {

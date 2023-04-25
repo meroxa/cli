@@ -29,9 +29,7 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-var (
-	Client HTTPClient
-)
+var Client HTTPClient
 
 // getContentHomebrewFormula returns from GitHub the content of the formula file for Meroxa CLI.
 func getContentHomebrewFormula(ctx context.Context) (string, error) {

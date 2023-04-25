@@ -49,8 +49,7 @@ type RotateTunnelKey struct {
 		Name string
 	}
 
-	flags struct {
-	}
+	flags struct{}
 }
 
 func (u *RotateTunnelKey) Usage() string {

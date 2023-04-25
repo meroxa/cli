@@ -129,7 +129,6 @@ func TestUpdateConnectorExecutionWithNewState(t *testing.T) {
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -181,7 +180,6 @@ func TestUpdateConnectorExecutionWithNewName(t *testing.T) {
 		Return(&c, nil)
 
 	err := u.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
@@ -226,7 +224,6 @@ func TestUpdateConnectorExecutionWithNewConfig(t *testing.T) {
 
 	u.flags.Config = newConfig
 	err := json.Unmarshal([]byte(u.flags.Config), &cfg)
-
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}

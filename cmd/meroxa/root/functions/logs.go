@@ -44,7 +44,6 @@ func (l *Logs) Docs() builder.Docs {
 
 func (l *Logs) Execute(ctx context.Context) error {
 	resp, err := l.client.GetFunctionLogs(ctx, l.args.NameOrUUID)
-
 	if err != nil {
 		return err
 	}

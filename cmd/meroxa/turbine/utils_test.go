@@ -89,7 +89,7 @@ func TestGitChecks(t *testing.T) {
 
 				// create file
 				dockerfilePath := filepath.Join(appPath, "Dockerfile")
-				err = os.WriteFile(dockerfilePath, []byte(""), 0644)
+				err = os.WriteFile(dockerfilePath, []byte(""), 0o644)
 				if err != nil {
 					return "", err
 				}
@@ -129,7 +129,7 @@ func TestGitChecks(t *testing.T) {
 
 				// create file
 				dockerfilePath := filepath.Join(appPath, "Dockerfile")
-				err = os.WriteFile(dockerfilePath, []byte(""), 0644)
+				err = os.WriteFile(dockerfilePath, []byte(""), 0o644)
 				if err != nil {
 					return "", err
 				}
@@ -160,7 +160,7 @@ func TestGitChecks(t *testing.T) {
 
 				// create second file
 				makefilePath := filepath.Join(appPath, "Makefile")
-				err = os.WriteFile(makefilePath, []byte(""), 0644)
+				err = os.WriteFile(makefilePath, []byte(""), 0o644)
 				if err != nil {
 					return "", err
 				}
@@ -562,7 +562,7 @@ func TestCleanupDockerfile(t *testing.T) {
 	require.NoError(t, err)
 
 	dockerfilePath := filepath.Join(appPath, "Dockerfile")
-	err = os.WriteFile(dockerfilePath, []byte(""), 0644)
+	err = os.WriteFile(dockerfilePath, []byte(""), 0o644)
 	require.NoError(t, err)
 
 	_, err = os.Stat(dockerfilePath)

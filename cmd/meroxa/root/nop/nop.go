@@ -22,8 +22,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 )
 
-type Nop struct {
-}
+type Nop struct{}
 
 var (
 	_ builder.CommandWithExecute = (*Nop)(nil)

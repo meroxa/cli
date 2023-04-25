@@ -75,8 +75,8 @@ func TestConnectExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	var rSource = utils.GenerateResource()
-	var rDestination = utils.GenerateResource()
+	rSource := utils.GenerateResource()
+	rDestination := utils.GenerateResource()
 
 	c.flags.Input = "my-resource.Table"
 	c.flags.Config = `{"key":"value"}`
@@ -146,7 +146,6 @@ func TestConnectExecution(t *testing.T) {
 		Return(&cDestination, nil)
 
 	err := c.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

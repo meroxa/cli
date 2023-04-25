@@ -98,7 +98,6 @@ func (c *Create) Execute(ctx context.Context) error {
 
 	c.logger.Infof(ctx, "Creating pipeline %q in %q environment...", c.args.Name, env)
 	pipeline, err := c.client.CreatePipeline(ctx, p)
-
 	if err != nil {
 		return err
 	}

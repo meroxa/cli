@@ -82,7 +82,6 @@ func TestRemoveConnectorExecution(t *testing.T) {
 		Return(nil)
 
 	err := r.Execute(ctx)
-
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}

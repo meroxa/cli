@@ -71,7 +71,6 @@ func (w *WhoAmI) Config(cfg config.Config) {
 
 func (w *WhoAmI) Execute(ctx context.Context) error {
 	user, err := w.client.GetUser(ctx)
-
 	if err != nil {
 		return err
 	}

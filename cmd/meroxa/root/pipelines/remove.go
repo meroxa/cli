@@ -68,7 +68,6 @@ func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing pipeline %q...", r.args.Name)
 
 	err := r.client.DeletePipeline(ctx, r.args.Name)
-
 	if err != nil {
 		return err
 	}

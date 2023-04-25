@@ -98,7 +98,7 @@ func TestPipelineTable(t *testing.T) {
 	}
 
 	tableHeaders := []string{"UUID", "ID", "Name", "State"}
-	var envHeader = "Environment Name"
+	envHeader := "Environment Name"
 
 	for name, p := range tests {
 		t.Run(name, func(t *testing.T) {

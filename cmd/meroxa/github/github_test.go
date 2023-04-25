@@ -51,7 +51,6 @@ end
 
 	ctx := context.Background()
 	gotContent, err := getContentHomebrewFormula(ctx)
-
 	if err != nil {
 		t.Error("unexpected error, got: ", err)
 		return
