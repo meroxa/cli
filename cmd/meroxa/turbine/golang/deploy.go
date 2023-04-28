@@ -2,8 +2,6 @@ package turbinego
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
 	"os"
 	"os/exec"
 	"time"
@@ -83,14 +81,7 @@ func (t *turbineGoCLI) CleanUpBuild(_ context.Context) {
 }
 
 func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	source := rand.NewSource(time.Now().UnixNano())
-	rand := rand.New(source)
-	port := rand.Intn(65535-1024) + 1024 //nolint:gomnd
-	grpcListenAddress := fmt.Sprintf("localhost:%d", port)
-
-	go t.builder.RunWithAddress(ctx, grpcListenAddress)
-
-	// randomizes the port
+	go t.builder.Run(ctx)
 
 	cmd := exec.Command("go", []string{
 		"run",
@@ -98,7 +89,7 @@ func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 		"build",
 		"-gitsha",
 		gitSha,
-		"-turbine-core-server", grpcListenAddress,
+		"-turbine-core-server", t.grpcListenAddress,
 		"-app-path", t.appPath,
 	}...)
 	cmd.Stdout = os.Stdout
@@ -110,7 +101,7 @@ func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(
 		return nil, err
 	}
 
-	c, err := client.DialTimeout(grpcListenAddress, time.Second)
+	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
 	if err != nil {
 		return nil, err
 	}
