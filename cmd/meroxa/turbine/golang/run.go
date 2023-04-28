@@ -13,7 +13,8 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 	defer t.runner.GracefulStop()
 
 	cmd := exec.Command("go", []string{
-		"run", "./...",
+		"run", "./...", "build",
+		"-gitsha", "devel",
 		"-turbine-core-server", t.grpcListenAddress,
 		"-app-path", t.appPath,
 	}...)
