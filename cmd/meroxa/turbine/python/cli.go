@@ -3,7 +3,6 @@ package turbinepy
 import (
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/client"
 	"github.com/meroxa/turbine-core/pkg/server"
 )
 
@@ -14,7 +13,6 @@ type turbinePyCLI struct {
 	grpcListenAddress string
 	runner            server.Server
 	builder           server.Server
-	bc                client.Client
 }
 
 func New(l log.Logger, appPath string) turbine.CLI {
