@@ -16,6 +16,7 @@ type Source struct {
 }
 
 type CreateSourceInputV2 struct {
+	Filename    string            `json:"filename,omitempty"`
 	Environment *EntityIdentifier `json:"environment,omitempty"`
 }
 
