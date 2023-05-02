@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
 	"strings"
 )
 
@@ -21,6 +20,7 @@ func RunTurbineCmd(appPath string, command TurbineCommand, env map[string]string
 	cmd := NewTurbineCmd(appPath, command, env, flags...)
 	cmd.Stderr = nil
 	cmd.Stdout = nil
+	cmd.Dir = appPath
 	out, err := cmd.CombinedOutput()
 	return strings.TrimSpace(string(out)), err
 }
@@ -28,7 +28,6 @@ func RunTurbineCmd(appPath string, command TurbineCommand, env map[string]string
 func NewTurbineCmd(appPath string, command TurbineCommand, env map[string]string, flags ...string) *exec.Cmd {
 	cmd := exec.Command("turbine-py", append([]string{
 		string(command),
-		path.Join(appPath, "app"),
 	}, flags...)...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

@@ -15,6 +15,7 @@ func (t *turbinePyCLI) Run(ctx context.Context) error {
 		internal.TurbineCommandRun,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
-		})
+		},
+		t.appPath)
 	return turbine.RunCMD(ctx, t.logger, cmd)
 }
