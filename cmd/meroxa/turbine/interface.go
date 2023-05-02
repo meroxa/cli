@@ -20,7 +20,7 @@ type CLI interface {
 	NeedsToBuild(ctx context.Context) (bool, error)
 	Run(ctx context.Context) error
 	Upgrade(vendor bool) error
-	CreateDockerfile(ctx context.Context, appName, specVersion string) (string, error)
+	CreateDockerfile(ctx context.Context, appName string) (string, error)
 	CleanUpBuild(ctx context.Context)
 	SetupForDeploy(ctx context.Context, gitSha string) (func(), error)
 }

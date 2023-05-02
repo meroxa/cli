@@ -113,7 +113,7 @@ func (t *turbinePyCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, _, _ string) (string, error) {
+func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
 	cmd := exec.CommandContext(ctx, "turbine-py", "clibuild", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {

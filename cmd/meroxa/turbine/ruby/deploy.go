@@ -16,7 +16,7 @@ func (t *turbineRbCLI) CleanUpBuild(_ context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _, _ string) (string, error) {
+func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
 	cmd := internal.NewTurbineCmd(
 		ctx,
 		t.appPath,

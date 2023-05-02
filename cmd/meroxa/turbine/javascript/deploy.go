@@ -100,7 +100,7 @@ func (t *turbineJsCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbineJsCLI) CreateDockerfile(ctx context.Context, _, _ string) (string, error) {
+func (t *turbineJsCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
 	_, err := RunTurbineJS(ctx, t.logger, "clibuild", t.appPath)
 	if err != nil {
 		return "", fmt.Errorf("unable to create Dockerfile at %s; %s", t.appPath, err)

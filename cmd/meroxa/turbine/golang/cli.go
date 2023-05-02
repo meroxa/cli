@@ -1,9 +1,9 @@
 package turbinego
 
 import (
-	"fmt"
 	"math/rand"
-	"time"
+	"net"
+	"strconv"
 
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
@@ -22,16 +22,11 @@ type turbineGoCLI struct {
 }
 
 func New(l log.Logger, appPath string) turbine.CLI {
-	source := rand.NewSource(time.Now().UnixNano())
-	rand := rand.New(source)
-	port := rand.Intn(65535-1024) + 1024 //nolint:gomnd
-	serverAddress := fmt.Sprintf("localhost:%d", port)
-
 	return &turbineGoCLI{
 		logger:            l,
 		appPath:           appPath,
 		runner:            server.NewRunServer(),
 		builder:           server.NewSpecBuilderServer(),
-		grpcListenAddress: serverAddress,
+		grpcListenAddress: net.JoinHostPort("localhost", strconv.Itoa(50000+rand.Intn(1000))),
 	}
 }

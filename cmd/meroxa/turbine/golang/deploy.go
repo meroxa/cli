@@ -2,8 +2,11 @@ package turbinego
 
 import (
 	"context"
+	"embed"
 	"os"
 	"os/exec"
+	"path"
+	"text/template"
 	"time"
 
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -12,8 +15,10 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	turbineGo "github.com/meroxa/turbine-go/deploy"
 )
+
+//go:embed templates
+var templates embed.FS
 
 // Deploy runs the binary previously built with the `--deploy` flag which should create all necessary resources.
 // TODO: Once all languages are under turbine-core refactor this so it's the same for all languages.
@@ -72,8 +77,25 @@ func (t *turbineGoCLI) GitChecks(ctx context.Context) error {
 	return turbine.GitChecks(ctx, t.logger, t.appPath)
 }
 
-func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName, specVersion string) (string, error) {
-	return t.appPath, turbineGo.CreateDockerfile(appName, t.appPath, specVersion)
+func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName string) (string, error) {
+	f, err := os.Create(path.Join(t.appPath, "Dockerfile"))
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	tpl, err := template.ParseFS(templates, "templates/Dockerfile.tpl")
+	if err != nil {
+		return "", err
+	}
+	if err := tpl.Execute(f, map[string]string{
+		"GoVersion": "1.20",
+		"AppName":   appName,
+	}); err != nil {
+		return "", err
+	}
+
+	return t.appPath, nil
 }
 
 func (t *turbineGoCLI) CleanUpBuild(_ context.Context) {
@@ -81,7 +103,7 @@ func (t *turbineGoCLI) CleanUpBuild(_ context.Context) {
 }
 
 func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	go t.builder.Run(ctx)
+	go t.builder.RunAddr(ctx, t.grpcListenAddress)
 
 	cmd := exec.Command("go", []string{
 		"run",

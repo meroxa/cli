@@ -19,8 +19,11 @@ const (
 
 type Server interface {
 	Run(context.Context)
+	RunAddr(context.Context, string)
 	GracefulStop()
 }
+
+var _ Server = (*turbineCoreServer)(nil)
 
 type turbineCoreServer struct {
 	*grpc.Server
@@ -43,7 +46,11 @@ func NewRecordServer() *turbineCoreServer {
 }
 
 func (s *turbineCoreServer) Run(ctx context.Context) {
-	listener, err := net.Listen("tcp", ListenAddress)
+	s.RunAddr(ctx, ListenAddress)
+}
+
+func (s *turbineCoreServer) RunAddr(ctx context.Context, addr string) {
+	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

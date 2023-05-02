@@ -48,18 +48,18 @@ func (mr *MockCLIMockRecorder) CleanUpBuild(ctx interface{}) *gomock.Call {
 }
 
 // CreateDockerfile mocks base method.
-func (m *MockCLI) CreateDockerfile(ctx context.Context, appName, specVersion string) (string, error) {
+func (m *MockCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDockerfile", ctx, appName, specVersion)
+	ret := m.ctrl.Call(m, "CreateDockerfile", ctx, appName)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateDockerfile indicates an expected call of CreateDockerfile.
-func (mr *MockCLIMockRecorder) CreateDockerfile(ctx, appName, specVersion interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) CreateDockerfile(ctx, appName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDockerfile", reflect.TypeOf((*MockCLI)(nil).CreateDockerfile), ctx, appName, specVersion)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDockerfile", reflect.TypeOf((*MockCLI)(nil).CreateDockerfile), ctx, appName)
 }
 
 // GetDeploymentSpec mocks base method.

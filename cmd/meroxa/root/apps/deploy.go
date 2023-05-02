@@ -288,7 +288,7 @@ func (d *Deploy) UploadSource(ctx context.Context, url string) error {
 	)
 
 	d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", d.path))
-	buildPath, err = d.turbineCLI.CreateDockerfile(ctx, d.appName, d.specVersion)
+	buildPath, err = d.turbineCLI.CreateDockerfile(ctx, d.appName)
 	if err != nil {
 		return err
 	}
