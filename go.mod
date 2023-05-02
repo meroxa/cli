@@ -28,8 +28,8 @@ require (
 	github.com/briandowns/spinner v1.21.0
 	github.com/docker/docker v23.0.4+incompatible
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-core v0.0.0-20230502010309-112ea9d8b986
-	github.com/meroxa/turbine-go v1.0.1-0.20230428104931-006fa68c299c
+	github.com/meroxa/turbine-core v0.0.0-20230502144147-c31c94416d23
+	github.com/meroxa/turbine-go v1.0.1-0.20230501205136-88d57eab23fc
 	github.com/stretchr/testify v1.8.2
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.10.0
