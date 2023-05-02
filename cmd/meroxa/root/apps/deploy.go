@@ -463,8 +463,8 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 	return nil
 }
 
-func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
-	specStr, err := d.turbineCLI.Deploy(
+func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
+	specStr, err := d.turbineCLI.GetDeploymentSpec(
 		ctx,
 		imageName,
 		d.appName,
@@ -492,19 +492,13 @@ func (d *Deploy) deployApp(ctx context.Context, imageName, gitSha, specVersion s
 	return nil, nil
 }
 
-// buildApp will call any specifics to the turbine library to prepare a directory that's ready
-// to compress, and build, to then later on call the specific command to deploy depending on the language.
-func (d *Deploy) buildApp(ctx context.Context) (err error) {
-	return d.turbineCLI.Build(ctx, d.appName, true)
-}
-
 // getAppImage will check what type of build needs to perform and ultimately will return the image name to use
 // when deploying.
 func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	d.logger.StartSpinner("\t", "Checking if application has processes...")
 	var fqImageName string
 
-	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx, d.appName)
+	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
 		return "", err
@@ -518,9 +512,10 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
 
-	d.localDeploy.Lang = d.lang
-	d.localDeploy.AppName = d.appName
 	if d.localDeploy.Enabled {
+		d.localDeploy.Lang = d.lang
+		d.localDeploy.AppName = d.appName
+
 		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName)
 		if err != nil {
 			return "", err
@@ -576,12 +571,12 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 		return d.validateLanguage()
 	}
 
-	d.lang, err = turbine.GetLangFromAppJSON(ctx, d.logger, d.path)
+	d.lang, err = turbine.GetLangFromAppJSON(d.logger, d.path)
 	if err != nil {
 		return err
 	}
 
-	d.configAppName, err = turbine.GetAppNameFromAppJSON(ctx, d.logger, d.path)
+	d.configAppName, err = turbine.GetAppNameFromAppJSON(d.logger, d.path)
 	if err != nil {
 		return err
 	}
@@ -658,7 +653,7 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 
 	d.logger.StartSpinner("\t", resourceCheckMessage)
 
-	resources, err := d.turbineCLI.GetResources(ctx, d.appName)
+	resources, err := d.turbineCLI.GetResources(ctx)
 	if err != nil {
 		return fmt.Errorf("unable to read resource definition from app: %s", err.Error())
 	}
@@ -689,14 +684,8 @@ func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
 func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
 
-	// After this point, CLI will package it up and will build it
-	err := d.buildApp(ctx)
-	if err != nil {
-		return err
-	}
-
 	// check if resources exist and are ready
-	err = d.checkResourceAvailability(ctx)
+	err := d.checkResourceAvailability(ctx)
 	if err != nil {
 		return err
 	}
@@ -906,7 +895,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 // Turbine Ruby will use a spec'ed version internally so --spec is not required when using environments which is
 // currently only available for those deployments using IR.
 func (d *Deploy) validateEnvironmentFlagCompatibility() error {
-	if d.flags.Spec == "" && d.env != nil && d.lang != ir.Ruby {
+	if d.flags.Spec == "" && d.env != nil && d.lang != ir.Ruby && d.lang != ir.GoLang {
 		return fmt.Errorf(
 			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
@@ -914,6 +903,7 @@ func (d *Deploy) validateEnvironmentFlagCompatibility() error {
 	return nil
 }
 
+// TODO: Once builds are done much faster we should move early checks like these to the Platform API.
 func (d *Deploy) validateEnvExists(ctx context.Context) error {
 	if _, err := d.client.GetEnvironment(ctx, d.env.nameOrUUID()); err != nil {
 		if strings.Contains(err.Error(), "could not find environment") {
@@ -977,7 +967,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby at the moment)
+	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby and Go at the moment)
 	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
 	if err != nil {
 		return err
@@ -990,11 +980,13 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	d.specVersion = d.flags.Spec
-	if d.specVersion == "" && d.lang == ir.Ruby {
+
+	// Make the latest version default for Ruby and Go
+	if d.specVersion == "" && (d.lang == ir.Ruby || d.lang == ir.GoLang) {
 		d.specVersion = ir.LatestSpecVersion
 	}
 
-	// Intermediate Representation Workflow (if using --spec on apps deploy)
+	// Intermediate Representation Workflow
 	if d.specVersion != "" {
 		if err = ir.ValidateSpecVersion(d.specVersion); err != nil {
 			return err
@@ -1023,7 +1015,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	err = d.prepareDeployment(ctx)
-	defer d.turbineCLI.CleanUpBinaries(ctx, d.appName)
 	if err != nil {
 		return err
 	}
@@ -1032,12 +1023,12 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	// Not deploying using IR
 	deployMsg := fmt.Sprintf("Deploying application %q...", d.appName)
 
-	// If not using IR as deployment type
+	// Hack: If not using IR as deployment type
 	if d.specVersion == "" {
 		d.logger.Infof(ctx, deployMsg)
 	}
 
-	if deployment, err = d.deployApp(ctx, d.fnName, gitSha, d.specVersion); err != nil {
+	if deployment, err = d.createDeployment(ctx, d.fnName, gitSha, d.specVersion); err != nil {
 		return err
 	}
 
@@ -1094,6 +1085,7 @@ func wrapErrors(errs []error) error {
 	return err
 }
 
+// TODO: Reuse this everywhere it's using the environment flag. Maybe make this part of builder so it's automatic.
 func envFromFlag(nameOrUUID string) *environment {
 	_, err := uuid.Parse(nameOrUUID)
 	if err != nil {

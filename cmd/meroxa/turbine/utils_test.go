@@ -236,7 +236,6 @@ HEAD
 }
 
 func TestReadAndWriteConfigFile(t *testing.T) {
-	ctx := context.Background()
 	logger := log.NewTestLogger()
 	appPath, err := makeTmpDir()
 	require.NoError(t, err)
@@ -290,11 +289,11 @@ unable to update app.json file on path "#nope$". Maybe try using a different val
 			require.NoError(t, err)
 			require.NoError(t, tc.err)
 
-			lang, err := GetLangFromAppJSON(ctx, logger, tc.path)
+			lang, err := GetLangFromAppJSON(logger, tc.path)
 			require.NoError(t, err)
 			require.Equal(t, tc.input.Language, lang)
 
-			name, err := GetAppNameFromAppJSON(ctx, logger, tc.path)
+			name, err := GetAppNameFromAppJSON(logger, tc.path)
 			require.NoError(t, err)
 			require.Equal(t, tc.input.Name, name)
 

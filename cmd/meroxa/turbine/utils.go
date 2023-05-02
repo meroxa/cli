@@ -84,7 +84,7 @@ func GetPath(flag string) (string, error) {
 }
 
 // GetLangFromAppJSON returns specified language in users' app.json.
-func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (ir.Lang, error) {
+func GetLangFromAppJSON(l log.Logger, pwd string) (ir.Lang, error) {
 	l.StartSpinner("\t", "Determining application language from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {
@@ -101,7 +101,7 @@ func GetLangFromAppJSON(_ context.Context, l log.Logger, pwd string) (ir.Lang, e
 }
 
 // GetAppNameFromAppJSON returns specified app name in users' app.json.
-func GetAppNameFromAppJSON(_ context.Context, l log.Logger, pwd string) (string, error) {
+func GetAppNameFromAppJSON(l log.Logger, pwd string) (string, error) {
 	l.StartSpinner("\t", "Reading application name from app.json...")
 	appConfig, err := ReadConfigFile(pwd)
 	if err != nil {

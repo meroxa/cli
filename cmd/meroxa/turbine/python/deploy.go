@@ -17,7 +17,7 @@ import (
 )
 
 // NeedsToBuild determines if the app has functions or not.
-func (t *turbinePyCLI) NeedsToBuild(_ context.Context, _ string) (bool, error) {
+func (t *turbinePyCLI) NeedsToBuild(_ context.Context) (bool, error) {
 	cmd := exec.Command("turbine-py", "hasFunctions", t.appPath)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -40,7 +40,7 @@ func (t *turbinePyCLI) NeedsToBuild(_ context.Context, _ string) (bool, error) {
 }
 
 // Deploy creates Application entities.
-func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
+func (t *turbinePyCLI) GetDeploymentSpec(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	var (
 		output         string
 		deploymentSpec string
@@ -83,7 +83,7 @@ func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
-func (t *turbinePyCLI) GetResources(ctx context.Context, _ string) ([]utils.ApplicationResource, error) {
+func (t *turbinePyCLI) GetResources(ctx context.Context) ([]utils.ApplicationResource, error) {
 	var resources []utils.ApplicationResource
 
 	cmd := exec.CommandContext(ctx, "turbine-py", "listResources", t.appPath)

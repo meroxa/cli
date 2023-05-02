@@ -11,7 +11,9 @@ func (t *turbineRbCLI) Run(ctx context.Context) error {
 	go t.runner.Run(ctx)
 	defer t.runner.GracefulStop()
 
-	cmd := internal.NewTurbineCmd(t.appPath,
+	cmd := internal.NewTurbineCmd(
+		ctx,
+		t.appPath,
 		internal.TurbineCommandRun,
 		map[string]string{
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,

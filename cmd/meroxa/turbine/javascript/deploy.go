@@ -12,7 +12,7 @@ import (
 
 var TurbineJSVersion = "1.3.8"
 
-func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error) {
+func (t *turbineJsCLI) NeedsToBuild(ctx context.Context) (bool, error) {
 	output, err := RunTurbineJS(ctx, t.logger, "hasfunctions", t.appPath)
 	if err != nil {
 		err = fmt.Errorf(
@@ -33,7 +33,7 @@ func (t *turbineJsCLI) NeedsToBuild(ctx context.Context, _ string) (bool, error)
 	return strconv.ParseBool(isNeeded)
 }
 
-func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
+func (t *turbineJsCLI) GetDeploymentSpec(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
 	var (
 		output         string
 		deploymentSpec string
@@ -71,7 +71,7 @@ func (t *turbineJsCLI) Deploy(ctx context.Context, imageName, appName, gitSha, s
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
-func (t *turbineJsCLI) GetResources(ctx context.Context, _ string) ([]utils.ApplicationResource, error) {
+func (t *turbineJsCLI) GetResources(ctx context.Context) ([]utils.ApplicationResource, error) {
 	var resources []utils.ApplicationResource
 
 	output, err := RunTurbineJS(ctx, t.logger, "listresources", t.appPath)

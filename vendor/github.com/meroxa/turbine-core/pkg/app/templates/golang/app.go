@@ -8,12 +8,12 @@ import (
 	"log"
 
 	// Dependencies of Turbine
-	"github.com/meroxa/turbine-go"
-	"github.com/meroxa/turbine-go/runner"
+	"github.com/meroxa/turbine-go/pkg/turbine"
+	"github.com/meroxa/turbine-go/pkg/turbine/cmd"
 )
 
 func main() {
-	runner.Start(App{})
+	cmd.Start(App{})
 }
 
 var _ turbine.App = (*App)(nil)
@@ -53,7 +53,10 @@ func (a App) Run(v turbine.Turbine) error {
 	// with the `Process` function
 	// Replace `Anonymize` with the name of your function code.
 
-	res := v.Process(rr, Anonymize{})
+	res, err := v.Process(rr, Anonymize{})
+	if err != nil {
+		return err
+	}
 
 	// Identify a downstream data store for your data app
 	// with the `Resources` function

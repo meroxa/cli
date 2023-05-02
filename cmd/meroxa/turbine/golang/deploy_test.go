@@ -1,4 +1,4 @@
-package turbinerb
+package turbinego
 
 import (
 	"context"
@@ -25,14 +25,14 @@ func Test_NeedsToBuild(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		cli         func(*gomock.Controller) *turbineRbCLI
+		cli         func(*gomock.Controller) *turbineGoCLI
 		wantErr     error
 		needToBuild bool
 	}{
 		{
 			name: "Has function",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
@@ -50,8 +50,8 @@ func Test_NeedsToBuild(t *testing.T) {
 		},
 		{
 			name: "Doesn't have function",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
@@ -69,8 +69,8 @@ func Test_NeedsToBuild(t *testing.T) {
 		},
 		{
 			name: "fail to get function info",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
@@ -104,14 +104,14 @@ func Test_Deploy(t *testing.T) {
 
 	tests := []struct {
 		name     string
-		cli      func(ctrl *gomock.Controller) *turbineRbCLI
+		cli      func(ctrl *gomock.Controller) *turbineGoCLI
 		wantErr  error
 		wantSpec string
 	}{
 		{
 			name: "get spec",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
@@ -131,8 +131,8 @@ func Test_Deploy(t *testing.T) {
 		},
 		{
 			name: "fail to get spec",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
@@ -168,14 +168,14 @@ func Test_GetResources(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		cli           func(ctrl *gomock.Controller) *turbineRbCLI
+		cli           func(ctrl *gomock.Controller) *turbineGoCLI
 		wantErr       error
 		wantResources []utils.ApplicationResource
 	}{
 		{
 			name: "get spec",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().
@@ -207,8 +207,8 @@ func Test_GetResources(t *testing.T) {
 		},
 		{
 			name: "fail to list resources",
-			cli: func(ctrl *gomock.Controller) *turbineRbCLI {
-				return &turbineRbCLI{
+			cli: func(ctrl *gomock.Controller) *turbineGoCLI {
+				return &turbineGoCLI{
 					bc: func() client.Client {
 						m := mock_client.NewMockClient(ctrl)
 						m.EXPECT().

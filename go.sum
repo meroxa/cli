@@ -298,8 +298,8 @@ github.com/envoyproxy/go-control-plane v0.9.7/go.mod h1:cwu0lG7PUMfa9snN8LXBig5y
 github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.mod h1:cXg6YxExXjJnVBQHBLXeUAgxn2UodCpnH306RInaBQk=
 github.com/envoyproxy/go-control-plane v0.9.9-0.20210512163311-63b5d3c536b0/go.mod h1:hliV/p42l8fGbc6Y9bQ70uLwIvmJyVE5k4iMKlh8wCQ=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
-github.com/envoyproxy/protoc-gen-validate v0.9.1 h1:PS7VIOgmSVhWUEeZwTe7z7zouA22Cr590PzXKbZHOVY=
-github.com/envoyproxy/protoc-gen-validate v0.9.1/go.mod h1:OKNgG7TCp5pF4d6XftA0++PMirau2/yoOwVac3AbF2w=
+github.com/envoyproxy/protoc-gen-validate v1.0.0 h1:FPFO7LWZ2pfphahSUMX8L5p/6FqSzRYRxq6V74eG8ZI=
+github.com/envoyproxy/protoc-gen-validate v1.0.0/go.mod h1:0vj8bNkYbSTNS2PIyH87KZaeN4x9zpL9Qt8fQC7d+vs=
 github.com/evanphx/json-patch v4.9.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fatih/color v1.15.0 h1:kOqh6YHBtK8aywxGerMG2Eq3H6Qgoqeo13Bk2Mv/nBs=
@@ -532,10 +532,10 @@ github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182aff
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
 github.com/meroxa/meroxa-go v0.0.0-20230331072126-47c9496dfb9b h1:xIxLrz8h0QA0QmFZrW3ciIjmEnGDszS/z3yjfD3d+pY=
 github.com/meroxa/meroxa-go v0.0.0-20230331072126-47c9496dfb9b/go.mod h1:VaDn0fLKHG2VoI9MQVEqwtfum4BaGr8pcgtfWRe8/Dk=
-github.com/meroxa/turbine-core v0.0.0-20230424203136-be26742a395a h1:jzMxcZcSTgGzKvL1O+L66xeWdy/u060jFR6PKTHhAFY=
-github.com/meroxa/turbine-core v0.0.0-20230424203136-be26742a395a/go.mod h1:uLpWSCUrePbI+YxBOnwjtpu7Lv1icD1EUgnDH7N5IB8=
-github.com/meroxa/turbine-go v1.0.0 h1:5/mLoRbtdefpcC35fG3YZioz1qgrlaHOKh56n2hJ9lQ=
-github.com/meroxa/turbine-go v1.0.0/go.mod h1:RckvcPOI7MJYRw65dzwk+OFjsCMxaFbthqPBzUn6vQA=
+github.com/meroxa/turbine-core v0.0.0-20230502144147-c31c94416d23 h1:bM5Eg4f6+TVraBmeDcY3sm7cmxNDyubMFzdvCSwHkMs=
+github.com/meroxa/turbine-core v0.0.0-20230502144147-c31c94416d23/go.mod h1:uZhedBTvrGalpLdWtG0UhpphiecO5dS7GLK87boPSA4=
+github.com/meroxa/turbine-go v1.0.1-0.20230501205136-88d57eab23fc h1:8wZsujSHgg6NG1NlWrUvFnBhIbkkVJaBDzfdZXO+jLQ=
+github.com/meroxa/turbine-go v1.0.1-0.20230501205136-88d57eab23fc/go.mod h1:FJz25kN9NomgVAjvScC3p1uYfblMZOTlTMPz0zZtM2g=
 github.com/miekg/pkcs11 v1.0.3/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mistifyio/go-zfs v2.1.2-0.20190413222219-f784269be439+incompatible/go.mod h1:8AuVvqP/mXw1px98n46wfvcGfQ4ci2FwoAjKYxuo3Z4=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

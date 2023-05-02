@@ -10,4 +10,4 @@ WORKDIR /app
 COPY --from=builder /builder/app.json /app
 COPY --from=builder /builder/{{.AppName}} /app
 
-ENTRYPOINT ["/app/{{.AppName}}", "server", "-serve"]
+ENTRYPOINT ["/app/{{.AppName}}", "server", "-serve-func"]

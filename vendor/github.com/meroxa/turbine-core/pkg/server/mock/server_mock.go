@@ -57,3 +57,15 @@ func (mr *MockServerMockRecorder) Run(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockServer)(nil).Run), arg0)
 }
+
+// RunAddr mocks base method.
+func (m *MockServer) RunAddr(arg0 context.Context, arg1 string) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "RunAddr", arg0, arg1)
+}
+
+// RunAddr indicates an expected call of RunAddr.
+func (mr *MockServerMockRecorder) RunAddr(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunAddr", reflect.TypeOf((*MockServer)(nil).RunAddr), arg0, arg1)
+}

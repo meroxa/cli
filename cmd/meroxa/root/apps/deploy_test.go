@@ -11,7 +11,7 @@ import (
 
 	"github.com/meroxa/turbine-core/pkg/ir"
 
-	turbine_mock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
+	turbineMock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -604,9 +604,9 @@ func TestDeployApp(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
@@ -629,9 +629,9 @@ func TestDeployApp(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, nil)
 
 				return mockTurbineCLI
@@ -646,9 +646,9 @@ func TestDeployApp(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, err)
 				return mockTurbineCLI
 			},
@@ -671,9 +671,9 @@ func TestDeployApp(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					Deploy(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
@@ -695,7 +695,7 @@ func TestDeployApp(t *testing.T) {
 				config:     cfg,
 			}
 
-			_, err := d.deployApp(ctx, imageName, gitSha, tc.version)
+			_, err := d.createDeployment(ctx, imageName, gitSha, tc.version)
 			if err != nil {
 				require.NotEmpty(t, tc.err)
 				require.Equal(t, tc.err, err)
@@ -746,7 +746,7 @@ func TestGetPlatformImage(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
@@ -794,7 +794,7 @@ func TestGetPlatformImage(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
@@ -816,7 +816,7 @@ func TestGetPlatformImage(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				return mockTurbineCLI
 			},
 			err: err,
@@ -832,7 +832,7 @@ func TestGetPlatformImage(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
 					Return("", err)
@@ -858,7 +858,7 @@ func TestGetPlatformImage(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
@@ -892,7 +892,7 @@ func TestGetPlatformImage(t *testing.T) {
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
@@ -946,9 +946,9 @@ func TestGetAppImage(t *testing.T) {
 				return mock.NewMockClient(ctrl)
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
-				mockTurbineCLI := turbine_mock.NewMockCLI(ctrl)
+				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					NeedsToBuild(ctx, appName).
+					NeedsToBuild(ctx).
 					Return(false, nil)
 				return mockTurbineCLI
 			},
@@ -1028,7 +1028,7 @@ func TestWaitForDeployment(t *testing.T) {
 	ctx := context.Background()
 	appName := "unit-test"
 	outputLogs := []string{"just getting started", "going well", "nailed it"}
-	uuid := "does-not-matter"
+	deploymentUuuid := "does-not-matter"
 
 	tests := []struct {
 		name         string
@@ -1043,7 +1043,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeployed,
@@ -1061,7 +1061,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeployed,
@@ -1080,7 +1080,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				first := client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeploying,
@@ -1088,7 +1088,7 @@ func TestWaitForDeployment(t *testing.T) {
 						},
 					}, nil)
 				second := client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeploying,
@@ -1096,7 +1096,7 @@ func TestWaitForDeployment(t *testing.T) {
 						},
 					}, nil)
 				third := client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeployed,
@@ -1115,7 +1115,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				first := client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeploying,
@@ -1123,7 +1123,7 @@ func TestWaitForDeployment(t *testing.T) {
 						},
 					}, nil)
 				second := client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeploying,
@@ -1131,7 +1131,7 @@ func TestWaitForDeployment(t *testing.T) {
 						},
 					}, nil)
 				third := client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeployed,
@@ -1157,7 +1157,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeployingError,
@@ -1181,7 +1181,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{
 						Status: meroxa.DeploymentStatus{
 							State:   meroxa.DeploymentStateDeployingError,
@@ -1202,7 +1202,7 @@ func TestWaitForDeployment(t *testing.T) {
 				client := mock.NewMockClient(ctrl)
 
 				client.EXPECT().
-					GetDeployment(ctx, appName, uuid).
+					GetDeployment(ctx, appName, deploymentUuuid).
 					Return(&meroxa.Deployment{}, fmt.Errorf("not today"))
 				return client
 			},
@@ -1223,7 +1223,7 @@ func TestWaitForDeployment(t *testing.T) {
 
 			d.flags.Verbose = tc.verboseFlag
 
-			err := d.waitForDeployment(ctx, uuid)
+			err := d.waitForDeployment(ctx, deploymentUuuid)
 			require.Equal(t, tc.err, err, "errors are not equal")
 
 			if err != nil {
@@ -1401,9 +1401,14 @@ func Test_validateFlags(t *testing.T) {
 			lang:    ir.Ruby,
 		},
 		{
-			name:    "Without --spec and with --env flags if language is not ruby",
+			name:    "Without --spec and with --env flags if language is go",
 			envFlag: "my-env",
 			lang:    ir.GoLang,
+		},
+		{
+			name:    "Without --spec and with --env flags if language is not ruby or go",
+			envFlag: "my-env",
+			lang:    ir.JavaScript,
 			wantErr: fmt.Errorf(
 				"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 				ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0),

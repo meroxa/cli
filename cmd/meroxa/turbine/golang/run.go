@@ -11,15 +11,46 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
+// Build will create a go binary with a specific name on a specific path.
+func (t *turbineGoCLI) build(ctx context.Context, appName string) error {
+	var cmd *exec.Cmd
+
+	t.logger.StartSpinner("\t", "Building Golang binary...")
+	cmd = exec.CommandContext(ctx, "go", "build", "-o", appName, "./...")
+	cmd.Dir = t.appPath
+
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		t.logger.StopSpinnerWithStatus(string(stdout), log.Failed)
+		return fmt.Errorf("build failed")
+	}
+	return t.buildForCrossCompile(ctx, appName)
+}
+
+func (t *turbineGoCLI) buildForCrossCompile(ctx context.Context, appName string) error {
+	cmd := exec.CommandContext(ctx, "go", "build", "-o", appName+".cross", "./...") //nolint:gosec
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, "CGO_ENABLED=0", "GOOS=linux", "GOARCH=amd64")
+	cmd.Dir = t.appPath
+
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		t.logger.StopSpinnerWithStatus(string(stdout), log.Failed)
+		return fmt.Errorf("cross compile failed")
+	}
+	t.logger.StopSpinnerWithStatus("Successfully built the Golang binary", log.Successful)
+	return nil
+}
+
 // Run will build a go binary and will run it.
 func (t *turbineGoCLI) Run(ctx context.Context) error {
-	appName, err := utils.GetAppNameFromAppJSON(ctx, t.logger, t.appPath)
+	appName, err := utils.GetAppNameFromAppJSON(t.logger, t.appPath)
 	if err != nil {
 		return err
 	}
 
 	// building is a requirement prior to running for go apps
-	if err = t.Build(ctx, appName, false); err != nil {
+	if err = t.build(ctx, appName); err != nil {
 		return err
 	}
 
@@ -34,6 +65,7 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 }
 
 // RunCleanup removes any dangling binaries.
+// TODO: Remove once `apps run` for go uses turbine-core exclusively.
 func RunCleanup(ctx context.Context, l log.Logger, appPath, appName string) {
 	localBinary := filepath.Join(appPath, appName)
 	err := os.Remove(localBinary)
@@ -42,6 +74,7 @@ func RunCleanup(ctx context.Context, l log.Logger, appPath, appName string) {
 	}
 
 	crossCompiledBinary := localBinary + ".cross"
+
 	err = os.Remove(crossCompiledBinary)
 	if err != nil {
 		l.Warnf(ctx, "warning: failed to clean up %s\n", crossCompiledBinary)
