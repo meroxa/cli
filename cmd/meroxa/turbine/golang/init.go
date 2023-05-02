@@ -92,6 +92,13 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 	if err != nil {
 		return err
 	}
+
+	// tidy
+	goTidy := exec.Command("go", "mod", "tidy")
+	if _, err := goTidy.CombinedOutput(); err != nil {
+		return err
+	}
+
 	depsLog := "Downloading dependencies"
 	cmd = exec.Command("go", "mod", "download")
 	if vendor {
