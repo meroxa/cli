@@ -551,10 +551,7 @@ func (d *Deploy) validateLanguage() error {
 // validateAppJSON will validate app JSON provided by customer has the right formation including supported language
 // TODO: Extract some of this logic this turbine-core so we centralize language support in one place.
 func (d *Deploy) validateAppJSON(ctx context.Context) error {
-	var (
-		err    error
-		config turbine.AppConfig
-	)
+	var err error
 
 	d.logger.Info(ctx, "Validating your app.json...")
 	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
@@ -580,11 +577,9 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	config, err = turbine.ReadConfigFile(d.path)
-	if err != nil {
+	if d.appConfig, err = turbine.ReadConfigFile(d.path); err != nil {
 		return err
 	}
-	d.appConfig = &config
 
 	if d.gitBranch, err = turbine.GetGitBranch(d.path); err != nil {
 		return err

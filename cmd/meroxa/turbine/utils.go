@@ -126,8 +126,7 @@ func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
 	if skipInit {
 		appConfig.ModuleInit = "false"
 	}
-	err = WriteConfigFile(pwd, appConfig)
-	return err
+	return WriteConfigFile(pwd, appConfig)
 }
 
 // SetVendorInAppJSON returns whether to vendor modules.
@@ -140,37 +139,36 @@ func SetVendorInAppJSON(pwd string, vendor bool) error {
 	if vendor {
 		appConfig.Vendor = "true"
 	}
-	err = WriteConfigFile(pwd, appConfig)
-	return err
+	return WriteConfigFile(pwd, appConfig)
 }
 
 // ReadConfigFile will read the content of an app.json based on path.
-func ReadConfigFile(appPath string) (AppConfig, error) {
+func ReadConfigFile(appPath string) (*AppConfig, error) {
 	var appConfig AppConfig
 
 	if prefetched == nil || os.Getenv("UNIT_TEST") != "" {
 		appConfigPath := path.Join(appPath, "app.json")
 		appConfigBytes, err := os.ReadFile(appConfigPath)
 		if err != nil {
-			return appConfig, fmt.Errorf("could not find an app.json file on path %q."+
+			return &appConfig, fmt.Errorf("could not find an app.json file on path %q."+
 				" Try a different value for `--path`", appPath)
 		}
 		if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
-			return appConfig, err
+			return &appConfig, err
 		}
 		prefetched = &appConfig
 	}
 
-	return *prefetched, nil
+	return prefetched, nil
 }
 
-func WriteConfigFile(appPath string, cfg AppConfig) error {
+func WriteConfigFile(appPath string, cfg *AppConfig) error {
 	appConfigPath := path.Join(appPath, "app.json")
 	data, err := json.MarshalIndent(cfg, "", "  ")
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(appConfigPath, data, 0o664) //nolint:gosec,gomnd
+	err = os.WriteFile(appConfigPath, data, 0o664) //nolint:gomnd
 	if err != nil {
 		return fmt.Errorf("%v\n"+
 			"unable to update app.json file on path %q. Maybe try using a different value for `--path`", err, appPath)
