@@ -95,7 +95,7 @@ func modulesInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 
 	// tidy
 	goTidy := exec.Command("go", "mod", "tidy")
-	if _, err := goTidy.CombinedOutput(); err != nil {
+	if _, err = goTidy.CombinedOutput(); err != nil {
 		return err
 	}
 
