@@ -1,11 +1,8 @@
 package turbinego
 
 import (
-	"math/rand"
-	"net"
-	"strconv"
-
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/turbine/internal"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/turbine-core/pkg/client"
 	"github.com/meroxa/turbine-core/pkg/server"
@@ -27,6 +24,6 @@ func New(l log.Logger, appPath string) turbine.CLI {
 		appPath:           appPath,
 		runner:            server.NewRunServer(),
 		builder:           server.NewSpecBuilderServer(),
-		grpcListenAddress: net.JoinHostPort("localhost", strconv.Itoa(50000+rand.Intn(1000))),
+		grpcListenAddress: internal.RandomLocalAddr(),
 	}
 }
