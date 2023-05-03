@@ -33,6 +33,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
+	turbineMock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -125,6 +126,7 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
+	mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 
 	appName := "my-app-with-funcs"
 	log := "hello world"
@@ -150,13 +152,15 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 		DeploymentLogs: map[string]string{"uu-id": log},
 	}
 
+	mockTurbineCLI.EXPECT().GetVersion(ctx).Return("1.0", nil)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.EXPECT().GetApplicationLogs(ctx, appName).Return(appLogs, nil)
 
 	dc := &Logs{
-		client: client,
-		logger: logger,
+		client:     client,
+		logger:     logger,
+		turbineCLI: mockTurbineCLI,
 	}
 	dc.flags.Path = filepath.Join(path, appName)
 

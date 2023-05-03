@@ -26,6 +26,8 @@ import (
 	"strings"
 	"testing"
 
+	turbineMock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
+
 	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/golang/mock/gomock"
@@ -156,6 +158,7 @@ func TestDescribeApplicationExecutionWithPath(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
+	mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 
 	appName := "my-env"
 
@@ -215,13 +218,15 @@ func TestDescribeApplicationExecutionWithPath(t *testing.T) {
 		{EntityIdentifier: meroxa.EntityIdentifier{Name: "fun1"}},
 	}
 
+	mockTurbineCLI.EXPECT().GetVersion(ctx).Return("1.0", nil)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.EXPECT().GetApplication(ctx, a.Name).Return(&a, nil)
 
 	dc := &Describe{
-		client: client,
-		logger: logger,
+		client:     client,
+		logger:     logger,
+		turbineCLI: mockTurbineCLI,
 	}
 	dc.flags.Path = filepath.Join(path, appName)
 

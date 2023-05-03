@@ -27,6 +27,8 @@ import (
 	"reflect"
 	"testing"
 
+	turbineMock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
+
 	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/golang/mock/gomock"
@@ -125,6 +127,7 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
+	mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 
 	app := utils.GenerateApplication("")
 
@@ -145,8 +148,9 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 
 	logger = log.NewTestLogger()
 	r := &Remove{
-		client: client,
-		logger: logger,
+		client:     client,
+		logger:     logger,
+		turbineCLI: mockTurbineCLI,
 	}
 
 	r.flags.Path = filepath.Join(path, app.Name)
@@ -156,6 +160,7 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 		StatusCode: http.StatusNoContent,
 	}
 
+	mockTurbineCLI.EXPECT().GetVersion(ctx).Return("1.0", nil)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 	client.
