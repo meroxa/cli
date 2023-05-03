@@ -43,9 +43,6 @@ import (
 )
 
 const (
-	dockerHubUserNameEnv    = "DOCKER_HUB_USERNAME"
-	dockerHubAccessTokenEnv = "DOCKER_HUB_ACCESS_TOKEN" //nolint:gosec
-
 	platformBuildPollDuration  = 2 * time.Second
 	minutesToWaitForDeployment = 5
 	intervalCheckForDeployment = 500 * time.Millisecond
@@ -85,8 +82,6 @@ func (e *environment) nameOrUUID() string {
 type Deploy struct {
 	flags struct {
 		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
-		DockerHubUserName        string `long:"docker-hub-username" usage:"DockerHub username to use to build and deploy the app" hidden:"true"`         //nolint:lll
-		DockerHubAccessToken     string `long:"docker-hub-access-token" usage:"DockerHub access token to use to build and deploy the app" hidden:"true"` //nolint:lll
 		Environment              string `long:"env" usage:"environment (name or UUID) where application will be deployed to"`
 		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
@@ -96,7 +91,6 @@ type Deploy struct {
 	client        deployApplicationClient
 	config        config.Config
 	logger        log.Logger
-	localDeploy   turbine.LocalDeploy
 	turbineCLI    turbine.CLI
 	appConfig     *turbine.AppConfig
 	configAppName string
@@ -145,73 +139,6 @@ func (d *Deploy) Client(client meroxa.Client) {
 
 func (d *Deploy) Flags() []builder.Flag {
 	return builder.BuildFlags(&d.flags)
-}
-
-func (d *Deploy) getDockerHubUserNameEnv() string {
-	if v := os.Getenv(dockerHubUserNameEnv); v != "" {
-		return v
-	}
-	return d.config.GetString(dockerHubUserNameEnv)
-}
-
-func (d *Deploy) getDockerHubAccessTokenEnv() string {
-	if v := os.Getenv(dockerHubAccessTokenEnv); v != "" {
-		return v
-	}
-	return d.config.GetString(dockerHubAccessTokenEnv)
-}
-
-func (d *Deploy) validateDockerHubFlags() error {
-	if d.flags.DockerHubUserName != "" {
-		d.localDeploy.DockerHubUserNameEnv = d.flags.DockerHubUserName
-		if d.flags.DockerHubAccessToken == "" {
-			return errors.New("--docker-hub-access-token is required when --docker-hub-username is present")
-		}
-	}
-
-	if d.flags.DockerHubAccessToken != "" {
-		d.localDeploy.DockerHubAccessTokenEnv = d.flags.DockerHubAccessToken
-		if d.flags.DockerHubUserName == "" {
-			return errors.New("--docker-hub-username is required when --docker-hub-access-token is present")
-		}
-	}
-	return nil
-}
-
-func (d *Deploy) validateDockerHubEnvVars() error {
-	if d.getDockerHubUserNameEnv() != "" {
-		d.localDeploy.DockerHubUserNameEnv = d.getDockerHubUserNameEnv()
-		if d.getDockerHubAccessTokenEnv() == "" {
-			return fmt.Errorf("%s is required when %s is present", dockerHubAccessTokenEnv, dockerHubUserNameEnv)
-		}
-	}
-	if d.getDockerHubAccessTokenEnv() != "" {
-		d.localDeploy.DockerHubAccessTokenEnv = d.getDockerHubAccessTokenEnv()
-		if d.getDockerHubUserNameEnv() == "" {
-			return fmt.Errorf("%s is required when %s is present", dockerHubUserNameEnv, dockerHubAccessTokenEnv)
-		}
-	}
-	return nil
-}
-
-func (d *Deploy) validateLocalDeploymentConfig() error {
-	// Check if users had an old configuration where DockerHub credentials were set as environment variables
-	err := d.validateDockerHubEnvVars()
-	if err != nil {
-		return err
-	}
-
-	// Check if users are making use of DockerHub flags
-	err = d.validateDockerHubFlags()
-	if err != nil {
-		return err
-	}
-
-	// If there are DockerHub credentials, we consider it a local deployment
-	if d.localDeploy.DockerHubUserNameEnv != "" && d.localDeploy.DockerHubAccessTokenEnv != "" {
-		d.localDeploy.Enabled = true
-	}
-	return nil
 }
 
 func (d *Deploy) Logger(logger log.Logger) {
@@ -496,8 +423,6 @@ func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVe
 // when deploying.
 func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	d.logger.StartSpinner("\t", "Checking if application has processes...")
-	var fqImageName string
-
 	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -511,23 +436,7 @@ func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	}
 
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
-
-	if d.localDeploy.Enabled {
-		d.localDeploy.Lang = d.lang
-		d.localDeploy.AppName = d.appName
-
-		fqImageName, err = d.localDeploy.GetDockerImageName(ctx, d.logger, d.path, d.appName)
-		if err != nil {
-			return "", err
-		}
-	} else {
-		fqImageName, err = d.getPlatformImage(ctx)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return fqImageName, nil
+	return d.getPlatformImage(ctx)
 }
 
 // validateLanguage stops execution of the deployment in case language is not supported.
@@ -554,10 +463,6 @@ func (d *Deploy) validateAppJSON(ctx context.Context) error {
 	var err error
 
 	d.logger.Info(ctx, "Validating your app.json...")
-	// validateLocalDeploymentConfig will look for DockerHub credentials to determine whether it's a local deployment or not.
-	if err = d.validateLocalDeploymentConfig(); err != nil {
-		return err
-	}
 
 	if d.path, err = turbine.GetPath(d.flags.Path); err != nil {
 		return err

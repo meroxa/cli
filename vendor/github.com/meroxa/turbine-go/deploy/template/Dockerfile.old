@@ -1,7 +1,0 @@
-# This Dockerfile is only maintained until Go is deploying the spec 0.2.0 as default
-FROM gcr.io/distroless/static
-USER nobody
-WORKDIR /app
-COPY app.json /app
-COPY {{.AppName}}.cross {{.AppName}}
-ENTRYPOINT ["/app/{{.AppName}}", "--serve"]
