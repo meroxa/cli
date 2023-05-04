@@ -2,93 +2,58 @@ package turbinejs
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"strconv"
+	"time"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/turbine/javascript/internal"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/pkg/client"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var TurbineJSVersion = "1.3.8"
 
 func (t *turbineJsCLI) NeedsToBuild(ctx context.Context) (bool, error) {
-	output, err := RunTurbineJS(ctx, t.logger, "hasfunctions", t.appPath)
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.HasFunctions(ctx, &emptypb.Empty{})
 	if err != nil {
-		err = fmt.Errorf(
-			"unable to determine if the Meroxa Application at %s has a Process; %s",
-			t.appPath,
-			err)
 		return false, err
 	}
 
-	isNeeded, err := utils.GetTurbineResponseFromOutput(output)
-	if err != nil {
-		fmtErr := fmt.Errorf(
-			"unable to determine if the Meroxa Application at %s has a Process; %s",
-			t.appPath,
-			err)
-		return false, fmtErr
-	}
-	return strconv.ParseBool(isNeeded)
+	return resp.Value, nil
 }
 
-func (t *turbineJsCLI) GetDeploymentSpec(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
-	var (
-		output         string
-		deploymentSpec string
-	)
-	params := []string{"clideploy", imageName, t.appPath, appName, gitSha}
-
-	if specVersion != "" {
-		params = append(params, specVersion)
-	}
-
-	accessToken, _, err := global.GetUserToken()
+func (t *turbineJsCLI) GetDeploymentSpec(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
 	if err != nil {
-		return deploymentSpec, err
-	}
-	output, err = RunTurbineJSWithEnvVars(
-		ctx,
-		t.logger,
-		map[string]string{
-			"MEROXA_ACCESS_TOKEN":   accessToken,
-			utils.AccountUUIDEnvVar: accountUUID,
-		},
-		params...)
-	if err != nil {
-		return deploymentSpec, err
+		return "", err
 	}
 
-	if specVersion != "" {
-		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
-		if err != nil {
-			err = fmt.Errorf(
-				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
-		}
-	}
-	return deploymentSpec, err
+	return string(resp.Spec), nil
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
 func (t *turbineJsCLI) GetResources(ctx context.Context) ([]utils.ApplicationResource, error) {
-	var resources []utils.ApplicationResource
-
-	output, err := RunTurbineJS(ctx, t.logger, "listresources", t.appPath)
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.ListResources(ctx, &emptypb.Empty{})
 	if err != nil {
-		return resources, err
+		return nil, err
 	}
-	list, err := utils.GetTurbineResponseFromOutput(output)
-	if err == nil && list != "" {
-		// ignores any lines that are not intended to be part of the response
-		output = list
+	var resources []utils.ApplicationResource
+	for _, r := range resp.Resources {
+		resources = append(resources, utils.ApplicationResource{
+			Name:        r.Name,
+			Destination: r.Destination,
+			Source:      r.Source,
+			Collection:  r.Collection,
+		})
 	}
-
-	if err := json.Unmarshal([]byte(output), &resources); err != nil {
-		// fall back if not json
-		return utils.GetResourceNamesFromString(output), nil
-	}
-
 	return resources, nil
 }
 
@@ -101,18 +66,46 @@ func (t *turbineJsCLI) GitChecks(ctx context.Context) error {
 }
 
 func (t *turbineJsCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
-	_, err := RunTurbineJS(ctx, t.logger, "clibuild", t.appPath)
-	if err != nil {
-		return "", fmt.Errorf("unable to create Dockerfile at %s; %s", t.appPath, err)
-	}
-
-	return t.appPath, err
+	cmd := internal.NewTurbineCmd(
+		ctx,
+		t.appPath,
+		internal.TurbineCommandBuild,
+		map[string]string{},
+		t.appPath,
+	)
+	return t.appPath, utils.RunCMD(ctx, t.logger, cmd)
 }
 
 func (t *turbineJsCLI) CleanUpBuild(_ context.Context) {
 	utils.CleanupDockerfile(t.logger, t.appPath)
 }
 
-func (t *turbineJsCLI) SetupForDeploy(_ context.Context, _ string) (func(), error) {
-	return func() {}, nil
+func (t *turbineJsCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+	go t.builder.Run(ctx)
+
+	cmd := internal.NewTurbineCmd(
+		ctx,
+		t.appPath,
+		internal.TurbineCommandRecord,
+		map[string]string{
+			"TURBINE_CORE_SERVER": t.grpcListenAddress,
+		},
+		gitSha,
+	)
+
+	if err := utils.RunCMD(ctx, t.logger, cmd); err != nil {
+		return nil, err
+	}
+
+	// Everything below is common to the other language
+	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
+	if err != nil {
+		return nil, err
+	}
+	t.bc = c
+
+	return func() {
+		c.Close()
+		t.builder.GracefulStop()
+	}, nil
 }

@@ -1245,9 +1245,9 @@ func Test_validateFlags(t *testing.T) {
 			lang:    ir.GoLang,
 		},
 		{
-			name:    "Without --spec and with --env flags if language is not ruby or go",
+			name:    "Without --spec and with --env flags if language is not ruby, go, or js",
 			envFlag: "my-env",
-			lang:    ir.JavaScript,
+			lang:    ir.Python,
 			wantErr: fmt.Errorf(
 				"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 				ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0),
