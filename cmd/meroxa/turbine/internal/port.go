@@ -12,6 +12,7 @@ const (
 )
 
 func RandomLocalAddr() string {
-	port := startPort + rand.Intn(endPort-startPort)
-	return net.JoinHostPort("localhost", strconv.Itoa(port))
+	rand.Seed(time.Now().UTC().UnixNano())
+	port := start + rand.Intn(end-start)
+	return net.JoinHostPort("localhost", strconv.Itoa(port))	
 }
