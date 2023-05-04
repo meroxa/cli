@@ -4,14 +4,16 @@ import (
 	"math/rand"
 	"net"
 	"strconv"
+	"time"
 )
 
 const (
 	startPort = 50000
-	endPort   = 51000
+	endPort   = 60000
 )
 
 func RandomLocalAddr() string {
-	port := startPort + rand.Intn(endPort-startPort)
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	port := startPort + r.Intn(endPort-startPort)
 	return net.JoinHostPort("localhost", strconv.Itoa(port))
 }

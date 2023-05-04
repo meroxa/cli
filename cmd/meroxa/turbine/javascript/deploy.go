@@ -81,7 +81,7 @@ func (t *turbineJsCLI) CleanUpBuild(_ context.Context) {
 }
 
 func (t *turbineJsCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	go t.builder.Run(ctx)
+	go t.builder.RunAddr(ctx, t.grpcListenAddress)
 
 	cmd := internal.NewTurbineCmd(
 		ctx,
