@@ -38,7 +38,7 @@ func (t *turbinePyCLI) CleanUpBuild(_ context.Context) {
 }
 
 func (t *turbinePyCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	go t.builder.Run(ctx)
+	go t.builder.RunAddr(ctx, t.grpcListenAddress)
 
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandRecord,
