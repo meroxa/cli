@@ -25,7 +25,7 @@ func (t *turbinePyCLI) GetVersion(_ context.Context) (string, error) {
 	if err != nil {
 		// For versions <= v1.6.1
 		version = string(output)
-		version = strings.TrimSpace(version) // it will remove tab '\t' and new lines '\n' as well
+		version = strings.TrimSpace(version)
 		return version, nil
 	}
 
