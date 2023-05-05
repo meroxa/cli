@@ -21,12 +21,13 @@ func (t *turbinePyCLI) GetVersion(_ context.Context) (string, error) {
 	}
 
 	version, err := utils.GetTurbineResponseFromOutput(string(output))
+	// FYI the error return here is being used to fallback to previous CLI output format
 	if err != nil {
 		// For versions <= v1.6.1
 		version = string(output)
-		version = strings.TrimSpace(version)  // it will remove tab '\t' and new lines '\n' as well
-		version = strings.Trim(version, "\r") // windows: removing part of windows new line
+		version = strings.TrimSpace(version) // it will remove tab '\t' and new lines '\n' as well
 		return version, nil
 	}
+
 	return version, err
 }
