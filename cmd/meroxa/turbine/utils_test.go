@@ -364,6 +364,16 @@ func TestGetTurbineResponseFromOutput(t *testing.T) {
 			output: "",
 		},
 		{
+			name:   "Successfully parse with carriage returns",
+			input:  "hey\nturbine-response: 1.7.0\r\nthis is from windows!",
+			output: "1.7.0",
+		},
+		{
+			name:   "Successfully parse with carriage returns plus some spaces",
+			input:  "hey\nturbine-response: 1.7.0   \r\nthis is from windows!",
+			output: "1.7.0",
+		},
+		{
 			name:  "Fail to find output",
 			input: "ABC",
 			err:   fmt.Errorf("output is formatted unexpectedly"),
