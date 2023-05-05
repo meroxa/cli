@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -110,7 +110,7 @@ func readConfig() (*viper.Viper, error) {
 		if err != nil {
 			return nil, fmt.Errorf("could not get config directory: %w", err)
 		}
-		configDir = filepath.Join(configDir, "meroxa")
+		configDir = path.Join(configDir, "meroxa")
 
 		// create subdirectory if it doesn't exist, otherwise viper will complain
 		err = os.MkdirAll(configDir, 0o755) //nolint:gomnd
