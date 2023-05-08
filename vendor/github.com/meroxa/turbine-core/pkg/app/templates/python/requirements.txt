@@ -1,4 +1,4 @@
-turbine-py==1.8.1
+turbine-py==1.8.2
 aiohttp>=3.8.1
 grpcio>=1.44.0
 grpcio-tools>=1.44.0
