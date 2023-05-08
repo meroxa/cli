@@ -271,6 +271,9 @@ func createTarAndZipFile(src string, buf io.Writer) error {
 	tarWriter := tar.NewWriter(zipWriter)
 
 	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
 		if shouldSkipDir(fi) {
 			return filepath.SkipDir
 		}

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -119,12 +118,13 @@ func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, _ string) (string, 
 	if err != nil {
 		return "", fmt.Errorf("unable to create Dockerfile; %s", string(output))
 	}
-	r := regexp.MustCompile("^turbine-response: ([^\n]*)")
-	match := r.FindStringSubmatch(string(output))
-	if match == nil || len(match) < 2 {
-		return "", fmt.Errorf("unable to create Dockerfiles; %s", string(output))
+
+	tmpPath, err := utils.GetTurbineResponseFromOutput(string(output))
+	if err != nil {
+		return "", fmt.Errorf("unable to create Dockerfile; %s", string(output))
 	}
-	t.tmpPath = match[1]
+
+	t.tmpPath = tmpPath
 	return t.tmpPath, err
 }
 
