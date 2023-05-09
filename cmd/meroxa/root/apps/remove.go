@@ -111,7 +111,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 			return err
 		}
 
-		if nameOrUUID != strings.TrimSuffix(input, "\n") {
+		if nameOrUUID != strings.TrimRight(input, "\r\n") {
 			return errors.New("action aborted")
 		}
 	}
