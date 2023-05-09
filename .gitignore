@@ -2,3 +2,4 @@
 /cli
 .envrc
 .vscode
+*.swp
