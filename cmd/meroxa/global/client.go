@@ -130,10 +130,13 @@ func SetAccountUUID(client meroxa.Client) error {
 }
 
 func NewClient() (meroxa.Client, error) {
+	/*
 	accessToken, refreshToken, err := GetUserToken()
 	if err != nil {
 		return nil, err
 	}
+	*/
+	var accessToken, refreshToken string
 
 	options := []meroxa.Option{
 		meroxa.WithUserAgent(fmt.Sprintf("Meroxa CLI %s", Version)),
@@ -151,7 +154,7 @@ func NewClient() (meroxa.Client, error) {
 
 	// WithAuthentication needs to be added after WithDumpTransport
 	// to catch requests to auth0
-	options = append(options, meroxa.WithAuthentication(
+	_ = append(options, meroxa.WithAuthentication(
 		&oauth2.Config{
 			ClientID: GetMeroxaAuthClientID(),
 			Endpoint: oauthEndpoint(GetMeroxaAuthDomain()),
@@ -163,7 +166,7 @@ func NewClient() (meroxa.Client, error) {
 
 	// If account is not set, set account as the default account
 	if Config.GetString(UserAccountUUID) == "" {
-		client, err := meroxa.New(options...)
+		client, err := meroxa.New()
 		if err != nil {
 			return nil, err
 		}

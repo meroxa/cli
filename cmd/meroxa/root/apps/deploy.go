@@ -404,6 +404,7 @@ func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVe
 	if err != nil {
 		return nil, err
 	}
+
 	var spec map[string]interface{}
 	if specStr != "" {
 		if unmarshalErr := json.Unmarshal([]byte(specStr), &spec); unmarshalErr != nil {

@@ -24,6 +24,8 @@ require (
 	golang.org/x/oauth2 v0.7.0
 )
 
+replace github.com/meroxa/turbine-core => /home/lyubo/src/turbine-core
+
 require (
 	github.com/briandowns/spinner v1.21.0
 	github.com/mattn/go-shellwords v1.0.12

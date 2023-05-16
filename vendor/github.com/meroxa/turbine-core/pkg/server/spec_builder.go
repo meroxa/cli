@@ -124,6 +124,7 @@ func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.P
 	f := ir.FunctionSpec{
 		UUID: uuid.New().String(),
 		Name: strings.ToLower(req.Process.Name),
+		Script: req.Process.Script,
 	}
 	if err := s.spec.AddFunction(&f); err != nil {
 		return nil, err
@@ -153,7 +154,15 @@ func (s *specBuilderService) RegisterSecret(_ context.Context, secret *pb.Secret
 }
 
 func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
-	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
+	var hasFunc bool
+
+	for _, f := range s.spec.Functions {
+		if hasFunc = (f.Script == ""); hasFunc {
+			break
+		}
+	}
+
+	return wrapperspb.Bool(hasFunc), nil
 }
 
 func (s *specBuilderService) ListResources(_ context.Context, _ *emptypb.Empty) (*pb.ListResourcesResponse, error) {

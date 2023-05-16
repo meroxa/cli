@@ -25,6 +25,11 @@ var templates embed.FS
 func (t *turbineGoCLI) GetDeploymentSpec(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
+
+	if imageName == "" {
+		imageName = "inline-js"
+	}
+
 	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
 		Image: imageName,
 	})

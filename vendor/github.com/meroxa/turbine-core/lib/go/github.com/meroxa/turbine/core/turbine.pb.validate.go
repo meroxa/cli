@@ -1991,6 +1991,8 @@ func (m *ProcessCollectionRequest_Process) validate(all bool) error {
 
 	// no validation rules for Name
 
+	// no validation rules for Script
+
 	if len(errors) > 0 {
 		return ProcessCollectionRequest_ProcessMultiError(errors)
 	}
