@@ -374,7 +374,7 @@ func buildCommandWithConfirmWithValue(cmd *cobra.Command, c Command) {
 			return err
 		}
 
-		if wantInput != strings.TrimSuffix(input, "\n") {
+		if wantInput != strings.TrimRight(input, "\r\n") {
 			return errors.New("action aborted")
 		}
 

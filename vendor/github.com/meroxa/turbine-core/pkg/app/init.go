@@ -4,6 +4,7 @@ import (
 	"embed"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -38,7 +39,7 @@ func (a *AppInit) createFixtures() error {
 		return err
 	}
 
-	content, err := templateFS.ReadDir(filepath.Join("templates", string(a.Language), directory))
+	content, err := templateFS.ReadDir(path.Join("templates", string(a.Language), directory))
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func (a *AppInit) createFixtures() error {
 
 // duplicateFile reads from a template and write to a file located to a path provided by the user
 func (a *AppInit) duplicateFile(fileName string) error {
-	t, err := template.ParseFS(templateFS, filepath.Join("templates", string(a.Language), fileName))
+	t, err := template.ParseFS(templateFS, path.Join("templates", string(a.Language), fileName))
 	if err != nil {
 		return err
 	}
@@ -87,7 +88,7 @@ func (a *AppInit) duplicateFile(fileName string) error {
 func (a *AppInit) listTemplateContent() ([]string, []string, error) {
 	var files, directories []string
 
-	content, err := templateFS.ReadDir(filepath.Join("templates", string(a.Language)))
+	content, err := templateFS.ReadDir(path.Join("templates", string(a.Language)))
 	if err != nil {
 		return files, directories, err
 	}

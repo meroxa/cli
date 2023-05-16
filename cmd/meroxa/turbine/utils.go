@@ -280,12 +280,14 @@ func GetGitBranch(appPath string) (string, error) {
 }
 
 func GetTurbineResponseFromOutput(output string) (string, error) {
-	r := regexp.MustCompile("turbine-response: ([^\n]*)")
+	r := regexp.MustCompile("turbine-response: ([^\r\n]*)")
 	match := r.FindStringSubmatch(output)
 	if match == nil || len(match) < 2 {
 		return "", fmt.Errorf("output is formatted unexpectedly")
 	}
-	return match[1], nil
+
+	trimmed := strings.TrimSpace(match[1])
+	return trimmed, nil
 }
 
 func RunCMD(ctx context.Context, logger log.Logger, cmd *exec.Cmd) error {
