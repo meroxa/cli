@@ -43,7 +43,6 @@ func EnvironmentsTable(environments []*meroxa.Environment, hideHeaders bool) str
 	return ""
 }
 
-//nolint:funlen
 func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable := simpletable.New()
 
@@ -94,69 +93,8 @@ func EnvironmentTable(environment *meroxa.Environment) string {
 	mainTable.SetStyle(simpletable.StyleCompact)
 	str := mainTable.String()
 
-	if environment.Status.PreflightDetails != nil {
-		preflightTable := simpletable.New()
-		preflightTable.Body.Cells = [][]*simpletable.Cell{
-			{
-				{Align: simpletable.AlignRight, Text: "				Preflight Checks:"},
-				{Text: ""},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS EC2 Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS ECR Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ECR, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS EKS Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EKS, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS IAM Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.IAM, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS KMS Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.KMS, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS MKS Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.MSK, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS S3 Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.S3, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS ServiceQuotas Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ServiceQuotas, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS CloudFormation Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudformation, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS Cloudwatch Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudwatch, " ; ")},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS EIP Limits Status:"},
-				{Text: environment.Status.PreflightDetails.PreflightLimits.EIP},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS NAT Limits Status:"},
-				{Text: environment.Status.PreflightDetails.PreflightLimits.NAT},
-			},
-			{
-				{Align: simpletable.AlignRight, Text: "AWS VPC Limits Status:"},
-				{Text: environment.Status.PreflightDetails.PreflightLimits.VPC},
-			},
-		}
-		preflightTable.SetStyle(simpletable.StyleCompact)
-		str += "\n" + preflightTable.String()
-	}
+	preflightTable := EnvironmentPreflightTable(environment)
+	str += "\n" + preflightTable
 
 	return str
 }
@@ -171,43 +109,43 @@ func EnvironmentPreflightTable(environment *meroxa.Environment) string {
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS EC2 Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EC2, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS ECR Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ECR, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ECR, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS EKS Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EKS, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.EKS, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS IAM Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.IAM, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.IAM, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS KMS Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.KMS, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.KMS, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS MKS Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.MSK, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.MSK, " \n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS S3 Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.S3, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.S3, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS ServiceQuotas Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ServiceQuotas, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.ServiceQuotas, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS CloudFormation Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudformation, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudformation, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS Cloudwatch Permissions Status:"},
-				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudwatch, " ; ")},
+				{Text: strings.Join(environment.Status.PreflightDetails.PreflightPermissions.Cloudwatch, "\n")},
 			},
 			{
 				{Align: simpletable.AlignRight, Text: "AWS EIP Limits Status:"},
