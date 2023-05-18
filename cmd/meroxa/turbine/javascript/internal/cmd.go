@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 type TurbineCommand string
@@ -16,6 +17,14 @@ const (
 	TurbineCommandBuild   TurbineCommand = "turbine-js-dockerfile"
 	TurbineCommandVersion TurbineCommand = "turbine-js-version"
 )
+
+func RunTurbineCmd(ctx context.Context, appPath string, command TurbineCommand, env map[string]string, flags ...string) (string, error) {
+	cmd := NewTurbineCmd(ctx, appPath, command, env, flags...)
+	cmd.Stderr = nil
+	cmd.Stdout = nil
+	out, err := cmd.CombinedOutput()
+	return strings.TrimSpace(string(out)), err
+}
 
 func NewTurbineCmd(ctx context.Context, appPath string, command TurbineCommand, env map[string]string, args ...string) *exec.Cmd {
 	cmd := exec.CommandContext(ctx, "node", append([]string{
