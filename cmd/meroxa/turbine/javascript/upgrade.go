@@ -13,40 +13,26 @@ func (t *turbineJsCLI) Upgrade(_ bool) error {
 	cmd.Dir = t.appPath
 	err := cmd.Wait()
 	if err != nil {
-		t.logger.StartSpinner("\t", "Adding @meroxa/turbine-js-framework requirement...")
-		cmd = exec.Command("npm", "install", "@meroxa/turbine-js-framework", "--save")
+		t.logger.StartSpinner("\t", "Adding @meroxa/turbine-js requirement...")
+		cmd = exec.Command("npm", "install", "@meroxa/turbine-js", "--save")
 		cmd.Dir = t.appPath
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			t.logger.StopSpinnerWithStatus("Failed to install @meroxa/turbine-js-framework", log.Failed)
+			t.logger.StopSpinnerWithStatus("Failed to install @meroxa/turbine-js", log.Failed)
 			return fmt.Errorf(string(out))
 		}
 
-		cmd = exec.Command("npm", "uninstall", "@meroxa/turbine-js", "--save")
-		cmd.Dir = t.appPath
-		err = cmd.Run()
-		if err != nil {
-			t.logger.StopSpinnerWithStatus("Failed to uninstall @meroxa/turbine-js. Moving on...", log.Failed)
-		}
-
-		cmd = exec.Command("npm", "update")
-		cmd.Dir = t.appPath
-		out, err = cmd.CombinedOutput()
-		if err != nil {
-			t.logger.StopSpinnerWithStatus("Failed to run npm update", log.Failed)
-			return fmt.Errorf(string(out))
-		}
-		t.logger.StopSpinnerWithStatus("Added @meroxa/turbine-js-framework requirement successfully!", log.Successful)
+		t.logger.StopSpinnerWithStatus("Added @meroxa/turbine-js requirement successfully!", log.Successful)
 	} else {
-		t.logger.StartSpinner("\t", "Upgrading @meroxa/turbine-js-framework...")
-		cmd = exec.Command("npm", "upgrade", "@meroxa/turbine-js-framework")
+		t.logger.StartSpinner("\t", "Upgrading @meroxa/turbine-js...")
+		cmd = exec.Command("npm", "upgrade", "@meroxa/turbine-js")
 		cmd.Dir = t.appPath
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			t.logger.StopSpinnerWithStatus("Failed to upgrade @meroxa/turbine-js-framework", log.Failed)
+			t.logger.StopSpinnerWithStatus("Failed to upgrade @meroxa/turbine-js", log.Failed)
 			return fmt.Errorf(string(out))
 		}
-		t.logger.StopSpinnerWithStatus("Upgraded @meroxa/turbine-js-framework successfully!", log.Successful)
+		t.logger.StopSpinnerWithStatus("Upgraded @meroxa/turbine-js!", log.Successful)
 	}
 	return nil
 }
