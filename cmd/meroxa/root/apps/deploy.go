@@ -798,7 +798,7 @@ func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
 // Turbine Ruby will use a spec'ed version internally so --spec is not required when using environments which is
 // currently only available for those deployments using IR.
 func (d *Deploy) validateEnvironmentFlagCompatibility() error {
-	if d.flags.Spec == "" && d.env != nil && d.lang == ir.Python {
+	if d.flags.Spec == "" && d.env != nil {
 		return fmt.Errorf(
 			"please run `meroxa apps deploy` with `--spec %s` or `--spec %s` if you want to deploy to an environment",
 			ir.SpecVersion_0_1_1, ir.SpecVersion_0_2_0)
@@ -870,7 +870,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby and Go at the moment)
+	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby Go and Python at the moment)
 	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
 	if err != nil {
 		return err
@@ -884,8 +884,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	d.specVersion = d.flags.Spec
 
-	// Make the latest version default for Ruby, Go, JS
-	if d.specVersion == "" && (d.lang != ir.Python) {
+	// Make the latest version default for Ruby , Go , Python and JS
+	if d.specVersion == "" {
 		d.specVersion = ir.LatestSpecVersion
 	}
 

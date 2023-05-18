@@ -2,105 +2,110 @@ package turbinepy
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"os"
-	"os/exec"
-	"strconv"
-	"strings"
+	"time"
 
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
-	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/cmd/meroxa/turbine/python/internal"
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/pkg/client"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // NeedsToBuild determines if the app has functions or not.
-func (t *turbinePyCLI) NeedsToBuild(_ context.Context) (bool, error) {
-	cmd := exec.Command("turbine-py", "hasFunctions", t.appPath)
-	output, err := cmd.CombinedOutput()
+
+func (t *turbinePyCLI) NeedsToBuild(ctx context.Context) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.HasFunctions(ctx, &emptypb.Empty{})
 	if err != nil {
-		err = fmt.Errorf(
-			"unable to determine if the Meroxa Application at %s has a Process; %s",
-			t.appPath,
-			string(output))
 		return false, err
 	}
 
-	isNeeded, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err != nil {
-		err := fmt.Errorf(
-			"unable to determine if the Meroxa Application at %s has a Process; %s",
-			t.appPath,
-			string(output))
-		return false, err
+	return resp.Value, nil
+}
+
+func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
+	cmd := internal.NewTurbineCmd(t.appPath,
+		internal.TurbineCommandBuild,
+		map[string]string{},
+		t.appPath,
+	)
+	return t.appPath, utils.RunCMD(ctx, t.logger, cmd)
+}
+
+func (t *turbinePyCLI) CleanUpBuild(_ context.Context) {
+	utils.CleanupDockerfile(t.logger, t.appPath)
+}
+
+func (t *turbinePyCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+	go t.builder.RunAddr(ctx, t.grpcListenAddress)
+
+	cmd := internal.NewTurbineCmd(t.appPath,
+		internal.TurbineCommandRecord,
+		map[string]string{
+			"TURBINE_CORE_SERVER": t.grpcListenAddress,
+		},
+		t.appPath,
+		gitSha,
+	)
+
+	if err := utils.RunCMD(ctx, t.logger, cmd); err != nil {
+		return nil, err
 	}
-	return strconv.ParseBool(isNeeded)
+
+	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
+	if err != nil {
+		return nil, err
+	}
+	t.bc = c
+
+	return func() {
+		c.Close()
+		t.builder.GracefulStop()
+	}, nil
 }
 
 // Deploy creates Application entities.
-func (t *turbinePyCLI) GetDeploymentSpec(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
-	var (
-		output         string
-		deploymentSpec string
-	)
-	args := []string{"clideploy", t.appPath, imageName, appName, gitSha}
-
-	if specVersion != "" {
-		args = append(args, specVersion)
-	}
-
-	cmd := exec.CommandContext(ctx, "turbine-py", args...)
-
-	accessToken, _, err := global.GetUserToken()
+func (t *turbinePyCLI) Deploy(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
+	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
 	if err != nil {
-		return deploymentSpec, err
+		return "", err
 	}
-	cmd.Env = os.Environ()
-	cmd.Env = append(
-		cmd.Env,
-		fmt.Sprintf("MEROXA_ACCESS_TOKEN=%s", accessToken),
-		fmt.Sprintf("%s=%s", utils.AccountUUIDEnvVar, accountUUID))
+	return string(resp.Spec), nil
+}
 
-	output, err = utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+func (t *turbinePyCLI) GetDeploymentSpec(ctx context.Context, imageName, _, _, _, _ string) (string, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
 	if err != nil {
-		if strings.Contains(err.Error(), "unrecognized arguments") {
-			return deploymentSpec, errors.New(utils.IncompatibleTurbineVersion)
-		}
-
-		return deploymentSpec, err
+		return "", err
 	}
 
-	if specVersion != "" {
-		deploymentSpec, err = utils.GetTurbineResponseFromOutput(output)
-		if err != nil {
-			err = fmt.Errorf(
-				"unable to receive the deployment spec for the Meroxa Application at %s", t.appPath)
-		}
-	}
-	return deploymentSpec, err
+	return string(resp.Spec), nil
 }
 
 // GetResources asks turbine for a list of resources used by the given app.
 func (t *turbinePyCLI) GetResources(ctx context.Context) ([]utils.ApplicationResource, error) {
-	var resources []utils.ApplicationResource
-
-	cmd := exec.CommandContext(ctx, "turbine-py", "listResources", t.appPath)
-	output, err := cmd.CombinedOutput()
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.bc.ListResources(ctx, &emptypb.Empty{})
 	if err != nil {
-		return resources, errors.New(string(output))
+		return nil, err
 	}
-	list, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err == nil && list != "" {
-		// ignores any lines that are not intended to be part of the response
-		output = []byte(list)
+	var resources []utils.ApplicationResource
+	for _, r := range resp.Resources {
+		resources = append(resources, utils.ApplicationResource{
+			Name:        r.Name,
+			Destination: r.Destination,
+			Source:      r.Source,
+			Collection:  r.Collection,
+		})
 	}
-
-	if err := json.Unmarshal(output, &resources); err != nil {
-		// fall back if not json
-		return utils.GetResourceNamesFromString(string(output)), nil
-	}
-
 	return resources, nil
 }
 
@@ -110,38 +115,4 @@ func (t *turbinePyCLI) GetGitSha(ctx context.Context) (string, error) {
 
 func (t *turbinePyCLI) GitChecks(ctx context.Context) error {
 	return utils.GitChecks(ctx, t.logger, t.appPath)
-}
-
-func (t *turbinePyCLI) CreateDockerfile(ctx context.Context, _ string) (string, error) {
-	cmd := exec.CommandContext(ctx, "turbine-py", "clibuild", t.appPath)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return "", fmt.Errorf("unable to create Dockerfile; %s", string(output))
-	}
-
-	tmpPath, err := utils.GetTurbineResponseFromOutput(string(output))
-	if err != nil {
-		return "", fmt.Errorf("unable to create Dockerfile; %s", string(output))
-	}
-
-	t.tmpPath = tmpPath
-	return t.tmpPath, err
-}
-
-func (t *turbinePyCLI) CleanUpBuild(ctx context.Context) {
-	// cleanUpPythonTempBuildLocation removes any artifacts in the temporary directory.
-	t.logger.StartSpinner("\t", fmt.Sprintf("Removing artifacts from building the Python Application at %s...", t.tmpPath))
-
-	cmd := exec.CommandContext(ctx, "turbine-py", "cliclean", t.tmpPath)
-	output, err := cmd.CombinedOutput()
-
-	if err != nil {
-		t.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Failed to clean up artifacts at %s: %v %s", t.tmpPath, err, output), log.Failed)
-	} else {
-		t.logger.StopSpinnerWithStatus("Removed artifacts from building", log.Successful)
-	}
-}
-
-func (t *turbinePyCLI) SetupForDeploy(_ context.Context, _ string) (func(), error) {
-	return func() {}, nil
 }
