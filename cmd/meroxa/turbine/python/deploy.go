@@ -108,3 +108,11 @@ func (t *turbinePyCLI) GetResources(ctx context.Context) ([]utils.ApplicationRes
 	}
 	return resources, nil
 }
+
+func (t *turbinePyCLI) GetGitSha(ctx context.Context) (string, error) {
+	return utils.GetGitSha(ctx, t.appPath)
+}
+
+func (t *turbinePyCLI) GitChecks(ctx context.Context) error {
+	return utils.GitChecks(ctx, t.logger, t.appPath)
+}
