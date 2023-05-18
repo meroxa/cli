@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -144,9 +145,11 @@ func (i *Init) Execute(ctx context.Context) error {
 	}
 	i.logger.StopSpinnerWithStatus("Git initialized successfully!", log.Successful)
 
+	appPath := filepath.Join(i.path, name)
+
 	i.logger.Infof(ctx, "Turbine Data Application successfully initialized!\n"+
-		"You can start interacting with Meroxa in your app located at \"%s/%s\".\n"+
-		"Your Application will not be visible in the Meroxa Dashboard until after deployment.", i.path, name)
+		"You can start interacting with Meroxa in your app located at \"%s\".\n"+
+		"Your Application will not be visible in the Meroxa Dashboard until after deployment.", appPath)
 
 	return nil
 }
