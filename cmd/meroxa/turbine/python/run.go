@@ -16,7 +16,7 @@ func (t *turbinePyCLI) Run(ctx context.Context) error {
 			"TURBINE_CORE_SERVER": t.grpcListenAddress,
 		},
 		t.appPath,
-		"git_sha",
+		"",
 	)
 	return turbine.RunCMD(ctx, t.logger, cmd)
 }
