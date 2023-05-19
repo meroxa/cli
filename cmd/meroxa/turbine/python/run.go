@@ -8,12 +8,13 @@ import (
 )
 
 func (t *turbinePyCLI) Run(ctx context.Context) error {
-	go t.runner.RunAddr(ctx, t.grpcListenAddress)
-	defer t.runner.GracefulStop()
+	gracefulStop, grpcListenAddress := t.Core.Run(ctx)
+	defer gracefulStop()
+
 	cmd := internal.NewTurbineCmd(t.appPath,
 		internal.TurbineCommandRun,
 		map[string]string{
-			"TURBINE_CORE_SERVER": t.grpcListenAddress,
+			"TURBINE_CORE_SERVER": grpcListenAddress,
 		},
 		t.appPath,
 		"",

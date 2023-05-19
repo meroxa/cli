@@ -10,6 +10,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	turbine "github.com/meroxa/cli/cmd/meroxa/turbine"
+	log "github.com/meroxa/cli/log"
 )
 
 // MockCLI is a mock of CLI interface.
@@ -35,236 +36,189 @@ func (m *MockCLI) EXPECT() *MockCLIMockRecorder {
 	return m.recorder
 }
 
-// CleanUpBuild mocks base method.
-func (m *MockCLI) CleanUpBuild(ctx context.Context) {
+// CleanupDockerfile mocks base method.
+func (m *MockCLI) CleanupDockerfile(arg0 log.Logger, arg1 string) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "CleanUpBuild", ctx)
+	m.ctrl.Call(m, "CleanupDockerfile", arg0, arg1)
 }
 
-// CleanUpBuild indicates an expected call of CleanUpBuild.
-func (mr *MockCLIMockRecorder) CleanUpBuild(ctx interface{}) *gomock.Call {
+// CleanupDockerfile indicates an expected call of CleanupDockerfile.
+func (mr *MockCLIMockRecorder) CleanupDockerfile(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CleanUpBuild", reflect.TypeOf((*MockCLI)(nil).CleanUpBuild), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CleanupDockerfile", reflect.TypeOf((*MockCLI)(nil).CleanupDockerfile), arg0, arg1)
 }
 
 // CreateDockerfile mocks base method.
-func (m *MockCLI) CreateDockerfile(ctx context.Context, appName string) (string, error) {
+func (m *MockCLI) CreateDockerfile(arg0 context.Context, arg1 string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDockerfile", ctx, appName)
+	ret := m.ctrl.Call(m, "CreateDockerfile", arg0, arg1)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateDockerfile indicates an expected call of CreateDockerfile.
-func (mr *MockCLIMockRecorder) CreateDockerfile(ctx, appName interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) CreateDockerfile(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDockerfile", reflect.TypeOf((*MockCLI)(nil).CreateDockerfile), ctx, appName)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDockerfile", reflect.TypeOf((*MockCLI)(nil).CreateDockerfile), arg0, arg1)
 }
 
 // GetDeploymentSpec mocks base method.
-func (m *MockCLI) GetDeploymentSpec(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error) {
+func (m *MockCLI) GetDeploymentSpec(arg0 context.Context, arg1 string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDeploymentSpec", ctx, imageName, appName, gitSha, specVersion, accountUUID)
+	ret := m.ctrl.Call(m, "GetDeploymentSpec", arg0, arg1)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetDeploymentSpec indicates an expected call of GetDeploymentSpec.
-func (mr *MockCLIMockRecorder) GetDeploymentSpec(ctx, imageName, appName, gitSha, specVersion, accountUUID interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GetDeploymentSpec(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeploymentSpec", reflect.TypeOf((*MockCLI)(nil).GetDeploymentSpec), ctx, imageName, appName, gitSha, specVersion, accountUUID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeploymentSpec", reflect.TypeOf((*MockCLI)(nil).GetDeploymentSpec), arg0, arg1)
 }
 
 // GetGitSha mocks base method.
-func (m *MockCLI) GetGitSha(ctx context.Context) (string, error) {
+func (m *MockCLI) GetGitSha(arg0 context.Context, arg1 string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetGitSha", ctx)
+	ret := m.ctrl.Call(m, "GetGitSha", arg0, arg1)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetGitSha indicates an expected call of GetGitSha.
-func (mr *MockCLIMockRecorder) GetGitSha(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GetGitSha(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGitSha", reflect.TypeOf((*MockCLI)(nil).GetGitSha), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGitSha", reflect.TypeOf((*MockCLI)(nil).GetGitSha), arg0, arg1)
 }
 
 // GetResources mocks base method.
-func (m *MockCLI) GetResources(ctx context.Context) ([]turbine.ApplicationResource, error) {
+func (m *MockCLI) GetResources(arg0 context.Context) ([]turbine.ApplicationResource, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResources", ctx)
+	ret := m.ctrl.Call(m, "GetResources", arg0)
 	ret0, _ := ret[0].([]turbine.ApplicationResource)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetResources indicates an expected call of GetResources.
-func (mr *MockCLIMockRecorder) GetResources(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GetResources(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResources", reflect.TypeOf((*MockCLI)(nil).GetResources), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResources", reflect.TypeOf((*MockCLI)(nil).GetResources), arg0)
 }
 
 // GetVersion mocks base method.
-func (m *MockCLI) GetVersion(ctx context.Context) (string, error) {
+func (m *MockCLI) GetVersion(arg0 context.Context) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVersion", ctx)
+	ret := m.ctrl.Call(m, "GetVersion", arg0)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetVersion indicates an expected call of GetVersion.
-func (mr *MockCLIMockRecorder) GetVersion(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GetVersion(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockCLI)(nil).GetVersion), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockCLI)(nil).GetVersion), arg0)
 }
 
 // GitChecks mocks base method.
-func (m *MockCLI) GitChecks(ctx context.Context) error {
+func (m *MockCLI) GitChecks(arg0 context.Context, arg1 log.Logger, arg2 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GitChecks", ctx)
+	ret := m.ctrl.Call(m, "GitChecks", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // GitChecks indicates an expected call of GitChecks.
-func (mr *MockCLIMockRecorder) GitChecks(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GitChecks(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitChecks", reflect.TypeOf((*MockCLI)(nil).GitChecks), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitChecks", reflect.TypeOf((*MockCLI)(nil).GitChecks), arg0, arg1, arg2)
 }
 
 // GitInit mocks base method.
-func (m *MockCLI) GitInit(ctx context.Context, name string) error {
+func (m *MockCLI) GitInit(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GitInit", ctx, name)
+	ret := m.ctrl.Call(m, "GitInit", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // GitInit indicates an expected call of GitInit.
-func (mr *MockCLIMockRecorder) GitInit(ctx, name interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) GitInit(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitInit", reflect.TypeOf((*MockCLI)(nil).GitInit), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitInit", reflect.TypeOf((*MockCLI)(nil).GitInit), arg0, arg1)
 }
 
 // Init mocks base method.
-func (m *MockCLI) Init(ctx context.Context, name string) error {
+func (m *MockCLI) Init(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Init", ctx, name)
+	ret := m.ctrl.Call(m, "Init", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Init indicates an expected call of Init.
-func (mr *MockCLIMockRecorder) Init(ctx, name interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) Init(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockCLI)(nil).Init), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockCLI)(nil).Init), arg0, arg1)
 }
 
 // NeedsToBuild mocks base method.
-func (m *MockCLI) NeedsToBuild(ctx context.Context) (bool, error) {
+func (m *MockCLI) NeedsToBuild(arg0 context.Context) (bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NeedsToBuild", ctx)
+	ret := m.ctrl.Call(m, "NeedsToBuild", arg0)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // NeedsToBuild indicates an expected call of NeedsToBuild.
-func (mr *MockCLIMockRecorder) NeedsToBuild(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) NeedsToBuild(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NeedsToBuild", reflect.TypeOf((*MockCLI)(nil).NeedsToBuild), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NeedsToBuild", reflect.TypeOf((*MockCLI)(nil).NeedsToBuild), arg0)
 }
 
 // Run mocks base method.
-func (m *MockCLI) Run(ctx context.Context) error {
+func (m *MockCLI) Run(arg0 context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Run", ctx)
+	ret := m.ctrl.Call(m, "Run", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Run indicates an expected call of Run.
-func (mr *MockCLIMockRecorder) Run(ctx interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) Run(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockCLI)(nil).Run), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockCLI)(nil).Run), arg0)
 }
 
 // SetupForDeploy mocks base method.
-func (m *MockCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+func (m *MockCLI) SetupForDeploy(arg0 context.Context, arg1 string) (func(), error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetupForDeploy", ctx, gitSha)
+	ret := m.ctrl.Call(m, "SetupForDeploy", arg0, arg1)
 	ret0, _ := ret[0].(func())
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SetupForDeploy indicates an expected call of SetupForDeploy.
-func (mr *MockCLIMockRecorder) SetupForDeploy(ctx, gitSha interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) SetupForDeploy(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupForDeploy", reflect.TypeOf((*MockCLI)(nil).SetupForDeploy), ctx, gitSha)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupForDeploy", reflect.TypeOf((*MockCLI)(nil).SetupForDeploy), arg0, arg1)
 }
 
 // Upgrade mocks base method.
-func (m *MockCLI) Upgrade(vendor bool) error {
+func (m *MockCLI) Upgrade(arg0 bool) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upgrade", vendor)
+	ret := m.ctrl.Call(m, "Upgrade", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Upgrade indicates an expected call of Upgrade.
-func (mr *MockCLIMockRecorder) Upgrade(vendor interface{}) *gomock.Call {
+func (mr *MockCLIMockRecorder) Upgrade(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), vendor)
-}
-
-// MockServer is a mock of Server interface.
-type MockServer struct {
-	ctrl     *gomock.Controller
-	recorder *MockServerMockRecorder
-}
-
-// MockServerMockRecorder is the mock recorder for MockServer.
-type MockServerMockRecorder struct {
-	mock *MockServer
-}
-
-// NewMockServer creates a new mock instance.
-func NewMockServer(ctrl *gomock.Controller) *MockServer {
-	mock := &MockServer{ctrl: ctrl}
-	mock.recorder = &MockServerMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServer) EXPECT() *MockServerMockRecorder {
-	return m.recorder
-}
-
-// GracefulStop mocks base method.
-func (m *MockServer) GracefulStop() {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "GracefulStop")
-}
-
-// GracefulStop indicates an expected call of GracefulStop.
-func (mr *MockServerMockRecorder) GracefulStop() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GracefulStop", reflect.TypeOf((*MockServer)(nil).GracefulStop))
-}
-
-// Run mocks base method.
-func (m *MockServer) Run(arg0 context.Context) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "Run", arg0)
-}
-
-// Run indicates an expected call of Run.
-func (mr *MockServerMockRecorder) Run(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockServer)(nil).Run), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), arg0)
 }

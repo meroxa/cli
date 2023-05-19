@@ -5,39 +5,21 @@ package turbine
 import (
 	"context"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
-	"google.golang.org/grpc"
+	"github.com/meroxa/cli/log"
 )
 
 type CLI interface {
-	GetDeploymentSpec(ctx context.Context, imageName, appName, gitSha, specVersion, accountUUID string) (string, error)
-	GetResources(ctx context.Context) ([]ApplicationResource, error)
-	GetVersion(ctx context.Context) (string, error)
-	GitInit(ctx context.Context, name string) error
-	GitChecks(ctx context.Context) error
-	GetGitSha(ctx context.Context) (string, error)
-	Init(ctx context.Context, name string) error
-	NeedsToBuild(ctx context.Context) (bool, error)
-	Run(ctx context.Context) error
-	Upgrade(vendor bool) error
-	CreateDockerfile(ctx context.Context, appName string) (string, error)
-	CleanUpBuild(ctx context.Context)
-	SetupForDeploy(ctx context.Context, gitSha string) (func(), error)
-}
-
-type Server interface {
-	Run(context.Context)
-	GracefulStop()
-}
-
-type Core struct {
-	Builder           Server
-	SpecBuilderClient SpecBuilderClient
-	Runner            Server
-	GrpcListenAddress string
-}
-
-type SpecBuilderClient struct {
-	*grpc.ClientConn
-	pb.TurbineServiceClient
+	GitInit(context.Context, string) error
+	GitChecks(context.Context, log.Logger, string) error
+	CleanupDockerfile(log.Logger, string)
+	GetGitSha(context.Context, string) (string, error)
+	GetDeploymentSpec(context.Context, string) (string, error)
+	GetResources(context.Context) ([]ApplicationResource, error)
+	NeedsToBuild(context.Context) (bool, error)
+	GetVersion(context.Context) (string, error)
+	Init(context.Context, string) error
+	Run(context.Context) error
+	Upgrade(bool) error
+	CreateDockerfile(context.Context, string) (string, error)
+	SetupForDeploy(context.Context, string) (func(), error)
 }

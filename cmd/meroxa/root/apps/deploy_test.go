@@ -445,7 +445,7 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
@@ -470,7 +470,7 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName).
 					Return(specStr, nil)
 
 				return mockTurbineCLI
@@ -487,7 +487,7 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName).
 					Return(specStr, err)
 				return mockTurbineCLI
 			},
@@ -512,7 +512,7 @@ func TestDeployApp(t *testing.T) {
 			mockTurbineCLI: func(ctrl *gomock.Controller, version string) turbine.CLI {
 				mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 				mockTurbineCLI.EXPECT().
-					GetDeploymentSpec(ctx, imageName, appName, gitSha, version, accountUUID).
+					GetDeploymentSpec(ctx, imageName).
 					Return(specStr, nil)
 				return mockTurbineCLI
 			},
@@ -590,7 +590,7 @@ func TestGetPlatformImage(t *testing.T) {
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
 				mockTurbineCLI.EXPECT().
-					CleanUpBuild(ctx).
+					CleanupDockerfile(logger, buildPath).
 					Return()
 				return mockTurbineCLI
 			},
@@ -638,7 +638,7 @@ func TestGetPlatformImage(t *testing.T) {
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
 				mockTurbineCLI.EXPECT().
-					CleanUpBuild(ctx).
+					CleanupDockerfile(logger, buildPath).
 					Return()
 				return mockTurbineCLI
 			},
@@ -702,7 +702,7 @@ func TestGetPlatformImage(t *testing.T) {
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
 				mockTurbineCLI.EXPECT().
-					CleanUpBuild(ctx).
+					CleanupDockerfile(logger, buildPath).
 					Return()
 				return mockTurbineCLI
 			},
@@ -736,7 +736,7 @@ func TestGetPlatformImage(t *testing.T) {
 					CreateDockerfile(ctx, appName).
 					Return(buildPath, nil)
 				mockTurbineCLI.EXPECT().
-					CleanUpBuild(ctx).
+					CleanupDockerfile(logger, buildPath).
 					Return()
 				return mockTurbineCLI
 			},

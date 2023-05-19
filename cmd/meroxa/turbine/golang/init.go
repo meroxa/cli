@@ -20,10 +20,6 @@ func (t *turbineGoCLI) Init(_ context.Context, appName string) error {
 	return app.NewAppInit(appName, ir.GoLang, t.appPath).Init()
 }
 
-func (t *turbineGoCLI) GitInit(ctx context.Context, name string) error {
-	return utils.GitInit(ctx, name)
-}
-
 func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 	l.StartSpinner("\t", "Running golang module initializing...")
 	skipLog := "skipping go module initialization\n\tFor guidance, visit " +

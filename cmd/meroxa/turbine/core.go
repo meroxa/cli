@@ -1,0 +1,97 @@
+package turbine
+
+import (
+	"context"
+	"time"
+
+	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/meroxa/cli/cmd/meroxa/turbine/internal"
+
+	"github.com/meroxa/turbine-core/pkg/client"
+	"github.com/meroxa/turbine-core/pkg/server"
+
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+)
+
+type Core struct {
+	grpcListenAddress string
+	builder           server.Server
+	runner            server.Server
+	client            client.Client
+}
+
+func NewCore() *Core {
+	return &Core{
+		runner:            server.NewRunServer(),
+		grpcListenAddress: internal.RandomLocalAddr(),
+		builder:           server.NewSpecBuilderServer(),
+	}
+}
+
+func (t *Core) Start(ctx context.Context) string {
+	go t.builder.RunAddr(ctx, t.grpcListenAddress)
+	return t.grpcListenAddress
+}
+
+func (t *Core) Stop() (func(), error) {
+	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
+	if err != nil {
+		return nil, err
+	}
+	t.client = c
+	return func() {
+		c.Close()
+		t.builder.GracefulStop()
+	}, nil
+}
+
+func (t *Core) Run(ctx context.Context) (func(), string) {
+	go t.runner.RunAddr(ctx, t.grpcListenAddress)
+	return t.runner.GracefulStop, t.grpcListenAddress
+}
+
+func (t *Core) GetDeploymentSpec(ctx context.Context, imageName string) (string, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.client.GetSpec(ctx, &pb.GetSpecRequest{
+		Image: imageName,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return string(resp.Spec), nil
+}
+
+func (t *Core) GetResources(ctx context.Context) ([]ApplicationResource, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.client.ListResources(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	var resources []ApplicationResource
+	for _, r := range resp.Resources {
+		resources = append(resources, ApplicationResource{
+			Name:        r.Name,
+			Destination: r.Destination,
+			Source:      r.Source,
+			Collection:  r.Collection,
+		})
+	}
+	return resources, nil
+}
+
+// NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
+// this is currently based on the number of functions.
+func (t *Core) NeedsToBuild(ctx context.Context) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
+	defer cancel()
+	resp, err := t.client.HasFunctions(ctx, &emptypb.Empty{})
+	if err != nil {
+		return false, err
+	}
+
+	return resp.Value, nil
+}

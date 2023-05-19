@@ -25,10 +25,6 @@ func (t *turbineJsCLI) Init(_ context.Context, appName string) error {
 	return nil
 }
 
-func (t *turbineJsCLI) GitInit(ctx context.Context, name string) error {
-	return utils.GitInit(ctx, name)
-}
-
 func jsInit(appPath string) error {
 	// temporarily switching to the app's directory
 	pwd, err := utils.SwitchToAppDirectory(appPath)
