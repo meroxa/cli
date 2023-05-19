@@ -16,7 +16,7 @@ func (t *turbinePyCLI) GetVersion(_ context.Context) (string, error) {
 		t.appPath,
 	)
 	if err != nil {
-		return "", fmt.Errorf("cannot determine turbine-rb gem version in %s", t.appPath)
+		return "", fmt.Errorf("cannot determine turbine-py version in %s", t.appPath)
 	}
 	return ver, nil
 }
