@@ -6,6 +6,7 @@ import (
 	"go/build"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/meroxa/turbine-core/pkg/app"
@@ -35,7 +36,7 @@ func GoInit(l log.Logger, appPath string, skipInit, vendor bool) error {
 		l.StopSpinnerWithStatus("$GOPATH not set up; "+skipLog, log.Warning)
 		return nil
 	}
-	i := strings.Index(appPath, goPath+"/src")
+	i := strings.Index(appPath, filepath.Join(goPath, "src"))
 	if i == -1 || i != 0 {
 		l.StopSpinnerWithStatus(fmt.Sprintf("%s is not under $GOPATH/src; %s", appPath, skipLog), log.Warning)
 		return nil
