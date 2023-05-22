@@ -23,7 +23,7 @@ type AppInitTemplate struct {
 	AppName string
 }
 
-//go:embed templates/*
+//go:embed all:templates
 var templateFS embed.FS
 
 func (a *AppInit) createAppDirectory() error {

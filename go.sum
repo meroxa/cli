@@ -190,8 +190,8 @@ github.com/mattn/go-shellwords v1.0.12 h1:M2zGm7EW6UQJvDeQxo4T51eKPurbeFbe8WtebG
 github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
 github.com/meroxa/meroxa-go v0.0.0-20230331072126-47c9496dfb9b h1:xIxLrz8h0QA0QmFZrW3ciIjmEnGDszS/z3yjfD3d+pY=
 github.com/meroxa/meroxa-go v0.0.0-20230331072126-47c9496dfb9b/go.mod h1:VaDn0fLKHG2VoI9MQVEqwtfum4BaGr8pcgtfWRe8/Dk=
-github.com/meroxa/turbine-core v0.0.0-20230509170933-41432f2bb476 h1:FKwfzZB+yGdd5GbfrLfnalIsEywFmxSfAt4xYvnOHNk=
-github.com/meroxa/turbine-core v0.0.0-20230509170933-41432f2bb476/go.mod h1:+ndkJ+xTBgy/WR4KMiXwPA7x5NdrVWIcjfl4R2zcTUE=
+github.com/meroxa/turbine-core v0.0.0-20230522172301-9867be85eb47 h1:bghd4ClyfYjFIvkeQkVMFVEPpB9pbikyPUxLLWi9Cxw=
+github.com/meroxa/turbine-core v0.0.0-20230522172301-9867be85eb47/go.mod h1:/83voxEvn+hi7nyEGMeOTi8wG9qRnINzTs5LwzDH7F4=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da h1:qiPWuGGr+1GQE6s9NPSK8iggR/6x/V+0snIoOPYsBgc=
@@ -238,8 +238,8 @@ github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
-github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
-github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
+github.com/stretchr/testify v1.8.3/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/subosito/gotenv v1.4.2 h1:X1TuBLAMDFbaTAChgCBLu3DU3UPyELpnF2jjJ2cz/S8=
 github.com/subosito/gotenv v1.4.2/go.mod h1:ayKnFf/c6rvx/2iiLrJUk1e6plDbT3edrFNGqEflhK0=
 github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1 h1:+dBg5k7nuTE38VVdoroRsT0Z88fmvdYrI2EjzJst35I=
