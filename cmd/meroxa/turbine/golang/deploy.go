@@ -36,7 +36,10 @@ func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName string) (stri
 }
 
 func (t *turbineGoCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
-	grpcListenAddress := t.Core.Start(ctx)
+	grpcListenAddress, err := t.Core.Start(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	cmd := exec.Command("go", []string{
 		"run",

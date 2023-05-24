@@ -29,19 +29,21 @@ func NewCore() *Core {
 	}
 }
 
-func (t *Core) Start(ctx context.Context) string {
+func (t *Core) Start(ctx context.Context) (string, error) {
 	go t.builder.RunAddr(ctx, t.grpcListenAddress)
-	return t.grpcListenAddress
+
+	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
+	if err != nil {
+		return "", err
+	}
+	t.client = c
+
+	return t.grpcListenAddress, nil
 }
 
 func (t *Core) Stop() (func(), error) {
-	c, err := client.DialTimeout(t.grpcListenAddress, time.Second)
-	if err != nil {
-		return nil, err
-	}
-	t.client = c
 	return func() {
-		c.Close()
+		t.client.Close()
 		t.builder.GracefulStop()
 	}, nil
 }
