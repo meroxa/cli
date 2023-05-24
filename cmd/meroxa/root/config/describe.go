@@ -93,7 +93,7 @@ func (e *Describe) obfuscate(key, value string) string {
 		return value
 	}
 
-	if len(value) < 5 { //nolint:gomnd
+	if len(value) < 5 {
 		// hide whole text
 		return strings.Repeat("*", len(value))
 	}

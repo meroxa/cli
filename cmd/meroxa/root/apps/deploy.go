@@ -34,7 +34,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
@@ -219,7 +218,7 @@ func (d *Deploy) UploadSource(ctx context.Context, url string) error {
 	if err != nil {
 		return err
 	}
-	defer d.turbineCLI.CleanUpBuild(ctx)
+	defer d.turbineCLI.CleanupDockerfile(d.logger, d.path)
 	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
 
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
@@ -394,13 +393,7 @@ func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) er
 }
 
 func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
-	specStr, err := d.turbineCLI.GetDeploymentSpec(
-		ctx,
-		imageName,
-		d.appName,
-		gitSha,
-		specVersion,
-		d.config.GetString(global.UserAccountUUID))
+	specStr, err := d.turbineCLI.GetDeploymentSpec(ctx, imageName)
 	if err != nil {
 		return nil, err
 	}
@@ -426,6 +419,7 @@ func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVe
 // when deploying.
 func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
 	d.logger.StartSpinner("\t", "Checking if application has processes...")
+
 	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -595,11 +589,6 @@ func (d *Deploy) prepareDeployment(ctx context.Context) error {
 
 	d.fnName, err = d.getAppImage(ctx)
 	return err
-}
-
-// validateConfig will validate uncommitted changes and git branch.
-func (d *Deploy) validateGitConfig(ctx context.Context) error {
-	return d.turbineCLI.GitChecks(ctx)
 }
 
 type resourceCollectionPair struct {
@@ -861,16 +850,16 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	addTurbineHeaders(d.client, d.lang, turbineLibVersion)
 
-	if err = d.validateGitConfig(ctx); err != nil {
+	if err = d.turbineCLI.GitChecks(ctx, d.logger, d.path); err != nil {
 		return err
 	}
 
-	gitSha, err := d.turbineCLI.GetGitSha(ctx)
+	gitSha, err := d.turbineCLI.GetGitSha(ctx, d.path)
 	if err != nil {
 		return err
 	}
 
-	// SetupForDeploy is only needed for those Turbine-Core deployments (Only Ruby Go and Python at the moment)
+	// SetupForDeploy will start the GRPC server for the specific language being deployed.
 	cleanup, err := d.turbineCLI.SetupForDeploy(ctx, gitSha)
 	if err != nil {
 		return err

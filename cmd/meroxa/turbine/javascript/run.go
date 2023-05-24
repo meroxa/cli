@@ -9,15 +9,15 @@ import (
 
 // Run calls turbine-js to exercise the app.
 func (t *turbineJsCLI) Run(ctx context.Context) error {
-	go t.runner.RunAddr(ctx, t.grpcListenAddress)
-	defer t.runner.GracefulStop()
+	gracefulStop, grpcListenAddress := t.Core.Run(ctx)
+	defer gracefulStop()
 
 	cmd := internal.NewTurbineCmd(
 		ctx,
 		t.appPath,
 		internal.TurbineCommandRun,
 		map[string]string{
-			"TURBINE_CORE_SERVER": t.grpcListenAddress,
+			"TURBINE_CORE_SERVER": grpcListenAddress,
 		},
 		"devel",
 	)
