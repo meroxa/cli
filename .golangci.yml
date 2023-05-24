@@ -21,11 +21,6 @@ linters-settings:
       - hugeParam
   gocyclo:
     min-complexity: 15
-  gomnd:
-    settings:
-      mnd:
-        # don't include the "operation" and "assign"
-        checks: [argument,case,condition,return]
   govet:
     check-shadowing: true
     settings:
@@ -64,7 +59,6 @@ linters:
     - godot
     - gofmt
     - goimports
-    - gomnd
     - goprintffuncname
     - govet
     - ineffassign
@@ -92,6 +86,8 @@ linters:
   # - prealloc
   # - testpackage
   # - wsl
+  # - gomnd
+
 
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source

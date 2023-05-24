@@ -72,7 +72,7 @@ func getContentHomebrewFormula(ctx context.Context) (string, error) {
 func parseVersionFromFormulaFile(content string) string {
 	r := regexp.MustCompile(`version "(\d+.\d+.\d+)"`)
 	matches := r.FindStringSubmatch(content)
-	if len(matches) >= 2 { //nolint:gomnd
+	if len(matches) >= 2 {
 		return matches[1]
 	}
 	return ""

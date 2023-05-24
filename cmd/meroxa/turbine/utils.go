@@ -167,7 +167,7 @@ func WriteConfigFile(appPath string, cfg *AppConfig) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(appConfigPath, data, 0o664) //nolint:gomnd
+	err = os.WriteFile(appConfigPath, data, 0o664)
 	if err != nil {
 		return fmt.Errorf("%v\n"+
 			"unable to update app.json file on path %q. Maybe try using a different value for `--path`", err, appPath)

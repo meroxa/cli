@@ -31,7 +31,7 @@ func NewCore() *Core {
 
 func (t *Core) Start(ctx context.Context) (string, error) {
 	var (
-		err error
+		err     error
 		retries = time.Tick(3 * time.Second)
 	)
 
@@ -39,7 +39,7 @@ func (t *Core) Start(ctx context.Context) (string, error) {
 
 	// NB: Spin until server is ready.
 	//     Ideally, server should communicate readyness but until then we wait.
-	for _ = range retries {
+	for range retries {
 		t.client, err = client.DialTimeout(t.grpcListenAddress, time.Second)
 		if err == nil {
 			return t.grpcListenAddress, nil

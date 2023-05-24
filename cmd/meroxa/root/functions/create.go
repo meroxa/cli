@@ -108,7 +108,7 @@ func (c *Create) parseEnvVars(envVars []string) (map[string]string, error) {
 	m := make(map[string]string)
 	for _, ev := range envVars {
 		var (
-			split = strings.SplitN(ev, "=", 2) //nolint
+			split = strings.SplitN(ev, "=", 2)
 			key   = split[0]
 			val   = split[1]
 		)
