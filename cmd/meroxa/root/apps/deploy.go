@@ -944,7 +944,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	defer gracefulStop()
 
-
 	app, err := d.createApplication(ctx)
 	if err != nil {
 		return err
