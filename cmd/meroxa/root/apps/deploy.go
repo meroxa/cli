@@ -834,7 +834,7 @@ func (d *Deploy) appModified(ctx context.Context) (bool, error) {
 	app, err := d.client.GetApplication(ctx, d.appName)
 	if err != nil {
 		if strings.Contains(err.Error(), "could not find application") {
-			return false, nil
+			return true, nil
 		}
 		return false, err
 	}
