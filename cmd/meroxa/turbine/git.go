@@ -46,8 +46,8 @@ func (g *Git) GitInit(ctx context.Context, appPath string) error {
 	return nil
 }
 
-// GitChecks prints warnings about uncommitted tracked and untracked files.
-func (g *Git) GitChecks(ctx context.Context, l log.Logger, appPath string) error {
+// CheckUncommittedChanges prints warnings about uncommitted tracked and untracked files.
+func (g *Git) CheckUncommittedChanges(ctx context.Context, l log.Logger, appPath string) error {
 	l.Info(ctx, "Checking for uncommitted changes...")
 	cmd := exec.Command("git", "status", "--porcelain=v2")
 	cmd.Dir = appPath

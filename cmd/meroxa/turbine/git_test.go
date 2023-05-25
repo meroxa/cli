@@ -59,7 +59,7 @@ func TestCheckGitVersion(t *testing.T) {
 }
 
 //nolint:funlen,gocyclo
-func TestGitChecks(t *testing.T) {
+func TestCheckUncommittedChanges(t *testing.T) {
 	var g Git
 
 	if gh := os.Getenv("GITHUB_WORKSPACE"); gh != "" {
@@ -224,7 +224,7 @@ HEAD
 				require.NoError(t, err)
 			}
 
-			err = g.GitChecks(ctx, logger, path)
+			err = g.CheckUncommittedChanges(ctx, logger, path)
 			if err != nil {
 				if tc.checksErr == nil {
 					t.Fatalf("unepxected error: %v", err)

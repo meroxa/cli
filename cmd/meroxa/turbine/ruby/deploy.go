@@ -17,7 +17,7 @@ func (t *turbineRbCLI) CreateDockerfile(ctx context.Context, _ string) (string, 
 	return t.appPath, turbine.RunCMD(ctx, t.logger, cmd)
 }
 
-func (t *turbineRbCLI) SetupForDeploy(ctx context.Context, gitSha string) (func(), error) {
+func (t *turbineRbCLI) StartGrpcServer(ctx context.Context, gitSha string) (func(), error) {
 	grpcListenAddress, err := t.Core.Start(ctx)
 	if err != nil {
 		return nil, err
