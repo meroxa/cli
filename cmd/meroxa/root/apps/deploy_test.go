@@ -1139,8 +1139,8 @@ func Test_createApplication(t *testing.T) {
 	appName := "my-app"
 
 	err := fmt.Errorf(
-		`application %q exists in the "running" state\n`+
-			`\t. use 'meroxa apps remove %s' if you want to redeploy to this application`,
+		`application %q exists in the "running" state` + "\n"+
+			"\t. use 'meroxa apps remove %s' if you want to redeploy to this application",
 		appName,
 		appName,
 	)

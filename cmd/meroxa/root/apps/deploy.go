@@ -855,8 +855,8 @@ func (d *Deploy) createApplication(ctx context.Context) (*meroxa.Application, er
 			_, _ = d.client.DeleteApplicationEntities(ctx, d.appName)
 		default:
 			return nil, fmt.Errorf(
-				`application %q exists in the %q state\n`+
-					`\t. use 'meroxa apps remove %s' if you want to redeploy to this application`,
+				"application %q exists in the %q state\n"+
+					"\t use 'meroxa apps remove %s' if you want to redeploy to this application",
 				d.appName,
 				existing.Status.State,
 				d.appName,
