@@ -104,7 +104,7 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 			u.turbineCLI = turbineRB.New(u.logger, u.path)
 		}
 	default:
-		return fmt.Errorf("language %q not supported. %s", u.config.Language, LanguageNotSupportedError)
+		return newLangUnsupportedError(u.config.Language)
 	}
 	vendor, _ := strconv.ParseBool(u.config.Vendor)
 	if err = u.turbineCLI.Upgrade(vendor); err != nil {

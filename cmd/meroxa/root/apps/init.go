@@ -165,6 +165,6 @@ func newTurbineCLI(logger log.Logger, lang, path string) (turbine.CLI, error) {
 	case "rb", turbine.Ruby:
 		return turbineRb.New(logger, path), nil
 	default:
-		return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
+		return nil, newLangUnsupportedError(ir.Lang(lang))
 	}
 }
