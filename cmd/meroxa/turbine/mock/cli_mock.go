@@ -36,6 +36,20 @@ func (m *MockCLI) EXPECT() *MockCLIMockRecorder {
 	return m.recorder
 }
 
+// CheckUncommittedChanges mocks base method.
+func (m *MockCLI) CheckUncommittedChanges(arg0 context.Context, arg1 log.Logger, arg2 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckUncommittedChanges", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CheckUncommittedChanges indicates an expected call of CheckUncommittedChanges.
+func (mr *MockCLIMockRecorder) CheckUncommittedChanges(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUncommittedChanges", reflect.TypeOf((*MockCLI)(nil).CheckUncommittedChanges), arg0, arg1, arg2)
+}
+
 // CleanupDockerfile mocks base method.
 func (m *MockCLI) CleanupDockerfile(arg0 log.Logger, arg1 string) {
 	m.ctrl.T.Helper()
@@ -123,20 +137,6 @@ func (mr *MockCLIMockRecorder) GetVersion(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVersion", reflect.TypeOf((*MockCLI)(nil).GetVersion), arg0)
 }
 
-// GitChecks mocks base method.
-func (m *MockCLI) GitChecks(arg0 context.Context, arg1 log.Logger, arg2 string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GitChecks", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// GitChecks indicates an expected call of GitChecks.
-func (mr *MockCLIMockRecorder) GitChecks(arg0, arg1, arg2 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GitChecks", reflect.TypeOf((*MockCLI)(nil).GitChecks), arg0, arg1, arg2)
-}
-
 // GitInit mocks base method.
 func (m *MockCLI) GitInit(arg0 context.Context, arg1 string) error {
 	m.ctrl.T.Helper()
@@ -194,19 +194,19 @@ func (mr *MockCLIMockRecorder) Run(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockCLI)(nil).Run), arg0)
 }
 
-// SetupForDeploy mocks base method.
-func (m *MockCLI) SetupForDeploy(arg0 context.Context, arg1 string) (func(), error) {
+// StartGrpcServer mocks base method.
+func (m *MockCLI) StartGrpcServer(arg0 context.Context, arg1 string) (func(), error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetupForDeploy", arg0, arg1)
+	ret := m.ctrl.Call(m, "StartGrpcServer", arg0, arg1)
 	ret0, _ := ret[0].(func())
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SetupForDeploy indicates an expected call of SetupForDeploy.
-func (mr *MockCLIMockRecorder) SetupForDeploy(arg0, arg1 interface{}) *gomock.Call {
+// StartGrpcServer indicates an expected call of StartGrpcServer.
+func (mr *MockCLIMockRecorder) StartGrpcServer(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetupForDeploy", reflect.TypeOf((*MockCLI)(nil).SetupForDeploy), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartGrpcServer", reflect.TypeOf((*MockCLI)(nil).StartGrpcServer), arg0, arg1)
 }
 
 // Upgrade mocks base method.

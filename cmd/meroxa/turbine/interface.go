@@ -10,7 +10,7 @@ import (
 
 type CLI interface {
 	GitInit(context.Context, string) error
-	GitChecks(context.Context, log.Logger, string) error
+	CheckUncommittedChanges(context.Context, log.Logger, string) error
 	CleanupDockerfile(log.Logger, string)
 	GetGitSha(context.Context, string) (string, error)
 	GetDeploymentSpec(context.Context, string) (string, error)
@@ -21,5 +21,5 @@ type CLI interface {
 	Run(context.Context) error
 	Upgrade(bool) error
 	CreateDockerfile(context.Context, string) (string, error)
-	SetupForDeploy(context.Context, string) (func(), error)
+	StartGrpcServer(context.Context, string) (func(), error)
 }
