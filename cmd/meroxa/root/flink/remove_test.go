@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"reflect"
 	"testing"
 
@@ -29,6 +28,7 @@ import (
 
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
