@@ -47,10 +47,11 @@ const (
 	intervalCheckForDeployment = 500 * time.Millisecond
 )
 
-type deployApplicationClient interface {
+type apiClient interface {
 	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
-	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
+	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
+	GetLatestDeployment(ctx context.Context, nameOrUUID string) (*meroxa.Deployment, error)
 	GetEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error)
 	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
@@ -78,6 +79,17 @@ func (e *environment) nameOrUUID() string {
 	}
 }
 
+func (e *environment) apiIdentifier() *meroxa.EntityIdentifier {
+	if e == nil {
+		return nil
+	}
+
+	return &meroxa.EntityIdentifier{
+		Name: e.Name,
+		UUID: e.UUID,
+	}
+}
+
 type Deploy struct {
 	flags struct {
 		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
@@ -87,7 +99,7 @@ type Deploy struct {
 		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
 	}
 
-	client        deployApplicationClient
+	client        apiClient
 	config        config.Config
 	logger        log.Logger
 	turbineCLI    turbine.CLI
@@ -450,7 +462,7 @@ func (d *Deploy) validateLanguage() error {
 	case "rb", turbine.Ruby:
 		d.lang = ir.Ruby
 	default:
-		return fmt.Errorf("language %q not supported. %s", d.lang, LanguageNotSupportedError)
+		return newLangUnsupportedError(d.lang)
 	}
 	return nil
 }
@@ -763,26 +775,6 @@ func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
 	}
 }
 
-// tearDownExistingResources will only delete the application and its associated entities if it hasn't been created
-// or whether it's in a non-running state.
-func (d *Deploy) tearDownExistingResources(ctx context.Context) error {
-	app, _ := d.client.GetApplication(ctx, d.appName)
-
-	if app != nil && app.Status.State != meroxa.ApplicationStateFailed {
-		appExists := fmt.Sprintf("application %q exists in the %q state", d.appName, app.Status.State)
-		msg := fmt.Sprintf(
-			"%s\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application",
-			appExists,
-			d.appName)
-		return errors.New(msg)
-	}
-	resp, _ := d.client.DeleteApplicationEntities(ctx, d.appName)
-	if resp != nil && resp.Body != nil {
-		defer resp.Body.Close()
-	}
-	return nil
-}
-
 // TODO: Once builds are done much faster we should move early checks like these to the Platform API.
 func (d *Deploy) validateEnvExists(ctx context.Context) error {
 	if _, err := d.client.GetEnvironment(ctx, d.env.nameOrUUID()); err != nil {
@@ -823,6 +815,7 @@ func (d *Deploy) assignDeploymentValues(ctx context.Context) error {
 	if d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.path); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -837,27 +830,46 @@ func (d *Deploy) getGitInfo(ctx context.Context) error {
 	return err
 }
 
+func (d *Deploy) appModified(ctx context.Context) (bool, error) {
+	app, err := d.client.GetApplication(ctx, d.appName)
+	if err != nil {
+		if strings.Contains(err.Error(), "could not find application") {
+			return true, nil
+		}
+		return false, err
+	}
+
+	latest, err := d.client.GetLatestDeployment(ctx, app.Name)
+	if err != nil {
+		return false, err
+	}
+
+	return latest.GitSha != d.gitSha, nil
+}
+
 func (d *Deploy) createApplication(ctx context.Context) (*meroxa.Application, error) {
-	var err error
-
-	// ⚠️ This is only until we re-deploy applications applying only the changes made
-	if err = d.tearDownExistingResources(ctx); err != nil {
-		return nil, err
-	}
-
-	appInput := &meroxa.CreateApplicationInput{
-		Name:     d.appName,
-		Language: string(d.lang),
-		GitSha:   d.gitSha,
-	}
-
-	if d.env != nil {
-		appInput.Environment = &meroxa.EntityIdentifier{
-			Name: d.env.Name,
-			UUID: d.env.UUID,
+	if existing, _ := d.client.GetApplication(ctx, d.appName); existing != nil {
+		switch existing.Status.State { //nolint:exhaustive
+		case meroxa.ApplicationStateFailed:
+			// Clean up failed application
+			_, _ = d.client.DeleteApplicationEntities(ctx, d.appName)
+		default:
+			return nil, fmt.Errorf(
+				"application %q exists in the %q state.\n"+
+					"\tUse 'meroxa apps remove %s' if you want to redeploy to this application",
+				d.appName,
+				existing.Status.State,
+				d.appName,
+			)
 		}
 	}
-	app, err := d.client.CreateApplicationV2(ctx, appInput)
+
+	app, err := d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
+		Name:        d.appName,
+		Language:    string(d.lang),
+		GitSha:      d.gitSha,
+		Environment: d.env.apiIdentifier(),
+	})
 	if err != nil {
 		if strings.Contains(err.Error(), "already exists") {
 			msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
@@ -865,6 +877,7 @@ func (d *Deploy) createApplication(ctx context.Context) (*meroxa.Application, er
 		}
 		return nil, err
 	}
+
 	return app, nil
 }
 
@@ -900,10 +913,9 @@ func (d *Deploy) deployApplication(ctx context.Context) error {
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
-	var app *meroxa.Application
+	var err error
 
-	err := d.assignDeploymentValues(ctx)
-	if err != nil {
+	if err = d.assignDeploymentValues(ctx); err != nil {
 		return err
 	}
 
@@ -913,9 +925,17 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	addTurbineHeaders(d.client, d.lang, turbineLibVersion)
 
-	err = d.getGitInfo(ctx)
+	if err = d.getGitInfo(ctx); err != nil { //nolint:shadow
+		return err
+	}
+
+	changed, err := d.appModified(ctx)
 	if err != nil {
 		return err
+	}
+	if !changed {
+		d.logger.Infof(ctx, "\t%s App %q is up-to-date", d.logger.SuccessfulCheck(), d.appName)
+		return nil
 	}
 
 	gracefulStop, err := d.turbineCLI.StartGrpcServer(ctx, d.gitSha)
@@ -924,18 +944,16 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	defer gracefulStop()
 
-	app, err = d.createApplication(ctx)
+	app, err := d.createApplication(ctx)
 	if err != nil {
 		return err
 	}
 
-	err = d.prepareDeployment(ctx)
-	if err != nil {
+	if err = d.prepareDeployment(ctx); err != nil {
 		return err
 	}
 
-	err = d.deployApplication(ctx)
-	if err != nil {
+	if err = d.deployApplication(ctx); err != nil {
 		return err
 	}
 
@@ -951,19 +969,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	d.logger.JSON(ctx, app)
 	return nil
-}
-
-func wrapErrors(errs []error) error {
-	if len(errs) == 0 {
-		return nil
-	}
-
-	err := errs[0]
-	for _, e := range errs[1:] {
-		err = fmt.Errorf("%w; %v", err, e)
-	}
-
-	return err
 }
 
 // TODO: Reuse this everywhere it's using the environment flag. Maybe make this part of builder so it's automatic.

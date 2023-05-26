@@ -32,8 +32,6 @@ import (
 
 type Apps struct{}
 
-const LanguageNotSupportedError = "Currently, we support \"javascript\", \"golang\", \"python\", and \"ruby (beta)\" "
-
 var (
 	_ builder.CommandWithDocs        = (*Apps)(nil)
 	_ builder.CommandWithAliases     = (*Apps)(nil)
@@ -80,7 +78,7 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (tu
 	case "rb", turbine.Ruby:
 		return turbineRb.New(logger, path), nil
 	}
-	return nil, fmt.Errorf("language %q not supported. %s", lang, LanguageNotSupportedError)
+	return nil, newLangUnsupportedError(lang)
 }
 
 type addHeader interface {

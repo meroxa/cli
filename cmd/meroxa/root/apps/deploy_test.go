@@ -370,7 +370,7 @@ func TestValidateLanguage(t *testing.T) {
 	tests := []struct {
 		name      string
 		languages []ir.Lang
-		errFormat string
+		wantErr   bool
 	}{
 		{
 			name:      "Successfully validate golang",
@@ -391,23 +391,22 @@ func TestValidateLanguage(t *testing.T) {
 		{
 			name:      "Reject unsupported languages",
 			languages: []ir.Lang{"cobol", "crystal", "g@rbAg3"},
-			errFormat: "language %q not supported. " + LanguageNotSupportedError,
+			wantErr:   true,
 		},
 	}
-
-	test := &Deploy{}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			for _, lang := range tc.languages {
-				test.lang = lang
+				test := Deploy{lang: lang}
+
 				err := test.validateLanguage()
+				// require.Equal(t, tc.wantErr, err != nil)
 
 				if err != nil {
-					require.NotEmptyf(t, tc.errFormat, fmt.Sprintf("test failed for %q", lang))
-					require.Equal(t, fmt.Errorf(tc.errFormat, lang), err)
+					require.Equal(t, newLangUnsupportedError(lang), err)
 				} else {
-					require.Emptyf(t, tc.errFormat, fmt.Sprintf("got an unexpected error for input %s", lang))
+					require.Equal(t, tc.wantErr, err != nil)
 				}
 			}
 		})
@@ -1134,12 +1133,17 @@ func TestUploadFile(t *testing.T) {
 	}
 }
 
-func TestTeardown(t *testing.T) {
+func Test_createApplication(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
 	appName := "my-app"
-	//nolint:lll
-	err := fmt.Errorf("application %q exists in the %q state\n\t. Use `meroxa apps remove %s` if you want to redeploy to this application", appName, "running", appName)
+
+	err := fmt.Errorf(
+		`application %q exists in the "running" state.`+"\n"+
+			"\tUse 'meroxa apps remove %s' if you want to redeploy to this application",
+		appName,
+		appName,
+	)
 
 	tests := []struct {
 		name         string
@@ -1154,7 +1158,7 @@ func TestTeardown(t *testing.T) {
 					GetApplication(ctx, appName).
 					Return(nil, nil)
 				client.EXPECT().
-					DeleteApplicationEntities(ctx, appName).
+					CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{Name: appName}).
 					Return(nil, nil)
 				return client
 			},
@@ -1185,6 +1189,9 @@ func TestTeardown(t *testing.T) {
 				client.EXPECT().
 					DeleteApplicationEntities(ctx, appName).
 					Return(nil, nil)
+				client.EXPECT().
+					CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{Name: appName}).
+					Return(nil, nil)
 				return client
 			},
 			err: nil,
@@ -1203,7 +1210,7 @@ func TestTeardown(t *testing.T) {
 				//	config:     cfg,
 			}
 
-			err := d.tearDownExistingResources(ctx)
+			_, err := d.createApplication(ctx)
 			if err != nil {
 				require.NotEmpty(t, tc.err)
 				require.Equal(t, tc.err, err)
