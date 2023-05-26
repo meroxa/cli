@@ -1073,7 +1073,7 @@ func TestWaitForDeployment(t *testing.T) {
 	}
 }
 
-func TestTeardown(t *testing.T) {
+func Test_createApplication(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
 	appName := "my-app"
