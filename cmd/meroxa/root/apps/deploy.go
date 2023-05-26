@@ -265,7 +265,7 @@ func (d *Deploy) UploadSource(ctx context.Context, url string) error {
 	}
 	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, buildPath), log.Successful)
 
-	return uploadFile(ctx, d.logger, dFile, url)
+	return turbine.UploadFile(ctx, d.logger, dFile, url)
 }
 
 // CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
@@ -344,65 +344,6 @@ func shouldSkipDir(fi os.FileInfo) bool {
 	}
 
 	return false
-}
-
-func uploadFile(ctx context.Context, logger log.Logger, filePath, url string) error {
-	logger.StartSpinner("\t", "Uploading source...")
-
-	var clientErr error
-	var res *http.Response
-	client := &http.Client{}
-
-	retries := 3
-	for retries > 0 {
-		fh, err := os.Open(filePath)
-		if err != nil {
-			logger.StopSpinnerWithStatus("\t Failed to open source file", log.Failed)
-			return err
-		}
-		defer func(fh *os.File) {
-			fh.Close()
-		}(fh)
-
-		req, err := http.NewRequestWithContext(ctx, "PUT", url, fh)
-		if err != nil {
-			logger.StopSpinnerWithStatus("\t Failed to make new request", log.Failed)
-			return err
-		}
-
-		fi, err := fh.Stat()
-		if err != nil {
-			logger.StopSpinnerWithStatus("\t Failed to stat source file", log.Failed)
-			return err
-		}
-		req.Header.Set("Accept", "*/*")
-		req.Header.Set("Content-Type", "multipart/form-data")
-		req.Header.Set("Accept-Encoding", "gzip, deflate, br")
-		req.Header.Set("Connection", "keep-alive")
-
-		req.ContentLength = fi.Size()
-
-		res, clientErr = client.Do(req)
-		if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
-			retries--
-		} else {
-			break
-		}
-	}
-
-	if res != nil && res.Body != nil {
-		defer res.Body.Close()
-	}
-	if clientErr != nil || (res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices) {
-		logger.StopSpinnerWithStatus("\t Failed to upload build source file", log.Failed)
-		if clientErr == nil {
-			clientErr = fmt.Errorf("upload failed: %s", res.Status)
-		}
-		return clientErr
-	}
-
-	logger.StopSpinnerWithStatus("Source uploaded", log.Successful)
-	return nil
 }
 
 func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {

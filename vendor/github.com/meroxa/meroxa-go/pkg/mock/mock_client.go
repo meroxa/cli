@@ -227,6 +227,21 @@ func (mr *MockClientMockRecorder) CreateEnvironment(ctx, input interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEnvironment", reflect.TypeOf((*MockClient)(nil).CreateEnvironment), ctx, input)
 }
 
+// CreateFlinkJob mocks base method.
+func (m *MockClient) CreateFlinkJob(ctx context.Context, input *meroxa.CreateFlinkJobInput) (*meroxa.FlinkJob, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateFlinkJob", ctx, input)
+	ret0, _ := ret[0].(*meroxa.FlinkJob)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateFlinkJob indicates an expected call of CreateFlinkJob.
+func (mr *MockClientMockRecorder) CreateFlinkJob(ctx, input interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateFlinkJob", reflect.TypeOf((*MockClient)(nil).CreateFlinkJob), ctx, input)
+}
+
 // CreateFunction mocks base method.
 func (m *MockClient) CreateFunction(ctx context.Context, input *meroxa.CreateFunctionInput) (*meroxa.Function, error) {
 	m.ctrl.T.Helper()
@@ -358,6 +373,20 @@ func (m *MockClient) DeleteEnvironment(ctx context.Context, nameOrUUID string) (
 func (mr *MockClientMockRecorder) DeleteEnvironment(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteEnvironment", reflect.TypeOf((*MockClient)(nil).DeleteEnvironment), ctx, nameOrUUID)
+}
+
+// DeleteFlinkJob mocks base method.
+func (m *MockClient) DeleteFlinkJob(ctx context.Context, nameOrUUID string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteFlinkJob", ctx, nameOrUUID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteFlinkJob indicates an expected call of DeleteFlinkJob.
+func (mr *MockClientMockRecorder) DeleteFlinkJob(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteFlinkJob", reflect.TypeOf((*MockClient)(nil).DeleteFlinkJob), ctx, nameOrUUID)
 }
 
 // DeleteFunction mocks base method.
@@ -521,6 +550,21 @@ func (m *MockClient) GetEnvironment(ctx context.Context, nameOrUUID string) (*me
 func (mr *MockClientMockRecorder) GetEnvironment(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEnvironment", reflect.TypeOf((*MockClient)(nil).GetEnvironment), ctx, nameOrUUID)
+}
+
+// GetFlinkJob mocks base method.
+func (m *MockClient) GetFlinkJob(ctx context.Context, nameOrUUID string) (*meroxa.FlinkJob, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFlinkJob", ctx, nameOrUUID)
+	ret0, _ := ret[0].(*meroxa.FlinkJob)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFlinkJob indicates an expected call of GetFlinkJob.
+func (mr *MockClientMockRecorder) GetFlinkJob(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlinkJob", reflect.TypeOf((*MockClient)(nil).GetFlinkJob), ctx, nameOrUUID)
 }
 
 // GetFunction mocks base method.
@@ -701,6 +745,21 @@ func (m *MockClient) ListEnvironments(ctx context.Context) ([]*meroxa.Environmen
 func (mr *MockClientMockRecorder) ListEnvironments(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListEnvironments", reflect.TypeOf((*MockClient)(nil).ListEnvironments), ctx)
+}
+
+// ListFlinkJobs mocks base method.
+func (m *MockClient) ListFlinkJobs(ctx context.Context) ([]*meroxa.FlinkJob, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListFlinkJobs", ctx)
+	ret0, _ := ret[0].([]*meroxa.FlinkJob)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListFlinkJobs indicates an expected call of ListFlinkJobs.
+func (mr *MockClientMockRecorder) ListFlinkJobs(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListFlinkJobs", reflect.TypeOf((*MockClient)(nil).ListFlinkJobs), ctx)
 }
 
 // ListFunctions mocks base method.

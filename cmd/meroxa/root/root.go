@@ -22,7 +22,6 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-
 	"github.com/meroxa/cli/cmd/meroxa/root/account"
 	"github.com/meroxa/cli/cmd/meroxa/root/api"
 	"github.com/meroxa/cli/cmd/meroxa/root/apps"
@@ -32,6 +31,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/config"
 	"github.com/meroxa/cli/cmd/meroxa/root/connectors"
 	"github.com/meroxa/cli/cmd/meroxa/root/environments"
+	"github.com/meroxa/cli/cmd/meroxa/root/flink"
 	"github.com/meroxa/cli/cmd/meroxa/root/functions"
 	"github.com/meroxa/cli/cmd/meroxa/root/login"
 	"github.com/meroxa/cli/cmd/meroxa/root/logout"
@@ -91,6 +91,7 @@ meroxa resources list --types
 	cmd.AddCommand(builder.BuildCobraCommand(&connectors.Connectors{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&functions.Functions{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&environments.Environments{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&flink.Job{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&login.Login{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&logout.Logout{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
