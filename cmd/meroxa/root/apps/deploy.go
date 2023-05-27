@@ -782,6 +782,9 @@ func (d *Deploy) appModified(ctx context.Context) (bool, error) {
 
 	latest, err := d.client.GetLatestDeployment(ctx, app.Name)
 	if err != nil {
+		if strings.Contains(err.Error(), "could not find deployment") {
+			return true, nil
+		}
 		return false, err
 	}
 
