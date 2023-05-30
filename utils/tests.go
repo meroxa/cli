@@ -74,6 +74,13 @@ func GenerateResource() meroxa.Resource {
 	return GenerateResourceWithNameAndStatus("", "")
 }
 
+func GenerateFlinkJob() meroxa.FlinkJob {
+	return meroxa.FlinkJob{
+		UUID: "424ec647-9f0f-45a5-8e4b-3e0441f12444",
+		Name: "my-flink-job",
+	}
+}
+
 func GenerateConnector(pipelineName, connectorName string) meroxa.Connector {
 	if pipelineName == "" {
 		pipelineName = "pipeline-1234"
