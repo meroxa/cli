@@ -23,7 +23,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-	
+
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/cli/utils/display"
