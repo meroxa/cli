@@ -112,5 +112,6 @@ func TestListFlinkJobsErrorHandling(t *testing.T) {
 		t.Fatalf("expected error, got %q", err.Error())
 	}
 
+        require.Error((t, err)
 	assert.ErrorContains(t, err, errMsg)
 }
