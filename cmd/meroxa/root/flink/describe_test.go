@@ -57,7 +57,7 @@ func TestDescribeFlinkJobArgs(t *testing.T) {
 	}
 }
 
-func TestDescribeResourceExecution(t *testing.T) {
+func TestDescribeFlinkJobExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
 	client := mock.NewMockClient(ctrl)

@@ -84,8 +84,8 @@ func GenerateFlinkJob() meroxa.FlinkJob {
 		Status: meroxa.FlinkJobStatus{
 			LifecycleState: meroxa.FlinkJobLifecycleStateUninitialized,
 		},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 }
 
