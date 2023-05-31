@@ -23,14 +23,14 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
-	"github.com/meroxa/cli/utils/display"
-
-	"github.com/golang/mock/gomock"
+	
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
+
+	"github.com/golang/mock/gomock"
 )
 
 func TestDescribeFlinkJobArgs(t *testing.T) {

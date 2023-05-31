@@ -70,7 +70,7 @@ func TestFlinkJobsTable(t *testing.T) {
 
 func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.FlinkJob) {
 	// verify header fields
-	tableHeaders := []string{"UUID", "NAME", "STATE", "DEPLOYMENT STATE"}
+	tableHeaders := []string{"UUID", "NAME", "LIFECYCLE STATE"}
 
 	for _, header := range tableHeaders {
 		if !strings.Contains(out, header) {
@@ -85,8 +85,8 @@ func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.Flink
 	if !strings.Contains(out, flinkJob.UUID) {
 		t.Errorf("%s, not found", flinkJob.UUID)
 	}
-	if !strings.Contains(out, string(flinkJob.Status.State)) {
-		t.Errorf("state %s, not found", flinkJob.Status.State)
+	if !strings.Contains(out, string(flinkJob.Status.LifecycleState)) {
+		t.Errorf("state %s, not found", flinkJob.Status.LifecycleState)
 	}
 	if !strings.Contains(out, string(meroxa.EnvironmentTypeCommon)) {
 		t.Errorf("state %s, not found", string(meroxa.EnvironmentTypeCommon))
@@ -98,8 +98,8 @@ func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.Flink
 	if strings.Contains(out, fmt.Sprintf("%v", flinkJob.OutputStreams)) {
 		t.Errorf("found unwanted output: %s", flinkJob.OutputStreams)
 	}
-	if strings.Contains(out, string(flinkJob.Status.LifecycleState)) {
-		t.Errorf("found unwanted output: %s", string(flinkJob.Status.LifecycleState))
+	if strings.Contains(out, string(flinkJob.Status.State)) {
+		t.Errorf("found unwanted output: %s", string(flinkJob.Status.State))
 	}
 	if strings.Contains(out, string(flinkJob.Status.ReconciliationState)) {
 		t.Errorf("found unwanted output: %s", string(flinkJob.Status.ReconciliationState))
