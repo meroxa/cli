@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 Meroxa Inc
+Copyright © 2023 Meroxa Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	
+	"github.com/stretchr/testify/require"
+
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/cli/utils/display"
@@ -112,6 +113,6 @@ func TestListFlinkJobsErrorHandling(t *testing.T) {
 		t.Fatalf("expected error, got %q", err.Error())
 	}
 
-        require.Error((t, err)
+	require.Error(t, err)
 	assert.ErrorContains(t, err, errMsg)
 }

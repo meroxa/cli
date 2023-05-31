@@ -88,6 +88,9 @@ func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.Flink
 	if !strings.Contains(out, string(flinkJob.Status.State)) {
 		t.Errorf("state %s, not found", flinkJob.Status.State)
 	}
+	if !strings.Contains(out, string(meroxa.EnvironmentTypeCommon)) {
+		t.Errorf("state %s, not found", string(meroxa.EnvironmentTypeCommon))
+	}
 	// verify fields that are supposed to be excluded from the output
 	if strings.Contains(out, fmt.Sprintf("%v", flinkJob.InputStreams)) {
 		t.Errorf("found unwanted output: %s", flinkJob.InputStreams)
