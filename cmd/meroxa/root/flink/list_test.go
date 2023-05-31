@@ -46,7 +46,7 @@ func TestListFlinkJobsExecution(t *testing.T) {
 	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
 
-	flinkJobs := append(getFlinkJobs())
+	flinkJobs := getFlinkJobs()
 
 	client.
 		EXPECT().
