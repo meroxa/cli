@@ -111,3 +111,95 @@ func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.Flink
 		t.Errorf("found unwanted output: %s", flinkJob.UpdatedAt.String())
 	}
 }
+
+func TestFlinkJobTable(t *testing.T) {
+	testCases := []struct {
+		desc                 string
+		flinkJob             func() *meroxa.FlinkJob
+		shouldErrorOnEnvInfo func(string) bool
+		checkStates          bool
+	}{
+		{
+			desc: "Flink Job with no environment",
+			flinkJob: func() *meroxa.FlinkJob {
+				a := utils.GenerateFlinkJob()
+				return &a
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return !strings.Contains(output, string(meroxa.EnvironmentTypeCommon))
+			},
+		},
+		{
+			desc: "Flink Job with in a private environment",
+			flinkJob: func() *meroxa.FlinkJob {
+				a := utils.GenerateFlinkJob()
+				a.Environment.Name = "hey-now"
+				return &a
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return strings.Contains(output, string(meroxa.EnvironmentTypeCommon))
+			},
+		},
+		{
+			desc: "Flink Job with states and details",
+			flinkJob: func() *meroxa.FlinkJob {
+				a := utils.GenerateFlinkJob()
+				a.Status.State = meroxa.FlinkJobStateRunning
+				a.Status.ManagerDeploymentState = meroxa.FlinkJobManagerDeploymentStateDeploying
+				a.Status.LifecycleState = meroxa.FlinkJobLifecycleStateCreated
+				a.Status.ReconciliationState = meroxa.FlinkJobReconciliationStateDeployed
+				a.Status.Details = "so many good things"
+				return &a
+			},
+			shouldErrorOnEnvInfo: func(output string) bool {
+				return !strings.Contains(output, string(meroxa.EnvironmentTypeCommon))
+			},
+			checkStates: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			fj := tc.flinkJob()
+			out := FlinkJobTable(fj)
+			if !strings.Contains(out, "UUID") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.UUID, out)
+			}
+			if !strings.Contains(out, "Name:") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.Name, out)
+			}
+			if !strings.Contains(out, "Created At:") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.CreatedAt, out)
+			}
+			if !strings.Contains(out, "Updated At:") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.UpdatedAt, out)
+			}
+			if !strings.Contains(out, "Input Streams:") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.InputStreams, out)
+			}
+			if !strings.Contains(out, "Output Streams:") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.OutputStreams, out)
+			}
+			if !strings.Contains(out, "Lifecycle State") {
+				t.Errorf("expected %q to be shown\n%s\n", fj.Status.LifecycleState, out)
+			}
+			if tc.checkStates {
+				if !strings.Contains(out, "Job State:") {
+					t.Errorf("expected %q to be shown\n%s\n", fj.Status.State, out)
+				}
+				if !strings.Contains(out, "Reconciliation State:") {
+					t.Errorf("expected %q to be shown\n%s\n", fj.Status.ReconciliationState, out)
+				}
+				if !strings.Contains(out, "Manager Deployment State:") {
+					t.Errorf("expected %q to be shown\n%s\n", fj.Status.ManagerDeploymentState, out)
+				}
+				if !strings.Contains(out, "State Details:") {
+					t.Errorf("expected %q to be shown\n%s\n", fj.Status.Details, out)
+				}
+			}
+			if tc.shouldErrorOnEnvInfo(out) {
+				t.Errorf("expected environment information to be shown\n%s\n", out)
+			}
+		})
+	}
+}

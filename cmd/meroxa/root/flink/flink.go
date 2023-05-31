@@ -28,13 +28,14 @@ type Job struct{}
 
 var (
 	_ builder.CommandWithDocs        = (*Job)(nil)
+	_ builder.CommandWithAliases     = (*Job)(nil)
 	_ builder.CommandWithSubCommands = (*Job)(nil)
 	_ builder.CommandWithFeatureFlag = (*Job)(nil)
 	_ builder.CommandWithHidden      = (*Job)(nil)
 )
 
 func (*Job) Usage() string {
-	return "flink"
+	return "jobs"
 }
 
 func (*Job) Docs() builder.Docs {
@@ -43,9 +44,14 @@ func (*Job) Docs() builder.Docs {
 	}
 }
 
+func (*Job) Aliases() []string {
+	return []string{"job", "flink"}
+}
+
 func (*Job) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Deploy{}),
+		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&List{}),
 	}

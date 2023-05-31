@@ -16,31 +16,31 @@ type FlinkJobReconciliationState string
 type FlinkJobManagerDeploymentState string
 
 const (
-	FlinkJobLifecycleStateCreated       FlinkJobState = "created"
-	FlinkJobLifecycleStateDeploying     FlinkJobState = "deploying"
-	FlinkJobLifecycleStateDoa           FlinkJobState = "doa"
-	FlinkJobLifecycleStateFailed        FlinkJobState = "failed"
-	FlinkJobLifecycleStateRolledBack    FlinkJobState = "rolled_back"
-	FlinkJobLifecycleStateRollingBack   FlinkJobState = "rolling_back"
-	FlinkJobLifecycleStateStable        FlinkJobState = "stable"
-	FlinkJobLifecycleStateSuspended     FlinkJobState = "suspended"
-	FlinkJobLifecycleStateUninitialized FlinkJobState = "uninitialized"
-	FlinkJobLifecycleStateUpgrading     FlinkJobState = "upgrading"
+	FlinkJobLifecycleStateCreated       FlinkJobLifecycleState = "created"
+	FlinkJobLifecycleStateDeploying     FlinkJobLifecycleState = "deploying"
+	FlinkJobLifecycleStateDoa           FlinkJobLifecycleState = "doa"
+	FlinkJobLifecycleStateFailed        FlinkJobLifecycleState = "failed"
+	FlinkJobLifecycleStateRolledBack    FlinkJobLifecycleState = "rolled_back"
+	FlinkJobLifecycleStateRollingBack   FlinkJobLifecycleState = "rolling_back"
+	FlinkJobLifecycleStateStable        FlinkJobLifecycleState = "stable"
+	FlinkJobLifecycleStateSuspended     FlinkJobLifecycleState = "suspended"
+	FlinkJobLifecycleStateUninitialized FlinkJobLifecycleState = "uninitialized"
+	FlinkJobLifecycleStateUpgrading     FlinkJobLifecycleState = "upgrading"
 
 	FlinkJobStateRunning   FlinkJobState = "running"
 	FlinkJobStateSuspended FlinkJobState = "suspended"
 
-	FlinkJobReconciliationStateDeployed    FlinkJobState = "deployed"
-	FlinkJobReconciliationStateRolledBack  FlinkJobState = "rolled_back"
-	FlinkJobReconciliationStateRollingBack FlinkJobState = "rolling_back"
-	FlinkJobReconciliationStateUpgrading   FlinkJobState = "upgrading"
+	FlinkJobReconciliationStateDeployed    FlinkJobReconciliationState = "deployed"
+	FlinkJobReconciliationStateRolledBack  FlinkJobReconciliationState = "rolled_back"
+	FlinkJobReconciliationStateRollingBack FlinkJobReconciliationState = "rolling_back"
+	FlinkJobReconciliationStateUpgrading   FlinkJobReconciliationState = "upgrading"
 
-	FlinkJobStateDeployedNotReady FlinkJobState = "deployed_not_ready"
-	FlinkJobStateDeploying        FlinkJobState = "deploying"
-	FlinkJobStateError            FlinkJobState = "error"
-	FlinkJobStateFailing          FlinkJobState = "failing"
-	FlinkJobStateMissing          FlinkJobState = "missing"
-	FlinkJobStateReady            FlinkJobState = "ready"
+	FlinkJobManagerDeploymentStateDeployedNotReady FlinkJobManagerDeploymentState = "deployed_not_ready"
+	FlinkJobManagerDeploymentStateDeploying        FlinkJobManagerDeploymentState = "deploying"
+	FlinkJobManagerDeploymentStateError            FlinkJobManagerDeploymentState = "error"
+	FlinkJobManagerDeploymentStateFailing          FlinkJobManagerDeploymentState = "failing"
+	FlinkJobManagerDeploymentStateMissing          FlinkJobManagerDeploymentState = "missing"
+	FlinkJobManagerDeploymentStateReady            FlinkJobManagerDeploymentState = "ready"
 )
 
 type FlinkJobStatus struct {
