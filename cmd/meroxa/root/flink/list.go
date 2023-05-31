@@ -64,7 +64,7 @@ func (l *List) Execute(ctx context.Context) error {
 
 	l.logger.JSON(ctx, flinkJobs)
 	l.logger.Info(ctx, display.FlinkJobsTable(flinkJobs))
-	output := "\n ✨ To view your FlinkJobs, visit https://dashboard.meroxa.io/apps"
+	output := "\n ✨ To view your Flink Jobs, visit https://dashboard.meroxa.io/apps"
 	l.logger.Info(ctx, output)
 
 	return nil
