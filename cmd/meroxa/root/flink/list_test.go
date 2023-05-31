@@ -88,6 +88,7 @@ func TestListFlinkJobsExecution(t *testing.T) {
 		t.Fatalf("expected \"%v\", got \"%v\"", lf, gotJobs)
 	}
 }
+
 func TestListFlinkJobsErrorHandling(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
