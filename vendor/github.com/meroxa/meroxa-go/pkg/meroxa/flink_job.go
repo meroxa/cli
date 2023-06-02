@@ -10,7 +10,7 @@ import (
 
 const flinkJobsBasePath = "/v1/flink-jobs"
 
-type FlinkJobState string
+type FlinkJobDesiredState string
 type FlinkJobLifecycleState string
 type FlinkJobReconciliationState string
 type FlinkJobManagerDeploymentState string
@@ -27,8 +27,8 @@ const (
 	FlinkJobLifecycleStateUninitialized FlinkJobLifecycleState = "uninitialized"
 	FlinkJobLifecycleStateUpgrading     FlinkJobLifecycleState = "upgrading"
 
-	FlinkJobStateRunning   FlinkJobState = "running"
-	FlinkJobStateSuspended FlinkJobState = "suspended"
+	FlinkJobDesiredStateRunning   FlinkJobDesiredState = "running"
+	FlinkJobDesiredStateSuspended FlinkJobDesiredState = "suspended"
 
 	FlinkJobReconciliationStateDeployed    FlinkJobReconciliationState = "deployed"
 	FlinkJobReconciliationStateRolledBack  FlinkJobReconciliationState = "rolled_back"
@@ -45,7 +45,7 @@ const (
 
 type FlinkJobStatus struct {
 	LifecycleState         FlinkJobLifecycleState         `json:"lifecycle_state"`
-	State                  FlinkJobState                  `json:"state"`
+	State                  string                         `json:"state"`
 	ReconciliationState    FlinkJobReconciliationState    `json:"reconciliation_state"`
 	ManagerDeploymentState FlinkJobManagerDeploymentState `json:"manager_deployment_state"`
 	Details                string                         `json:"details,omitempty"`

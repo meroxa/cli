@@ -86,7 +86,7 @@ func FlinkJobTable(flinkJob *meroxa.FlinkJob) string {
 	if flinkJob.Status.State != "" {
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: "Job State:"},
-			{Text: string(flinkJob.Status.State)},
+			{Text: flinkJob.Status.State},
 		})
 	}
 

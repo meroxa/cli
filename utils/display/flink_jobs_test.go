@@ -18,7 +18,7 @@ func TestFlinkJobsTable(t *testing.T) {
 		InputStreams:  []string{"inputstream_one", "inputstream_two"},
 		OutputStreams: []string{"outtt"},
 		Status: meroxa.FlinkJobStatus{
-			State:                  "running",
+			State:                  "finished",
 			LifecycleState:         "success",
 			ReconciliationState:    "deployed",
 			ManagerDeploymentState: "ready",
@@ -33,7 +33,7 @@ func TestFlinkJobsTable(t *testing.T) {
 		InputStreams:  []string{"inputstream_one"},
 		OutputStreams: []string{"outtt", "anotheroutt"},
 		Status: meroxa.FlinkJobStatus{
-			State:                  "failed",
+			State:                  "finished",
 			LifecycleState:         "suspended",
 			ReconciliationState:    "rolling back",
 			ManagerDeploymentState: "error",
@@ -98,11 +98,14 @@ func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.Flink
 	if strings.Contains(out, fmt.Sprintf("%v", flinkJob.OutputStreams)) {
 		t.Errorf("found unwanted output: %s", flinkJob.OutputStreams)
 	}
-	if strings.Contains(out, string(flinkJob.Status.State)) {
-		t.Errorf("found unwanted output: %s", string(flinkJob.Status.State))
+	if strings.Contains(out, flinkJob.Status.State) {
+		t.Errorf("found unwanted output: %s", flinkJob.Status.State)
 	}
 	if strings.Contains(out, string(flinkJob.Status.ReconciliationState)) {
 		t.Errorf("found unwanted output: %s", string(flinkJob.Status.ReconciliationState))
+	}
+	if strings.Contains(out, string(flinkJob.Status.ManagerDeploymentState)) {
+		t.Errorf("found unwanted output: %s", string(flinkJob.Status.ManagerDeploymentState))
 	}
 	if strings.Contains(out, flinkJob.CreatedAt.String()) {
 		t.Errorf("found unwanted output: %s", flinkJob.CreatedAt.String())
@@ -144,7 +147,7 @@ func TestFlinkJobTable(t *testing.T) {
 			desc: "Flink Job with states and details",
 			flinkJob: func() *meroxa.FlinkJob {
 				a := utils.GenerateFlinkJob()
-				a.Status.State = meroxa.FlinkJobStateRunning
+				a.Status.State = "finished"
 				a.Status.ManagerDeploymentState = meroxa.FlinkJobManagerDeploymentStateDeploying
 				a.Status.LifecycleState = meroxa.FlinkJobLifecycleStateCreated
 				a.Status.ReconciliationState = meroxa.FlinkJobReconciliationStateDeployed
