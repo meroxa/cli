@@ -10,7 +10,6 @@ import (
 
 const flinkJobsBasePath = "/v1/flink-jobs"
 
-type FlinkJobStatusState string
 type FlinkJobDesiredState string
 type FlinkJobLifecycleState string
 type FlinkJobReconciliationState string
