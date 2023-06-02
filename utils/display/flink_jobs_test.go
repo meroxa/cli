@@ -115,7 +115,6 @@ func verifyPrintFlinkJobsOutput(t *testing.T, out string, flinkJob *meroxa.Flink
 	}
 }
 
-//nolint:gocyclo
 func TestFlinkJobTable(t *testing.T) {
 	testCases := []struct {
 		desc                 string
