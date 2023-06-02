@@ -42,6 +42,32 @@ linters-settings:
     require-explanation: false # don't require an explanation for nolint directives
     require-specific: false # don't require nolint directives to be specific about which linter is being skipped
 
+  depguard:
+    rules:
+      # Name of a rule.
+      main:
+        allow:
+          - $gostd
+          - github.com/meroxa
+          - github.com/alexeyco/simpletable
+          - github.com/briandowns/spinner
+          - github.com/cased/cased-go
+          - github.com/fatih/color
+          - github.com/golang/mock/gomock
+          - github.com/google/go-cmp
+          - github.com/google/uuid
+          - github.com/gorilla/mux
+          - github.com/manifoldco/promptui
+          - github.com/mattn/go-shellwords
+          - github.com/nirasan/go-oauth-pkce-code-verifier
+          - github.com/pkg/browser
+          - github.com/skratchdot/open-golang/open
+          - github.com/spf13/cobra
+          - github.com/spf13/pflag
+          - github.com/spf13/viper
+          - github.com/stretchr/testify
+          - github.com/withfig/autocomplete-tools/integrations/cobra
+
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
   # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
