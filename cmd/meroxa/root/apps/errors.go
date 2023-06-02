@@ -15,7 +15,7 @@ const (
 func newLangUnsupportedError(lang ir.Lang) error {
 	return fmt.Errorf(
 		`language %q not supported. `+
-			`supported languages "javascript", "golang", "python", and "ruby (beta)"`,
+			`supported languages "javascript", "golang", "python", "ruby", and "java"`,
 		lang,
 	)
 }

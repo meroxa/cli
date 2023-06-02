@@ -21,6 +21,7 @@ const (
 	JavaScript Lang = "javascript"
 	Python     Lang = "python"
 	Ruby       Lang = "ruby"
+	Java       Lang = "java"
 
 	ConnectorSource      ConnectorType = "source"
 	ConnectorDestination ConnectorType = "destination"
