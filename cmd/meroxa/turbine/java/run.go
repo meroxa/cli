@@ -6,7 +6,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 func (t *turbineJavaCLI) Run(ctx context.Context) error {
@@ -50,11 +49,11 @@ func (t *turbineJavaCLI) build(ctx context.Context) error {
 }
 
 func (t *turbineJavaCLI) runCMD(ctx context.Context, grpcAddress string) *exec.Cmd {
-	split := strings.Split(grpcAddress, ":")
 	cmd := exec.Command(
 		"java",
 		"-jar",
-		"-Dquarkus.grpc.server.port="+split[1],
+		"-Dturbine.core.server="+grpcAddress,
+		"-Dturbine.app.path="+t.appPath,
 		"target/turbine-java-example-1.0-SNAPSHOT-runner.jar",
 	)
 
