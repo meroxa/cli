@@ -19,6 +19,8 @@ package apps
 import (
 	"fmt"
 
+	turbineJava "github.com/meroxa/cli/cmd/meroxa/turbine/java"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
@@ -77,6 +79,8 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (tu
 		return turbinePY.New(logger, path), nil
 	case "rb", turbine.Ruby:
 		return turbineRb.New(logger, path), nil
+	case turbine.Java:
+		return turbineJava.New(logger, path), nil
 	}
 	return nil, newLangUnsupportedError(lang)
 }

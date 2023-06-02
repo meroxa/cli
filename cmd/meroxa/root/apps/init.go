@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strings"
 
+	turbineJava "github.com/meroxa/cli/cmd/meroxa/turbine/java"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
@@ -44,7 +46,7 @@ var (
 )
 
 func (*Init) Usage() string {
-	return "init APP_NAME [--path pwd] --lang js|go|py"
+	return "init APP_NAME [--path pwd] --lang js|go|py|ruby|java"
 }
 
 func (*Init) Docs() builder.Docs {
@@ -52,6 +54,8 @@ func (*Init) Docs() builder.Docs {
 		Short: "Initialize a Turbine Data Application",
 		Example: `meroxa apps init my-app --path ~/code --lang js
 meroxa apps init my-app --lang py
+meroxa apps init my-app --lang ruby
+meroxa apps init my-app --lang java
 meroxa apps init my-app --lang go 			# will be initialized in a dir called my-app in the current directory
 meroxa apps init my-app --lang go --skip-mod-init 	# will not initialize the new go module
 meroxa apps init my-app --lang go --mod-vendor 		# will initialize the new go module and download dependencies to the vendor directory
@@ -164,6 +168,8 @@ func newTurbineCLI(logger log.Logger, lang, path string) (turbine.CLI, error) {
 		return turbinePY.New(logger, path), nil
 	case "rb", turbine.Ruby:
 		return turbineRb.New(logger, path), nil
+	case turbine.Java:
+		return turbineJava.New(logger, path), nil
 	default:
 		return nil, newLangUnsupportedError(ir.Lang(lang))
 	}

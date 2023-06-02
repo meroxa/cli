@@ -25,6 +25,7 @@ const (
 	Python     = "python"
 	Python3    = "python3"
 	Ruby       = "ruby"
+	Java       = "java"
 
 	AccountUUIDEnvVar = "MEROXA_ACCOUNT_UUID"
 

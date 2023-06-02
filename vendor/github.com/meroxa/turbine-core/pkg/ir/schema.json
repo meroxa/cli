@@ -160,7 +160,8 @@
                                         "js",
                                         "python",
                                         "py",
-                                        "ruby"
+                                        "ruby",
+                                        "java"
                                     ]
                                 },
                                 "version": {
