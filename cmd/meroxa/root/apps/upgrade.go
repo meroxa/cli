@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"strconv"
 
+	turbineJava "github.com/meroxa/cli/cmd/meroxa/turbine/java"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
@@ -86,26 +88,23 @@ func (u *Upgrade) Execute(ctx context.Context) error {
 		u.logger.StopSpinnerWithStatus(fmt.Sprintf("Determined the details of the %q Application", u.config.Name), log.Successful)
 	}
 
-	switch u.config.Language {
-	case "go", turbine.GoLang:
-		if u.turbineCLI == nil {
+	if u.turbineCLI == nil {
+		switch u.config.Language {
+		case "go", turbine.GoLang:
 			u.turbineCLI = turbineGo.New(u.logger, u.path)
-		}
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		if u.turbineCLI == nil {
+		case "js", turbine.JavaScript, turbine.NodeJs:
 			u.turbineCLI = turbineJS.New(u.logger, u.path)
-		}
-	case "py", turbine.Python3, turbine.Python:
-		if u.turbineCLI == nil {
+		case "py", turbine.Python3, turbine.Python:
 			u.turbineCLI = turbinePY.New(u.logger, u.path)
-		}
-	case "rb", turbine.Ruby:
-		if u.turbineCLI == nil {
+		case "rb", turbine.Ruby:
 			u.turbineCLI = turbineRB.New(u.logger, u.path)
+		case turbine.Java:
+			u.turbineCLI = turbineJava.New(u.logger, u.path)
+		default:
+			return newLangUnsupportedError(u.config.Language)
 		}
-	default:
-		return newLangUnsupportedError(u.config.Language)
 	}
+
 	vendor, _ := strconv.ParseBool(u.config.Vendor)
 	if err = u.turbineCLI.Upgrade(vendor); err != nil {
 		return err
