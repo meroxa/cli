@@ -16,8 +16,7 @@ var _ pb.TurbineServiceServer = (*specBuilderService)(nil)
 type specBuilderService struct {
 	pb.UnimplementedTurbineServiceServer
 
-	spec      *ir.DeploymentSpec
-	resources []*pb.Resource
+	spec *ir.DeploymentSpec
 }
 
 func NewSpecBuilderService() *specBuilderService {
@@ -46,59 +45,36 @@ func (s *specBuilderService) Init(_ context.Context, req *pb.InitRequest) (*empt
 	return empty(), nil
 }
 
-func (s *specBuilderService) GetResource(_ context.Context, req *pb.GetResourceRequest) (*pb.Resource, error) {
+func (s *specBuilderService) ReadFromSource(_ context.Context, req *pb.ReadFromSourceRequest) (*pb.RecordsCollection, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
-	return &pb.Resource{Name: req.Name}, nil
-}
-
-func (s *specBuilderService) ReadCollection(_ context.Context, req *pb.ReadCollectionRequest) (*pb.Collection, error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-
-	s.resources = append(s.resources, &pb.Resource{
-		Name:       req.GetResource().GetName(),
-		Source:     true,
-		Collection: req.GetCollection(),
-	})
 
 	c := ir.ConnectorSpec{
 		UUID:       uuid.New().String(),
-		Collection: req.Collection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorSource,
-		Config:     configMap(req.Configs),
+		PluginName: req.PluginName,
+		Direction:  ir.ConnectorSource,
+		Config:     configMap(req.Configuration),
 	}
 
 	if err := s.spec.AddSource(&c); err != nil {
 		return nil, err
 	}
 
-	return &pb.Collection{
-		Name:   req.Collection,
+	return &pb.RecordsCollection{
 		Stream: c.UUID,
 	}, nil
 }
 
-func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *pb.WriteCollectionRequest) (*emptypb.Empty, error) {
+func (s *specBuilderService) WriteToDestination(_ context.Context, req *pb.WriteToDestinationRequest) (*emptypb.Empty, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
 
-	s.resources = append(s.resources, &pb.Resource{
-		Name:        req.Resource.Name,
-		Destination: true,
-		Collection:  req.TargetCollection,
-	})
-
 	c := ir.ConnectorSpec{
-		UUID:       uuid.New().String(),
-		Collection: req.TargetCollection,
-		Resource:   req.Resource.Name,
-		Type:       ir.ConnectorDestination,
-		Config:     configMap(req.Configs),
+		UUID:      uuid.New().String(),
+		Direction: ir.ConnectorDestination,
+		Config:    configMap(req.Configuration),
 	}
 	if err := s.spec.AddDestination(&c); err != nil {
 		return nil, err
@@ -106,9 +82,9 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.SourceCollection.Stream,
+		FromUUID: req.Records.Stream,
 		ToUUID:   c.UUID,
-		Name:     req.SourceCollection.Stream + "_" + c.UUID,
+		Name:     req.Records.Stream + "_" + c.UUID,
 	}); err != nil {
 		return nil, err
 	}
@@ -116,7 +92,7 @@ func (s *specBuilderService) WriteCollectionToResource(_ context.Context, req *p
 	return empty(), nil
 }
 
-func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.ProcessCollectionRequest) (*pb.Collection, error) {
+func (s *specBuilderService) Process(_ context.Context, req *pb.ProcessRecordsRequest) (*pb.RecordsCollection, error) {
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
@@ -131,15 +107,14 @@ func (s *specBuilderService) AddProcessToCollection(_ context.Context, req *pb.P
 
 	if err := s.spec.AddStream(&ir.StreamSpec{
 		UUID:     uuid.New().String(),
-		FromUUID: req.Collection.Stream,
+		FromUUID: req.Records.Stream,
 		ToUUID:   f.UUID,
-		Name:     req.Collection.Stream + "_" + f.UUID,
+		Name:     req.Records.Stream + "_" + f.UUID,
 	}); err != nil {
 		return nil, err
 	}
 
-	return &pb.Collection{
-		Name:   req.Collection.Name,
+	return &pb.RecordsCollection{
 		Stream: f.UUID,
 	}, nil
 }
@@ -154,10 +129,6 @@ func (s *specBuilderService) RegisterSecret(_ context.Context, secret *pb.Secret
 
 func (s *specBuilderService) HasFunctions(_ context.Context, _ *emptypb.Empty) (*wrapperspb.BoolValue, error) {
 	return wrapperspb.Bool(len(s.spec.Functions) > 0), nil
-}
-
-func (s *specBuilderService) ListResources(_ context.Context, _ *emptypb.Empty) (*pb.ListResourcesResponse, error) {
-	return &pb.ListResourcesResponse{Resources: s.resources}, nil
 }
 
 func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) (*pb.GetSpecResponse, error) {
@@ -181,13 +152,13 @@ func (s *specBuilderService) GetSpec(_ context.Context, req *pb.GetSpecRequest) 
 	return &pb.GetSpecResponse{Spec: spec}, nil
 }
 
-func configMap(configs *pb.Configs) map[string]any {
+func configMap(configs *pb.Configurations) map[string]any {
 	if configs == nil {
 		return nil
 	}
 
 	m := make(map[string]any)
-	for _, c := range configs.Config {
+	for _, c := range configs.Configuration {
 		m[c.Field] = c.Value
 	}
 	return m

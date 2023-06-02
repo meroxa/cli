@@ -14,9 +14,9 @@ import (
 	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 )
 
-type FixtureResource struct {
-	File       string
-	Collection string
+type FixtureConnector struct {
+	File       string // file path
+	PluginName string
 }
 
 type fixtureRecord struct {
@@ -25,14 +25,14 @@ type fixtureRecord struct {
 	Timestamp string
 }
 
-func (f *FixtureResource) ReadAll(ctx context.Context) ([]*pb.Record, error) {
+func (f *FixtureConnector) ReadAll(ctx context.Context) ([]*pb.Record, error) {
 	b, err := os.ReadFile(f.File)
 	if err != nil {
 		return nil, err
 	}
 
 	var rr []*pb.Record
-	if f.Collection == "" {
+	if f.PluginName == "" {
 		// hacky hack because of https://github.com/golang/go/issues/22518
 		first := strings.Index(string(b), "[")
 		last := strings.LastIndex(string(b), "]")
@@ -51,7 +51,7 @@ func (f *FixtureResource) ReadAll(ctx context.Context) ([]*pb.Record, error) {
 		if err := json.Unmarshal(b, &records); err != nil {
 			return nil, err
 		}
-		for _, r := range records[f.Collection] {
+		for _, r := range records[f.PluginName] {
 			rr = append(rr, wrapRecord(r))
 		}
 	}
@@ -75,9 +75,9 @@ func wrapRecord(m fixtureRecord) *pb.Record {
 	}
 }
 
-func PrintRecords(name, collection string, rr []*pb.Record) {
+func PrintRecords(name string, rr []*pb.Record) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.AlignRight|tabwriter.Debug)
-	fmt.Fprintf(w, "Destination %s/%s\n", name, collection)
+	fmt.Fprintf(w, "Destination %s\n", name)
 	fmt.Fprintf(w, "----------------------\n")
 	fmt.Fprintln(w, "index\trecord")
 	fmt.Fprintln(w, "----\t----")

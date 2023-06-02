@@ -25,6 +25,7 @@ const (
 	Python     = "python"
 	Python3    = "python3"
 	Ruby       = "ruby"
+	Java       = "java"
 
 	IncompatibleTurbineVersion = `your Turbine library version is incompatible with the Meroxa CLI.
 For guidance on updating to the latest version, visit:

@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -103,24 +104,11 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-func (d *Deploy) getPlatformImage(ctx context.Context) error {
-	var (
-		err       error
-		buildPath string
-	)
-
-	d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", d.path))
-	buildPath, err = d.turbineCLI.CreateDockerfile(ctx, d.appName)
-	if err != nil {
-		return err
-	}
-	defer d.turbineCLI.CleanupDockerfile(d.logger, d.path)
-	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
-
+func (d *Deploy) createAndRemoveZipFile(buildPath string) error {
 	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
 
 	var buf bytes.Buffer
-	if err = createTarAndZipFile(buildPath, &buf); err != nil {
+	if err := createTarAndZipFile(buildPath, &buf); err != nil {
 		return err
 	}
 
@@ -150,6 +138,56 @@ func (d *Deploy) getPlatformImage(ctx context.Context) error {
 	d.fnName = dFile
 	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, buildPath), log.Successful)
 	return nil
+}
+
+func (d *Deploy) getMdpxDemoPlatformImage(ctx context.Context) error {
+	err := d.mvnPkgCmd(ctx)
+	if err != nil {
+		return fmt.Errorf("failed building maven: %w", err)
+	}
+
+	d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile in %s", d.path))
+	buildPath, err := d.turbineCLI.CreateDockerfile(ctx, "")
+	if err != nil {
+		return fmt.Errorf("failed creating Dockerfile: %w", err)
+	}
+	defer d.turbineCLI.CleanupDockerfile(d.logger, d.path)
+	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
+
+	cmd := exec.CommandContext(
+		ctx,
+		"docker",
+		"build",
+		"-t",
+		d.appName,
+		".",
+	)
+
+	cmd.Dir = d.path
+	cmd.Env = os.Environ()
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("docker failed: %v", string(out))
+	}
+	return d.createAndRemoveZipFile(buildPath)
+}
+
+// TODO: Update this before shipping to MDPX.
+func (d *Deploy) getPlatformImage(ctx context.Context) error {
+	var (
+		err error
+	)
+
+	d.logger.StartSpinner("\t", fmt.Sprintf("Creating Dockerfile before uploading source in %s", d.path))
+	buildPath, err := d.turbineCLI.CreateDockerfile(ctx, d.appName)
+	if err != nil {
+		return err
+	}
+	defer d.turbineCLI.CleanupDockerfile(d.logger, d.path)
+	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
+
+	return d.createAndRemoveZipFile(buildPath)
 }
 
 // CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
@@ -248,7 +286,11 @@ func (d *Deploy) getAppImage(ctx context.Context) error {
 	}
 
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
-	return d.getPlatformImage(ctx)
+
+	// Classic Platform
+	//return d.getPlatformImage(ctx)
+
+	return d.getMdpxDemoPlatformImage(ctx)
 }
 
 // validateLanguage stops execution of the deployment in case language is not supported.
@@ -263,6 +305,8 @@ func (d *Deploy) validateLanguage() error {
 		d.lang = ir.Python
 	case "rb", turbine.Ruby:
 		d.lang = ir.Ruby
+	case turbine.Java:
+		d.lang = ir.Java
 	default:
 		return newLangUnsupportedError(d.lang)
 	}
@@ -382,6 +426,25 @@ func (d *Deploy) createApplicationRequest(ctx context.Context) (*Application, er
 		SpecVersion: d.specVersion,
 		Spec:        spec,
 	}, nil
+}
+
+func (d *Deploy) mvnPkgCmd(ctx context.Context) error {
+	cmd := exec.CommandContext(
+		ctx,
+		"mvn",
+		"clean",
+		"package",
+	)
+
+	cmd.Dir = d.path
+	cmd.Env = os.Environ()
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("mvn failed: %v", string(out))
+	}
+
+	return nil
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {

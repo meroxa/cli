@@ -113,7 +113,7 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 	destinationUUID := ""
 	var sourceUUIDs []string
 	for _, cs := range spec.Connectors {
-		if cs.Type == ir.ConnectorDestination {
+		if cs.Direction == ir.ConnectorDestination {
 			destinationUUID = cs.UUID
 		} else {
 			sourceUUIDs = append(sourceUUIDs, cs.UUID)

@@ -3,7 +3,7 @@
 Initialize a Turbine Data Application
 
 ```
-meroxa apps init APP_NAME [--path pwd] --lang js|go|py [flags]
+meroxa apps init APP_NAME [--path pwd] --lang js|go|py|ruby|java [flags]
 ```
 
 ### Examples
@@ -11,6 +11,8 @@ meroxa apps init APP_NAME [--path pwd] --lang js|go|py [flags]
 ```
 meroxa apps init my-app --path ~/code --lang js
 meroxa apps init my-app --lang py
+meroxa apps init my-app --lang ruby
+meroxa apps init my-app --lang java
 meroxa apps init my-app --lang go 			# will be initialized in a dir called my-app in the current directory
 meroxa apps init my-app --lang go --skip-mod-init 	# will not initialize the new go module
 meroxa apps init my-app --lang go --mod-vendor 		# will initialize the new go module and download dependencies to the vendor directory

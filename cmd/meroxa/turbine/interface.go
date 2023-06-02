@@ -14,7 +14,6 @@ type CLI interface {
 	CleanupDockerfile(log.Logger, string)
 	GetGitSha(context.Context, string) (string, error)
 	GetDeploymentSpec(context.Context, string) (string, error)
-	GetResources(context.Context) ([]ApplicationResource, error)
 	NeedsToBuild(context.Context) (bool, error)
 	GetVersion(context.Context) (string, error)
 	Init(context.Context, string) error
