@@ -402,6 +402,8 @@ func (d *Deploy) validateLanguage() error {
 		d.lang = ir.Python
 	case "rb", turbine.Ruby:
 		d.lang = ir.Ruby
+	case turbine.Java:
+		d.lang = ir.Java
 	default:
 		return newLangUnsupportedError(d.lang)
 	}
