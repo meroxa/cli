@@ -9,18 +9,18 @@ import java.util.List;
 
 import static java.time.LocalDateTime.now;
 
-public class MyApp implements TurbineApp {
+public class Main implements TurbineApp {
     public static void main(String[] args) {
-        Runner.start(new MyApp());
+        Runner.start(new Main());
     }
 
     @Override
     public void setup(Turbine turbine) {
         turbine
-            .resource("test-pg-source")
-            .read("user_activity", null)
+            .resource("source_name")
+            .read("collection_name", null)
             .process(this::process)
-            .writeTo(turbine.resource("test-mysql-destination"), "user_activity_enriched", null);
+            .writeTo(turbine.resource("a-mysql-destination"), "collection_enriched", null);
     }
 
     private List<TurbineRecord> process(List<TurbineRecord> records) {
