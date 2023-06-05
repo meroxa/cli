@@ -126,7 +126,7 @@ github.com/mitchellh/mapstructure
 # github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 ## explicit
 github.com/nirasan/go-oauth-pkce-code-verifier
-# github.com/pelletier/go-toml/v2 v2.0.6
+# github.com/pelletier/go-toml/v2 v2.0.8
 ## explicit; go 1.16
 github.com/pelletier/go-toml/v2
 github.com/pelletier/go-toml/v2/internal/characters
@@ -151,12 +151,12 @@ github.com/santhosh-tekuri/jsonschema/v5
 # github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 ## explicit
 github.com/skratchdot/open-golang/open
-# github.com/spf13/afero v1.9.3
+# github.com/spf13/afero v1.9.5
 ## explicit; go 1.16
 github.com/spf13/afero
 github.com/spf13/afero/internal/common
 github.com/spf13/afero/mem
-# github.com/spf13/cast v1.5.0
+# github.com/spf13/cast v1.5.1
 ## explicit; go 1.18
 github.com/spf13/cast
 # github.com/spf13/cobra v1.7.0
@@ -169,7 +169,7 @@ github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
-# github.com/spf13/viper v1.15.0
+# github.com/spf13/viper v1.16.0
 ## explicit; go 1.17
 github.com/spf13/viper
 github.com/spf13/viper/internal/encoding
@@ -231,7 +231,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4
+# google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.55.0
