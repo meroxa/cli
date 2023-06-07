@@ -372,7 +372,7 @@ func TestCreateResourceExecutionPrivateKeyFlags(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	keyVal := "super-secret"
-	keyFile := filepath.Join("/tmp", uuid.NewString())
+	keyFile := filepath.Join(os.TempDir(), uuid.NewString())
 	err := os.WriteFile(keyFile, []byte(keyVal), 0o600)
 	require.NoError(t, err)
 

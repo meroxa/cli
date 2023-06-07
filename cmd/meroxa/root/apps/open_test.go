@@ -106,14 +106,14 @@ func TestOpenAppExecution(t *testing.T) {
 		},
 		{
 			desc:    "Fail with bad path",
-			appFlag: "/tmp",
+			appFlag: os.TempDir(),
 			wantErr: errors.New("could not find an app.json file on path"),
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
 			os.Setenv("UNIT_TEST", "1")
-			path := filepath.Join("/tmp", uuid.New().String())
+			path := filepath.Join(os.TempDir(), uuid.New().String())
 			logger := log.NewTestLogger()
 			cc := &Init{}
 			cc.Logger(logger)

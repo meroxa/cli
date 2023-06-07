@@ -138,7 +138,7 @@ func TestGoInitExecute(t *testing.T) {
 		{
 			desc: "Init without go mod init because the path is not under GOPATH and with vendor flag",
 			path: func() string {
-				return filepath.Join("/tmp", uuid.New().String()) //nolint:gocritic
+				return filepath.Join(os.TempDir(), uuid.New().String()) //nolint:gocritic
 			}(),
 			skipModInit:          false,
 			effectiveSkipModInit: true,
@@ -168,13 +168,13 @@ func TestGoInitExecute(t *testing.T) {
 
 			if err == nil && tt.err == nil {
 				if !tt.skipModInit && !tt.effectiveSkipModInit {
-					p, _ := filepath.Abs(tt.path + "/" + cc.args.appName + "/go.mod")
+					p, _ := filepath.Abs(filepath.Join(tt.path, cc.args.appName, "go.mod"))
 					if _, err := os.Stat(p); os.IsNotExist(err) {
 						t.Fatalf("expected file \"%s\" to be created", p)
 					}
 
 					if tt.vendor {
-						p, _ = filepath.Abs(tt.path + "/" + cc.args.appName + "/go.mod")
+						p, _ = filepath.Abs(filepath.Join(tt.path, cc.args.appName, "go.mod"))
 						if _, err := os.Stat(p); os.IsNotExist(err) {
 							t.Fatalf("expected directory \"%s\" to be created", p)
 						}
@@ -252,7 +252,7 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 			mock := mockturbinecli.NewMockCLI(mockCtrl)
 			if tt.err == nil {
 				mock.EXPECT().Init(ctx, tt.name)
-				mock.EXPECT().GitInit(ctx, tt.path+"/"+tt.name)
+				mock.EXPECT().GitInit(ctx, filepath.Join(tt.path, tt.name))
 			} else {
 				mock.EXPECT().Init(ctx, tt.name).Return(tt.err)
 			}
