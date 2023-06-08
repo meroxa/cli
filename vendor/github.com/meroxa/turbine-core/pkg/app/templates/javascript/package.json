@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "@meroxa/turbine-js": "^2.0.0-alpha.6",
+    "@meroxa/turbine-js": "^2.0.0",
     "string-hash": "^1.1.3"
   },
   "devDependencies": {
