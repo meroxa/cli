@@ -25,7 +25,7 @@ require (
 )
 
 require (
-	github.com/briandowns/spinner v1.21.0
+	github.com/briandowns/spinner v1.23.0
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-core v0.0.0-20230605100209-67a6cf60fee6
 	github.com/stretchr/testify v1.8.4
