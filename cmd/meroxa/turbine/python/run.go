@@ -19,5 +19,6 @@ func (t *turbinePyCLI) Run(ctx context.Context) error {
 		t.appPath,
 		"",
 	)
-	return turbine.RunCMD(ctx, t.logger, cmd)
+	_, err := turbine.RunCmdWithErrorDetection(ctx, cmd, t.logger)
+	return err
 }
