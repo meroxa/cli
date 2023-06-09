@@ -55,7 +55,7 @@ func (t *turbineGoCLI) StartGrpcServer(ctx context.Context, gitSha string) (func
 	cmd.Dir = t.appPath
 	cmd.Env = os.Environ()
 
-	if err := turbine.RunCMD(ctx, t.logger, cmd); err != nil {
+	if _, err := turbine.RunCmdWithErrorDetection(ctx, cmd, t.logger); err != nil {
 		return nil, err
 	}
 
