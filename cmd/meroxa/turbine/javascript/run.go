@@ -22,6 +22,5 @@ func (t *turbineJsCLI) Run(ctx context.Context) error {
 		"devel",
 	)
 
-	_, err := utils.RunCmdWithErrorDetection(ctx, cmd, t.logger)
-	return err
+	return utils.RunCMD(ctx, t.logger, cmd)
 }

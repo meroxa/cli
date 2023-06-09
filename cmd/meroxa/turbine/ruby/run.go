@@ -18,6 +18,5 @@ func (t *turbineRbCLI) Run(ctx context.Context) error {
 		map[string]string{
 			"TURBINE_CORE_SERVER": grpcListenAddress,
 		})
-	_, err := turbine.RunCmdWithErrorDetection(ctx, cmd, t.logger)
-	return err
+	return turbine.RunCMD(ctx, t.logger, cmd)
 }

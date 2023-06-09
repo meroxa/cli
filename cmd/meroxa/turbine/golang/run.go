@@ -23,6 +23,5 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 	cmd.Dir = t.appPath
 	cmd.Env = os.Environ()
 
-	_, err := turbine.RunCmdWithErrorDetection(ctx, cmd, t.logger)
-	return err
+	return turbine.RunCMD(ctx, t.logger, cmd)
 }
