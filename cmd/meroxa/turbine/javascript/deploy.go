@@ -18,8 +18,7 @@ func (t *turbineJsCLI) CreateDockerfile(ctx context.Context, _ string) (string, 
 		map[string]string{},
 		t.appPath,
 	)
-	_, err := turbine.RunCmdWithErrorDetection(ctx, cmd, t.logger)
-	return t.appPath, err
+	return t.appPath, turbine.RunCMD(ctx, t.logger, cmd)
 }
 
 func (t *turbineJsCLI) StartGrpcServer(ctx context.Context, gitSha string) (func(), error) {
@@ -38,7 +37,7 @@ func (t *turbineJsCLI) StartGrpcServer(ctx context.Context, gitSha string) (func
 		gitSha,
 	)
 
-	if _, err := turbine.RunCmdWithErrorDetection(ctx, cmd, t.logger); err != nil {
+	if err := turbine.RunCMD(ctx, t.logger, cmd); err != nil {
 		return nil, err
 	}
 
