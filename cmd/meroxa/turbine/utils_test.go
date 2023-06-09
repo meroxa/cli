@@ -317,7 +317,7 @@ func Test_trimNonNpmErrorLines(t *testing.T) {
 }
 
 func makeTmpDir() (string, error) {
-	basePath := "/tmp"
+	basePath := os.TempDir()
 	dirName := uuid.NewString()
 	appPath := filepath.Join(basePath, dirName)
 	err := os.MkdirAll(appPath, os.ModePerm)

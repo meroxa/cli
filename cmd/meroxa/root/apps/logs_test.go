@@ -134,7 +134,7 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	i := &Init{
 		logger: logger,
 	}
-	path, _ := filepath.Abs("tmp" + uuid.NewString())
+	path, _ := filepath.Abs(filepath.Join(os.TempDir(), uuid.NewString()))
 	i.args.appName = appName
 	i.flags.Path = path
 	i.flags.Lang = string(ir.GoLang)

@@ -134,7 +134,7 @@ func TestRemoveAppExecutionWithPath(t *testing.T) {
 	i := &Init{
 		logger: logger,
 	}
-	path := "tmp" + uuid.NewString()
+	path := filepath.Join(os.TempDir(), uuid.NewString())
 	i.args.appName = app.Name
 	i.flags.Path = path
 	i.flags.Lang = string(ir.GoLang)
