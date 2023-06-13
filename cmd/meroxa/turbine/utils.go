@@ -187,19 +187,6 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 	return trimmed, nil
 }
 
-func RunCMD(ctx context.Context, logger log.Logger, cmd *exec.Cmd) error {
-	if err := cmd.Start(); err != nil {
-		logger.Errorf(ctx, err.Error())
-		return err
-	}
-
-	if err := cmd.Wait(); err != nil {
-		logger.Errorf(ctx, err.Error())
-		return err
-	}
-	return nil
-}
-
 // RunCmdWithErrorDetection checks exit codes and stderr for failures and logs on success.
 func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) (string, error) {
 	stdout, stderr := bytes.NewBuffer(nil), bytes.NewBuffer(nil)

@@ -214,43 +214,6 @@ func TestGetPath(t *testing.T) {
 	}
 }
 
-func TestRunCMD(t *testing.T) {
-	ctx := context.Background()
-	logger := log.NewTestLogger()
-
-	tests := []struct {
-		name  string
-		input *exec.Cmd
-		err   error
-	}{
-		{
-			name:  "Successfully execute command",
-			input: exec.Command("date"),
-			err:   nil,
-		},
-		{
-			name:  "Fail to find command",
-			input: exec.Command("not-a-thing"),
-			err:   fmt.Errorf("exec: \"not-a-thing\": executable file not found in $PATH"),
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			err := RunCMD(ctx, logger, tc.input)
-			if err != nil {
-				if tc.err == nil {
-					t.Fatalf("unexpected err: %v", err)
-				} else {
-					assert.Equal(t, tc.err.Error(), err.Error())
-				}
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
 func TestRunCMDWithErrorDetection(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
