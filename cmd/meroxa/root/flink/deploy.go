@@ -21,10 +21,14 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/flink"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -39,7 +43,9 @@ type Deploy struct {
 	}
 
 	flags struct {
-		Jar string `long:"jar" required:"true" usage:"Path to Flink Job jar file"`
+		Jar     string   `long:"jar" required:"true" usage:"Path to Flink Job jar file"`
+		Secrets []string `short:"s" long:"secret" usage:"environment variables to inject into the Flink Job (e.g.: --secret API_KEY=$API_KEY --secret ACCESS_KEY=abcdef)"` //nolint:lll
+
 	}
 
 	client deployFlinkJobClient
@@ -96,13 +102,20 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return fmt.Errorf("the path to your Flink Job jar file must be provided to the --jar flag")
 	}
 
-	filename := filepath.Base(jarPath)
+	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
+	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
+	if err != nil {
+		return err
+	}
+	// just print it for now
+	fmt.Printf("Connector Spec: %s\n", spew.Sdump(spec.Connectors))
 
 	name := d.args.Name
 	if name == "" {
 		return fmt.Errorf("the name of your Flink Job be provided as an argument")
 	}
 
+	filename := filepath.Base(jarPath)
 	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
 	source, err := d.client.CreateSourceV2(ctx, &meroxa.CreateSourceInputV2{Filename: filename})
 	if err != nil {
