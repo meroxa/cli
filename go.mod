@@ -27,7 +27,7 @@ require (
 require (
 	github.com/briandowns/spinner v1.23.0
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-core v0.0.0-20230605100209-67a6cf60fee6
+	github.com/meroxa/turbine-core v0.0.0-20230609143328-ff4d4ed7edbb
 	github.com/stretchr/testify v1.8.4
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.10.0
@@ -42,7 +42,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dewski/jsonpath v0.0.0-20210103075638-af6da8f1a897 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/envoyproxy/protoc-gen-validate v1.0.0 // indirect
+	github.com/envoyproxy/protoc-gen-validate v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
