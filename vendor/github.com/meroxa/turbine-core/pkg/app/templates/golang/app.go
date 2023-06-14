@@ -8,8 +8,8 @@ import (
 	"log"
 
 	// Dependencies of Turbine
-	"github.com/meroxa/turbine-go/pkg/turbine"
-	"github.com/meroxa/turbine-go/pkg/turbine/cmd"
+	"github.com/meroxa/turbine-go/v2/pkg/turbine"
+	"github.com/meroxa/turbine-go/v2/pkg/turbine/cmd"
 )
 
 func main() {

@@ -187,8 +187,8 @@ github.com/mattn/go-shellwords v1.0.12 h1:M2zGm7EW6UQJvDeQxo4T51eKPurbeFbe8WtebG
 github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
 github.com/meroxa/meroxa-go v0.0.0-20230602200008-52f4437a6a26 h1:WyDJJuELd8iDIgcwY4PscfNazQY7YRRHqwD1+Z/z2HQ=
 github.com/meroxa/meroxa-go v0.0.0-20230602200008-52f4437a6a26/go.mod h1:zO5ivDagJFc+zejDNHe/GwtCvgN1zqfBIpIuSvgiUFc=
-github.com/meroxa/turbine-core v0.0.0-20230614165646-663965381cd4 h1:YYBn3DBKVc4XmksDWLT43S4ELHkcRUYEBLAkCkAPlkg=
-github.com/meroxa/turbine-core v0.0.0-20230614165646-663965381cd4/go.mod h1:FKlgNtdLKmoLM+qQwIOc5+yLDmB/WlBRLHKnS5qoRzY=
+github.com/meroxa/turbine-core v0.0.0-20230614233233-044d997b9e71 h1:OQY0JWZzr+fw4jgysaYCw4CWlCbu5uTUhJ0dJdJrPG8=
+github.com/meroxa/turbine-core v0.0.0-20230614233233-044d997b9e71/go.mod h1:W3hnKV7ClJBkDOQThEYVFYPw7UnRl73pF551H9pfyA8=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da h1:qiPWuGGr+1GQE6s9NPSK8iggR/6x/V+0snIoOPYsBgc=
