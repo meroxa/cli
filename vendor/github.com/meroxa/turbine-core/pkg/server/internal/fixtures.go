@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 	"time"
 
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
 )
 
 type FixtureResource struct {
@@ -18,7 +20,7 @@ type FixtureResource struct {
 }
 
 type fixtureRecord struct {
-	Key       string
+	Key       interface{}
 	Value     map[string]interface{}
 	Timestamp string
 }
@@ -29,14 +31,29 @@ func (f *FixtureResource) ReadAll(ctx context.Context) ([]*pb.Record, error) {
 		return nil, err
 	}
 
-	var records map[string][]fixtureRecord
-	if err := json.Unmarshal(b, &records); err != nil {
-		return nil, err
-	}
-
 	var rr []*pb.Record
-	for _, r := range records[f.Collection] {
-		rr = append(rr, wrapRecord(r))
+	if f.Collection == "" {
+		// hacky hack because of https://github.com/golang/go/issues/22518
+		first := strings.Index(string(b), "[")
+		last := strings.LastIndex(string(b), "]")
+
+		substr := b[first : last+1]
+
+		var records []fixtureRecord
+		if err := json.Unmarshal(substr, &records); err != nil {
+			return nil, err
+		}
+		for _, r := range records {
+			rr = append(rr, wrapRecord(r))
+		}
+	} else {
+		var records map[string][]fixtureRecord
+		if err := json.Unmarshal(b, &records); err != nil {
+			return nil, err
+		}
+		for _, r := range records[f.Collection] {
+			rr = append(rr, wrapRecord(r))
+		}
 	}
 
 	return rr, nil
@@ -52,7 +69,7 @@ func wrapRecord(m fixtureRecord) *pb.Record {
 	}
 
 	return &pb.Record{
-		Key:       m.Key,
+		Key:       fmt.Sprintf("%v", m.Key),
 		Value:     b,
 		Timestamp: ts,
 	}
