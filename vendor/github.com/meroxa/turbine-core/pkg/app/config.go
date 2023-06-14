@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/meroxa/turbine-core/pkg/ir"
 )
@@ -43,7 +44,7 @@ var ReadConfig = func(appName, appPath string) (Config, error) {
 		appPath = path.Dir(exePath)
 	}
 
-	b, err := os.ReadFile(appPath + "/" + "app.json")
+	b, err := os.ReadFile(filepath.Join(appPath, "app.json"))
 	if err != nil {
 		return Config{}, err
 	}
