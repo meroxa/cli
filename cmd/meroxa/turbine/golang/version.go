@@ -9,12 +9,10 @@ import (
 
 // GetVersion will return the tag or hash of the turbine-go dependency of a given app.
 func (t *turbineGoCLI) GetVersion(ctx context.Context) (string, error) {
-	var cmd *exec.Cmd
-
-	cmd = exec.CommandContext(
+	var cmd = exec.CommandContext(
 		ctx,
 		"go",
-		"list", "-m", "-f", "'{{ .Version }}'", "github.com/meroxa/turbine-go")
+		"list", "-m", "-f", "'{{ .Version }}'", "github.com/meroxa/turbine-go/v2")
 	cmd.Dir = t.appPath
 	fmtErr := fmt.Errorf(
 		"unable to determine the version of turbine-go used by the Meroxa Application at %s",
