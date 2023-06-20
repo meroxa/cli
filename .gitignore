@@ -2,4 +2,5 @@
 /cli
 .envrc
 .vscode
+.idea
 *.swp
