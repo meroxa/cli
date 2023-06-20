@@ -212,7 +212,7 @@ func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) 
 		}
 		if errLog != "" {
 			if stdOutMsg != "" {
-				l.Info(ctx, "\n"+stdOutMsg+"\n")
+				errLog = stdOutMsg + errLog
 			}
 			return "", errors.New(errLog)
 		}
