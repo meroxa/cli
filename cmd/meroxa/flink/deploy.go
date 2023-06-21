@@ -15,11 +15,13 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-const irFilename = "meroxa-ir.json"
-const exactJavaVersion = "v11"
-const modeEnvVar = "MEROXA_PLATFORM"
-const outputEnvVar = "MEROXA_OUTPUT"
-const irVal = "EMIT_IR"
+const (
+	irFilename       = "meroxa-ir.json"
+	exactJavaVersion = "v11"
+	modeEnvVar       = "MEROXA_PLATFORM"
+	outputEnvVar     = "MEROXA_OUTPUT"
+	irVal            = "EMIT_IR"
+)
 
 func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l log.Logger) (*ir.DeploymentSpec, error) {
 	verifyJavaVersion(ctx, l)

@@ -45,7 +45,6 @@ type Deploy struct {
 	flags struct {
 		Jar     string   `long:"jar" required:"true" usage:"Path to Flink Job jar file"`
 		Secrets []string `short:"s" long:"secret" usage:"environment variables to inject into the Flink Job (e.g.: --secret API_KEY=$API_KEY --secret ACCESS_KEY=abcdef)"` //nolint:lll
-
 	}
 
 	client deployFlinkJobClient
