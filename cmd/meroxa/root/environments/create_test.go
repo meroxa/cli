@@ -113,7 +113,7 @@ func TestCreateEnvironmentExecution(t *testing.T) {
 	c.flags.Region = "aws"
 	c.flags.Config = []string{"aws_access_key_id=my_access_key", "aws_secret_access_key=my_access_secret"}
 
-	cfg := stringSliceToMap(c.flags.Config)
+	cfg := utils.StringSliceToInterfaceMap(c.flags.Config)
 
 	e := &meroxa.CreateEnvironmentInput{
 		Type:          meroxa.EnvironmentType(c.flags.Type),

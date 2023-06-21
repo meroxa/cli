@@ -67,6 +67,7 @@ linters-settings:
           - github.com/spf13/viper
           - github.com/stretchr/testify
           - github.com/withfig/autocomplete-tools/integrations/cobra
+          - github.com/davecgh/go-spew/spew
 
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.

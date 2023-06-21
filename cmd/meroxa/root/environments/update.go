@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/cli/utils/display"
 
 	"github.com/manifoldco/promptui"
@@ -88,7 +89,7 @@ func (c *Update) setUserValues(e *meroxa.UpdateEnvironmentInput) {
 	}
 
 	if c.flags.Config != nil {
-		e.Configuration = stringSliceToMap(c.flags.Config)
+		e.Configuration = utils.StringSliceToInterfaceMap(c.flags.Config)
 	}
 }
 
@@ -98,7 +99,7 @@ func (c *Update) Execute(ctx context.Context) error {
 
 	// In case user skipped prompt and configuration was specified via flags
 	if len(c.flags.Config) != 0 {
-		e.Configuration = stringSliceToMap(c.flags.Config)
+		e.Configuration = utils.StringSliceToInterfaceMap(c.flags.Config)
 	}
 	if c.flags.Name != "" {
 		e.Name = c.flags.Name
@@ -172,7 +173,7 @@ func (c *Update) Prompt() error {
 		c.flags.Name, _ = p.Run()
 	}
 
-	c.envCfg = stringSliceToMap(c.flags.Config)
+	c.envCfg = utils.StringSliceToInterfaceMap(c.flags.Config)
 	configPrompt := "a"
 	if len(c.flags.Config) != 0 {
 		configPrompt = "additional"
