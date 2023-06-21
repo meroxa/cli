@@ -107,8 +107,10 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		fmt.Printf("failed to extract IR spec: %v\n", err)
 		// non-blocking as of yet
 	}
-	// just print it for now
-	fmt.Printf("Connector Spec: %s\n", spew.Sdump(spec.Connectors))
+	if spec != nil {
+		// just print it for now
+		fmt.Printf("Connector Spec: %s\n", spew.Sdump(spec.Connectors))
+	}
 
 	name := d.args.Name
 	if name == "" {
