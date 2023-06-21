@@ -188,7 +188,7 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 }
 
 // RunCmdWithErrorDetection checks exit codes and stderr for failures and logs on success.
-func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, l log.Logger) (string, error) {
+func RunCmdWithErrorDetection(_ context.Context, cmd *exec.Cmd, _ log.Logger) (string, error) {
 	stdout, stderr := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
