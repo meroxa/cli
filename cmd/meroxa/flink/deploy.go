@@ -17,7 +17,7 @@ import (
 
 const (
 	irFilename       = "meroxa-ir.json"
-	exactJavaVersion = "v11"
+	majorJavaVersion = "v11"
 	modeEnvVar       = "MEROXA_PLATFORM"
 	outputEnvVar     = "MEROXA_OUTPUT"
 	irVal            = "EMIT_IR"
@@ -74,7 +74,7 @@ func verifyJavaVersion(ctx context.Context, l log.Logger) {
 	if err != nil {
 		l.Warnf(ctx,
 			"warning: unable to verify local Java version is compatible with the Meroxa Platform; jar's must be compiled for %s",
-			exactJavaVersion)
+			majorJavaVersion)
 		return
 	}
 
@@ -83,14 +83,14 @@ func verifyJavaVersion(ctx context.Context, l log.Logger) {
 	matches := r.FindStringSubmatch(string(output))
 	if len(matches) > 0 {
 		version := "v" + matches[1]
-		comparison := semver.Compare(version, exactJavaVersion)
-		if comparison >= 1 {
+		comparison := semver.Compare(semver.Major(version), majorJavaVersion)
+		if comparison == 0 {
 			return
 		}
 		l.Warnf(ctx,
 			"warning: local Java version %q is incompatible with the Meroxa Platform; jar's must be compiled for %s",
 			version,
-			exactJavaVersion)
+			majorJavaVersion)
 	}
 	return
 }
