@@ -105,7 +105,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
 	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
 	if err != nil {
-		return err
+		fmt.Printf("failed to extract IR spec: %v\n", err)
+		// non-blocking as of yet
 	}
 	// just print it for now
 	fmt.Printf("Connector Spec: %s\n", spew.Sdump(spec.Connectors))

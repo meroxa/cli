@@ -35,7 +35,7 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 		cmd.Environ(),
 		fmt.Sprintf("%s=%s", modeEnvVar, irVal),
 		fmt.Sprintf("%s=%s", outputEnvVar, irFilename))
-	_, err = cmd.CombinedOutput() // all java output goes to stderr
+	_, err = cmd.CombinedOutput() // all java output goes to stderr, so that's fun
 	defer func() {
 		_ = os.Remove(irFilepath)
 	}()
@@ -55,8 +55,7 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 		return nil, err
 	}
 
-	// when integrating this with Turbine, convert to turbine.ApplicationResource format to run validateCollections
-	// or assess the scope of updating validateCollections tp use the ConnectorSpec... aka breaking backwards compatibility
+	// @TODO assess the scope of updating validateCollections to use the ConnectorSpec
 	var spec ir.DeploymentSpec
 	err = json.Unmarshal(b, &spec)
 	if err != nil {
@@ -68,46 +67,8 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 }
 
 func verifyJavaVersion(ctx context.Context, l log.Logger) {
-	/*
-			// more reliable way with bytecode
-		type class struct {
-			Magic        uint32
-			MinorVersion uint16
-			MajorVersion uint16
-		}
-
-		var versions = map[uint16]string{
-			52: "Java 8",
-			53: "Java 9",
-			54: "Java 10",
-			55: "Java 11",
-			56: "Java 12",
-			57: "Java 13",
-			58: "Java 14",
-			59: "Java 15",
-			60: "Java 16",
-			61: "Java 17",
-		}
-			unzip -p target/meroxa-flink-prototype-0.1.0-SNAPSHOT.jar META-INF/MANIFEST.MF
-			"Main-Class" from that output
-		filename = cwd + mainClass // we may not be at the top of the job definition or it may not exist on this system at all
-				// cl = Readfile(filename)
-				b := make([]byte, binary.Size(cl))
-				f, err := os.Open(os.Args[1])
-				if err != nil {
-					log.Fatal(err)
-				}
-				if _, err := f.Read(b); err != nil {
-					log.Fatal(err)
-				}
-				buf := bytes.NewReader(b)
-				if err := binary.Read(buf, binary.BigEndian, &cl); err != nil {
-					log.Fatal(err)
-				}
-				log.Printf("version: %s\n", versions[cl.MajorVersion])
-	*/
 	cmd := exec.CommandContext(ctx, "java", "-version")
-	output, err := cmd.CombinedOutput() // everything goes to stderr
+	output, err := cmd.CombinedOutput()
 	if err != nil {
 		l.Warnf(ctx,
 			"warning: unable to verify local Java version is compatible with the Meroxa Platform; jar's must be compiled for %s",
