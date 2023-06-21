@@ -59,8 +59,7 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 
 	// @TODO assess the scope of updating validateCollections to use the ConnectorSpec
 	var spec ir.DeploymentSpec
-	err = json.Unmarshal(b, &spec)
-	if err != nil {
+	if err = json.Unmarshal(b, &spec); err != nil {
 		return nil, err
 	}
 
