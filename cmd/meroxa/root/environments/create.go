@@ -17,13 +17,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/cli/utils/display"
 
 	"github.com/manifoldco/promptui"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 

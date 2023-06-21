@@ -73,7 +73,7 @@ func TestUpdateEnvironmentExecution(t *testing.T) {
 	r.args.NameOrUUID = e.Name
 	r.flags.Name = newName
 	r.flags.Config = newConfig
-	input := &meroxa.UpdateEnvironmentInput{Name: newName, Configuration: stringSliceToMap(newConfig)}
+	input := &meroxa.UpdateEnvironmentInput{Name: newName, Configuration: utils.StringSliceToInterfaceMap(newConfig)}
 
 	client.
 		EXPECT().
