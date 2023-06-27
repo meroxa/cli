@@ -100,6 +100,10 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return fmt.Errorf("the path to your Flink Job jar file must be provided to the --jar flag")
 	}
 
+	if filepath.Ext(jarPath) != "jar" {
+		return fmt.Errorf("please provide a JAR file to the --jar flag")
+	}
+
 	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
 	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
 	if err != nil {
@@ -140,7 +144,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		input.Spec = string(bytes)
 		input.SpecVersion = ir.LatestSpecVersion
 	}
-	fj, err := d.client.CreateFlinkJob(ctx, &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl})
+	fmt.Printf("GetUrl: %s\n", source.GetUrl)
+	fj, err := d.client.CreateFlinkJob(ctx, input)
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
