@@ -63,8 +63,10 @@ type FlinkJob struct {
 }
 
 type CreateFlinkJobInput struct {
-	Name   string `json:"name"`
-	JarURL string `json:"jar_url"`
+	Name        string `json:"name"`
+	JarURL      string `json:"jar_url"`
+	Spec        string `json:"spec"`
+	SpecVersion string `json:"spec_version"`
 }
 
 func (c *client) GetFlinkJob(ctx context.Context, nameOrUUID string) (*FlinkJob, error) {

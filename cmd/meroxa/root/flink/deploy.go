@@ -19,9 +19,8 @@ package flink
 import (
 	"context"
 	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"path/filepath"
-
-	"github.com/davecgh/go-spew/spew"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/flink"
@@ -105,11 +104,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
 	if err != nil {
 		fmt.Printf("failed to extract IR spec: %v\n", err)
-		// non-blocking as of yet
-	}
-	if spec != nil {
-		// just print it for now
-		fmt.Printf("Connector Spec: %s\n", spew.Sdump(spec.Connectors))
+		// non-blocking as of yet... is this still true?
 	}
 
 	name := d.args.Name
@@ -133,6 +128,18 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	d.logger.StartSpinner("\t", "Creating Flink job...")
+	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
+	if spec != nil {
+		d.logger.StartSpinner("\t", "Adding Meroxa integrations to request...")
+		bytes, err := spec.Marshal()
+		if err != nil {
+			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
+			d.logger.StopSpinnerWithStatus("\t", log.Failed)
+			return err
+		}
+		input.Spec = string(bytes)
+		input.SpecVersion = ir.LatestSpecVersion
+	}
 	fj, err := d.client.CreateFlinkJob(ctx, &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl})
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
