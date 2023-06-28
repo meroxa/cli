@@ -18,7 +18,6 @@ package flink
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/meroxa/turbine-core/pkg/ir"
@@ -140,8 +139,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
 	if spec != nil {
 		d.logger.StartSpinner("\t", "Adding Meroxa integrations to request...")
-		//bytes, err := spec.Marshal()
-		bytes, err := json.Marshal(spec)
+		bytes, err := spec.Marshal()
+		//bytes, err := json.Marshal(spec)
 		if err != nil {
 			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
 			d.logger.StopSpinnerWithStatus("\t", log.Failed)
