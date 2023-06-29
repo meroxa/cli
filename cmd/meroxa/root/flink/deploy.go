@@ -181,7 +181,14 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			d.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return err
 		}
-		input.Spec = string(bytes)
+		var inputSpec map[string]interface{}
+		if unmarshalErr := json.Unmarshal(bytes, &inputSpec); unmarshalErr != nil {
+			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
+			d.logger.StopSpinnerWithStatus("\t", log.Failed)
+			return unmarshalErr
+		}
+
+		input.Spec = inputSpec
 		input.SpecVersion = spec.Definition.Metadata.SpecVersion
 		fmt.Printf("bytes: %v\n", string(bytes))
 	}
