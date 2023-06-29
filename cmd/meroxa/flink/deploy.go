@@ -12,6 +12,7 @@ import (
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/turbine-core/pkg/ir"
 
+	"github.com/google/uuid"
 	"golang.org/x/mod/semver"
 )
 
@@ -42,7 +43,7 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 		_ = os.Remove(irFilepath)
 	}()
 	if err != nil {
-		return nil, fmt.Errorf("%s\n%v\n", output, err)
+		return nil, fmt.Errorf("%s\n%v", output, err)
 	}
 
 	_, err = os.Stat(irFilepath)
@@ -64,6 +65,31 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 	}
 
 	spec.Secrets = secrets
+	// workarounds to validate spec
+	spec.Definition.Metadata.SpecVersion = ir.LatestSpecVersion
+	spec.Definition.Metadata.Turbine.Language = "js" // java and flink are not acceptable yet
+	spec.Definition.Metadata.Turbine.Version = majorJavaVersion
+
+	// hardcode all sources to one destination as streams
+	destinationUUID := ""
+	var sourceUUIDs []string
+	for _, cs := range spec.Connectors {
+		if cs.Type == ir.ConnectorDestination {
+			destinationUUID = cs.UUID
+		} else {
+			sourceUUIDs = append(sourceUUIDs, cs.UUID)
+		}
+	}
+
+	for _, u := range sourceUUIDs {
+		ss := ir.StreamSpec{
+			UUID:     uuid.New().String(),
+			FromUUID: u,
+			ToUUID:   destinationUUID,
+			Name:     u + "_" + destinationUUID,
+		}
+		spec.Streams = append(spec.Streams, ss)
+	}
 	return &spec, nil
 }
 

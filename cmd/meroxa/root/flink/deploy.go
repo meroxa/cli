@@ -20,9 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/google/uuid"
-	"github.com/meroxa/turbine-core/pkg/ir"
+
 	"path/filepath"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -111,38 +109,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
 	if err != nil {
 		fmt.Printf("failed to extract IR spec: %v\n", err)
-		// non-blocking as of yet... is this still true?
+		// non-blocking
 	}
-	spec.Definition.Metadata.SpecVersion = ir.LatestSpecVersion // temporary workaround
-	spec.Definition.Metadata.Turbine.Language = "js"
-	spec.Definition.Metadata.Turbine.Version = "v0.0.1"
-
-	// hardcode all sources to one destination as streams
-	destinationUUID := ""
-	var sourceUUIDs []string
-	for _, cs := range spec.Connectors {
-		if cs.Type == ir.ConnectorDestination {
-			destinationUUID = cs.UUID
-		} else {
-			sourceUUIDs = append(sourceUUIDs, cs.UUID)
-		}
-	}
-
-	for _, u := range sourceUUIDs {
-		ss := ir.StreamSpec{
-			UUID:     uuid.New().String(),
-			FromUUID: u,
-			ToUUID:   destinationUUID,
-			Name:     u + "_" + destinationUUID,
-		}
-		spec.Streams = append(spec.Streams, ss)
-		//err = spec.AddStream(ss)
-		//fmt.Printf("add stream err: %v\n", err)
-	}
-
-	dag, err := spec.BuildDAG()
-	fmt.Printf("build dag err: %v %v\n", err, dag)
-	fmt.Printf("spec:\n%s\n", spew.Sdump(spec))
 
 	name := d.args.Name
 	if name == "" {
@@ -168,14 +136,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
 	if spec != nil {
 		d.logger.StartSpinner("\t", "Adding Meroxa integrations to request...")
-		//bytes, err := spec.Marshal()
 		bytes, err := json.Marshal(spec)
-		validateEerr := ir.ValidateSpec(bytes, ir.LatestSpecVersion)
-		if validateEerr != nil {
-			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
-			d.logger.StopSpinnerWithStatus("\t", log.Failed)
-			return validateEerr
-		}
 		if err != nil {
 			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
 			d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -190,9 +151,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 		input.Spec = inputSpec
 		input.SpecVersion = spec.Definition.Metadata.SpecVersion
-		fmt.Printf("bytes: %v\n", string(bytes))
 	}
-	fmt.Printf("GetUrl: %s\n", source.GetUrl)
+	fmt.Printf("GetUrl: %s\n", source.GetUrl) // @TODO remove
 	fj, err := d.client.CreateFlinkJob(ctx, input)
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
