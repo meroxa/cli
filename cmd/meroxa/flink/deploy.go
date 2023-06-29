@@ -37,12 +37,12 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 		cmd.Environ(),
 		fmt.Sprintf("%s=%s", modeEnvVar, irVal),
 		fmt.Sprintf("%s=%s", outputEnvVar, irFilename))
-	_, err = cmd.CombinedOutput() // all java output goes to stderr, so that's fun
+	output, err := cmd.CombinedOutput() // all java output goes to stderr, so that's fun
 	defer func() {
 		_ = os.Remove(irFilepath)
 	}()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s\n%v\n", output, err)
 	}
 
 	_, err = os.Stat(irFilepath)
