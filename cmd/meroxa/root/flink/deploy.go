@@ -136,7 +136,8 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
 	if spec != nil {
 		d.logger.StartSpinner("\t", "Adding Meroxa integrations to request...")
-		bytes, err := json.Marshal(spec)
+		var bytes []byte
+		bytes, err = json.Marshal(spec)
 		if err != nil {
 			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
 			d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -152,7 +153,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		input.Spec = inputSpec
 		input.SpecVersion = spec.Definition.Metadata.SpecVersion
 	}
-	fmt.Printf("GetUrl: %s\n", source.GetUrl) // @TODO remove
+
 	fj, err := d.client.CreateFlinkJob(ctx, input)
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
