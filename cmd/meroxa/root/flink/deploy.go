@@ -18,10 +18,9 @@ package flink
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
-
-	"github.com/davecgh/go-spew/spew"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/flink"
@@ -101,15 +100,15 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return fmt.Errorf("the path to your Flink Job jar file must be provided to the --jar flag")
 	}
 
+	if filepath.Ext(jarPath) != ".jar" {
+		return fmt.Errorf("please provide a JAR file to the --jar flag")
+	}
+
 	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
 	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
 	if err != nil {
 		fmt.Printf("failed to extract IR spec: %v\n", err)
-		// non-blocking as of yet
-	}
-	if spec != nil {
-		// just print it for now
-		fmt.Printf("Connector Spec: %s\n", spew.Sdump(spec.Connectors))
+		// non-blocking
 	}
 
 	name := d.args.Name
@@ -133,7 +132,28 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	d.logger.StartSpinner("\t", "Creating Flink job...")
-	fj, err := d.client.CreateFlinkJob(ctx, &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl})
+	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
+	if spec != nil {
+		d.logger.StartSpinner("\t", "Adding Meroxa integrations to request...")
+		var bytes []byte
+		bytes, err = json.Marshal(spec)
+		if err != nil {
+			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
+			d.logger.StopSpinnerWithStatus("\t", log.Failed)
+			return err
+		}
+		var inputSpec map[string]interface{}
+		if unmarshalErr := json.Unmarshal(bytes, &inputSpec); unmarshalErr != nil {
+			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
+			d.logger.StopSpinnerWithStatus("\t", log.Failed)
+			return unmarshalErr
+		}
+
+		input.Spec = inputSpec
+		input.SpecVersion = spec.Definition.Metadata.SpecVersion
+	}
+
+	fj, err := d.client.CreateFlinkJob(ctx, input)
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)

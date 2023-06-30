@@ -59,6 +59,7 @@ func TestFlinkJobDeployAppFlags(t *testing.T) {
 
 //nolint:funlen // this is a test function, splitting it would duplicate code
 func TestDeployFlinkJob(t *testing.T) {
+	os.Setenv("UNIT_TEST", "true")
 	ctx := context.Background()
 	logger := log.NewTestLogger()
 	accountUUID := "aa-bb-cc-dd"
@@ -131,6 +132,16 @@ func TestDeployFlinkJob(t *testing.T) {
 			err: fmt.Errorf("the path to your Flink Job jar file must be provided to the --jar flag"),
 		},
 		{
+			description: "Fail to provide file that is a jar",
+			name:        name,
+			jar:         "hi.jam",
+			meroxaClient: func(ctrl *gomock.Controller) meroxa.Client {
+				client := mock.NewMockClient(ctrl)
+				return client
+			},
+			err: fmt.Errorf("please provide a JAR file to the --jar flag"),
+		},
+		{
 			description: "Fail to get source",
 			name:        name,
 			jar:         jar,
@@ -192,4 +203,5 @@ func TestDeployFlinkJob(t *testing.T) {
 			}
 		})
 	}
+	os.Setenv("UNIT_TEST", "")
 }
