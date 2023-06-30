@@ -13,7 +13,7 @@ require (
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20230602200008-52f4437a6a26
+	github.com/meroxa/meroxa-go v0.0.0-20230630181637-7cfd524c070a
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -26,7 +26,6 @@ require (
 
 require (
 	github.com/briandowns/spinner v1.23.0
-	github.com/davecgh/go-spew v1.1.1
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/meroxa/turbine-core v0.0.0-20230614233233-044d997b9e71
 	github.com/stretchr/testify v1.8.4
@@ -40,6 +39,7 @@ require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
 require (
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dewski/jsonpath v0.0.0-20210103075638-af6da8f1a897 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.0.1 // indirect
@@ -71,5 +71,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/meroxa/meroxa-go => ../meroxa-go

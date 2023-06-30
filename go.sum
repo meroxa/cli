@@ -185,8 +185,8 @@ github.com/mattn/go-runewidth v0.0.13 h1:lTGmDsbAYt5DmK6OnoV7EuIF1wEIFAcxld6ypU4
 github.com/mattn/go-runewidth v0.0.13/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mattn/go-shellwords v1.0.12 h1:M2zGm7EW6UQJvDeQxo4T51eKPurbeFbe8WtebGE2xrk=
 github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
-github.com/meroxa/meroxa-go v0.0.0-20230602200008-52f4437a6a26 h1:WyDJJuELd8iDIgcwY4PscfNazQY7YRRHqwD1+Z/z2HQ=
-github.com/meroxa/meroxa-go v0.0.0-20230602200008-52f4437a6a26/go.mod h1:zO5ivDagJFc+zejDNHe/GwtCvgN1zqfBIpIuSvgiUFc=
+github.com/meroxa/meroxa-go v0.0.0-20230630181637-7cfd524c070a h1:Kd/d630d6ykAagdSGwc47zVenqYRYILTm7O70NmyFz8=
+github.com/meroxa/meroxa-go v0.0.0-20230630181637-7cfd524c070a/go.mod h1:c1rom/GgYA74PAHorffVlOWCaUhMc5DFbAvt1UwD76Y=
 github.com/meroxa/turbine-core v0.0.0-20230614233233-044d997b9e71 h1:OQY0JWZzr+fw4jgysaYCw4CWlCbu5uTUhJ0dJdJrPG8=
 github.com/meroxa/turbine-core v0.0.0-20230614233233-044d997b9e71/go.mod h1:W3hnKV7ClJBkDOQThEYVFYPw7UnRl73pF551H9pfyA8=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
