@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"path/filepath"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
