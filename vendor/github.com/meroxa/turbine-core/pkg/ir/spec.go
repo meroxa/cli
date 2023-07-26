@@ -131,9 +131,6 @@ func (d *DeploymentSpec) AddSource(c *ConnectorSpec) error {
 	defer d.mu.Unlock()
 	d.init()
 
-	if len(d.turbineDag.GetRoots()) >= 1 {
-		return fmt.Errorf("can only add one source connector per application")
-	}
 	if c.Type != ConnectorSource {
 		return fmt.Errorf("not a source connector")
 	}
@@ -230,7 +227,7 @@ func (d *DeploymentSpec) BuildDAG() (*dag.DAG, error) {
 		}
 	}
 
-	return turbineDag, d.ValidateDAG(turbineDag)
+	return turbineDag, nil
 }
 
 // upgradeToLatestSpecVersion will ensure that simple topologies as defined in 0.1.1 are still compatible

@@ -41,7 +41,7 @@ class MyApp
     # database.write(
     #   records: processed_records,
     #   collection: "collection_archive",
-    #   configs: {"behavior.on.null.values": "ignore"})
+    #   configs: {"behavior.on.null.values" => "ignore"})
     database.write(records: processed_records, collection: "collection_archive")
   end
 end
