@@ -32,7 +32,7 @@ github.com/emirpasic/gods/queues/linkedlistqueue
 github.com/emirpasic/gods/stacks
 github.com/emirpasic/gods/stacks/linkedliststack
 github.com/emirpasic/gods/utils
-# github.com/envoyproxy/protoc-gen-validate v1.0.1
+# github.com/envoyproxy/protoc-gen-validate v1.0.2
 ## explicit; go 1.19
 github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/fatih/color v1.15.0
@@ -111,7 +111,7 @@ github.com/mattn/go-shellwords
 ## explicit; go 1.20
 github.com/meroxa/meroxa-go/pkg/meroxa
 github.com/meroxa/meroxa-go/pkg/mock
-# github.com/meroxa/turbine-core v0.0.0-20230614233233-044d997b9e71
+# github.com/meroxa/turbine-core v0.0.0-20230724095433-2fb636d030d2
 ## explicit; go 1.20
 github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core
 github.com/meroxa/turbine-core/pkg/app
@@ -145,8 +145,8 @@ github.com/rivo/uniseg
 # github.com/russross/blackfriday/v2 v2.1.0
 ## explicit
 github.com/russross/blackfriday/v2
-# github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
-## explicit; go 1.15
+# github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
+## explicit; go 1.19
 github.com/santhosh-tekuri/jsonschema/v5
 # github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 ## explicit
@@ -234,7 +234,7 @@ google.golang.org/appengine/urlfetch
 # google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.55.0
+# google.golang.org/grpc v1.56.2
 ## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes

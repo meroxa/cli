@@ -41,29 +41,7 @@
                     ]
                 }
             ],
-            "contains": {
-                "type": "object",
-                "properties": {
-                    "collection": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string",
-                        "pattern": "^source$"
-                    },
-                    "resource": {
-                        "type": "string"
-                    },
-                    "config": {
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "type"
-                ]
-            },
-            "maxContains": 1,
-            "minItems": 1,
+            "minItems": 0,
             "uniqueItems": true
         },
         "functions": {
