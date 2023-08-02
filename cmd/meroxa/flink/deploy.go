@@ -58,7 +58,6 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 	}
 
 	if usesMeroxa {
-
 		cwd, err := os.Getwd()
 		if err != nil {
 			return nil, err
