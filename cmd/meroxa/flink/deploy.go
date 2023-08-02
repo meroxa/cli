@@ -6,15 +6,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
-	"golang.org/x/mod/semver"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/google/uuid"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"golang.org/x/mod/semver"
 )
 
 const (
@@ -26,10 +27,8 @@ const (
 )
 
 func doesJobUseMeroxaPlatform(ctx context.Context, jarPath string) (bool, error) {
-
 	cmd := exec.CommandContext(ctx, "jar", "-tf", jarPath)
 	output, err := cmd.Output()
-
 	if err != nil {
 		return false, err
 	}
