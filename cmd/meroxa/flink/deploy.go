@@ -1,19 +1,20 @@
 package flink
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"golang.org/x/mod/semver"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
-
-	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
-
-	"github.com/google/uuid"
-	"golang.org/x/mod/semver"
+	"strings"
 )
 
 const (
@@ -24,6 +25,27 @@ const (
 	irVal            = "EMIT_IR"
 )
 
+func doesJobUseMeroxaPlatform(ctx context.Context, jarPath string) (bool, error) {
+
+	cmd := exec.CommandContext(ctx, "jar", "-tf", jarPath)
+	output, err := cmd.Output()
+
+	if err != nil {
+		return false, err
+	}
+
+	scanner := bufio.NewScanner(bytes.NewBuffer(output))
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "com.meroxa") {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l log.Logger) (*ir.DeploymentSpec, error) {
 	if os.Getenv("UNIT_TEST") != "" {
 		return nil, nil
@@ -31,70 +53,80 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 
 	verifyJavaVersion(ctx, l)
 
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	irFilepath := filepath.Join(cwd, irFilename)
-
-	cmd := exec.CommandContext(ctx, "java", "-jar", jarPath)
-	cmd.Env = append(
-		cmd.Environ(),
-		fmt.Sprintf("%s=%s", modeEnvVar, irVal),
-		fmt.Sprintf("%s=%s", outputEnvVar, irFilename))
-	output, err := cmd.CombinedOutput() // all java output goes to stderr, so that's fun
-	defer func() {
-		_ = os.Remove(irFilepath)
-	}()
-	if err != nil {
-		return nil, fmt.Errorf("%s\n%v", output, err)
-	}
-
-	_, err = os.Stat(irFilepath)
-	if err != nil {
-		// @TODO try the docker way because the jar is skinny
-		// Otherwise, there are no Meroxa* classes in this main class
-		return nil, nil
-	}
-
-	b, err := os.ReadFile(irFilepath)
+	usesMeroxa, err := doesJobUseMeroxaPlatform(ctx, jarPath)
 	if err != nil {
 		return nil, err
 	}
 
-	// @TODO assess the scope of updating validateCollections to use the ConnectorSpec
-	var spec ir.DeploymentSpec
-	if err = json.Unmarshal(b, &spec); err != nil {
-		return nil, err
-	}
+	if usesMeroxa {
 
-	spec.Secrets = secrets
-	// workarounds to validate spec
-	spec.Definition.Metadata.SpecVersion = ir.LatestSpecVersion
-	spec.Definition.Metadata.Turbine.Language = "js" // java and flink are not acceptable yet
-	spec.Definition.Metadata.Turbine.Version = majorJavaVersion
-
-	// hardcode all sources to one destination as streams
-	destinationUUID := ""
-	var sourceUUIDs []string
-	for _, cs := range spec.Connectors {
-		if cs.Type == ir.ConnectorDestination {
-			destinationUUID = cs.UUID
-		} else {
-			sourceUUIDs = append(sourceUUIDs, cs.UUID)
+		cwd, err := os.Getwd()
+		if err != nil {
+			return nil, err
 		}
+		irFilepath := filepath.Join(cwd, irFilename)
+
+		cmd := exec.CommandContext(ctx, "java", "-jar", jarPath)
+		cmd.Env = append(
+			cmd.Environ(),
+			fmt.Sprintf("%s=%s", modeEnvVar, irVal),
+			fmt.Sprintf("%s=%s", outputEnvVar, irFilename))
+		output, err := cmd.CombinedOutput() // all java output goes to stderr, so that's fun
+		defer func() {
+			_ = os.Remove(irFilepath)
+		}()
+		if err != nil {
+			return nil, fmt.Errorf("%s\n%v", output, err)
+		}
+
+		_, err = os.Stat(irFilepath)
+		if err != nil {
+			// @TODO try the docker way because the jar is skinny
+			// Otherwise, there are no Meroxa* classes in this main class
+			return nil, nil
+		}
+
+		b, err := os.ReadFile(irFilepath)
+		if err != nil {
+			return nil, err
+		}
+
+		// @TODO assess the scope of updating validateCollections to use the ConnectorSpec
+		var spec ir.DeploymentSpec
+		if err = json.Unmarshal(b, &spec); err != nil {
+			return nil, err
+		}
+
+		spec.Secrets = secrets
+		// workarounds to validate spec
+		spec.Definition.Metadata.SpecVersion = ir.LatestSpecVersion
+		spec.Definition.Metadata.Turbine.Language = "js" // java and flink are not acceptable yet
+		spec.Definition.Metadata.Turbine.Version = majorJavaVersion
+
+		// hardcode all sources to one destination as streams
+		destinationUUID := ""
+		var sourceUUIDs []string
+		for _, cs := range spec.Connectors {
+			if cs.Type == ir.ConnectorDestination {
+				destinationUUID = cs.UUID
+			} else {
+				sourceUUIDs = append(sourceUUIDs, cs.UUID)
+			}
+		}
+
+		for _, u := range sourceUUIDs {
+			ss := ir.StreamSpec{
+				UUID:     uuid.New().String(),
+				FromUUID: u,
+				ToUUID:   destinationUUID,
+				Name:     u + "_" + destinationUUID,
+			}
+			spec.Streams = append(spec.Streams, ss)
+		}
+		return &spec, nil
 	}
 
-	for _, u := range sourceUUIDs {
-		ss := ir.StreamSpec{
-			UUID:     uuid.New().String(),
-			FromUUID: u,
-			ToUUID:   destinationUUID,
-			Name:     u + "_" + destinationUUID,
-		}
-		spec.Streams = append(spec.Streams, ss)
-	}
-	return &spec, nil
+	return nil, nil
 }
 
 func verifyJavaVersion(ctx context.Context, l log.Logger) {
