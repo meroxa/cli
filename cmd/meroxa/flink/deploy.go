@@ -70,7 +70,8 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 	irFilepath := filepath.Join(cwd, irFilename)
 
 	// The submitted jar is executed with some special env vars set to inform the `MeroxaExecutionEnvironment` to
-	// short circuit execution and emit an IR spec instead https://github.com/meroxa/flink-platform-prototype/blob/main/src/main/java/com/meroxa/flink/MeroxaExecutionEnvironment.java#L64-L69
+	// short circuit execution and emit an IR spec instead
+	// https://github.com/meroxa/flink-platform-prototype/blob/main/src/main/java/com/meroxa/flink/MeroxaExecutionEnvironment.java#L64-L69
 	cmd := exec.CommandContext(ctx, "java", "-jar", jarPath)
 	cmd.Env = append(
 		cmd.Environ(),
@@ -129,7 +130,6 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 		spec.Streams = append(spec.Streams, ss)
 	}
 	return &spec, nil
-
 }
 
 func verifyJavaVersion(ctx context.Context, l log.Logger) {
