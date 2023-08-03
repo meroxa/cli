@@ -1,6 +1,8 @@
 package flink
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,11 +10,11 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-
-	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"strings"
 
 	"github.com/google/uuid"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"golang.org/x/mod/semver"
 )
 
@@ -24,6 +26,27 @@ const (
 	irVal            = "EMIT_IR"
 )
 
+func doesJobUseMeroxaPlatform(ctx context.Context, jarPath string) (bool, error) {
+	// TODO: This approach is fine for now but may prove to be too naive in the future
+	// https://github.com/meroxa/product/issues/953
+	cmd := exec.CommandContext(ctx, "jar", "-tf", jarPath)
+	output, err := cmd.Output()
+	if err != nil {
+		return false, err
+	}
+
+	scanner := bufio.NewScanner(bytes.NewBuffer(output))
+	scanner.Split(bufio.ScanLines)
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "com.meroxa") {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l log.Logger) (*ir.DeploymentSpec, error) {
 	if os.Getenv("UNIT_TEST") != "" {
 		return nil, nil
@@ -31,12 +54,24 @@ func GetIRSpec(ctx context.Context, jarPath string, secrets map[string]string, l
 
 	verifyJavaVersion(ctx, l)
 
+	usesMeroxa, err := doesJobUseMeroxaPlatform(ctx, jarPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if !usesMeroxa {
+		return nil, nil
+	}
+
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
 	irFilepath := filepath.Join(cwd, irFilename)
 
+	// The submitted jar is executed with some special env vars set to inform the `MeroxaExecutionEnvironment` to
+	// short circuit execution and emit an IR spec instead
+	// https://github.com/meroxa/flink-platform-prototype/blob/main/src/main/java/com/meroxa/flink/MeroxaExecutionEnvironment.java#L64-L69
 	cmd := exec.CommandContext(ctx, "java", "-jar", jarPath)
 	cmd.Env = append(
 		cmd.Environ(),
