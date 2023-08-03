@@ -27,7 +27,7 @@ const (
 )
 
 func doesJobUseMeroxaPlatform(ctx context.Context, jarPath string) (bool, error) {
-	//TODO: This approach is fine for now but may prove to be too naive in the future
+	// TODO: This approach is fine for now but may prove to be too naive in the future
 	// https://github.com/meroxa/product/issues/953
 	cmd := exec.CommandContext(ctx, "jar", "-tf", jarPath)
 	output, err := cmd.Output()
