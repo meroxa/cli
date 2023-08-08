@@ -20,7 +20,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"path/filepath"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -30,6 +29,7 @@ import (
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 type deployFlinkJobClient interface {
