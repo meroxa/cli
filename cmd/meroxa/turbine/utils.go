@@ -37,7 +37,7 @@ https://docs.meroxa.com/beta-overview#updated-meroxa-cli-and-outdated-turbine-li
 	grpcDestCollectionErr = "invalid WriteCollectionRequest.SourceCollection: embedded message failed validation | " +
 		"caused by: invalid Collection.Name: value length must be at least 1 runes"
 	missingSourceCollectionErr = `missing source or source collection, please ensure that you have configured your source correctly:
-https://docs.meroxa.com/turbine/troubleshooting"`
+https://docs.meroxa.com/turbine/troubleshooting#troubleshooting-checklist"`
 )
 
 type AppConfig struct {
