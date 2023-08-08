@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/meroxa/turbine-core/pkg/ir"
 	"path/filepath"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
@@ -132,12 +133,31 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
+	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
+	err = d.addIntegrations(ctx, spec, input)
+	if err != nil {
+		return err
+	}
+
+	d.logger.StartSpinner("\t", "Creating Flink job...")
+	fj, err := d.client.CreateFlinkJob(ctx, input)
+	if err != nil {
+		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
+		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		return err
+	}
+
+	d.logger.StopSpinnerWithStatus("Flink job created", log.Successful)
+	d.logger.JSON(ctx, fj)
+	return nil
+}
+
+func (d *Deploy) addIntegrations(ctx context.Context, spec *ir.DeploymentSpec, input *meroxa.CreateFlinkJobInput) error {
 	d.logger.StartSpinner("\t", "Checking Meroxa integrations...")
 	successMsg := "Finished checking Meroxa integrations"
-	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
 	if spec != nil {
 		var bytes []byte
-		bytes, err = json.Marshal(spec)
+		bytes, err := json.Marshal(spec)
 		if err != nil {
 			d.logger.Errorf(ctx, "\t 𐄂 Unable to add Meroxa integrations to request")
 			d.logger.StopSpinnerWithStatus("\t", log.Failed)
@@ -154,16 +174,5 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		input.SpecVersion = spec.Definition.Metadata.SpecVersion
 	}
 	d.logger.StopSpinnerWithStatus(successMsg, log.Successful)
-
-	d.logger.StartSpinner("\t", "Creating Flink job...")
-	fj, err := d.client.CreateFlinkJob(ctx, input)
-	if err != nil {
-		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-
-	d.logger.StopSpinnerWithStatus("Flink job created", log.Successful)
-	d.logger.JSON(ctx, fj)
 	return nil
 }
