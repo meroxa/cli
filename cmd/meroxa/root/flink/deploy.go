@@ -104,16 +104,16 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return fmt.Errorf("please provide a JAR file to the --jar flag")
 	}
 
-	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
-	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
-	if err != nil {
-		fmt.Printf("failed to extract IR spec: %v\n", err)
-		// non-blocking
-	}
-
 	name := d.args.Name
 	if name == "" {
 		return fmt.Errorf("the name of your Flink Job be provided as an argument")
+	}
+
+	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
+	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
+	if err != nil {
+		d.logger.Warnf(ctx, "failed to extract IR spec: %v\n", err)
+		// non-blocking
 	}
 
 	filename := filepath.Base(jarPath)
@@ -126,15 +126,16 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	d.logger.StopSpinnerWithStatus("Platform source fetched", log.Successful)
 
+	// Logging happens inside UploadFile
 	err = turbine.UploadFile(ctx, d.logger, jarPath, source.PutUrl)
 	if err != nil {
 		return err
 	}
 
-	d.logger.StartSpinner("\t", "Creating Flink job...")
+	d.logger.StartSpinner("\t", "Checking Meroxa integrations...")
+	successMsg := "Finished checking Meroxa integrations"
 	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
 	if spec != nil {
-		d.logger.StartSpinner("\t", "Adding Meroxa integrations to request...")
 		var bytes []byte
 		bytes, err = json.Marshal(spec)
 		if err != nil {
@@ -148,11 +149,13 @@ func (d *Deploy) Execute(ctx context.Context) error {
 			d.logger.StopSpinnerWithStatus("\t", log.Failed)
 			return unmarshalErr
 		}
-
+		successMsg = "Added Meroxa integrations to request"
 		input.Spec = inputSpec
 		input.SpecVersion = spec.Definition.Metadata.SpecVersion
 	}
+	d.logger.StopSpinnerWithStatus(successMsg, log.Successful)
 
+	d.logger.StartSpinner("\t", "Creating Flink job...")
 	fj, err := d.client.CreateFlinkJob(ctx, input)
 	if err != nil {
 		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
