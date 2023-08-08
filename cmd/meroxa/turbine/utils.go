@@ -31,6 +31,13 @@ const (
 	IncompatibleTurbineVersion = `your Turbine library version is incompatible with the Meroxa CLI.
 For guidance on updating to the latest version, visit:
 https://docs.meroxa.com/beta-overview#updated-meroxa-cli-and-outdated-turbine-library`
+
+	grpcFuncCollectionErr = "invalid ProcessCollectionRequest.Collection: embedded message failed validation | " +
+		"caused by: invalid Collection.Name: value length must be at least 1 runes"
+	grpcDestCollectionErr = "invalid WriteCollectionRequest.SourceCollection: embedded message failed validation | " +
+		"caused by: invalid Collection.Name: value length must be at least 1 runes"
+	missingSourceCollectionErr = `missing source or source collection, please ensure that you have configured your source correctly:
+https://docs.meroxa.com/turbine/troubleshooting#troubleshooting-checklist"`
 )
 
 type AppConfig struct {
@@ -188,7 +195,7 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 }
 
 // RunCmdWithErrorDetection checks exit codes and stderr for failures and logs on success.
-func RunCmdWithErrorDetection(_ context.Context, cmd *exec.Cmd, _ log.Logger) (string, error) {
+func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, logger log.Logger) (string, error) {
 	stdout, stderr := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
@@ -214,6 +221,12 @@ func RunCmdWithErrorDetection(_ context.Context, cmd *exec.Cmd, _ log.Logger) (s
 			if stdOutMsg != "" {
 				errLog = stdOutMsg + errLog
 			}
+
+			if strings.Contains(errLog, "rpc error") {
+				logger.Debug(ctx, errLog)
+				errLog = clarifyGrpcErrors(errLog)
+			}
+
 			return "", errors.New(errLog)
 		}
 	}
@@ -239,6 +252,20 @@ func trimNonNpmErrorLines(output string) string {
 	}
 
 	return strings.Join(errorLines, "\n")
+}
+
+// TODO: remove this and refactor error handling from turbine-core grpc requests
+// This is needed temporarily to provide a more actionable error when the app has no sources defined.
+// Longer-term, we need to have more specific, actionable errors rather than grpc validation
+// errors surfaced to CLI output.
+func clarifyGrpcErrors(errLog string) string {
+	switch {
+	case strings.Contains(errLog, grpcFuncCollectionErr):
+		return missingSourceCollectionErr
+	case strings.Contains(errLog, grpcDestCollectionErr):
+		return missingSourceCollectionErr
+	}
+	return errLog
 }
 
 // SwitchToAppDirectory switches temporarily to the application's directory.
