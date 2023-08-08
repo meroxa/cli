@@ -195,7 +195,7 @@ func GetTurbineResponseFromOutput(output string) (string, error) {
 }
 
 // RunCmdWithErrorDetection checks exit codes and stderr for failures and logs on success.
-func RunCmdWithErrorDetection(_ context.Context, cmd *exec.Cmd, _ log.Logger) (string, error) {
+func RunCmdWithErrorDetection(ctx context.Context, cmd *exec.Cmd, logger log.Logger) (string, error) {
 	stdout, stderr := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
@@ -223,6 +223,7 @@ func RunCmdWithErrorDetection(_ context.Context, cmd *exec.Cmd, _ log.Logger) (s
 			}
 
 			if strings.Contains(errLog, "rpc error") {
+				logger.Debug(ctx, errLog)
 				errLog = clarifyGrpcErrors(errLog)
 			}
 
