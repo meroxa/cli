@@ -191,7 +191,7 @@ func (d *DeploymentSpec) ValidateDAG(turbineDag *dag.DAG) error {
 
 	// No edges
 	if turbineDag.GetSize() == 0 {
-		return fmt.Errorf("invalid DAG, there has to be at least one source and one destination")
+		return fmt.Errorf("invalid DAG, there has to be at least one source, at most one function, and zero or more destinations")
 	}
 
 	return nil
