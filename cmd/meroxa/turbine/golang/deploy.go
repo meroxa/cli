@@ -45,8 +45,7 @@ func (t *turbineGoCLI) StartGrpcServer(ctx context.Context, gitSha string) (func
 		"run",
 		"./...",
 		"build",
-		"-gitsha",
-		gitSha,
+		"-gitsha", gitSha,
 		"-turbine-core-server", grpcListenAddress,
 		"-app-path", t.appPath,
 	}...)

@@ -27,7 +27,7 @@ require (
 require (
 	github.com/briandowns/spinner v1.23.0
 	github.com/mattn/go-shellwords v1.0.12
-	github.com/meroxa/turbine-core v0.0.0-20230808162125-33f70f75883e
+	github.com/meroxa/turbine-core v0.0.0-20230815153536-e0c914b74ea1
 	github.com/stretchr/testify v1.8.4
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.12.0
