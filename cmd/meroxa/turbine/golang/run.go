@@ -17,6 +17,7 @@ func (t *turbineGoCLI) Run(ctx context.Context) error {
 		"-gitsha", "devel",
 		"-turbine-core-server", grpcListenAddress,
 		"-app-path", t.appPath,
+		"-run-process",
 	}...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
