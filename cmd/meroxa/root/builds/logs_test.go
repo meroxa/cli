@@ -17,16 +17,19 @@ limitations under the License.
 package builds
 
 import (
-	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
+	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
+	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
@@ -69,19 +72,25 @@ func TestLogsBuildExecution(t *testing.T) {
 
 	l.args.UUID = buildUUID
 
-	responseDetails := io.NopCloser(bytes.NewReader([]byte(
-		`[2021-04-29T12:16:42Z] Beep boop, robots doing build things`,
-	)))
-
-	httpResponse := &http.Response{
-		StatusCode: 200,
-		Body:       responseDetails,
+	buildLog := &meroxa.Logs{
+		Data: []meroxa.LogData{
+			{
+				Timestamp: time.Now().UTC(),
+				Log:       "Beep boop, robots doing build things",
+				Source:    "function build",
+			},
+		},
+		Metadata: meroxa.Metadata{
+			End:   time.Now().UTC(),
+			Start: time.Now().UTC().Add(-12 * time.Hour),
+			Limit: 10,
+		},
 	}
 
 	client.
 		EXPECT().
-		GetBuildLogs(ctx, buildUUID).
-		Return(httpResponse, nil)
+		GetBuildLogsV2(ctx, buildUUID).
+		Return(buildLog, nil)
 
 	err := l.Execute(ctx)
 	if err != nil {
@@ -89,9 +98,20 @@ func TestLogsBuildExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := "[2021-04-29T12:16:42Z] Beep boop, robots doing build things"
+	wantLeveledOutput := display.BuildLogsTableV2(buildLog)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
-		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
+		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))
+	}
+
+	gotJSONOutput := logger.JSONOutput()
+	var gotBuildLog meroxa.Logs
+	err = json.Unmarshal([]byte(gotJSONOutput), &gotBuildLog)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
+
+	if !reflect.DeepEqual(gotBuildLog, *buildLog) {
+		t.Fatalf(cmp.Diff(*buildLog, gotBuildLog))
 	}
 }

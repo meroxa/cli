@@ -19,11 +19,11 @@ package builds
 import (
 	"context"
 	"errors"
-	"io"
 	"net/http"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
@@ -38,6 +38,7 @@ var (
 
 type buildLogsClient interface {
 	GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error)
+	GetBuildLogsV2(ctx context.Context, uuid string) (*meroxa.Logs, error)
 }
 
 type Logs struct {
@@ -64,18 +65,15 @@ func (l *Logs) Docs() builder.Docs {
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	response, err := l.client.GetBuildLogs(ctx, l.args.UUID)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		return err
+	buildLogs, getErr := l.client.GetBuildLogsV2(ctx, l.args.UUID)
+	if getErr != nil {
+		return getErr
 	}
 
-	l.logger.Info(ctx, string(body))
+	output := display.BuildLogsTableV2(buildLogs)
+
+	l.logger.Info(ctx, output)
+	l.logger.JSON(ctx, buildLogs)
 
 	return nil
 }

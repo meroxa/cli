@@ -25,6 +25,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/meroxa/turbine-core/pkg/ir"
 
@@ -71,15 +72,28 @@ func TestApplicationLogsExecution(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	appName := "my-app-with-funcs"
-	log := "hello world"
 
-	appLogs := &meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"res1": log},
-		FunctionLogs:   map[string]string{"fun1": log},
-		DeploymentLogs: map[string]string{"uu-id": log},
+	appLogs := &meroxa.Logs{
+		Data: []meroxa.LogData{
+			{
+				Timestamp: time.Now().UTC(),
+				Log:       "log just logging",
+				Source:    "fun-name",
+			},
+			{
+				Timestamp: time.Now().UTC(),
+				Log:       "another log",
+				Source:    "deployment-uuid",
+			},
+		},
+		Metadata: meroxa.Metadata{
+			End:   time.Now().UTC(),
+			Start: time.Now().UTC().Add(-12 * time.Hour),
+			Limit: 10,
+		},
 	}
 
-	client.EXPECT().GetApplicationLogs(ctx, appName).Return(appLogs, nil)
+	client.EXPECT().GetApplicationLogsV2(ctx, appName).Return(appLogs, nil)
 
 	dc := &Logs{
 		client: client,
@@ -93,7 +107,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppLogsTable(appLogs)
+	wantLeveledOutput := display.AppLogsTableV2(appLogs)
 
 	// N.B. This comparison is undeterminstic when the test data map contains
 	//      more than one key. Maps in golang are not guaranteed ordered so the result
@@ -103,7 +117,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotAppLogs meroxa.ApplicationLogs
+	var gotAppLogs meroxa.Logs
 	err = json.Unmarshal([]byte(gotJSONOutput), &gotAppLogs)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
@@ -129,7 +143,6 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 
 	appName := "my-app-with-funcs"
-	log := "hello world"
 
 	i := &Init{
 		logger: logger,
@@ -146,16 +159,30 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	}(path)
 	require.NoError(t, err)
 
-	appLogs := &meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"res1": log},
-		FunctionLogs:   map[string]string{"fun1": log},
-		DeploymentLogs: map[string]string{"uu-id": log},
+	appLogs := &meroxa.Logs{
+		Data: []meroxa.LogData{
+			{
+				Timestamp: time.Now().UTC(),
+				Log:       "log just logging",
+				Source:    "fun-name",
+			},
+			{
+				Timestamp: time.Now().UTC(),
+				Log:       "another log",
+				Source:    "deployment-uuid",
+			},
+		},
+		Metadata: meroxa.Metadata{
+			End:   time.Now().UTC(),
+			Start: time.Now().UTC().Add(-12 * time.Hour),
+			Limit: 10,
+		},
 	}
 
 	mockTurbineCLI.EXPECT().GetVersion(ctx).Return("1.0", nil)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
-	client.EXPECT().GetApplicationLogs(ctx, appName).Return(appLogs, nil)
+	client.EXPECT().GetApplicationLogsV2(ctx, appName).Return(appLogs, nil)
 
 	dc := &Logs{
 		client:     client,
@@ -171,14 +198,14 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppLogsTable(appLogs)
+	wantLeveledOutput := display.AppLogsTableV2(appLogs)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))
 	}
 
 	gotJSONOutput := logger.JSONOutput()
-	var gotAppLogs meroxa.ApplicationLogs
+	var gotAppLogs meroxa.Logs
 	err = json.Unmarshal([]byte(gotJSONOutput), &gotAppLogs)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())

@@ -53,6 +53,7 @@ type Logs struct {
 
 type applicationLogsClient interface {
 	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error)
+	GetApplicationLogsV2(ctx context.Context, nameOrUUID string) (*meroxa.Logs, error)
 	AddHeader(key, value string)
 }
 
@@ -112,12 +113,12 @@ func (l *Logs) Execute(ctx context.Context) error {
 		addTurbineHeaders(l.client, config.Language, turbineLibVersion)
 	}
 
-	appLogs, getErr := l.client.GetApplicationLogs(ctx, nameOrUUID)
+	appLogs, getErr := l.client.GetApplicationLogsV2(ctx, nameOrUUID)
 	if getErr != nil {
 		return getErr
 	}
 
-	output := display.AppLogsTable(appLogs)
+	output := display.AppLogsTableV2(appLogs)
 
 	l.logger.Info(ctx, output)
 	l.logger.JSON(ctx, appLogs)
