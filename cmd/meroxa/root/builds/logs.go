@@ -19,7 +19,6 @@ package builds
 import (
 	"context"
 	"errors"
-	"net/http"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -37,7 +36,6 @@ var (
 )
 
 type buildLogsClient interface {
-	GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error)
 	GetBuildLogsV2(ctx context.Context, uuid string) (*meroxa.Logs, error)
 }
 

@@ -222,26 +222,6 @@ func (c *client) ListApplications(ctx context.Context) ([]*Application, error) {
 	return aa, nil
 }
 
-func (c *client) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/logs", applicationsBasePathV1, nameOrUUID), nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	var l *ApplicationLogs
-	err = json.NewDecoder(resp.Body).Decode(&l)
-	if err != nil {
-		return nil, err
-	}
-
-	return l, nil
-}
-
 func (c *client) GetApplicationLogsV2(ctx context.Context, nameOrUUID string) (*Logs, error) {
 	path := fmt.Sprintf("%s/%s/logs", applicationsBasePathV2, nameOrUUID)
 	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)

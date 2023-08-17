@@ -52,7 +52,6 @@ type Logs struct {
 }
 
 type applicationLogsClient interface {
-	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error)
 	GetApplicationLogsV2(ctx context.Context, nameOrUUID string) (*meroxa.Logs, error)
 	AddHeader(key, value string)
 }
