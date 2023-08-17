@@ -180,7 +180,8 @@ func appFunctionsTable(functions []meroxa.EntityDetails) string {
 func AppLogsTable(appLogs *meroxa.Logs) string {
 	var subTable string
 
-	for _, l := range appLogs.Data {
+	for i := len(appLogs.Data) - 1; i >= 0; i-- {
+		l := appLogs.Data[i]
 		subTable += fmt.Sprintf("[%s]\t%s\t%q\n", l.Timestamp.Format(time.RFC3339), l.Source, l.Log)
 	}
 

@@ -42,7 +42,8 @@ func BuildTable(build *meroxa.Build) string {
 func BuildsLogsTable(buildLogs *meroxa.Logs) string {
 	var subTable string
 
-	for _, l := range buildLogs.Data {
+	for i := len(buildLogs.Data) - 1; i >= 0; i-- {
+		l := buildLogs.Data[i]
 		subTable += fmt.Sprintf("[%s]\t%q\n", l.Timestamp.Format(time.RFC3339), l.Log)
 	}
 
