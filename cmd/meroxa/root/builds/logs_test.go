@@ -98,7 +98,7 @@ func TestLogsBuildExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.BuildLogsTableV2(buildLog)
+	wantLeveledOutput := display.BuildsLogsTable(buildLog)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))

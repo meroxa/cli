@@ -70,7 +70,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 		return getErr
 	}
 
-	output := display.BuildLogsTableV2(buildLogs)
+	output := display.BuildsLogsTable(buildLogs)
 
 	l.logger.Info(ctx, output)
 	l.logger.JSON(ctx, buildLogs)

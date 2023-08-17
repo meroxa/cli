@@ -177,25 +177,7 @@ func appFunctionsTable(functions []meroxa.EntityDetails) string {
 	return subTable
 }
 
-func AppLogsTable(appLogs *meroxa.ApplicationLogs) string {
-	var subTable string
-
-	for key, logs := range appLogs.ConnectorLogs {
-		subTable += fmt.Sprintf("\n# Logs for %s resource\n\n%s\n", key, logs)
-	}
-
-	for key, logs := range appLogs.FunctionLogs {
-		subTable += fmt.Sprintf("\n# Logs for %s function\n\n%s\n", key, logs)
-	}
-
-	for key, logs := range appLogs.DeploymentLogs {
-		subTable += fmt.Sprintf("\n# Logs for %s deployment\n\n%s\n", key, logs)
-	}
-
-	return subTable
-}
-
-func AppLogsTableV2(appLogs *meroxa.Logs) string {
+func AppLogsTable(appLogs *meroxa.Logs) string {
 	var subTable string
 
 	for _, l := range appLogs.Data {

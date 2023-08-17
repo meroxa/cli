@@ -118,7 +118,7 @@ func (l *Logs) Execute(ctx context.Context) error {
 		return getErr
 	}
 
-	output := display.AppLogsTableV2(appLogs)
+	output := display.AppLogsTable(appLogs)
 
 	l.logger.Info(ctx, output)
 	l.logger.JSON(ctx, appLogs)

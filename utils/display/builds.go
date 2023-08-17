@@ -39,7 +39,7 @@ func BuildTable(build *meroxa.Build) string {
 	return mainTable.String()
 }
 
-func BuildLogsTableV2(buildLogs *meroxa.Logs) string {
+func BuildsLogsTable(buildLogs *meroxa.Logs) string {
 	var subTable string
 
 	for _, l := range buildLogs.Data {
