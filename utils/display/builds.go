@@ -1,6 +1,9 @@
 package display
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
@@ -34,4 +37,15 @@ func BuildTable(build *meroxa.Build) string {
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
 	return mainTable.String()
+}
+
+func BuildsLogsTable(buildLogs *meroxa.Logs) string {
+	var subTable string
+
+	for i := len(buildLogs.Data) - 1; i >= 0; i-- {
+		l := buildLogs.Data[i]
+		subTable += fmt.Sprintf("[%s]\t%q\n", l.Timestamp.Format(time.RFC3339), l.Log)
+	}
+
+	return subTable
 }

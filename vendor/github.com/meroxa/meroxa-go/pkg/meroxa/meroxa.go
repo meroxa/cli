@@ -1,3 +1,4 @@
+//go:generate mockgen -source=meroxa.go -package=mock -destination=../mock/mock_client.go
 package meroxa
 
 import (
@@ -65,11 +66,13 @@ type Client interface {
 	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
 	GetApplication(ctx context.Context, nameOrUUID string) (*Application, error)
 	GetApplicationLogs(ctx context.Context, nameOrUUID string) (*ApplicationLogs, error)
+	GetApplicationLogsV2(ctx context.Context, nameOrUUID string) (*Logs, error)
 	ListApplications(ctx context.Context) ([]*Application, error)
 
 	CreateBuild(ctx context.Context, input *CreateBuildInput) (*Build, error)
 	GetBuild(ctx context.Context, uuid string) (*Build, error)
 	GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error)
+	GetBuildLogsV2(ctx context.Context, uuid string) (*Logs, error)
 
 	CreateConnector(ctx context.Context, input *CreateConnectorInput) (*Connector, error)
 	DeleteConnector(ctx context.Context, nameOrID string) error

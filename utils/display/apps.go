@@ -3,6 +3,7 @@ package display
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/alexeyco/simpletable"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
@@ -176,19 +177,12 @@ func appFunctionsTable(functions []meroxa.EntityDetails) string {
 	return subTable
 }
 
-func AppLogsTable(appLogs *meroxa.ApplicationLogs) string {
+func AppLogsTable(appLogs *meroxa.Logs) string {
 	var subTable string
 
-	for key, logs := range appLogs.ConnectorLogs {
-		subTable += fmt.Sprintf("\n# Logs for %s resource\n\n%s\n", key, logs)
-	}
-
-	for key, logs := range appLogs.FunctionLogs {
-		subTable += fmt.Sprintf("\n# Logs for %s function\n\n%s\n", key, logs)
-	}
-
-	for key, logs := range appLogs.DeploymentLogs {
-		subTable += fmt.Sprintf("\n# Logs for %s deployment\n\n%s\n", key, logs)
+	for i := len(appLogs.Data) - 1; i >= 0; i-- {
+		l := appLogs.Data[i]
+		subTable += fmt.Sprintf("[%s]\t%s\t%q\n", l.Timestamp.Format(time.RFC3339), l.Source, l.Log)
 	}
 
 	return subTable

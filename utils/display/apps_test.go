@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/meroxa/cli/utils"
 
@@ -11,34 +12,37 @@ import (
 )
 
 func TestAppLogsTable(t *testing.T) {
-	res1 := "res1"
-	res2 := "res2"
-	fun1 := "fun1"
-	deploymentUUID := "uu-id"
+	res := "res"
+	fun := "fun"
 	log := "custom log"
-	logs := meroxa.ApplicationLogs{
-		ConnectorLogs:  map[string]string{"source " + res1: log, "destination " + res2: log},
-		FunctionLogs:   map[string]string{fun1: log},
-		DeploymentLogs: map[string]string{deploymentUUID: log},
+	now := time.Now().UTC()
+	logs := meroxa.Logs{
+		Data: []meroxa.LogData{
+			{
+				Timestamp: now,
+				Log:       log,
+				Source:    fun,
+			},
+			{
+				Timestamp: now,
+				Log:       log,
+				Source:    res,
+			},
+		},
+		Metadata: meroxa.Metadata{
+			End:   now,
+			Start: now.Add(-12 * time.Hour),
+			Limit: 10,
+		},
 	}
 
 	out := AppLogsTable(&logs)
 
-	if !strings.Contains(out, "custom log") {
-		t.Errorf("expected %q to be shown", log)
+	if want := fmt.Sprintf("[%s]\t%s\t%q", now.Format(time.RFC3339), res, log); !strings.Contains(out, want) {
+		t.Errorf("expected %q to be shown with logs, %s", want, out)
 	}
-
-	if !strings.Contains(out, fmt.Sprintf("# Logs for source %s resource\n\n%s", res1, log)) {
-		t.Errorf("expected %q to be shown with logs", res1)
-	}
-	if !strings.Contains(out, fmt.Sprintf("# Logs for destination %s resource\n\n%s", res2, log)) {
-		t.Errorf("expected %q to be shown with logs", res2)
-	}
-	if !strings.Contains(out, fmt.Sprintf("# Logs for %s function\n\n%s", fun1, log)) {
-		t.Errorf("expected %q to be shown with logs", fun1)
-	}
-	if !strings.Contains(out, fmt.Sprintf("# Logs for %s deployment\n\n%s", deploymentUUID, log)) {
-		t.Errorf("expected %q to be shown with logs", deploymentUUID)
+	if want := fmt.Sprintf("[%s]\t%s\t%q", now.Format(time.RFC3339), fun, log); !strings.Contains(out, want) {
+		t.Errorf("expected %q to be shown with logs, %s", want, out)
 	}
 }
 
