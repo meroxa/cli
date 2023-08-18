@@ -447,21 +447,6 @@ func (mr *MockClientMockRecorder) GetApplication(ctx, nameOrUUID interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplication", reflect.TypeOf((*MockClient)(nil).GetApplication), ctx, nameOrUUID)
 }
 
-// GetApplicationLogs mocks base method.
-func (m *MockClient) GetApplicationLogs(ctx context.Context, nameOrUUID string) (*meroxa.ApplicationLogs, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetApplicationLogs", ctx, nameOrUUID)
-	ret0, _ := ret[0].(*meroxa.ApplicationLogs)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetApplicationLogs indicates an expected call of GetApplicationLogs.
-func (mr *MockClientMockRecorder) GetApplicationLogs(ctx, nameOrUUID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationLogs", reflect.TypeOf((*MockClient)(nil).GetApplicationLogs), ctx, nameOrUUID)
-}
-
 // GetApplicationLogsV2 mocks base method.
 func (m *MockClient) GetApplicationLogsV2(ctx context.Context, nameOrUUID string) (*meroxa.Logs, error) {
 	m.ctrl.T.Helper()
@@ -492,21 +477,6 @@ func (mr *MockClientMockRecorder) GetBuild(ctx, uuid interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBuild", reflect.TypeOf((*MockClient)(nil).GetBuild), ctx, uuid)
 }
 
-// GetBuildLogs mocks base method.
-func (m *MockClient) GetBuildLogs(ctx context.Context, uuid string) (*http.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBuildLogs", ctx, uuid)
-	ret0, _ := ret[0].(*http.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetBuildLogs indicates an expected call of GetBuildLogs.
-func (mr *MockClientMockRecorder) GetBuildLogs(ctx, uuid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBuildLogs", reflect.TypeOf((*MockClient)(nil).GetBuildLogs), ctx, uuid)
-}
-
 // GetBuildLogsV2 mocks base method.
 func (m *MockClient) GetBuildLogsV2(ctx context.Context, uuid string) (*meroxa.Logs, error) {
 	m.ctrl.T.Helper()
@@ -535,21 +505,6 @@ func (m *MockClient) GetConnectorByNameOrID(ctx context.Context, nameOrID string
 func (mr *MockClientMockRecorder) GetConnectorByNameOrID(ctx, nameOrID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorByNameOrID", reflect.TypeOf((*MockClient)(nil).GetConnectorByNameOrID), ctx, nameOrID)
-}
-
-// GetConnectorLogs mocks base method.
-func (m *MockClient) GetConnectorLogs(ctx context.Context, nameOrID string) (*http.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConnectorLogs", ctx, nameOrID)
-	ret0, _ := ret[0].(*http.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetConnectorLogs indicates an expected call of GetConnectorLogs.
-func (mr *MockClientMockRecorder) GetConnectorLogs(ctx, nameOrID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConnectorLogs", reflect.TypeOf((*MockClient)(nil).GetConnectorLogs), ctx, nameOrID)
 }
 
 // GetDeployment mocks base method.
@@ -610,21 +565,6 @@ func (m *MockClient) GetFunction(ctx context.Context, nameOrUUID string) (*merox
 func (mr *MockClientMockRecorder) GetFunction(ctx, nameOrUUID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunction", reflect.TypeOf((*MockClient)(nil).GetFunction), ctx, nameOrUUID)
-}
-
-// GetFunctionLogs mocks base method.
-func (m *MockClient) GetFunctionLogs(ctx context.Context, nameOrUUID string) (*http.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFunctionLogs", ctx, nameOrUUID)
-	ret0, _ := ret[0].(*http.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetFunctionLogs indicates an expected call of GetFunctionLogs.
-func (mr *MockClientMockRecorder) GetFunctionLogs(ctx, nameOrUUID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFunctionLogs", reflect.TypeOf((*MockClient)(nil).GetFunctionLogs), ctx, nameOrUUID)
 }
 
 // GetLatestDeployment mocks base method.

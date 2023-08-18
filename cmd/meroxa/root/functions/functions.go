@@ -45,6 +45,5 @@ func (*Functions) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&Remove{}),
-		builder.BuildCobraCommand(&Logs{}),
 	}
 }
