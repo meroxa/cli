@@ -107,7 +107,7 @@ func TestApplicationLogsExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppLogsTable(appLogs)
+	wantLeveledOutput := display.LogsTable(appLogs)
 
 	// N.B. This comparison is undeterminstic when the test data map contains
 	//      more than one key. Maps in golang are not guaranteed ordered so the result
@@ -198,7 +198,7 @@ func TestApplicationLogsExecutionWithPath(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := display.AppLogsTable(appLogs)
+	wantLeveledOutput := display.LogsTable(appLogs)
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf(cmp.Diff(wantLeveledOutput, gotLeveledOutput))

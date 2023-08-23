@@ -52,6 +52,7 @@ func (*Job) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Describe{}),
+		builder.BuildCobraCommand(&Logs{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&List{}),
 	}

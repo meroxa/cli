@@ -552,6 +552,21 @@ func (mr *MockClientMockRecorder) GetFlinkJob(ctx, nameOrUUID interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlinkJob", reflect.TypeOf((*MockClient)(nil).GetFlinkJob), ctx, nameOrUUID)
 }
 
+// GetFlinkLogsV2 mocks base method.
+func (m *MockClient) GetFlinkLogsV2(ctx context.Context, nameOrUUID string) (*meroxa.Logs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFlinkLogsV2", ctx, nameOrUUID)
+	ret0, _ := ret[0].(*meroxa.Logs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFlinkLogsV2 indicates an expected call of GetFlinkLogsV2.
+func (mr *MockClientMockRecorder) GetFlinkLogsV2(ctx, nameOrUUID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlinkLogsV2", reflect.TypeOf((*MockClient)(nil).GetFlinkLogsV2), ctx, nameOrUUID)
+}
+
 // GetFunction mocks base method.
 func (m *MockClient) GetFunction(ctx context.Context, nameOrUUID string) (*meroxa.Function, error) {
 	m.ctrl.T.Helper()
