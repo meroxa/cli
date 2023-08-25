@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-const flinkJobsBasePath = "/v1/flink-jobs"
+const flinkJobsBasePathV1 = "/v1/flink-jobs"
+const flinkJobsBasePathV2 = "/v2/flink-jobs"
 
 type FlinkJobDesiredState string
 type FlinkJobLifecycleState string
@@ -70,7 +71,7 @@ type CreateFlinkJobInput struct {
 }
 
 func (c *client) GetFlinkJob(ctx context.Context, nameOrUUID string) (*FlinkJob, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", flinkJobsBasePath, nameOrUUID), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s", flinkJobsBasePathV1, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +89,7 @@ func (c *client) GetFlinkJob(ctx context.Context, nameOrUUID string) (*FlinkJob,
 }
 
 func (c *client) ListFlinkJobs(ctx context.Context) ([]*FlinkJob, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodGet, flinkJobsBasePath, nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, flinkJobsBasePathV1, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +107,7 @@ func (c *client) ListFlinkJobs(ctx context.Context) ([]*FlinkJob, error) {
 }
 
 func (c *client) CreateFlinkJob(ctx context.Context, input *CreateFlinkJobInput) (*FlinkJob, error) {
-	resp, err := c.MakeRequest(ctx, http.MethodPost, flinkJobsBasePath, input, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodPost, flinkJobsBasePathV1, input, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -124,10 +125,31 @@ func (c *client) CreateFlinkJob(ctx context.Context, input *CreateFlinkJobInput)
 }
 
 func (c *client) DeleteFlinkJob(ctx context.Context, nameOrUUID string) error {
-	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", flinkJobsBasePath, nameOrUUID), nil, nil, nil)
+	resp, err := c.MakeRequest(ctx, http.MethodDelete, fmt.Sprintf("%s/%s", flinkJobsBasePathV1, nameOrUUID), nil, nil, nil)
 	if err != nil {
 		return err
 	}
 
 	return handleAPIErrors(resp)
+}
+
+func (c *client) GetFlinkLogsV2(ctx context.Context, nameOrUUID string) (*Logs, error) {
+	path := fmt.Sprintf("%s/%s/logs", flinkJobsBasePathV2, nameOrUUID)
+	resp, err := c.MakeRequest(ctx, http.MethodGet, path, nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	var l *Logs
+	err = json.NewDecoder(resp.Body).Decode(&l)
+	if err != nil {
+		return nil, err
+	}
+
+	return l, nil
 }

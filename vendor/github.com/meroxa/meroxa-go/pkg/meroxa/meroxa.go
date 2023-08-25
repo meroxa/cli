@@ -87,6 +87,7 @@ type Client interface {
 	DeleteFlinkJob(ctx context.Context, nameOrUUID string) error
 	GetFlinkJob(ctx context.Context, nameOrUUID string) (*FlinkJob, error)
 	ListFlinkJobs(ctx context.Context) ([]*FlinkJob, error)
+	GetFlinkLogsV2(ctx context.Context, nameOrUUID string) (*Logs, error)
 
 	CreateFunction(ctx context.Context, input *CreateFunctionInput) (*Function, error)
 	GetFunction(ctx context.Context, nameOrUUID string) (*Function, error)
