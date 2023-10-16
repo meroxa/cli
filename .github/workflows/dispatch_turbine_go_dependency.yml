@@ -12,7 +12,7 @@ jobs:
       - name: Event Information
         run: |
           echo "Event '${{ github.event.action }}' received from '${{ github.event.client_payload.repository }}' for commit '${{ github.event.client_payload.sha }}'"
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: master
       - uses: actions/setup-go@v3
