@@ -45,6 +45,7 @@ func (t *Core) Start(ctx context.Context) (string, error) {
 			return t.grpcListenAddress, nil
 		}
 	}
+	// unnecessary change
 
 	return "", err
 }
