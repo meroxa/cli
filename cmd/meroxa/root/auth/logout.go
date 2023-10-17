@@ -61,6 +61,7 @@ func (l *Logout) Execute(ctx context.Context) error {
 	l.config.Set(global.ActorEnv, "")
 	l.config.Set(global.ActorUUIDEnv, "")
 	l.config.Set(global.UserFeatureFlagsEnv, "")
+	l.config.Set(global.TenantSubdomainEnv, "")
 
 	l.logger.Infof(ctx, "Successfully logged out.")
 	return nil
