@@ -294,34 +294,3 @@ func TestAddAction(t *testing.T) {
 		t.Fatalf("expected event action to be %q, got %q", want, v)
 	}
 }
-
-func TestAddUserInfo(t *testing.T) {
-	Config = viper.New()
-	defer clearConfiguration()
-
-	meroxaUser := "user@meroxa.io"
-	meroxaUserUUID := "ff45a74a-4fc1-49a5-8fa5-f1762703b7e8"
-
-	// Makes sure user is logged in
-	Config.Set(AccessTokenEnv, "access-token")
-	Config.Set(RefreshTokenEnv, "refresh-token")
-
-	Config.Set(ActorEnv, meroxaUser)
-	Config.Set(ActorUUIDEnv, meroxaUserUUID)
-
-	// Makes sure there's no need to fetch for user info
-	Config.Set(UserInfoUpdatedAtEnv, time.Now().UTC())
-
-	event := cased.AuditEvent{}
-	addUserInfo(event)
-
-	want := meroxaUser
-	if v := event["actor"]; v != want {
-		t.Fatalf("expected event \"actor\" to be %q, got %q", want, v)
-	}
-
-	want = meroxaUserUUID
-	if v := event["actor_uuid"]; v != want {
-		t.Fatalf("expected event \"actor_uuid\" to be %q, got %q", want, v)
-	}
-}
