@@ -17,7 +17,7 @@ jobs:
       with:
         go-version: ^1.20
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Build
       run: |
        make build
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: ^1.20
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
@@ -37,7 +37,7 @@ jobs:
     name: Vet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Vet
         run: go vet ./...
   test:
@@ -45,7 +45,7 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v3
         with:
           go-version: ^1.20
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Acceptance
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.MEROXA_MACHINE }}
           repository: meroxa/acceptance
