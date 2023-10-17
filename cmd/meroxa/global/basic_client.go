@@ -17,6 +17,7 @@ const (
 	jsonContentType = "application/json"
 )
 
+//go:generate mockgen -source=basic_client.go -package=mock -destination=mock/basic_client_mock.go
 type BasicClient interface {
 	CollectionRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
 	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)

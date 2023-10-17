@@ -49,7 +49,6 @@ lint:
 .PHONY: generate
 generate: mockgen-install
 	go generate ./...
-	mockery
 
 mockgen-install:
 	go install github.com/golang/mock/mockgen@$(MOCKGEN_VER)

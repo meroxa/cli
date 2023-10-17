@@ -1,9 +1,0 @@
-with-expecter: True
-inpackage: True
-filename: "mock_{{.InterfaceName | snakecase}}_test.go"
-mockname: "mock{{.InterfaceName | firstUpper}}"
-dir: "{{.InterfaceDir}}"
-packages:
-  github.com/meroxa/cli/cmd/meroxa/global:
-    interfaces:
-      BasicClient:
