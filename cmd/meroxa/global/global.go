@@ -40,8 +40,6 @@ var (
 
 const (
 	AccessTokenEnv               = "ACCESS_TOKEN"
-	ActorEnv                     = "ACTOR"
-	ActorUUIDEnv                 = "ACTOR_UUID"
 	CasedDebugEnv                = "CASED_DEBUG"
 	CasedPublishKeyEnv           = "CASED_PUBLISH_KEY"
 	LatestCLIVersionUpdatedAtEnv = "LATEST_CLI_VERSION_UPDATED_AT"
@@ -54,7 +52,6 @@ const (
 	RefreshTokenEnv              = "REFRESH_TOKEN"
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
-	UserAccountUUID              = "USER_ACCOUNT_UUID"
 
 	TenantEmailAddress = "TENANT_EMAIL_ADDRESS"
 	TenantPassword     = "TENANT_PASSWORD"
