@@ -24,22 +24,14 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
-type getUserClient interface {
-	GetUser(ctx context.Context) (*meroxa.User, error)
-}
-
 type WhoAmI struct {
-	client getUserClient
 	logger log.Logger
 	config config.Config
 }
 
 var (
-	_ builder.CommandWithClient  = (*WhoAmI)(nil)
-	_ builder.CommandWithConfig  = (*WhoAmI)(nil)
 	_ builder.CommandWithDocs    = (*WhoAmI)(nil)
 	_ builder.CommandWithExecute = (*WhoAmI)(nil)
 	_ builder.CommandWithLogger  = (*WhoAmI)(nil)
@@ -56,16 +48,8 @@ func (w *WhoAmI) Docs() builder.Docs {
 	}
 }
 
-func (w *WhoAmI) Client(client meroxa.Client) {
-	w.client = client
-}
-
 func (w *WhoAmI) Logger(logger log.Logger) {
 	w.logger = logger
-}
-
-func (w *WhoAmI) Config(cfg config.Config) {
-	w.config = cfg
 }
 
 func (w *WhoAmI) Execute(ctx context.Context) error {

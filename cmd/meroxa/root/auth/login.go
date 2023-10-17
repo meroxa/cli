@@ -39,15 +39,17 @@ import (
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Login)(nil)
-	_ builder.CommandWithLogger  = (*Login)(nil)
-	_ builder.CommandWithExecute = (*Login)(nil)
-	_ builder.CommandWithConfig  = (*Login)(nil)
+	_ builder.CommandWithDocs        = (*Login)(nil)
+	_ builder.CommandWithLogger      = (*Login)(nil)
+	_ builder.CommandWithExecute     = (*Login)(nil)
+	_ builder.CommandWithConfig      = (*Login)(nil)
+	_ builder.CommandWithBasicClient = (*Login)(nil)
 )
 
 type Login struct {
 	logger log.Logger
 	config config.Config
+	client global.BasicClient
 }
 
 func (l *Login) Usage() string {
@@ -60,6 +62,10 @@ func (l *Login) Docs() builder.Docs {
 	}
 }
 
+func (l *Login) BasicClient(client global.BasicClient) {
+	l.client = client
+}
+
 type authRequest struct {
 	Identity string `json:"identity"`
 	Password string `json:"password"`
@@ -70,17 +76,13 @@ type pocketbaseResponse struct {
 }
 
 func (l *Login) Execute(ctx context.Context) error {
-	client, err := global.NewBasicClient()
-	if err != nil {
-		return err
-	}
 	req := authRequest{
 		Identity: l.config.GetString(global.TenantEmailAddress),
 		Password: l.config.GetString(global.TenantPassword),
 	}
 
 	var pbResp pocketbaseResponse
-	_, err = client.UrlRequest(ctx, "POST", "/api/collections/users/auth-with-password", req, nil, nil, &pbResp)
+	_, err := l.client.UrlRequest(ctx, "POST", "/api/collections/users/auth-with-password", req, nil, nil, &pbResp)
 	if err != nil {
 		return err
 	}
