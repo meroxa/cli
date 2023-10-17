@@ -18,8 +18,8 @@ const (
 )
 
 type BasicClient interface {
-	CollectionRequest(ctx context.Context, method string, collection string, body interface{}, params url.Values, headers http.Header, output interface{}) (*http.Response, error)
-	UrlRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header, output interface{}) (*http.Response, error)
+	CollectionRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
+	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
 }
 
 type client struct {
@@ -67,7 +67,14 @@ func NewBasicClient() (BasicClient, error) {
 	return r, nil
 }
 
-func (r *client) CollectionRequest(ctx context.Context, method, collection string, body interface{}, params url.Values, headers http.Header, output interface{}) (*http.Response, error) {
+func (r *client) CollectionRequest(
+	ctx context.Context,
+	method string,
+	collection string,
+	body interface{},
+	params url.Values,
+	headers http.Header,
+	output interface{}) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
 	req, err := r.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
@@ -94,7 +101,14 @@ func (r *client) CollectionRequest(ctx context.Context, method, collection strin
 	return resp, nil
 }
 
-func (r *client) UrlRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header, output interface{}) (*http.Response, error) {
+func (r *client) URLRequest(
+	ctx context.Context,
+	method string,
+	path string,
+	body interface{},
+	params url.Values,
+	headers http.Header,
+	output interface{}) (*http.Response, error) {
 	req, err := r.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
 		return nil, err
@@ -120,7 +134,13 @@ func (r *client) UrlRequest(ctx context.Context, method, path string, body inter
 	return resp, nil
 }
 
-func (r *client) newRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Request, error) {
+func (r *client) newRequest(
+	ctx context.Context,
+	method string,
+	path string,
+	body interface{},
+	params url.Values,
+	headers http.Header) (*http.Request, error) {
 	u, err := r.baseURL.Parse(path)
 	if err != nil {
 		return nil, err
@@ -128,7 +148,7 @@ func (r *client) newRequest(ctx context.Context, method, path string, body inter
 
 	buf := new(bytes.Buffer)
 	if body != nil {
-		if err := r.encodeBody(buf, body); err != nil {
+		if encodeErr := r.encodeBody(buf, body); encodeErr != nil {
 			return nil, err
 		}
 	}

@@ -2,8 +2,7 @@ package auth
 
 import (
 	"context"
-	"encoding/json"
-	"reflect"
+	"os"
 	"strings"
 	"testing"
 
@@ -11,41 +10,20 @@ import (
 
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
-
-	"github.com/golang/mock/gomock"
-	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestWhoAmIExecution(t *testing.T) {
 	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
 	logger := log.NewTestLogger()
+	email := "user@example.com"
+	os.Setenv(global.TenantEmailAddress, email)
 
 	cfg := config.NewInMemoryConfig()
 
 	w := WhoAmI{
 		logger: logger,
-		client: client,
 		config: cfg,
 	}
-
-	u := meroxa.User{
-		UUID:       "1234-5678-9012",
-		Username:   "gbutler",
-		Email:      "gbutler@email.io",
-		GivenName:  "Joseph",
-		FamilyName: "Marcell",
-		Verified:   true,
-	}
-
-	client.
-		EXPECT().
-		GetUser(
-			ctx,
-		).
-		Return(&u, nil)
 
 	err := w.Execute(ctx)
 	if err != nil {
@@ -53,28 +31,14 @@ func TestWhoAmIExecution(t *testing.T) {
 	}
 
 	gotLeveledOutput := logger.LeveledOutput()
-	wantLeveledOutput := u.Email
+	wantLeveledOutput := email
 
 	if !strings.Contains(gotLeveledOutput, wantLeveledOutput) {
 		t.Fatalf("expected output:\n%s\ngot:\n%s", wantLeveledOutput, gotLeveledOutput)
 	}
 
-	gotJSONOutput := logger.JSONOutput()
-	var gotUser meroxa.User
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotUser)
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
-
-	if !reflect.DeepEqual(gotUser, u) {
-		t.Fatalf("expected \"%v\", got \"%v\"", u, gotUser)
-	}
-
-	if w.config.GetString(global.ActorEnv) != u.Email {
-		t.Fatalf("expected %q key to be %q", global.ActorEnv, u.Email)
-	}
-
-	if w.config.GetString(global.ActorUUIDEnv) != u.UUID {
-		t.Fatalf("expected %q key to be %q", global.ActorUUIDEnv, u.UUID)
+	gotJSONOutput := strings.TrimSpace(logger.JSONOutput())
+	if gotJSONOutput != email {
+		t.Fatalf("expected \"%v\", got \"%v\"", email, gotJSONOutput)
 	}
 }

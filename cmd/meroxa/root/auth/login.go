@@ -82,13 +82,9 @@ func (l *Login) Execute(ctx context.Context) error {
 	}
 
 	var pbResp pocketbaseResponse
-	_, err := l.client.UrlRequest(ctx, "POST", "/api/collections/users/auth-with-password", req, nil, nil, &pbResp)
-	if err != nil {
-		return err
-	}
-
+	_, err := l.client.URLRequest(ctx, "POST", "/api/collections/users/auth-with-password", req, nil, nil, &pbResp)
 	l.config.Set(global.AccessTokenEnv, pbResp.Token)
-	return nil
+	return err
 }
 
 func (l *Login) Logger(logger log.Logger) {
@@ -100,6 +96,8 @@ func (l *Login) Config(cfg config.Config) {
 }
 
 // AuthorizeUser implements the PKCE OAuth2 flow.
+//
+//nolint:unused // temporarily not supporting OAuth
 func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audience, redirectURL string) {
 	// initialize the code verifier
 	CodeVerifier, _ := cv.CreateCodeVerifier()
@@ -197,6 +195,7 @@ func (l *Login) authorizeUser(ctx context.Context, clientID, authDomain, audienc
 	_ = server.Serve(listener)
 }
 
+//nolint:unparam,unused // temporarily not supporting OAuth
 func (l *Login) login(ctx context.Context) error {
 	l.logger.Infof(ctx, color.CyanString("You will now be taken to your browser for authentication or open the url below in a browser."))
 	l.logger.Infof(ctx, global.GetMeroxaAuthCallbackURL())
@@ -211,6 +210,8 @@ func (l *Login) login(ctx context.Context) error {
 }
 
 // cleanup closes the HTTP server.
+//
+//nolint:unused // temporarily not supporting OAuth
 func (l *Login) cleanup(server *http.Server) {
 	// we run this as a goroutine so that this function falls through and
 	// the socket to the browser gets flushed/closed before the server goes away
@@ -218,6 +219,8 @@ func (l *Login) cleanup(server *http.Server) {
 }
 
 // getAccessTokenAuth trades the authorization code retrieved from the first OAuth2 leg for an access token.
+//
+//nolint:unused // temporarily not supporting OAuth
 func (l *Login) getAccessTokenAuth(
 	ctx context.Context,
 	clientID, codeVerifier, authorizationCode, callbackURL string,

@@ -206,6 +206,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithAliases(cmd, c)
 	buildCommandWithArgs(cmd, c)
 	buildCommandWithClient(cmd, c)
+	buildCommandWithBasicClient(cmd, c)
 	buildCommandWithConfig(cmd, c)
 
 	// buildCommandWithConfirmWithValue needs to go before buildCommandWithExecute to make sure there's a confirmation prompt
