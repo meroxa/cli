@@ -1,7 +1,6 @@
 package display
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"testing"
@@ -150,9 +149,4 @@ func TestEnvironmentsTableWithoutHeaders(t *testing.T) {
 	if !strings.Contains(out, e.UUID) {
 		t.Errorf("%s, not found", e.UUID)
 	}
-}
-
-func deepCopy(a, b interface{}) {
-	byt, _ := json.Marshal(a)
-	_ = json.Unmarshal(byt, b)
 }
