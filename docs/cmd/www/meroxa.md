@@ -32,7 +32,6 @@ meroxa resources list --types
 
 ### SEE ALSO
 
-* [meroxa account](/cli/cmd/meroxa-account/)	 - Manage Meroxa Accounts
 * [meroxa api](/cli/cmd/meroxa-api/)	 - Invoke Meroxa API
 * [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 * [meroxa auth](/cli/cmd/meroxa-auth/)	 - Authentication commands for Meroxa

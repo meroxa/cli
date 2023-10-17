@@ -70,6 +70,12 @@ type CommandWithClient interface {
 	Client(meroxa.Client)
 }
 
+type CommandWithBasicClient interface {
+	Command
+	// Client provides the basic client to the command.
+	BasicClient(client global.BasicClient)
+}
+
 type CommandWithConfig interface {
 	Command
 	Config(config.Config)
@@ -200,6 +206,7 @@ func BuildCobraCommand(c Command) *cobra.Command {
 	buildCommandWithAliases(cmd, c)
 	buildCommandWithArgs(cmd, c)
 	buildCommandWithClient(cmd, c)
+	buildCommandWithBasicClient(cmd, c)
 	buildCommandWithConfig(cmd, c)
 
 	// buildCommandWithConfirmWithValue needs to go before buildCommandWithExecute to make sure there's a confirmation prompt
@@ -267,11 +274,34 @@ func buildCommandWithClient(cmd *cobra.Command, c Command) {
 				return err
 			}
 		}
-		c, err := global.NewClient()
+		c, err := global.NewOauthClient()
 		if err != nil {
 			return err
 		}
 		v.Client(c)
+		return nil
+	}
+}
+
+func buildCommandWithBasicClient(cmd *cobra.Command, c Command) {
+	v, ok := c.(CommandWithBasicClient)
+	if !ok {
+		return
+	}
+
+	old := cmd.PreRunE
+	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
+		if old != nil {
+			err := old(cmd, args)
+			if err != nil {
+				return err
+			}
+		}
+		c, err := global.NewBasicClient()
+		if err != nil {
+			return err
+		}
+		v.BasicClient(c)
 		return nil
 	}
 }
