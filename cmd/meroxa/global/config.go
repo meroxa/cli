@@ -98,6 +98,10 @@ func getEnvVal(keys []string, defaultVal string) string {
 	return defaultVal
 }
 
+func getAuthToken() string {
+	return Config.GetString("token")
+}
+
 func readConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 
@@ -137,11 +141,6 @@ func readConfig() (*viper.Viper, error) {
 		if err := setupCompatibility(cfg); err != nil {
 			return nil, err
 		}
-	}
-
-	// TODO remove this code once we migrate acceptance tests to use new env variable
-	if apiURL, ok := os.LookupEnv("API_URL"); ok {
-		os.Setenv("MEROXA_API_URL", apiURL)
 	}
 
 	// When we bind flags to environment variables expect that the

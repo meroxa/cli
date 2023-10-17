@@ -58,8 +58,6 @@ func (l *Logout) Config(cfg config.Config) {
 func (l *Logout) Execute(ctx context.Context) error {
 	l.config.Set(global.AccessTokenEnv, "")
 	l.config.Set(global.RefreshTokenEnv, "")
-	l.config.Set(global.ActorEnv, "")
-	l.config.Set(global.ActorUUIDEnv, "")
 	l.config.Set(global.UserFeatureFlagsEnv, "")
 
 	l.logger.Infof(ctx, "Successfully logged out.")

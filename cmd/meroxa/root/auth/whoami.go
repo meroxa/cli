@@ -18,14 +18,12 @@ package auth
 
 import (
 	"context"
-	"strings"
-	"time"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
+	"os"
 )
 
 type getUserClient interface {
@@ -70,23 +68,9 @@ func (w *WhoAmI) Config(cfg config.Config) {
 }
 
 func (w *WhoAmI) Execute(ctx context.Context) error {
-	user, err := w.client.GetUser(ctx)
-	if err != nil {
-		return err
-	}
-
-	w.logger.Infof(ctx, "%s", user.Email)
-	w.logger.JSON(ctx, user)
-
-	// Updates config file with actor information.
-	w.config.Set(global.ActorEnv, user.Email)
-	w.config.Set(global.ActorUUIDEnv, user.UUID)
-	w.config.Set(global.UserFeatureFlagsEnv, strings.Join(user.Features, " "))
-	w.config.Set(global.UserInfoUpdatedAtEnv, time.Now().UTC())
-
-	if err != nil {
-		return err
-	}
+	email := os.Getenv(global.TenantEmailAddress)
+	w.logger.Infof(ctx, "%s", email)
+	w.logger.JSON(ctx, email)
 
 	return nil
 }

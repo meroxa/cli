@@ -67,7 +67,7 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
-		m, err := NewClient()
+		m, err := NewOauthClient()
 		if err != nil {
 			return "", "", fmt.Errorf("meroxa: could not create Meroxa client: %v", err)
 		}
@@ -129,7 +129,7 @@ func SetAccountUUID(client meroxa.Client) error {
 	return nil
 }
 
-func NewClient() (meroxa.Client, error) {
+func NewOauthClient() (meroxa.Client, error) {
 	accessToken, refreshToken, err := GetUserToken()
 	if err != nil {
 		return nil, err

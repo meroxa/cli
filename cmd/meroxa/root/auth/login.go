@@ -56,17 +56,36 @@ func (l *Login) Usage() string {
 
 func (l *Login) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Login or Sign up to the Meroxa Platform",
+		Short: "Login to a Conduit Platform tenant",
 	}
 }
 
+type authRequest struct {
+	Identity string `json:"identity"`
+	Password string `json:"password"`
+}
+
+type pocketbaseResponse struct {
+	Token string `json:"token"`
+}
+
 func (l *Login) Execute(ctx context.Context) error {
-	// initialize the code verifier
-	err := l.login(ctx)
+	client, err := global.NewBasicClient()
+	if err != nil {
+		return err
+	}
+	req := authRequest{
+		Identity: l.config.GetString(global.TenantEmailAddress),
+		Password: l.config.GetString(global.TenantPassword),
+	}
+
+	var pbResp pocketbaseResponse
+	_, err = client.UrlRequest(ctx, "POST", "/api/collections/users/auth-with-password", req, nil, nil, &pbResp)
 	if err != nil {
 		return err
 	}
 
+	l.config.Set(global.AccessTokenEnv, pbResp.Token)
 	return nil
 }
 
@@ -193,7 +212,6 @@ func (l *Login) login(ctx context.Context) error {
 func (l *Login) cleanup(server *http.Server) {
 	// we run this as a goroutine so that this function falls through and
 	// the socket to the browser gets flushed/closed before the server goes away
-	l.config.Set(global.UserAccountUUID, "")
 	go server.Close()
 }
 
