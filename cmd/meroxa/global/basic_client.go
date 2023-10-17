@@ -74,7 +74,8 @@ func (r *client) CollectionRequest(
 	body interface{},
 	params url.Values,
 	headers http.Header,
-	output interface{}) (*http.Response, error) {
+	output interface{},
+) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
 	req, err := r.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
@@ -108,7 +109,8 @@ func (r *client) URLRequest(
 	body interface{},
 	params url.Values,
 	headers http.Header,
-	output interface{}) (*http.Response, error) {
+	output interface{},
+) (*http.Response, error) {
 	req, err := r.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
 		return nil, err
@@ -140,7 +142,8 @@ func (r *client) newRequest(
 	path string,
 	body interface{},
 	params url.Values,
-	headers http.Header) (*http.Request, error) {
+	headers http.Header,
+) (*http.Request, error) {
 	u, err := r.baseURL.Parse(path)
 	if err != nil {
 		return nil, err
