@@ -42,6 +42,7 @@ const (
 	AccessTokenEnv               = "ACCESS_TOKEN"
 	ActorEnv                     = "ACTOR"
 	ActorUUIDEnv                 = "ACTOR_UUID"
+	TenantSubDomainEnv           = "TENANT_SUBDOMAIN"
 	CasedDebugEnv                = "CASED_DEBUG"
 	CasedPublishKeyEnv           = "CASED_PUBLISH_KEY"
 	LatestCLIVersionUpdatedAtEnv = "LATEST_CLI_VERSION_UPDATED_AT"

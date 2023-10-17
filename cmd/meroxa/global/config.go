@@ -53,6 +53,10 @@ func GetLocalTurbineJSSetting() string {
 	return getEnvVal([]string{"MEROXA_USE_LOCAL_TURBINE_JS"}, "false")
 }
 
+func GetTenantSubDomain() string {
+	return getEnvVal([]string{"MDPX_TENANT_SUBDOMAIN"}, os.Getenv("MDPX_TENANT_SUBDOMAIN"))
+}
+
 func getMeroxaAuthCallbackPort() string {
 	return getEnvVal([]string{MeroxaAuthCallbackPort}, "21900")
 }

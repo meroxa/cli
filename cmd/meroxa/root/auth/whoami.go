@@ -81,6 +81,7 @@ func (w *WhoAmI) Execute(ctx context.Context) error {
 	// Updates config file with actor information.
 	w.config.Set(global.ActorEnv, user.Email)
 	w.config.Set(global.ActorUUIDEnv, user.UUID)
+	w.config.Set(global.TenantSubDomainEnv, global.GetTenantSubDomain())
 	w.config.Set(global.UserFeatureFlagsEnv, strings.Join(user.Features, " "))
 	w.config.Set(global.UserInfoUpdatedAtEnv, time.Now().UTC())
 
