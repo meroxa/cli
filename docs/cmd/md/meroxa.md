@@ -28,16 +28,12 @@ meroxa resources list --types
 * [meroxa api](meroxa_api.md)	 - Invoke Meroxa API
 * [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
-* [meroxa billing](meroxa_billing.md)	 - Open your billing page in a web browser
-* [meroxa builds](meroxa_builds.md)	 - Inspect Process Builds on Meroxa
 * [meroxa completion](meroxa_completion.md)	 - Generate completion script
 * [meroxa config](meroxa_config.md)	 - Manage your Meroxa CLI configuration
 * [meroxa environments](meroxa_environments.md)	 - Manage environments on Meroxa
-* [meroxa login](meroxa_login.md)	 - Login or Sign up to the Meroxa Platform
+* [meroxa login](meroxa_login.md)	 - Login to a Conduit Platform tenant
 * [meroxa logout](meroxa_logout.md)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](meroxa_open.md)	 - Open in a web browser
-* [meroxa resources](meroxa_resources.md)	 - Manage resources on Meroxa
-* [meroxa transforms](meroxa_transforms.md)	 - Manage transforms on Meroxa
 * [meroxa version](meroxa_version.md)	 - Display the Meroxa CLI version
 * [meroxa whoami](meroxa_whoami.md)	 - Display the current logged in user
 
