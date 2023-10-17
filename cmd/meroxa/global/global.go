@@ -53,7 +53,7 @@ const (
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
 
-	TenantSubdomainEnv           = "TENANT_SUBDOMAIN"
+	TenantSubdomainEnv = "TENANT_SUBDOMAIN"
 	TenantEmailAddress = "TENANT_EMAIL_ADDRESS"
 	TenantPassword     = "TENANT_PASSWORD"
 )
