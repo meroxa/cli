@@ -83,7 +83,6 @@ func GetCLIUserInfo() (actor, actorUUID string, err error) {
 		// write user information in config file
 		Config.Set(ActorEnv, actor)
 		Config.Set(ActorUUIDEnv, actorUUID)
-		Config.Set(TenantSubDomainEnv, GetTenantSubDomain())
 
 		// write existing feature flags enabled
 		Config.Set(UserFeatureFlagsEnv, strings.Join(user.Features, " "))
@@ -173,7 +172,6 @@ func NewClient() (meroxa.Client, error) {
 		}
 	}
 	options = append(options, meroxa.WithAccountUUID(Config.GetString(UserAccountUUID)))
-	options = append(options, meroxa.WithHeader(TenantSubDomainEnv, GetTenantSubDomain()))
 	options = append(options, meroxa.WithHeader("Meroxa-CLI-Version", Version))
 	return meroxa.New(options...)
 }
