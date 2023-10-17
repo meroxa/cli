@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
@@ -62,7 +61,6 @@ func TestDeployFlinkJob(t *testing.T) {
 	os.Setenv("UNIT_TEST", "true")
 	ctx := context.Background()
 	logger := log.NewTestLogger()
-	accountUUID := "aa-bb-cc-dd"
 	name := "solid-name"
 	jar := filepath.Join(os.TempDir(), "real-jar.jar")
 	f, err := os.Create(jar)
@@ -185,7 +183,6 @@ func TestDeployFlinkJob(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			cfg := config.NewInMemoryConfig()
-			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
 				client: tc.meroxaClient(ctrl),
 				logger: logger,

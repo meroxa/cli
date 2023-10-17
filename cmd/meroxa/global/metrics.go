@@ -92,18 +92,6 @@ func addArgs(args []string) string {
 	return ""
 }
 
-func addUserInfo(event cased.AuditEvent) {
-	actor, actorUUID, _ := GetCLIUserInfo()
-
-	if actor != "" {
-		event["actor"] = actor
-	}
-
-	if actorUUID != "" {
-		event["actor_uuid"] = actorUUID
-	}
-}
-
 // addAction looks up all parent commands recursively and builds the action field.
 func addAction(event cased.AuditEvent, cmd *cobra.Command) {
 	var buildAction func(cmd *cobra.Command) string
@@ -151,7 +139,6 @@ func buildBasicEvent(cmd *cobra.Command, args []string) cased.AuditEvent {
 func BuildEvent(cmd *cobra.Command, args []string, err error) cased.AuditEvent {
 	event := buildBasicEvent(cmd, args)
 
-	addUserInfo(event)
 	addAction(event, cmd)
 	addError(event, err)
 

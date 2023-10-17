@@ -16,7 +16,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
@@ -421,7 +420,6 @@ func TestDeployApp(t *testing.T) {
 	imageName := "doc.ker:latest"
 	gitSha := "aa:bb:cc:dd"
 	specVersion := "latest"
-	accountUUID := "aa-bb-cc-dd"
 	specStr := `{"metadata": "metadata"}`
 	spec := map[string]interface{}{
 		"metadata": "metadata",
@@ -524,7 +522,6 @@ func TestDeployApp(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			cfg := config.NewInMemoryConfig()
-			cfg.Set(global.UserAccountUUID, accountUUID)
 			d := &Deploy{
 				client:     tc.meroxaClient(ctrl),
 				turbineCLI: tc.mockTurbineCLI(ctrl, tc.version),
