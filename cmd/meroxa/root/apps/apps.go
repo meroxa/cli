@@ -18,6 +18,7 @@ package apps
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -29,6 +30,28 @@ import (
 	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/spf13/cobra"
 )
+
+type ApplicationState string
+
+const (
+	ApplicationStateInitialized ApplicationState = "initialized"
+	ApplicationStateDeploying   ApplicationState = "deploying"
+	ApplicationStatePending     ApplicationState = "pending"
+	ApplicationStateRunning     ApplicationState = "running"
+	ApplicationStateDegraded    ApplicationState = "degraded"
+	ApplicationStateFailed      ApplicationState = "failed"
+)
+
+// Application represents the Meroxa Application type within the Meroxa API
+type Application struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Spec        string    `json:"spec"`
+	SpecVersion string    `json:"specVersion"`
+	Archive     string    `json:"archive"`
+	Created     time.Time `json:"createdt"`
+	Updated     time.Time `json:"updated"`
+}
 
 type Apps struct{}
 

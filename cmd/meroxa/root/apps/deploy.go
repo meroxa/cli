@@ -22,46 +22,21 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/turbine-core/pkg/ir"
+	"io"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
 )
-
-const (
-	platformBuildPollDuration  = 2 * time.Second
-	minutesToWaitForDeployment = 5
-	intervalCheckForDeployment = 500 * time.Millisecond
-)
-
-type apiClient interface {
-	CreateApplicationV2(ctx context.Context, input *meroxa.CreateApplicationInput) (*meroxa.Application, error)
-	GetApplication(ctx context.Context, nameOrUUID string) (*meroxa.Application, error)
-	CreateDeployment(ctx context.Context, input *meroxa.CreateDeploymentInput) (*meroxa.Deployment, error)
-	GetLatestDeployment(ctx context.Context, nameOrUUID string) (*meroxa.Deployment, error)
-	GetEnvironment(ctx context.Context, nameOrUUID string) (*meroxa.Environment, error)
-	DeleteApplicationEntities(ctx context.Context, nameOrUUID string) (*http.Response, error)
-	GetDeployment(ctx context.Context, appName string, depUUID string) (*meroxa.Deployment, error)
-	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
-	CreateBuild(ctx context.Context, input *meroxa.CreateBuildInput) (*meroxa.Build, error)
-	CreateSourceV2(ctx context.Context, input *meroxa.CreateSourceInputV2) (*meroxa.Source, error)
-	GetBuild(ctx context.Context, uuid string) (*meroxa.Build, error)
-	GetResourceByNameOrID(ctx context.Context, nameOrID string) (*meroxa.Resource, error)
-	AddHeader(key, value string)
-}
 
 type environment struct {
 	Name string
@@ -99,7 +74,7 @@ type Deploy struct {
 		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
 	}
 
-	client        apiClient
+	client        global.BasicClient
 	config        config.Config
 	logger        log.Logger
 	turbineCLI    turbine.CLI
@@ -109,19 +84,20 @@ type Deploy struct {
 	gitBranch     string
 	path          string
 	lang          ir.Lang
-	fnName        string
+	fnName        string // is this still necessary?
+	appTarName    string
 	specVersion   string
 	env           *environment
 	gitSha        string
 }
 
 var (
-	_ builder.CommandWithClient  = (*Deploy)(nil)
-	_ builder.CommandWithConfig  = (*Deploy)(nil)
-	_ builder.CommandWithDocs    = (*Deploy)(nil)
-	_ builder.CommandWithExecute = (*Deploy)(nil)
-	_ builder.CommandWithFlags   = (*Deploy)(nil)
-	_ builder.CommandWithLogger  = (*Deploy)(nil)
+	_ builder.CommandWithBasicClient = (*Deploy)(nil)
+	_ builder.CommandWithConfig      = (*Deploy)(nil)
+	_ builder.CommandWithDocs        = (*Deploy)(nil)
+	_ builder.CommandWithExecute     = (*Deploy)(nil)
+	_ builder.CommandWithFlags       = (*Deploy)(nil)
+	_ builder.CommandWithLogger      = (*Deploy)(nil)
 )
 
 func (*Deploy) Usage() string {
@@ -145,7 +121,7 @@ func (d *Deploy) Config(cfg config.Config) {
 	d.config = cfg
 }
 
-func (d *Deploy) Client(client meroxa.Client) {
+func (d *Deploy) BasicClient(client global.BasicClient) {
 	d.client = client
 }
 
@@ -157,70 +133,7 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-// getAppSource will return the proper destination where the application source will be uploaded and fetched.
-func (d *Deploy) getAppSource(ctx context.Context) (*meroxa.Source, error) {
-	in := meroxa.CreateSourceInputV2{}
-	if d.env != nil {
-		in.Environment = &meroxa.EntityIdentifier{
-			UUID: d.env.UUID,
-			Name: d.env.Name,
-		}
-	}
-	return d.client.CreateSourceV2(ctx, &in)
-}
-
-func (d *Deploy) getPlatformImage(ctx context.Context) (string, error) {
-	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
-
-	s, err := d.getAppSource(ctx)
-	if err != nil {
-		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source")
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return "", err
-	}
-	d.logger.StopSpinnerWithStatus("Platform source fetched", log.Successful)
-
-	err = d.UploadSource(ctx, s.PutUrl)
-	if err != nil {
-		return "", err
-	}
-	sourceBlob := meroxa.SourceBlob{Url: s.GetUrl}
-	buildInput := &meroxa.CreateBuildInput{SourceBlob: sourceBlob}
-	if d.env != nil {
-		buildInput.Environment = &meroxa.EntityIdentifier{
-			UUID: d.env.UUID,
-			Name: d.env.Name,
-		}
-	}
-
-	build, err := d.client.CreateBuild(ctx, buildInput)
-	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return "", err
-	}
-	d.logger.StartSpinner("\t", fmt.Sprintf("Building Meroxa Process image (%q)...", build.Uuid))
-
-	for {
-		b, err := d.client.GetBuild(ctx, build.Uuid)
-		if err != nil {
-			d.logger.StopSpinnerWithStatus("\t", log.Failed)
-			return "", err
-		}
-
-		switch b.Status.State {
-		case "error":
-			msg := fmt.Sprintf("build with uuid %q errored\nRun `meroxa build logs %s` for more information", b.Uuid, b.Uuid)
-			d.logger.StopSpinnerWithStatus(msg, log.Failed)
-			return "", fmt.Errorf("build with uuid %q errored", b.Uuid)
-		case "complete":
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Successfully built process image (%q)\n", build.Uuid), log.Successful)
-			return build.Image, nil
-		}
-		time.Sleep(platformBuildPollDuration)
-	}
-}
-
-func (d *Deploy) UploadSource(ctx context.Context, url string) error {
+func (d *Deploy) getPlatformImage(ctx context.Context) error {
 	var (
 		err       error
 		buildPath string
@@ -263,9 +176,9 @@ func (d *Deploy) UploadSource(ctx context.Context, url string) error {
 	if _, err = io.Copy(fileToWrite, &buf); err != nil {
 		return err
 	}
+	d.appTarName = dFile
 	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, buildPath), log.Successful)
-
-	return turbine.UploadFile(ctx, d.logger, dFile, url)
+	return nil
 }
 
 // CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
@@ -346,44 +259,21 @@ func shouldSkipDir(fi os.FileInfo) bool {
 	return false
 }
 
-func (d *Deploy) createDeployment(ctx context.Context, imageName, gitSha, specVersion string) (*meroxa.Deployment, error) {
-	specStr, err := d.turbineCLI.GetDeploymentSpec(ctx, imageName)
-	if err != nil {
-		return nil, err
-	}
-	var spec map[string]interface{}
-	if specStr != "" {
-		if unmarshalErr := json.Unmarshal([]byte(specStr), &spec); unmarshalErr != nil {
-			return nil, fmt.Errorf("failed to parse deployment spec into json")
-		}
-	}
-	if specVersion != "" {
-		input := &meroxa.CreateDeploymentInput{
-			Application: meroxa.EntityIdentifier{Name: d.appName},
-			GitSha:      gitSha,
-			SpecVersion: specVersion,
-			Spec:        spec,
-		}
-		return d.client.CreateDeployment(ctx, input)
-	}
-	return nil, nil
-}
-
 // getAppImage will check what type of build needs to perform and ultimately will return the image name to use
 // when deploying.
-func (d *Deploy) getAppImage(ctx context.Context) (string, error) {
+func (d *Deploy) getAppImage(ctx context.Context) error {
 	d.logger.StartSpinner("\t", "Checking if application has processes...")
 
 	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx)
 	if err != nil {
 		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return "", err
+		return err
 	}
 
 	// If no need to build, return empty imageName which won't be utilized by the deployment process anyway.
 	if !needsToBuild {
 		d.logger.StopSpinnerWithStatus("No need to create process image\n", log.Successful)
-		return "", nil
+		return nil
 	}
 
 	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
@@ -444,208 +334,9 @@ func (d *Deploy) readFromAppJSON(ctx context.Context) error {
 	return nil
 }
 
-func (d *Deploy) validateResources(ctx context.Context, rr []turbine.ApplicationResource) error {
-	var errs []error
-	validated := make(map[string]bool)
-
-	wrapNotFound := func(name string, err error) error {
-		if strings.Contains(err.Error(), "could not find") {
-			return fmt.Errorf("could not find resource %q", name)
-		}
-		return err
-	}
-
-	for _, r := range rr {
-		// dedup resources for validation
-		if _, ok := validated[r.Name]; ok {
-			continue
-		}
-		resource, err := d.client.GetResourceByNameOrID(ctx, r.Name)
-
-		// order is important
-		switch {
-		case err != nil:
-			errs = append(errs, wrapNotFound(r.Name, err))
-		case resource.Status.State != meroxa.ResourceStateReady:
-			errs = append(errs, fmt.Errorf("resource %q is not ready and usable", r.Name))
-		// app is provisioned in common env, but resource was added at self hosted env
-		case d.flags.Environment == "" && resource.Environment != nil:
-			errs = append(errs, fmt.Errorf(
-				"resource %q is in %q, but app is in common",
-				r.Name,
-				resource.Environment.Name,
-			))
-		// app is provisioned in an env, but resource is in common env
-		case d.flags.Environment != "" && resource.Environment == nil:
-			errs = append(errs, fmt.Errorf(
-				"resource %q is not in app env %q, but in common",
-				r.Name,
-				d.flags.Environment,
-			))
-		// app is provisioned in an env, but resource is in different self hosted env
-		case d.flags.Environment != "" && resource.Environment.Name != d.flags.Environment:
-			errs = append(errs, fmt.Errorf(
-				"resource %q is not in app env %q, but in %q",
-				r.Name,
-				d.flags.Environment,
-				resource.Environment.Name,
-			))
-		}
-
-		validated[r.Name] = true
-	}
-
-	return wrapErrors(errs)
-}
-
-func (d *Deploy) checkResourceAvailability(ctx context.Context) error {
-	resourceCheckMessage := fmt.Sprintf("Checking resource availability for application %q (%s) before deployment...", d.appName, d.lang)
-
-	d.logger.StartSpinner("\t", resourceCheckMessage)
-
-	resources, err := d.turbineCLI.GetResources(ctx)
-	if err != nil {
-		return fmt.Errorf("unable to read resource definition from app: %s", err.Error())
-	}
-
-	if len(resources) == 0 {
-		return errors.New("no resources defined in your Turbine app")
-	}
-
-	if err := d.validateResources(ctx, resources); err != nil {
-		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
-		return fmt.Errorf("%w;\n\n%s", err, resourceInvalidError)
-	}
-
-	if d.flags.SkipCollectionValidation {
-		d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
-		return nil
-	}
-
-	if err := d.validateCollections(ctx, resources); err != nil {
-		d.logger.StopSpinnerWithStatus("Resource availability check failed", log.Failed)
-		return err
-	}
-
-	d.logger.StopSpinnerWithStatus("Can access your Turbine resources", log.Successful)
-	return nil
-}
-
 func (d *Deploy) prepareDeployment(ctx context.Context) error {
 	d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
-
-	// check if resources exist and are ready
-	err := d.checkResourceAvailability(ctx)
-	if err != nil {
-		return err
-	}
-
-	d.fnName, err = d.getAppImage(ctx)
-	return err
-}
-
-type resourceCollectionPair struct {
-	collectionName string
-	resourceName   string
-}
-
-func newResourceCollectionPair(r turbine.ApplicationResource) resourceCollectionPair {
-	return resourceCollectionPair{
-		collectionName: r.Collection,
-		resourceName:   r.Name,
-	}
-}
-
-// TODO: Eventually remove this and validate fast in Platform API.
-func (d *Deploy) validateCollections(ctx context.Context, resources []turbine.ApplicationResource) error {
-	var (
-		sources      []turbine.ApplicationResource
-		destinations = map[resourceCollectionPair]bool{}
-
-		errMessage string
-	)
-	for _, r := range resources {
-		if r.Source && r.Destination {
-			errMessage = fmt.Sprintf(
-				"%s\n\tApplication resource cannot be used as both a source and destination.",
-				errMessage,
-			)
-		} else if r.Source {
-			sources = append(sources, r)
-		} else if r.Destination {
-			pair := newResourceCollectionPair(r)
-			if destinations[pair] {
-				errMessage = fmt.Sprintf(
-					"%s\n\tApplication resource %q with collection %q cannot be used as a destination more than once.",
-					errMessage,
-					r.Name,
-					r.Collection,
-				)
-			} else {
-				destinations[pair] = true
-			}
-		}
-	}
-
-	apps, err := d.client.ListApplications(ctx)
-	if err != nil {
-		return err
-	}
-
-	errMessage += d.validateNoCollectionLoops(sources, destinations) +
-		d.validateDestinationCollectionUnique(apps, destinations)
-
-	if errMessage != "" {
-		return fmt.Errorf(
-			"⚠️%s\n%s %s",
-			errMessage,
-			"Please modify your Turbine data application code. Then run `meroxa app deploy` again.",
-			"To skip collection validation, run `meroxa app deploy --skip-collection-validation`.",
-		)
-	}
-
-	return nil
-}
-
-// validateNoCollectionLoops ensures source (resource, collection) doesn't equal any destination (resource, collection).
-func (d *Deploy) validateNoCollectionLoops(sources []turbine.ApplicationResource, destinations map[resourceCollectionPair]bool) string {
-	var errMessage string
-	for _, source := range sources {
-		if ok := destinations[newResourceCollectionPair(source)]; ok {
-			errMessage = fmt.Sprintf(
-				"%s\n\tApplication resource %q with collection %q cannot be used as a destination. It is also the source.",
-				errMessage,
-				source.Name,
-				source.Collection)
-		}
-	}
-
-	return errMessage
-}
-
-// validateDestinationCollectionUnique ensures destination (resource, collection) is unique for account.
-func (d *Deploy) validateDestinationCollectionUnique(apps []*meroxa.Application, destinations map[resourceCollectionPair]bool) string {
-	var errMessage string
-	for _, app := range apps {
-		for _, r := range app.Resources {
-			if r.Collection.Destination == "true" &&
-				destinations[resourceCollectionPair{
-					collectionName: r.Collection.Name,
-					resourceName:   r.Name,
-				}] {
-				errMessage = fmt.Sprintf(
-					"%s\n\tApplication resource %q with collection %q cannot be used as a destination. "+
-						"It is also being used as a destination by another application %q.",
-					errMessage,
-					r.Name,
-					r.Collection.Name,
-					app.Name,
-				)
-			}
-		}
-	}
-
-	return errMessage
+	return d.getAppImage(ctx)
 }
 
 func (d *Deploy) prepareAppName(ctx context.Context) string {
@@ -668,57 +359,9 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 	return appName
 }
 
-func (d *Deploy) waitForDeployment(ctx context.Context, depUUID string) error {
-	cctx, cancel := context.WithTimeout(ctx, minutesToWaitForDeployment*time.Minute)
-	defer cancel()
-	checkLogsMsg := "Check `meroxa apps logs` for further information"
-	t := time.NewTicker(intervalCheckForDeployment)
-	defer t.Stop()
-
-	prevLine := ""
-
-	for {
-		select {
-		case <-t.C:
-			var deployment *meroxa.Deployment
-			deployment, err := d.client.GetDeployment(ctx, d.appName, depUUID)
-			if err != nil {
-				return fmt.Errorf("couldn't fetch deployment status: %s", err.Error())
-			}
-
-			logs := strings.Split(deployment.Status.Details, "\n")
-
-			if d.flags.Verbose {
-				l := len(logs)
-				if l > 0 && logs[l-1] != prevLine {
-					prevLine = logs[l-1]
-					d.logger.Info(ctx, "\t"+logs[l-1])
-				}
-			}
-
-			switch {
-			case deployment.Status.State == meroxa.DeploymentStateDeployed:
-				return nil
-			case deployment.Status.State == meroxa.DeploymentStateDeployingError:
-				if !d.flags.Verbose {
-					d.logger.Error(ctx, "\n")
-					for _, l := range logs {
-						d.logger.Errorf(ctx, "\t%s", l)
-					}
-				}
-				return fmt.Errorf("\n %s", checkLogsMsg)
-			}
-		case <-cctx.Done():
-			return fmt.Errorf(
-				"your Turbine Application Deployment did not finish within %d minutes. %s",
-				minutesToWaitForDeployment, checkLogsMsg)
-		}
-	}
-}
-
 // TODO: Once builds are done much faster we should move early checks like these to the Platform API.
 func (d *Deploy) validateEnvExists(ctx context.Context) error {
-	if _, err := d.client.GetEnvironment(ctx, d.env.nameOrUUID()); err != nil {
+	if _, err := d.client.CollectionRequest(ctx, "GET", "environments", d.env.nameOrUUID(), nil, nil, nil); err != nil {
 		if strings.Contains(err.Error(), "could not find environment") {
 			return fmt.Errorf("environment %q does not exist", d.flags.Environment)
 		}
@@ -771,89 +414,23 @@ func (d *Deploy) getGitInfo(ctx context.Context) error {
 	return err
 }
 
-func (d *Deploy) appModified(ctx context.Context) (bool, error) {
-	app, err := d.client.GetApplication(ctx, d.appName)
+func (d *Deploy) createApplicationRequest(ctx context.Context) (*Application, error) {
+	specStr, err := d.turbineCLI.GetDeploymentSpec(ctx, d.fnName)
 	if err != nil {
-		if strings.Contains(err.Error(), "could not find application") {
-			return true, nil
-		}
-		return false, err
-	}
-
-	latest, err := d.client.GetLatestDeployment(ctx, app.Name)
-	if err != nil {
-		if strings.Contains(err.Error(), "could not find deployment") {
-			return true, nil
-		}
-		return false, err
-	}
-
-	return latest.GitSha != d.gitSha, nil
-}
-
-func (d *Deploy) createApplication(ctx context.Context) (*meroxa.Application, error) {
-	if existing, _ := d.client.GetApplication(ctx, d.appName); existing != nil {
-		switch existing.Status.State { //nolint:exhaustive
-		case meroxa.ApplicationStateFailed:
-			// Clean up failed application
-			_, _ = d.client.DeleteApplicationEntities(ctx, d.appName)
-		default:
-			return nil, fmt.Errorf(
-				"application %q exists in the %q state.\n"+
-					"\tUse 'meroxa apps remove %s' if you want to redeploy to this application",
-				d.appName,
-				existing.Status.State,
-				d.appName,
-			)
-		}
-	}
-
-	app, err := d.client.CreateApplicationV2(ctx, &meroxa.CreateApplicationInput{
-		Name:        d.appName,
-		Language:    string(d.lang),
-		GitSha:      d.gitSha,
-		Environment: d.env.apiIdentifier(),
-	})
-	if err != nil {
-		if strings.Contains(err.Error(), "already exists") {
-			msg := fmt.Sprintf("%s\n\tUse `meroxa apps remove %s` if you want to redeploy to this application", err, d.appName)
-			return nil, errors.New(msg)
-		}
 		return nil, err
 	}
-
-	return app, nil
-}
-
-func (d *Deploy) deployApplication(ctx context.Context) error {
-	var (
-		deployment *meroxa.Deployment
-		err        error
-	)
-
-	deployMsg := fmt.Sprintf("Deploying application %q...", d.appName)
-	if deployment, err = d.createDeployment(ctx, d.fnName, d.gitSha, d.specVersion); err != nil {
-		return err
-	}
-
-	// In verbose mode, we'll use spinners for each deployment step
-	if d.flags.Verbose {
-		d.logger.Info(ctx, deployMsg+"\n")
-	} else {
-		d.logger.StartSpinner("", deployMsg)
-	}
-
-	err = d.waitForDeployment(ctx, deployment.UUID)
-	if err != nil {
-		deploymentErroredMsg := "Couldn't complete the deployment"
-		if !d.flags.Verbose {
-			d.logger.StopSpinnerWithStatus(deploymentErroredMsg, log.Failed)
-		} else {
-			d.logger.Error(ctx, fmt.Sprintf("\t%s %s", d.logger.FailedMark(), deploymentErroredMsg))
+	var spec map[string]interface{}
+	if specStr != "" {
+		if unmarshalErr := json.Unmarshal([]byte(specStr), &spec); unmarshalErr != nil {
+			return nil, fmt.Errorf("failed to parse deployment spec into json")
 		}
-		return err
 	}
-	return nil
+	return &Application{
+		Name:        d.appName,
+		SpecVersion: d.specVersion,
+		Spec:        specStr,
+		Archive:     d.appTarName, //@TODO buffer?
+	}, nil
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
@@ -873,31 +450,22 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	changed, err := d.appModified(ctx)
-	if err != nil {
-		return err
-	}
-	if !changed {
-		d.logger.Infof(ctx, "\t%s App %q is up-to-date", d.logger.SuccessfulCheck(), d.appName)
-		return nil
-	}
-
 	gracefulStop, err := d.turbineCLI.StartGrpcServer(ctx, d.gitSha)
 	if err != nil {
 		return err
 	}
 	defer gracefulStop()
 
-	app, err := d.createApplication(ctx)
-	if err != nil {
-		return err
-	}
-
 	if err = d.prepareDeployment(ctx); err != nil {
 		return err
 	}
 
-	if err = d.deployApplication(ctx); err != nil {
+	app := &Application{}
+	input, err := d.createApplicationRequest(ctx)
+	if err != nil {
+		return err
+	}
+	if _, err = d.client.CollectionRequest(ctx, "POST", "apps", "", input, nil, app); err != nil {
 		return err
 	}
 

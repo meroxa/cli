@@ -19,8 +19,10 @@ const (
 
 //go:generate mockgen -source=basic_client.go -package=mock -destination=mock/basic_client_mock.go
 type BasicClient interface {
-	CollectionRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
+	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values, interface{}) (*http.Response, error)
+	CollectionRequest(context.Context, string, string, string, interface{}, url.Values, interface{}) (*http.Response, error)
 	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
+	AddHeader(key, value string)
 }
 
 type client struct {
@@ -68,17 +70,64 @@ func NewBasicClient() (BasicClient, error) {
 	return r, nil
 }
 
+func (r *client) AddHeader(key, value string) {
+	if len(r.headers) == 0 {
+		r.headers = make(http.Header)
+	}
+	r.headers.Add(key, value)
+}
 func (r *client) CollectionRequest(
 	ctx context.Context,
 	method string,
 	collection string,
+	id string,
 	body interface{},
 	params url.Values,
-	headers http.Header,
 	output interface{},
 ) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
-	req, err := r.newRequest(ctx, method, path, body, params, headers)
+	if id != "" {
+		path += fmt.Sprintf("/%s", id)
+	}
+	req, err := r.newRequest(ctx, method, path, body, params, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Merge params
+	resp, err := r.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	err = handleAPIErrors(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if output != nil {
+		err = json.NewDecoder(resp.Body).Decode(&output)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return resp, nil
+}
+
+func (r *client) CollectionRequestMultipart(
+	ctx context.Context,
+	method string,
+	collection string,
+	id string,
+	body interface{},
+	params url.Values,
+	output interface{},
+) (*http.Response, error) {
+	path := fmt.Sprintf("/api/collections/%s/records", collection)
+	if id != "" {
+		path += fmt.Sprintf("/%s", id)
+	}
+	req, err := r.newRequest(ctx, method, path, body, params, nil)
 	if err != nil {
 		return nil, err
 	}
