@@ -37,16 +37,10 @@ func PrintTable(obj interface{}, details Details) string {
 func interfaceSlice(slice interface{}) []interface{} {
 	s := reflect.ValueOf(slice)
 	if s.Kind() != reflect.Slice {
-		panic("InterfaceSlice() given a non-slice type")
-	}
-
-	// Keep the distinction between nil and empty slice input
-	if s.IsNil() {
-		return nil
+		return make([]interface{}, 0)
 	}
 
 	ret := make([]interface{}, s.Len())
-
 	for i := 0; i < s.Len(); i++ {
 		ret[i] = s.Index(i).Interface()
 	}
