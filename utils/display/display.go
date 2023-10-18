@@ -1,11 +1,80 @@
 package display
 
-func truncateString(oldString string, l int) string {
-	str := oldString
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"strings"
 
-	if len(oldString) > l {
-		str = oldString[:l] + "..."
+	"github.com/alexeyco/simpletable"
+)
+
+type Details map[string]string
+
+func PrintTable(obj interface{}, details Details) string {
+	bytes, err := json.Marshal(obj)
+	if err != nil {
+		panic(err)
+	}
+	amorphous := map[string]interface{}{}
+	err = json.Unmarshal(bytes, &amorphous)
+	if err != nil {
+		panic(err)
 	}
 
-	return str
+	mainTable := simpletable.New()
+	for row, field := range details {
+		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
+			{Align: simpletable.AlignRight, Text: row + ":"},
+			{Text: fmt.Sprintf("%v", amorphous[field])},
+		})
+	}
+	mainTable.SetStyle(simpletable.StyleCompact)
+
+	return mainTable.String()
+}
+
+func interfaceSlice(slice interface{}) []interface{} {
+	s := reflect.ValueOf(slice)
+	if s.Kind() != reflect.Slice {
+		return make([]interface{}, 0)
+	}
+
+	ret := make([]interface{}, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = s.Index(i).Interface()
+	}
+
+	return ret
+}
+
+func PrintList(input interface{}, details Details) string {
+	table := simpletable.New()
+	headers := []*simpletable.Cell{}
+	for column := range details {
+		headers = append(headers, &simpletable.Cell{Align: simpletable.AlignCenter, Text: strings.ToUpper(column)})
+	}
+	objs := interfaceSlice(input)
+	for _, o := range objs {
+		bytes, err := json.Marshal(o)
+		if err != nil {
+			return ""
+		}
+		amorphous := map[string]interface{}{}
+		err = json.Unmarshal(bytes, &amorphous)
+		if err != nil {
+			return ""
+		}
+
+		row := []*simpletable.Cell{}
+		for _, field := range details {
+			row = append(row,
+				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", amorphous[field])})
+		}
+		table.Body.Cells = append(table.Body.Cells, row)
+	}
+
+	table.Header = &simpletable.Header{Cells: headers}
+	table.SetStyle(simpletable.StyleCompact)
+	return table.String()
 }
