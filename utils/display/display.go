@@ -58,13 +58,11 @@ func PrintList(input interface{}, details Details) string {
 	for _, o := range objs {
 		bytes, err := json.Marshal(o)
 		if err != nil {
-			fmt.Printf("err1: %v\n", err)
 			return ""
 		}
 		amorphous := map[string]interface{}{}
 		err = json.Unmarshal(bytes, &amorphous)
 		if err != nil {
-			fmt.Printf("err2: %v\n", err)
 			return ""
 		}
 
