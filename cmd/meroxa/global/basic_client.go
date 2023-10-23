@@ -76,6 +76,7 @@ func (r *client) AddHeader(key, value string) {
 	}
 	r.headers.Add(key, value)
 }
+
 func (r *client) CollectionRequest(
 	ctx context.Context,
 	method string,

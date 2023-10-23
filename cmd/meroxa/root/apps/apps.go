@@ -41,7 +41,7 @@ const (
 	ApplicationStateDegraded    ApplicationState = "degraded"
 	ApplicationStateFailed      ApplicationState = "failed"
 
-	//collectionName = "apps".
+	// collectionName = "apps".
 )
 
 //var displayDetails = display.Details{"Name": "name", "State": "state", .

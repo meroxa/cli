@@ -106,8 +106,8 @@ func TestValidateLanguage(t *testing.T) {
 func TestGetPlatformImage(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
-	//buildUUID := uuid.NewString()
-	//sourcePutURL := "http://foo.bar"
+	// buildUUID := uuid.NewString()
+	// sourcePutURL := "http://foo.bar"
 	//  sourceGetURL := "http://foo.bar"
 	appName := "my-app"
 	buildPath := ""
@@ -124,7 +124,7 @@ func TestGetPlatformImage(t *testing.T) {
 			name: "Successfully get platform image ",
 			meroxaClient: func(ctrl *gomock.Controller) *basicMock.MockBasicClient {
 				client := basicMock.NewMockBasicClient(ctrl)
-				//client.EXPECT().CollectionRequest(ctx, "POST", "apps", "", nil, nil, &Application{})
+				// client.EXPECT().CollectionRequest(ctx, "POST", "apps", "", nil, nil, &Application{})
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
@@ -143,7 +143,7 @@ func TestGetPlatformImage(t *testing.T) {
 			name: "Fail to get platform image ",
 			meroxaClient: func(ctrl *gomock.Controller) *basicMock.MockBasicClient {
 				client := basicMock.NewMockBasicClient(ctrl)
-				//client.EXPECT().CollectionRequest(ctx, "POST", "apps", "", nil, nil, &Application{})
+				// client.EXPECT().CollectionRequest(ctx, "POST", "apps", "", nil, nil, &Application{})
 				return client
 			},
 			mockTurbineCLI: func(ctrl *gomock.Controller) turbine.CLI {
