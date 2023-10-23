@@ -40,17 +40,23 @@ const (
 	ApplicationStateRunning     ApplicationState = "running"
 	ApplicationStateDegraded    ApplicationState = "degraded"
 	ApplicationStateFailed      ApplicationState = "failed"
+
+	//collectionName = "apps".
 )
 
-// Application represents the Meroxa Application type within the Meroxa API
+//var displayDetails = display.Details{"Name": "name", "State": "state", .
+//"SpecVersion": "specVersion", "Created": "created", "Updated": "updated"}.
+
+// Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Spec        string    `json:"spec"`
-	SpecVersion string    `json:"specVersion"`
-	Archive     string    `json:"archive"`
-	Created     time.Time `json:"createdt"`
-	Updated     time.Time `json:"updated"`
+	ID          string           `json:"id"`
+	Name        string           `json:"name"`
+	State       ApplicationState `json:"state"`
+	Spec        string           `json:"spec"`
+	SpecVersion string           `json:"specVersion"`
+	Archive     string           `json:"archive"`
+	Created     time.Time        `json:"createdt"`
+	Updated     time.Time        `json:"updated"`
 }
 
 type Apps struct{}
@@ -81,11 +87,9 @@ func (*Apps) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&List{}),
-		builder.BuildCobraCommand(&Logs{}),
 		builder.BuildCobraCommand(&Open{}),
 		builder.BuildCobraCommand(&Remove{}),
 		builder.BuildCobraCommand(&Run{}),
-		builder.BuildCobraCommand(&Upgrade{}),
 	}
 }
 

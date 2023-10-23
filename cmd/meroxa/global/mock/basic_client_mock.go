@@ -5,63 +5,91 @@
 package mock
 
 import (
-	context "context"
-	http "net/http"
-	url "net/url"
-	reflect "reflect"
+    context "context"
+    http "net/http"
+    url "net/url"
+    reflect "reflect"
 
-	gomock "github.com/golang/mock/gomock"
+    gomock "github.com/golang/mock/gomock"
 )
 
 // MockBasicClient is a mock of BasicClient interface.
 type MockBasicClient struct {
-	ctrl     *gomock.Controller
-	recorder *MockBasicClientMockRecorder
+    ctrl     *gomock.Controller
+    recorder *MockBasicClientMockRecorder
 }
 
 // MockBasicClientMockRecorder is the mock recorder for MockBasicClient.
 type MockBasicClientMockRecorder struct {
-	mock *MockBasicClient
+    mock *MockBasicClient
 }
 
 // NewMockBasicClient creates a new mock instance.
 func NewMockBasicClient(ctrl *gomock.Controller) *MockBasicClient {
-	mock := &MockBasicClient{ctrl: ctrl}
-	mock.recorder = &MockBasicClientMockRecorder{mock}
-	return mock
+    mock := &MockBasicClient{ctrl: ctrl}
+    mock.recorder = &MockBasicClientMockRecorder{mock}
+    return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockBasicClient) EXPECT() *MockBasicClientMockRecorder {
-	return m.recorder
+    return m.recorder
+}
+
+// AddHeader mocks base method.
+func (m *MockBasicClient) AddHeader(key, value string) {
+    m.ctrl.T.Helper()
+    m.ctrl.Call(m, "AddHeader", key, value)
+}
+
+// AddHeader indicates an expected call of AddHeader.
+func (mr *MockBasicClientMockRecorder) AddHeader(key, value interface{}) *gomock.Call {
+    mr.mock.ctrl.T.Helper()
+    return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddHeader", reflect.TypeOf((*MockBasicClient)(nil).AddHeader), key, value)
 }
 
 // CollectionRequest mocks base method.
-func (m *MockBasicClient) CollectionRequest(arg0 context.Context, arg1, arg2 string, arg3 interface{}, arg4 url.Values, arg5 http.Header, arg6 interface{}) (*http.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CollectionRequest", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
-	ret0, _ := ret[0].(*http.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+func (m *MockBasicClient) CollectionRequest(arg0 context.Context, arg1, arg2, arg3 string, arg4 interface{}, arg5 url.Values, arg6 interface{}) (*http.Response, error) {
+    m.ctrl.T.Helper()
+    ret := m.ctrl.Call(m, "CollectionRequest", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+    ret0, _ := ret[0].(*http.Response)
+    ret1, _ := ret[1].(error)
+    return ret0, ret1
 }
 
 // CollectionRequest indicates an expected call of CollectionRequest.
 func (mr *MockBasicClientMockRecorder) CollectionRequest(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollectionRequest", reflect.TypeOf((*MockBasicClient)(nil).CollectionRequest), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+    mr.mock.ctrl.T.Helper()
+    return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollectionRequest", reflect.TypeOf((*MockBasicClient)(nil).CollectionRequest), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+}
+
+// CollectionRequestMultipart mocks base method.
+func (m *MockBasicClient) CollectionRequestMultipart(arg0 context.Context, arg1, arg2, arg3 string, arg4 interface{}, arg5 url.Values, arg6 interface{}) (*http.Response, error) {
+    m.ctrl.T.Helper()
+    ret := m.ctrl.Call(m, "CollectionRequestMultipart", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+    ret0, _ := ret[0].(*http.Response)
+    ret1, _ := ret[1].(error)
+    return ret0, ret1
+}
+
+// CollectionRequestMultipart indicates an expected call of CollectionRequestMultipart.
+func (mr *MockBasicClientMockRecorder) CollectionRequestMultipart(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
+    mr.mock.ctrl.T.Helper()
+    return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollectionRequestMultipart", reflect.TypeOf((*MockBasicClient)(nil).CollectionRequestMultipart), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
 // URLRequest mocks base method.
 func (m *MockBasicClient) URLRequest(arg0 context.Context, arg1, arg2 string, arg3 interface{}, arg4 url.Values, arg5 http.Header, arg6 interface{}) (*http.Response, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "URLRequest", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
-	ret0, _ := ret[0].(*http.Response)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+    m.ctrl.T.Helper()
+    ret := m.ctrl.Call(m, "URLRequest", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+    ret0, _ := ret[0].(*http.Response)
+    ret1, _ := ret[1].(error)
+    return ret0, ret1
 }
 
 // URLRequest indicates an expected call of URLRequest.
 func (mr *MockBasicClientMockRecorder) URLRequest(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "URLRequest", reflect.TypeOf((*MockBasicClient)(nil).URLRequest), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+    mr.mock.ctrl.T.Helper()
+    return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "URLRequest", reflect.TypeOf((*MockBasicClient)(nil).URLRequest), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
+

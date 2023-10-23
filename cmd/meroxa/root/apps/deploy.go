@@ -23,19 +23,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/turbine-core/pkg/ir"
-	"io"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 type environment struct {
@@ -51,17 +51,6 @@ func (e *environment) nameOrUUID() string {
 		return e.Name
 	default:
 		panic("bad state: name or uuid should be present")
-	}
-}
-
-func (e *environment) apiIdentifier() *meroxa.EntityIdentifier {
-	if e == nil {
-		return nil
-	}
-
-	return &meroxa.EntityIdentifier{
-		Name: e.Name,
-		UUID: e.UUID,
 	}
 }
 
