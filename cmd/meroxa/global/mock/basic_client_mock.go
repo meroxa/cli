@@ -63,6 +63,21 @@ func (mr *MockBasicClientMockRecorder) CollectionRequest(arg0, arg1, arg2, arg3,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollectionRequest", reflect.TypeOf((*MockBasicClient)(nil).CollectionRequest), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
+// CollectionRequestMultipart mocks base method.
+func (m *MockBasicClient) CollectionRequestMultipart(arg0 context.Context, arg1, arg2, arg3 string, arg4 interface{}, arg5 url.Values, arg6 interface{}) (*http.Response, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CollectionRequestMultipart", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CollectionRequestMultipart indicates an expected call of CollectionRequestMultipart.
+func (mr *MockBasicClientMockRecorder) CollectionRequestMultipart(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollectionRequestMultipart", reflect.TypeOf((*MockBasicClient)(nil).CollectionRequestMultipart), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+}
+
 // URLRequest mocks base method.
 func (m *MockBasicClient) URLRequest(arg0 context.Context, arg1, arg2 string, arg3 interface{}, arg4 url.Values, arg5 http.Header, arg6 interface{}) (*http.Response, error) {
 	m.ctrl.T.Helper()

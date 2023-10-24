@@ -37,10 +37,16 @@ func PrintTable(obj interface{}, details Details) string {
 func interfaceSlice(slice interface{}) []interface{} {
 	s := reflect.ValueOf(slice)
 	if s.Kind() != reflect.Slice {
-		return make([]interface{}, 0)
+		panic("InterfaceSlice() given a non-slice type")
+	}
+
+	// Keep the distinction between nil and empty slice input
+	if s.IsNil() {
+		return nil
 	}
 
 	ret := make([]interface{}, s.Len())
+
 	for i := 0; i < s.Len(); i++ {
 		ret[i] = s.Index(i).Interface()
 	}
@@ -58,11 +64,13 @@ func PrintList(input interface{}, details Details) string {
 	for _, o := range objs {
 		bytes, err := json.Marshal(o)
 		if err != nil {
+			fmt.Printf("err: %v\n", err)
 			return ""
 		}
 		amorphous := map[string]interface{}{}
 		err = json.Unmarshal(bytes, &amorphous)
 		if err != nil {
+			fmt.Printf("err: %v\n", err)
 			return ""
 		}
 
