@@ -208,17 +208,3 @@ func (mr *MockCLIMockRecorder) StartGrpcServer(arg0, arg1 interface{}) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartGrpcServer", reflect.TypeOf((*MockCLI)(nil).StartGrpcServer), arg0, arg1)
 }
-
-// Upgrade mocks base method.
-func (m *MockCLI) Upgrade(arg0 bool) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upgrade", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upgrade indicates an expected call of Upgrade.
-func (mr *MockCLIMockRecorder) Upgrade(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upgrade", reflect.TypeOf((*MockCLI)(nil).Upgrade), arg0)
-}
