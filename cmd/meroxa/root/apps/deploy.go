@@ -166,6 +166,7 @@ func (d *Deploy) getPlatformImage(ctx context.Context) error {
 		return err
 	}
 	d.appTarName = dFile
+	d.fnName = dFile
 	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, buildPath), log.Successful)
 	return nil
 }
