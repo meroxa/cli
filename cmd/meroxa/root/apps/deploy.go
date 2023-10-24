@@ -450,12 +450,11 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	app := &Application{}
 	input, err := d.createApplicationRequest(ctx)
 	if err != nil {
 		return err
 	}
-	if _, err = d.client.CollectionRequest(ctx, "POST", "apps", "", input, nil, app); err != nil {
+	if _, err = d.client.CollectionRequest(ctx, "POST", "apps", "", input, nil, nil); err != nil {
 		return err
 	}
 
@@ -469,7 +468,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		d.logger.StopSpinnerWithStatus(output, log.Successful)
 	}
 
-	d.logger.JSON(ctx, app)
 	return nil
 }
 
