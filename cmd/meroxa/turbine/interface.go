@@ -19,7 +19,6 @@ type CLI interface {
 	GetVersion(context.Context) (string, error)
 	Init(context.Context, string) error
 	Run(context.Context) error
-	Upgrade(bool) error
 	CreateDockerfile(context.Context, string) (string, error)
 	StartGrpcServer(context.Context, string) (func(), error)
 }
