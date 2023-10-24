@@ -53,7 +53,7 @@ type Application struct {
 	Name        string           `json:"name"`
 	State       ApplicationState `json:"state"`
 	Spec        string           `json:"spec"`
-	SpecVersion string           `json:"spec_version"`
+	SpecVersion string           `json:"specVersion"`
 	Archive     string           `json:"archive"`
 	Created     time.Time        `json:"created"`
 	Updated     time.Time        `json:"updated"`
