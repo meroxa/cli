@@ -31,9 +31,7 @@ Manage Turbine Data Applications
 * [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Turbine Data Application
 * [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Turbine Data Application
 * [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Turbine Data Applications
-* [meroxa apps logs](/cli/cmd/meroxa-apps-logs/)	 - View relevant logs to the state of the given Turbine Data Application
 * [meroxa apps open](/cli/cmd/meroxa-apps-open/)	 - Open the link to a Turbine Data Application in the Dashboard
 * [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Remove a Turbine Data Application
 * [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Turbine Data Application locally
-* [meroxa apps upgrade](/cli/cmd/meroxa-apps-upgrade/)	 - Upgrade a Turbine Data Application
 

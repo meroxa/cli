@@ -29,7 +29,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -38,26 +37,9 @@ import (
 	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
-type environment struct {
-	Name string
-	UUID string
-}
-
-func (e *environment) nameOrUUID() string {
-	switch {
-	case e.UUID != "":
-		return e.UUID
-	case e.Name != "":
-		return e.Name
-	default:
-		panic("bad state: name or uuid should be present")
-	}
-}
-
 type Deploy struct {
 	flags struct {
 		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
-		Environment              string `long:"env" usage:"environment (name or UUID) where application will be deployed to"`
 		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
 		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
@@ -76,7 +58,6 @@ type Deploy struct {
 	fnName        string // is this still necessary?
 	appTarName    string
 	specVersion   string
-	env           *environment
 	gitSha        string
 }
 
@@ -349,27 +330,8 @@ func (d *Deploy) prepareAppName(ctx context.Context) string {
 	return appName
 }
 
-// TODO: Once builds are done much faster we should move early checks like these to the Platform API.
-func (d *Deploy) validateEnvExists(ctx context.Context) error {
-	if _, err := d.client.CollectionRequest(ctx, "GET", "environments", d.env.nameOrUUID(), nil, nil, nil); err != nil {
-		if strings.Contains(err.Error(), "could not find environment") {
-			return fmt.Errorf("environment %q does not exist", d.flags.Environment)
-		}
-		return fmt.Errorf("unable to retrieve environment %q: %w", d.flags.Environment, err)
-	}
-	return nil
-}
-
 func (d *Deploy) assignDeploymentValues(ctx context.Context) error {
 	var err error
-
-	if d.flags.Environment != "" {
-		d.env = envFromFlag(d.flags.Environment)
-		err = d.validateEnvExists(ctx)
-		if err != nil {
-			return err
-		}
-	}
 
 	// Always default to the latest spec version.
 	d.specVersion = ir.LatestSpecVersion
@@ -469,13 +431,4 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// TODO: Reuse this everywhere it's using the environment flag. Maybe make this part of builder so it's automatic.
-func envFromFlag(nameOrUUID string) *environment {
-	_, err := uuid.Parse(nameOrUUID)
-	if err != nil {
-		return &environment{Name: nameOrUUID}
-	}
-	return &environment{UUID: nameOrUUID}
 }

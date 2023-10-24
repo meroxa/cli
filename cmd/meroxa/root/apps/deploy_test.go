@@ -29,7 +29,6 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "spec", required: false, hidden: true},
 		{name: "skip-collection-validation", required: false, hidden: false},
 		{name: "verbose", required: false, hidden: true},
-		{name: "env", required: false, hidden: false},
 	}
 
 	c := builder.BuildCobraCommand(&Deploy{})
@@ -106,9 +105,6 @@ func TestValidateLanguage(t *testing.T) {
 func TestGetPlatformImage(t *testing.T) {
 	ctx := context.Background()
 	logger := log.NewTestLogger()
-	// buildUUID := uuid.NewString()
-	// sourcePutURL := "http://foo.bar"
-	//  sourceGetURL := "http://foo.bar"
 	appName := "my-app"
 	buildPath := ""
 	err := fmt.Errorf("nope")
@@ -117,7 +113,6 @@ func TestGetPlatformImage(t *testing.T) {
 		name           string
 		meroxaClient   func(*gomock.Controller) *basicMock.MockBasicClient
 		mockTurbineCLI func(*gomock.Controller) turbine.CLI
-		env            string
 		err            error
 	}{
 		{
@@ -166,9 +161,6 @@ func TestGetPlatformImage(t *testing.T) {
 				logger:     logger,
 				appName:    appName,
 			}
-			if tc.env != "" {
-				d.env = &environment{Name: tc.env}
-			}
 
 			err := d.getPlatformImage(ctx)
 			if err != nil {
@@ -216,7 +208,6 @@ func TestGetAppImage(t *testing.T) {
 				logger:     logger,
 				appName:    appName,
 			}
-			d.flags.Environment = "my-env"
 
 			err := d.getAppImage(ctx)
 			if err != nil {
