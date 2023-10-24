@@ -55,7 +55,7 @@ type Application struct {
 	Spec        string           `json:"spec"`
 	SpecVersion string           `json:"spec_version"`
 	Archive     string           `json:"archive"`
-	Created     time.Time        `json:"createdt"`
+	Created     time.Time        `json:"created"`
 	Updated     time.Time        `json:"updated"`
 }
 

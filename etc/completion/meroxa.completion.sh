@@ -402,8 +402,6 @@ _meroxa_apps_deploy()
     flags_with_completion=()
     flags_completion=()
 
-    flags+=("--env=")
-    two_word_flags+=("--env")
     flags+=("--help")
     flags+=("-h")
     flags+=("--path=")
@@ -544,36 +542,6 @@ _meroxa_apps_list()
     noun_aliases=()
 }
 
-_meroxa_apps_logs()
-{
-    last_command="meroxa_apps_logs"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--path=")
-    two_word_flags+=("--path")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
 _meroxa_apps_open()
 {
     last_command="meroxa_apps_open"
@@ -666,36 +634,6 @@ _meroxa_apps_run()
     noun_aliases=()
 }
 
-_meroxa_apps_upgrade()
-{
-    last_command="meroxa_apps_upgrade"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--path=")
-    two_word_flags+=("--path")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
 _meroxa_apps()
 {
     last_command="meroxa_apps"
@@ -712,11 +650,6 @@ _meroxa_apps()
         command_aliases+=("ls")
         aliashash["ls"]="list"
     fi
-    commands+=("logs")
-    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
-        command_aliases+=("log")
-        aliashash["log"]="logs"
-    fi
     commands+=("open")
     commands+=("remove")
     if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
@@ -726,7 +659,6 @@ _meroxa_apps()
         aliashash["rm"]="remove"
     fi
     commands+=("run")
-    commands+=("upgrade")
 
     flags=()
     two_word_flags=()

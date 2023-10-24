@@ -31,7 +31,6 @@ meroxa apps deploy --path ./my-app
 ### Options
 
 ```
-      --env string                   environment (name or UUID) where application will be deployed to
   -h, --help                         help for deploy
       --path string                  Path to the app directory (default is local directory)
       --skip-collection-validation   Skips unique destination collection and looping validations
