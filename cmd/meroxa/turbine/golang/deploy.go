@@ -26,7 +26,7 @@ func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName string) (stri
 		return "", err
 	}
 	if err := tpl.Execute(f, map[string]string{
-		"GoVersion": "1.20",
+		"GoVersion": "1.21",
 		"AppName":   appName,
 	}); err != nil {
 		return "", err
