@@ -27,13 +27,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.13.0
-	golang.org/x/oauth2 v0.13.0
 	google.golang.org/protobuf v1.31.0
-)
-
-require (
-	github.com/cristalhq/jwt/v3 v3.1.0 // indirect
-	google.golang.org/appengine v1.6.8 // indirect
 )
 
 require (
@@ -50,7 +44,6 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20231016131734-73fd3e2268a4
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
