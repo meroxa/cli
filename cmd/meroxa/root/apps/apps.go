@@ -17,16 +17,24 @@ limitations under the License.
 package apps
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
 	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
+	pb "github.com/pocketbase/pocketbase/tools/types"
+
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils/display"
 	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/spf13/cobra"
 )
@@ -41,22 +49,57 @@ const (
 	ApplicationStateDegraded    ApplicationState = "degraded"
 	ApplicationStateFailed      ApplicationState = "failed"
 
-	// collectionName = "apps".
+	collectionName = "apps"
 )
 
-//var displayDetails = display.Details{"Name": "name", "State": "state", .
-//"SpecVersion": "specVersion", "Created": "created", "Updated": "updated"}.
+var displayDetails = display.Details{"Name": "name", "State": "state", "SpecVersion": "specVersion", "Created": "created", "Updated": "updated"}
 
 // Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
-	ID          string           `json:"id"`
-	Name        string           `json:"name"`
-	State       ApplicationState `json:"state"`
-	Spec        string           `json:"spec"`
-	SpecVersion string           `json:"specVersion"`
-	Archive     string           `json:"archive"`
-	Created     time.Time        `json:"created"`
-	Updated     time.Time        `json:"updated"`
+	ID          string                 `json:"id"`
+	Name        string                 `json:"name"`
+	State       ApplicationState       `json:"state"`
+	Spec        map[string]interface{} `json:"spec"`
+	SpecVersion string                 `json:"specVersion"`
+	Created     AppTime                `json:"created"`
+	Updated     AppTime                `json:"updated"`
+}
+
+type Applications struct {
+	Page       int           `json:"page"`
+	PerPage    int           `json:"perPage"`
+	TotalItems int           `json:"totalItems"`
+	TotalPages int           `json:"totalPages"`
+	Items      []Application `json:"items"`
+}
+
+type AppTime struct {
+	time.Time
+}
+
+func (at *AppTime) UnmarshalJSON(b []byte) error {
+	appTime, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+
+	dt, err := pb.ParseDateTime(appTime) //time.Parse(pb.DefaultDateLayout, appTime)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	at.Time = dt.Time()
+	return nil
+}
+
+func (at *AppTime) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Time(at.Time))
+}
+
+// Maybe a Format function for printing your date
+func (at *AppTime) Format(s string) string {
+	t := time.Time(at.Time)
+	return t.Format(s)
 }
 
 type Apps struct{}
@@ -118,4 +161,50 @@ func addTurbineHeaders(c addHeader, lang ir.Lang, version string) {
 		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)
 	}
 	c.AddHeader("Meroxa-CLI-App-Version", version)
+}
+
+func (a Applications) RetrieveApplicationID(ctx context.Context, client global.BasicClient, nameOrId, path string) (*Applications, error) {
+	var getPath string
+	var apps = Applications{}
+	if path != "" {
+		var err error
+		if getPath, err = turbine.GetPath(path); err != nil {
+			return nil, err
+		}
+
+		config, err := turbine.ReadConfigFile(getPath)
+		if err != nil {
+			return nil, err
+		}
+
+		a := &url.Values{}
+		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", config.Name, config.Name))
+
+		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a, apps)
+		if err != nil {
+			return nil, err
+		}
+		err = json.NewDecoder(response.Body).Decode(&apps)
+		if err != nil {
+			return nil, err
+		}
+
+	} else if nameOrId != "" {
+		a := &url.Values{}
+		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrId, nameOrId))
+
+		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a, apps)
+		if err != nil {
+			return nil, err
+		}
+		err = json.NewDecoder(response.Body).Decode(&apps)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		return nil, fmt.Errorf("supply either ID/Name argument or --path flag")
+
+	}
+	return &apps, nil
 }

@@ -380,8 +380,7 @@ func (d *Deploy) createApplicationRequest(ctx context.Context) (*Application, er
 	return &Application{
 		Name:        d.appName,
 		SpecVersion: d.specVersion,
-		Spec:        specStr,
-		Archive:     d.appTarName, //@TODO buffer?
+		Spec:        spec,
 	}, nil
 }
 
@@ -416,7 +415,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if _, err = d.client.CollectionRequest(ctx, "POST", "apps", "", input, nil, nil); err != nil {
+	if _, err = d.client.CollectionRequest(ctx, "POST", collectionName, "", input, nil, nil); err != nil {
 		return err
 	}
 

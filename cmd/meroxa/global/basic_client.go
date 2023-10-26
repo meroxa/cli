@@ -87,9 +87,10 @@ func (r *client) CollectionRequest(
 	output interface{},
 ) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
-	if id != "" {
+	if len(id) != 0 {
 		path += fmt.Sprintf("/%s", id)
 	}
+
 	req, err := r.newRequest(ctx, method, path, body, params, nil)
 	if err != nil {
 		return nil, err
@@ -106,12 +107,6 @@ func (r *client) CollectionRequest(
 		return nil, err
 	}
 
-	if output != nil {
-		err = json.NewDecoder(resp.Body).Decode(&output)
-		if err != nil {
-			return nil, err
-		}
-	}
 	return resp, nil
 }
 
@@ -169,11 +164,6 @@ func (r *client) URLRequest(
 
 	// Merge params
 	resp, err := r.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}

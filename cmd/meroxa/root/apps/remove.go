@@ -21,29 +21,23 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
-type removeAppClient interface {
-	DeleteApplicationEntities(ctx context.Context, name string) (*http.Response, error)
-	AddHeader(key, value string)
-}
-
 type Remove struct {
-	client     removeAppClient
+	client     global.BasicClient
 	logger     log.Logger
 	turbineCLI turbine.CLI
 	path       string
 
 	args struct {
-		NameOrUUID string
+		idOrName string
 	}
 	flags struct {
 		Path  string `long:"path" usage:"Path to the app directory (default is local directory)"`
@@ -52,7 +46,7 @@ type Remove struct {
 }
 
 func (r *Remove) Usage() string {
-	return `remove [NameOrUUID] [--path pwd]`
+	return `remove [ID or Name] [--path pwd]`
 }
 
 func (r *Remove) Flags() []builder.Flag {
@@ -67,67 +61,40 @@ func (r *Remove) Docs() builder.Docs {
 or the Application specified by the given name or UUID identifier.`,
 		Example: `meroxa apps remove # assumes that the Application is in the current directory
 meroxa apps remove --path /my/app
-meroxa apps remove NAME`,
+meroxa apps remove IDorName`,
 	}
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
-	var turbineLibVersion string
-	nameOrUUID := r.args.NameOrUUID
-	if nameOrUUID != "" && r.flags.Path != "" {
-		return fmt.Errorf("supply either NameOrUUID argument or --path flag")
-	}
-
-	if nameOrUUID == "" {
-		var err error
-		if r.path, err = turbine.GetPath(r.flags.Path); err != nil {
-			return err
-		}
-
-		config, err := turbine.ReadConfigFile(r.path)
-		if err != nil {
-			return err
-		}
-		nameOrUUID = config.Name
-
-		if r.turbineCLI == nil {
-			r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, config.Language, r.path)
-			if err != nil {
-				return err
-			}
-		}
-
-		if turbineLibVersion, err = r.turbineCLI.GetVersion(ctx); err != nil {
-			return err
-		}
-		addTurbineHeaders(r.client, config.Language, turbineLibVersion)
-	}
 
 	if !r.flags.Force {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", nameOrUUID)
+		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", r.args.idOrName)
 		input, err := reader.ReadString('\n')
+
 		if err != nil {
 			return err
 		}
 
-		if nameOrUUID != strings.TrimRight(input, "\r\n") {
+		if r.args.idOrName != strings.TrimRight(input, "\r\n") {
 			return errors.New("action aborted")
 		}
 	}
 
-	r.logger.Infof(ctx, "Removing application %q...", nameOrUUID)
-
-	res, err := r.client.DeleteApplicationEntities(ctx, nameOrUUID)
+	apps := &Applications{}
+	apps, err := apps.RetrieveApplicationID(ctx, r.client, r.args.idOrName, r.flags.Path)
 	if err != nil {
 		return err
 	}
-	if res.Body != nil {
-		defer res.Body.Close()
+
+	r.logger.Infof(ctx, "Removing application %q...", r.args.idOrName)
+	response, err := r.client.CollectionRequest(ctx, "DELETE", collectionName, apps.Items[0].ID, nil, nil, nil)
+	if err != nil {
+		return err
 	}
 
-	r.logger.Infof(ctx, "Application %q successfully removed", nameOrUUID)
-	r.logger.JSON(ctx, res)
+	r.logger.Infof(ctx, "Application %q successfully removed", r.args.idOrName)
+	r.logger.JSON(ctx, response)
 
 	return nil
 }
@@ -136,13 +103,13 @@ func (r *Remove) Logger(logger log.Logger) {
 	r.logger = logger
 }
 
-func (r *Remove) Client(client meroxa.Client) {
+func (r *Remove) BasicClient(client global.BasicClient) {
 	r.client = client
 }
 
 func (r *Remove) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		r.args.NameOrUUID = args[0]
+		r.args.idOrName = args[0]
 	}
 
 	return nil
@@ -153,11 +120,11 @@ func (r *Remove) Aliases() []string {
 }
 
 var (
-	_ builder.CommandWithDocs    = (*Remove)(nil)
-	_ builder.CommandWithAliases = (*Remove)(nil)
-	_ builder.CommandWithArgs    = (*Remove)(nil)
-	_ builder.CommandWithFlags   = (*Remove)(nil)
-	_ builder.CommandWithClient  = (*Remove)(nil)
-	_ builder.CommandWithLogger  = (*Remove)(nil)
-	_ builder.CommandWithExecute = (*Remove)(nil)
+	_ builder.CommandWithDocs        = (*Remove)(nil)
+	_ builder.CommandWithAliases     = (*Remove)(nil)
+	_ builder.CommandWithArgs        = (*Remove)(nil)
+	_ builder.CommandWithFlags       = (*Remove)(nil)
+	_ builder.CommandWithBasicClient = (*Remove)(nil)
+	_ builder.CommandWithLogger      = (*Remove)(nil)
+	_ builder.CommandWithExecute     = (*Remove)(nil)
 )
