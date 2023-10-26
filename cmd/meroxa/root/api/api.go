@@ -45,7 +45,7 @@ type API struct {
 	args struct {
 		Method string
 		Path   string
-		Body   string
+		Body   interface{}
 		ID     string
 	}
 }
@@ -87,7 +87,8 @@ func (a *API) ParseArgs(args []string) error {
 }
 
 func (a *API) Execute(ctx context.Context) error {
-	resp, err := a.client.CollectionRequest(ctx, a.args.Method, a.args.Path, a.args.ID, a.args.Body, nil)
+
+	resp, err := a.client.URLRequest(ctx, a.args.Method, a.args.Path, a.args.Body, nil, nil, nil)
 	if err != nil {
 		return err
 	}
