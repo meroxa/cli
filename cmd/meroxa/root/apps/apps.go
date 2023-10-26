@@ -52,11 +52,13 @@ const (
 	collectionName = "apps"
 )
 
-var displayDetails = display.Details{"Name": "name",
+var displayDetails = display.Details{
+	"Name":        "name",
 	"State":       "state",
 	"SpecVersion": "specVersion",
 	"Created":     "created",
-	"Updated":     "updated"}
+	"Updated":     "updated",
+}
 
 // Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
