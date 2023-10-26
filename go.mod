@@ -12,7 +12,6 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/meroxa/meroxa-go v0.0.0-20230825083516-b71959984f10
 	github.com/nirasan/go-oauth-pkce-code-verifier v0.0.0-20170819232839-0fbfe93532da
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
 	github.com/rivo/uniseg v0.2.0 // indirect
@@ -20,7 +19,6 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.17.0
-	golang.org/x/oauth2 v0.13.0
 )
 
 require (
@@ -29,10 +27,14 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.13.0
+	golang.org/x/oauth2 v0.13.0
 	google.golang.org/protobuf v1.31.0
 )
 
-require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
+require (
+	github.com/cristalhq/jwt/v3 v3.1.0 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
+)
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
@@ -48,6 +50,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/meroxa/meroxa-go v0.0.0-20231016131734-73fd3e2268a4
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
@@ -66,7 +69,6 @@ require (
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/term v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b // indirect
 	google.golang.org/grpc v1.59.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect

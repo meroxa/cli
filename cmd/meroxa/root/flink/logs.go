@@ -21,31 +21,26 @@ import (
 	"errors"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils/display"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
-	_ builder.CommandWithAliases = (*Logs)(nil)
-	_ builder.CommandWithDocs    = (*Logs)(nil)
-	_ builder.CommandWithArgs    = (*Logs)(nil)
-	_ builder.CommandWithClient  = (*Logs)(nil)
-	_ builder.CommandWithLogger  = (*Logs)(nil)
-	_ builder.CommandWithExecute = (*Logs)(nil)
+	_ builder.CommandWithAliases     = (*Logs)(nil)
+	_ builder.CommandWithDocs        = (*Logs)(nil)
+	_ builder.CommandWithArgs        = (*Logs)(nil)
+	_ builder.CommandWithBasicClient = (*Logs)(nil)
+	_ builder.CommandWithLogger      = (*Logs)(nil)
+	_ builder.CommandWithExecute     = (*Logs)(nil)
 )
 
 type Logs struct {
-	client flinkLogsClient
+	client global.BasicClient
 	logger log.Logger
 
 	args struct {
 		NameOrUUID string
 	}
-}
-
-type flinkLogsClient interface {
-	GetFlinkLogsV2(ctx context.Context, nameOrUUID string) (*meroxa.Logs, error)
 }
 
 func (*Logs) Aliases() []string {
@@ -65,22 +60,13 @@ meroxa jobs logs my-flink-job-uuid`,
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-	nameOrUUID := l.args.NameOrUUID
 
-	appLogs, getErr := l.client.GetFlinkLogsV2(ctx, nameOrUUID)
-	if getErr != nil {
-		return getErr
-	}
-
-	output := display.LogsTable(appLogs)
-
-	l.logger.Info(ctx, output)
-	l.logger.JSON(ctx, appLogs)
+	//Get flink job logs.
 
 	return nil
 }
 
-func (l *Logs) Client(client meroxa.Client) {
+func (l *Logs) BasicClient(client global.BasicClient) {
 	l.client = client
 }
 

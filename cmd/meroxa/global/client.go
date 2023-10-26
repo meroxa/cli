@@ -18,7 +18,6 @@ package global
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -87,17 +86,6 @@ func GetCLIUserInfo() (err error) {
 	}
 
 	return nil
-}
-
-func GetUserToken() (accessToken, refreshToken string, err error) {
-	accessToken = Config.GetString(AccessTokenEnv)
-	refreshToken = Config.GetString(RefreshTokenEnv)
-	if accessToken == "" && refreshToken == "" {
-		// we need at least one token for creating an authenticated client
-		return "", "", errors.New("please login or signup by running 'meroxa login'")
-	}
-
-	return accessToken, refreshToken, nil
 }
 
 func NewOauthClient() (meroxa.Client, error) {

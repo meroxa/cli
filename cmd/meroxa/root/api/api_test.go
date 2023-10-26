@@ -26,9 +26,10 @@ import (
 	"strings"
 	"testing"
 
+	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestDescribeAPIArgs(t *testing.T) {
@@ -93,7 +94,7 @@ func TestDescribeAPIArgs(t *testing.T) {
 func TestAPIExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
+	client := basicMock.NewMockBasicClient(ctrl)
 	logger := log.NewTestLogger()
 
 	a := &API{
@@ -101,7 +102,9 @@ func TestAPIExecution(t *testing.T) {
 		logger: logger,
 	}
 	a.args.Method = "GET"
-	a.args.Path = "/v1/my-path"
+	a.args.Path = "apps"
+	a.args.ID = "04b0d690-dd44-4df3-8"
+	a.args.Body = ""
 
 	bodyResponse := `{ "key": "value" }`
 
@@ -112,18 +115,10 @@ func TestAPIExecution(t *testing.T) {
 		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
-	client.
-		EXPECT().
-		MakeRequest(
-			ctx,
-			a.args.Method,
-			a.args.Path,
-			"",
-			nil,
-			nil,
-		).
-		Return(httpResponse, nil)
-
+	client.EXPECT().CollectionRequest(ctx, "GET", "apps", "04b0d690-dd44-4df3-8", "", nil).Return(
+		httpResponse,
+		nil,
+	)
 	err := a.Execute(ctx)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -240,4 +241,15 @@ func (r *client) encodeBody(w io.Writer, v interface{}) error {
 	default:
 		return json.NewEncoder(w).Encode(v)
 	}
+}
+
+func GetUserToken() (accessToken, refreshToken string, err error) {
+	accessToken = Config.GetString(AccessTokenEnv)
+	refreshToken = Config.GetString(RefreshTokenEnv)
+	if accessToken == "" && refreshToken == "" {
+		// we need at least one token for creating an authenticated client
+		return "", "", errors.New("please login or signup by running 'meroxa login'")
+	}
+
+	return accessToken, refreshToken, nil
 }

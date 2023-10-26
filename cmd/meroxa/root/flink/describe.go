@@ -21,25 +21,20 @@ import (
 	"errors"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils/display"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Describe)(nil)
-	_ builder.CommandWithArgs    = (*Describe)(nil)
-	_ builder.CommandWithClient  = (*Describe)(nil)
-	_ builder.CommandWithLogger  = (*Describe)(nil)
-	_ builder.CommandWithExecute = (*Describe)(nil)
+	_ builder.CommandWithDocs        = (*Describe)(nil)
+	_ builder.CommandWithArgs        = (*Describe)(nil)
+	_ builder.CommandWithBasicClient = (*Describe)(nil)
+	_ builder.CommandWithLogger      = (*Describe)(nil)
+	_ builder.CommandWithExecute     = (*Describe)(nil)
 )
 
-type getJobClient interface {
-	GetFlinkJob(ctx context.Context, nameOrUUID string) (*meroxa.FlinkJob, error)
-}
-
 type Describe struct {
-	client getJobClient
+	client global.BasicClient
 	logger log.Logger
 
 	args struct {
@@ -58,13 +53,7 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	flinkJob, err := d.client.GetFlinkJob(ctx, d.args.NameOrUUID)
-	if err != nil {
-		return err
-	}
-
-	d.logger.JSON(ctx, flinkJob)
-	d.logger.Info(ctx, display.FlinkJobTable(flinkJob))
+	//Get flink joob.
 
 	return nil
 }
@@ -73,7 +62,7 @@ func (d *Describe) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-func (d *Describe) Client(client meroxa.Client) {
+func (d *Describe) BasicClient(client global.BasicClient) {
 	d.client = client
 }
 

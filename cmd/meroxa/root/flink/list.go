@@ -20,25 +20,20 @@ import (
 	"context"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/cli/utils/display"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
-	_ builder.CommandWithDocs    = (*List)(nil)
-	_ builder.CommandWithClient  = (*List)(nil)
-	_ builder.CommandWithLogger  = (*List)(nil)
-	_ builder.CommandWithExecute = (*List)(nil)
-	_ builder.CommandWithAliases = (*List)(nil)
+	_ builder.CommandWithDocs        = (*List)(nil)
+	_ builder.CommandWithBasicClient = (*List)(nil)
+	_ builder.CommandWithLogger      = (*List)(nil)
+	_ builder.CommandWithExecute     = (*List)(nil)
+	_ builder.CommandWithAliases     = (*List)(nil)
 )
 
-type listJobsClient interface {
-	ListFlinkJobs(ctx context.Context) ([]*meroxa.FlinkJob, error)
-}
-
 type List struct {
-	client listJobsClient
+	client global.BasicClient
 	logger log.Logger
 }
 
@@ -57,13 +52,7 @@ func (l *List) Aliases() []string {
 }
 
 func (l *List) Execute(ctx context.Context) error {
-	flinkJobs, err := l.client.ListFlinkJobs(ctx)
-	if err != nil {
-		return err
-	}
-
-	l.logger.JSON(ctx, flinkJobs)
-	l.logger.Info(ctx, display.FlinkJobsTable(flinkJobs))
+	//List flink jobs.
 	output := "\n ✨ To view your Flink Jobs, visit https://dashboard.meroxa.io/apps"
 	l.logger.Info(ctx, output)
 
@@ -74,6 +63,6 @@ func (l *List) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
-func (l *List) Client(client meroxa.Client) {
+func (l *List) BasicClient(client global.BasicClient) {
 	l.client = client
 }

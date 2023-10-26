@@ -22,36 +22,31 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 )
 
 var (
-	_ builder.CommandWithDocs    = (*API)(nil)
-	_ builder.CommandWithArgs    = (*API)(nil)
-	_ builder.CommandWithClient  = (*API)(nil)
-	_ builder.CommandWithLogger  = (*API)(nil)
-	_ builder.CommandWithExecute = (*API)(nil)
+	_ builder.CommandWithDocs        = (*API)(nil)
+	_ builder.CommandWithArgs        = (*API)(nil)
+	_ builder.CommandWithBasicClient = (*API)(nil)
+	_ builder.CommandWithLogger      = (*API)(nil)
+	_ builder.CommandWithExecute     = (*API)(nil)
 )
 
-type apiClient interface {
-	MakeRequest(ctx context.Context, method, path string, body interface{}, params url.Values, headers http.Header) (*http.Response, error)
-}
-
 type API struct {
-	client apiClient
+	client global.BasicClient
 	logger log.Logger
 
 	args struct {
 		Method string
 		Path   string
 		Body   string
+		ID     string
 	}
 }
 
@@ -63,12 +58,12 @@ func (a *API) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Invoke Meroxa API",
 		Example: `
-meroxa api GET /v1/resources
-meroxa api POST /v1/resources '{"type":"postgres", "name":"pg", "url":"postgres://.."}'`,
+meroxa api GET {collection} {id}
+meroxa api POST {collection} {id} '{"type":"postgres", "name":"pg", "url":"postgres://.."}'`,
 	}
 }
 
-func (a *API) Client(client meroxa.Client) {
+func (a *API) BasicClient(client global.BasicClient) {
 	a.client = client
 }
 
@@ -92,7 +87,7 @@ func (a *API) ParseArgs(args []string) error {
 }
 
 func (a *API) Execute(ctx context.Context) error {
-	resp, err := a.client.MakeRequest(ctx, a.args.Method, a.args.Path, a.args.Body, nil, nil)
+	resp, err := a.client.CollectionRequest(ctx, a.args.Method, a.args.Path, a.args.ID, a.args.Body, nil)
 	if err != nil {
 		return err
 	}

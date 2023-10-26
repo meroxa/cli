@@ -24,18 +24,12 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/flink"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 	"github.com/meroxa/turbine-core/pkg/ir"
 )
-
-type deployFlinkJobClient interface {
-	CreateSourceV2(ctx context.Context, input *meroxa.CreateSourceInputV2) (*meroxa.Source, error)
-	CreateFlinkJob(ctx context.Context, input *meroxa.CreateFlinkJobInput) (*meroxa.FlinkJob, error)
-}
 
 type Deploy struct {
 	args struct {
@@ -47,19 +41,19 @@ type Deploy struct {
 		Secrets []string `short:"s" long:"secret" usage:"environment variables to inject into the Flink Job (e.g.: --secret API_KEY=$API_KEY --secret ACCESS_KEY=abcdef)"` //nolint:lll
 	}
 
-	client deployFlinkJobClient
+	client global.BasicClient
 	config config.Config
 	logger log.Logger
 }
 
 var (
-	_ builder.CommandWithClient  = (*Deploy)(nil)
-	_ builder.CommandWithConfig  = (*Deploy)(nil)
-	_ builder.CommandWithDocs    = (*Deploy)(nil)
-	_ builder.CommandWithExecute = (*Deploy)(nil)
-	_ builder.CommandWithArgs    = (*Deploy)(nil)
-	_ builder.CommandWithFlags   = (*Deploy)(nil)
-	_ builder.CommandWithLogger  = (*Deploy)(nil)
+	_ builder.CommandWithBasicClient = (*Deploy)(nil)
+	_ builder.CommandWithConfig      = (*Deploy)(nil)
+	_ builder.CommandWithDocs        = (*Deploy)(nil)
+	_ builder.CommandWithExecute     = (*Deploy)(nil)
+	_ builder.CommandWithArgs        = (*Deploy)(nil)
+	_ builder.CommandWithFlags       = (*Deploy)(nil)
+	_ builder.CommandWithLogger      = (*Deploy)(nil)
 )
 
 func (*Deploy) Usage() string {
@@ -76,7 +70,7 @@ func (d *Deploy) Config(cfg config.Config) {
 	d.config = cfg
 }
 
-func (d *Deploy) Client(client meroxa.Client) {
+func (d *Deploy) BasicClient(client global.BasicClient) {
 	d.client = client
 }
 
@@ -111,48 +105,25 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 
 	secrets := utils.StringSliceToStringMap(d.flags.Secrets)
-	spec, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
+	_, err := flink.GetIRSpec(ctx, jarPath, secrets, d.logger)
 	if err != nil {
 		d.logger.Warnf(ctx, "failed to extract IR spec: %v\n", err)
 		// non-blocking
 	}
 
-	filename := filepath.Base(jarPath)
 	d.logger.StartSpinner("\t", "Fetching Meroxa Platform source...")
-	source, err := d.client.CreateSourceV2(ctx, &meroxa.CreateSourceInputV2{Filename: filename})
-	if err != nil {
-		d.logger.Errorf(ctx, "\t 𐄂 Unable to fetch source")
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
+
 	d.logger.StopSpinnerWithStatus("Platform source fetched", log.Successful)
 
 	// Logging happens inside UploadFile
-	err = turbine.UploadFile(ctx, d.logger, jarPath, source.PutUrl)
-	if err != nil {
-		return err
-	}
 
-	input := &meroxa.CreateFlinkJobInput{Name: name, JarURL: source.GetUrl}
-	err = d.addIntegrations(ctx, spec, input)
-	if err != nil {
-		return err
-	}
-
-	d.logger.StartSpinner("\t", "Creating Flink job...")
-	fj, err := d.client.CreateFlinkJob(ctx, input)
-	if err != nil {
-		d.logger.Errorf(ctx, "\t 𐄂 Unable to create Flink job")
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
+	//Creqte flink job
 
 	d.logger.StopSpinnerWithStatus("Flink job created", log.Successful)
-	d.logger.JSON(ctx, fj)
 	return nil
 }
 
-func (d *Deploy) addIntegrations(ctx context.Context, spec *ir.DeploymentSpec, input *meroxa.CreateFlinkJobInput) error {
+func (d *Deploy) addIntegrations(ctx context.Context, spec *ir.DeploymentSpec) error {
 	d.logger.StartSpinner("\t", "Checking Meroxa integrations...")
 	successMsg := "Finished checking Meroxa integrations"
 	if spec != nil {
@@ -170,8 +141,7 @@ func (d *Deploy) addIntegrations(ctx context.Context, spec *ir.DeploymentSpec, i
 			return unmarshalErr
 		}
 		successMsg = "Added Meroxa integrations to request"
-		input.Spec = inputSpec
-		input.SpecVersion = spec.Definition.Metadata.SpecVersion
+
 	}
 	d.logger.StopSpinnerWithStatus(successMsg, log.Successful)
 	return nil
