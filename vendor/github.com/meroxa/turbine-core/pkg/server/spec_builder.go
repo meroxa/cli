@@ -72,9 +72,10 @@ func (s *specBuilderService) WriteToDestination(_ context.Context, req *pb.Write
 	}
 
 	c := ir.ConnectorSpec{
-		UUID:      uuid.New().String(),
-		Direction: ir.ConnectorDestination,
-		Config:    configMap(req.Configuration),
+		UUID:       uuid.New().String(),
+		PluginName: req.PluginName,
+		Direction:  ir.ConnectorDestination,
+		Config:     configMap(req.Configuration),
 	}
 	if err := s.spec.AddDestination(&c); err != nil {
 		return nil, err
