@@ -81,16 +81,14 @@ func TestInitAppFlags(t *testing.T) {
 	}
 }
 
-//nolint:funlen
 func TestGoInitExecute(t *testing.T) {
 	gopath := os.Getenv("GOPATH")
 	if gopath == "" {
 		gopath = build.Default.GOPATH
 	}
 	if gopath == "" {
-		t.Fatal("GOPATH is not defined")
+		t.Fatal("GOPATH isnt  defined")
 	}
-
 	tests := []struct {
 		desc                 string
 		path                 string
@@ -259,21 +257,18 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 			i.turbineCLI = mock
 
 			err := i.Execute(ctx)
-			processError(t, err, tt.err)
+			if err != nil {
+				if tt.err == nil {
+					t.Fatalf("unexpected error \"%s\"", err)
+				} else if tt.err.Error() != err.Error() {
+					t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+				}
+			}
+
 			if err == nil && tt.err != nil {
 				t.Fatalf("did not find expected error: %s", tt.err.Error())
 			}
 		})
-	}
-}
-
-func processError(t *testing.T, given error, wanted error) {
-	if given != nil {
-		if wanted == nil {
-			t.Fatalf("unexpected error \"%s\"", given)
-		} else if wanted.Error() != given.Error() {
-			t.Fatalf("expected \"%s\" got \"%s\"", wanted, given)
-		}
 	}
 }
 
