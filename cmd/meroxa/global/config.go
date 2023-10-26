@@ -98,10 +98,6 @@ func getEnvVal(keys []string, defaultVal string) string {
 	return defaultVal
 }
 
-func getAuthToken() string {
-	return Config.GetString("token")
-}
-
 func readConfig() (*viper.Viper, error) {
 	cfg := viper.New()
 

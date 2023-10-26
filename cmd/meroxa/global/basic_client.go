@@ -198,7 +198,12 @@ func (r *client) newRequest(
 	if len(r.headers) > 0 {
 		req.Header = r.headers
 	}
-	req.Header.Add("Authorization", getAuthToken())
+
+	accessToken, _, err := GetUserToken()
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", accessToken)
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", r.userAgent)
