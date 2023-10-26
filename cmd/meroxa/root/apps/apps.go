@@ -52,7 +52,11 @@ const (
 	collectionName = "apps"
 )
 
-var displayDetails = display.Details{"Name": "name", "State": "state", "SpecVersion": "specVersion", "Created": "created", "Updated": "updated"}
+var displayDetails = display.Details{"Name": "name",
+	"State":       "state",
+	"SpecVersion": "specVersion",
+	"Created":     "created",
+	"Updated":     "updated"}
 
 // Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
@@ -83,7 +87,7 @@ func (at *AppTime) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	dt, err := pb.ParseDateTime(appTime) //time.Parse(pb.DefaultDateLayout, appTime)
+	dt, err := pb.ParseDateTime(appTime) // time.Parse(pb.DefaultDateLayout, appTime)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -93,12 +97,11 @@ func (at *AppTime) UnmarshalJSON(b []byte) error {
 }
 
 func (at *AppTime) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Time(at.Time))
+	return json.Marshal(at.Time)
 }
 
-// Maybe a Format function for printing your date
 func (at *AppTime) Format(s string) string {
-	t := time.Time(at.Time)
+	t := at.Time
 	return t.Format(s)
 }
 
@@ -163,9 +166,9 @@ func addTurbineHeaders(c addHeader, lang ir.Lang, version string) {
 	c.AddHeader("Meroxa-CLI-App-Version", version)
 }
 
-func (a Applications) RetrieveApplicationID(ctx context.Context, client global.BasicClient, nameOrId, path string) (*Applications, error) {
+func (a Applications) RetrieveApplicationID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
 	var getPath string
-	var apps = Applications{}
+	apps := Applications{}
 	if path != "" {
 		var err error
 		if getPath, err = turbine.GetPath(path); err != nil {
@@ -180,7 +183,7 @@ func (a Applications) RetrieveApplicationID(ctx context.Context, client global.B
 		a := &url.Values{}
 		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", config.Name, config.Name))
 
-		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a, apps)
+		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a)
 		if err != nil {
 			return nil, err
 		}
@@ -188,12 +191,11 @@ func (a Applications) RetrieveApplicationID(ctx context.Context, client global.B
 		if err != nil {
 			return nil, err
 		}
-
-	} else if nameOrId != "" {
+	} else if nameOrID != "" {
 		a := &url.Values{}
-		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrId, nameOrId))
+		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrID, nameOrID))
 
-		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a, apps)
+		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a)
 		if err != nil {
 			return nil, err
 		}
@@ -201,10 +203,8 @@ func (a Applications) RetrieveApplicationID(ctx context.Context, client global.B
 		if err != nil {
 			return nil, err
 		}
-
 	} else {
 		return nil, fmt.Errorf("supply either ID/Name argument or --path flag")
-
 	}
 	return &apps, nil
 }

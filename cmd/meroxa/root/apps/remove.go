@@ -26,15 +26,12 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
 type Remove struct {
-	client     global.BasicClient
-	logger     log.Logger
-	turbineCLI turbine.CLI
-	path       string
+	client global.BasicClient
+	logger log.Logger
 
 	args struct {
 		idOrName string
@@ -66,12 +63,10 @@ meroxa apps remove IDorName`,
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
-
 	if !r.flags.Force {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", r.args.idOrName)
 		input, err := reader.ReadString('\n')
-
 		if err != nil {
 			return err
 		}
@@ -88,7 +83,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 	}
 
 	r.logger.Infof(ctx, "Removing application %q...", r.args.idOrName)
-	response, err := r.client.CollectionRequest(ctx, "DELETE", collectionName, apps.Items[0].ID, nil, nil, nil)
+	response, err := r.client.CollectionRequest(ctx, "DELETE", collectionName, apps.Items[0].ID, nil, nil)
 	if err != nil {
 		return err
 	}

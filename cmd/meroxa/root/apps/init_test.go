@@ -266,6 +266,7 @@ func TestJsPyAndRbInitExecute(t *testing.T) {
 		})
 	}
 }
+
 func processError(t *testing.T, given error, wanted error) {
 	if given != nil {
 		if wanted == nil {

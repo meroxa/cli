@@ -23,7 +23,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/global"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 )
@@ -38,11 +37,9 @@ var (
 )
 
 type Describe struct {
-	client     global.BasicClient
-	logger     log.Logger
-	turbineCLI turbine.CLI
-	path       string
-	args       struct {
+	client global.BasicClient
+	logger log.Logger
+	args   struct {
 		idOrName string
 	}
 	flags struct {

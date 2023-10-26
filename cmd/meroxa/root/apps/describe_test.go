@@ -34,47 +34,8 @@ import (
 	"github.com/meroxa/cli/log"
 )
 
-func TestDescribeApplicationArgs(t *testing.T) {
-	tests := []struct {
-		args []string
-		err  error
-		name string
-	}{
-		{args: nil, err: errors.New("requires app name or UUID"), name: ""},
-		{args: []string{"ApplicationName"}, err: nil, name: "ApplicationName"},
-	}
-
-	for _, tt := range tests {
-		ar := &Describe{}
-		err := ar.ParseArgs(tt.args)
-
-		if err != nil && tt.err.Error() != err.Error() {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
-		}
-
-		if tt.name != ar.args.idOrName {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.idOrName)
-		}
-	}
-}
-
-func TestDescribeApplicationExecution(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := basicMock.NewMockBasicClient(ctrl)
-	logger := log.NewTestLogger()
-
-	appName := "my-env"
-	appTime := AppTime{}
-	appTime.UnmarshalJSON([]byte(`"2023-10-25 22:40:21.297Z"`))
-	a := &Application{}
-	a.Name = appName
-	a.State = "running"
-	a.SpecVersion = "0.2.0"
-	a.Created = appTime
-	a.Updated = appTime
-
-	body := `{
+const (
+	body = `{
 		"page":1,
 		"perPage":30,
 		"totalItems":1,
@@ -139,16 +100,60 @@ func TestDescribeApplicationExecution(t *testing.T) {
 		   }
 		]
 	 }`
+)
+
+func TestDescribeApplicationArgs(t *testing.T) {
+	tests := []struct {
+		args []string
+		err  error
+		name string
+	}{
+		{args: nil, err: errors.New("requires app name or UUID"), name: ""},
+		{args: []string{"ApplicationName"}, err: nil, name: "ApplicationName"},
+	}
+
+	for _, tt := range tests {
+		ar := &Describe{}
+		err := ar.ParseArgs(tt.args)
+
+		if err != nil && tt.err.Error() != err.Error() {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		}
+
+		if tt.name != ar.args.idOrName {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.idOrName)
+		}
+	}
+}
+
+func TestDescribeApplicationExecution(t *testing.T) {
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	client := basicMock.NewMockBasicClient(ctrl)
+	logger := log.NewTestLogger()
+
+	appName := "my-env"
+	appTime := AppTime{}
+	err := appTime.UnmarshalJSON([]byte(`"2023-10-25 22:40:21.297Z"`))
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
+	a := &Application{}
+	a.Name = appName
+	a.State = "running"
+	a.SpecVersion = "0.2.0"
+	a.Created = appTime
+	a.Updated = appTime
+
 	filter := &url.Values{}
 	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
-	output := &Applications{}
 
 	httpResp := &http.Response{
 		Body:       io.NopCloser(strings.NewReader(body)),
 		Status:     "200 OK",
 		StatusCode: 200,
 	}
-	client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, *filter, output).Return(
+	client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, *filter).Return(
 		httpResp,
 		nil,
 	)
@@ -159,7 +164,7 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	}
 	dc.args.idOrName = a.Name
 
-	err := dc.Execute(ctx)
+	err = dc.Execute(ctx)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
@@ -187,5 +192,4 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	if gotApp.Updated.String() != a.Updated.String() {
 		t.Fatalf("expected \"%s\" got \"%s\"", a.Updated.String(), gotApp.Updated.String())
 	}
-
 }

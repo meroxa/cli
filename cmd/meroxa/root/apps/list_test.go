@@ -39,7 +39,10 @@ func TestListApplicationExecution(t *testing.T) {
 	logger := log.NewTestLogger()
 
 	appTime := AppTime{}
-	appTime.UnmarshalJSON([]byte(`"2023-10-25 22:40:21.297Z"`))
+	err := appTime.UnmarshalJSON([]byte(`"2023-10-25 22:40:21.297Z"`))
+	if err != nil {
+		t.Fatalf("not expected error, got \"%s\"", err.Error())
+	}
 	a := &Application{}
 	a.Name = "my-env"
 	a.State = "running"
@@ -56,138 +59,15 @@ func TestListApplicationExecution(t *testing.T) {
 
 	allApps := []Application{*a, *a2}
 
-	body := `{
-		"page":1,
-		"perPage":30,
-		"totalItems":2,
-		"totalPages":1,
-		"items":[
-		   {
-			  "collectionId":"gnhz55oi6tulkvs",
-			  "collectionName":"apps",
-			  "created":"2023-10-25 22:40:21.297Z",
-			  "id":"b0p2ok0dcjisn4z",
-			  "name":"my-env",
-			  "specVersion":"0.2.0",
-			  "state":"running",
-			  "updated":"2023-10-25 22:40:21.297Z",
-			  "spec":{
-				 "connectors":[
-					{
-					   "collection":"collection_name",
-					   "resource":"source_name",
-					   "type":"source",
-					   "uuid":"5ce244be-e404-4fc1-b486-a35ee200fd27"
-					},
-					{
-					   "collection":"collection_archive",
-					   "resource":"destination_name",
-					   "type":"destination",
-					   "uuid":"0362c2df-6e99-445e-b95e-a798e69a651f"
-					}
-				 ],
-				 "definition":{
-					"git_sha":"f7baf1e05df0becdf946847b8f7411d22988a3d7\n",
-					"metadata":{
-					   "spec_version":"0.2.0",
-					   "turbine":{
-						  "language":"golang",
-						  "version":"v2.1.3"
-					   }
-					}
-				 },
-				 "functions":[
-					{
-					   "image":"turbine-newgo.tar.gz",
-					   "name":"anonymize",
-					   "uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93"
-					}
-				 ],
-				 "streams":[
-					{
-					   "from_uuid":"5ce244be-e404-4fc1-b486-a35ee200fd27",
-					   "name":"5ce244be-e404-4fc1-b486-a35ee200fd27_04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-					   "to_uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-					   "uuid":"ef1e3681-fbaa-4bff-9d21-6e010bcdec3e"
-					},
-					{
-					   "from_uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-					   "name":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93_0362c2df-6e99-445e-b95e-a798e69a651f",
-					   "to_uuid":"0362c2df-6e99-445e-b95e-a798e69a651f",
-					   "uuid":"06c89e49-753d-4a54-81f1-ee1e036003e6"
-					}
-				 ]
-			  }
-		   },
-		   {
-			"collectionId":"gnhz55oi6tulkvs",
-			"collectionName":"apps",
-			"created":"2023-10-25 22:40:21.297Z",
-			"id":"b0p2ok0dcjisn4z",
-			"name":"my-env2",
-			"specVersion":"0.2.0",
-			"state":"creating",
-			"updated":"2023-10-25 22:40:21.297Z",
-			"spec":{
-			   "connectors":[
-				  {
-					 "collection":"collection_name",
-					 "resource":"source_name",
-					 "type":"source",
-					 "uuid":"5ce244be-e404-4fc1-b486-a35ee200fd27"
-				  },
-				  {
-					 "collection":"collection_archive",
-					 "resource":"destination_name",
-					 "type":"destination",
-					 "uuid":"0362c2df-6e99-445e-b95e-a798e69a651f"
-				  }
-			   ],
-			   "definition":{
-				  "git_sha":"f7baf1e05df0becdf946847b8f7411d22988a3d7\n",
-				  "metadata":{
-					 "spec_version":"0.2.0",
-					 "turbine":{
-						"language":"golang",
-						"version":"v2.1.3"
-					 }
-				  }
-			   },
-			   "functions":[
-				  {
-					 "image":"turbine-newgo.tar.gz",
-					 "name":"anonymize",
-					 "uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93"
-				  }
-			   ],
-			   "streams":[
-				  {
-					 "from_uuid":"5ce244be-e404-4fc1-b486-a35ee200fd27",
-					 "name":"5ce244be-e404-4fc1-b486-a35ee200fd27_04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-					 "to_uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-					 "uuid":"ef1e3681-fbaa-4bff-9d21-6e010bcdec3e"
-				  },
-				  {
-					 "from_uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-					 "name":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93_0362c2df-6e99-445e-b95e-a798e69a651f",
-					 "to_uuid":"0362c2df-6e99-445e-b95e-a798e69a651f",
-					 "uuid":"06c89e49-753d-4a54-81f1-ee1e036003e6"
-				  }
-			   ]
-			}
-		 }
-		]
-	 }`
 	filter := &url.Values{}
 	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
-	output := &Applications{}
 
 	httpResp := &http.Response{
 		Body:       io.NopCloser(strings.NewReader(body)),
 		Status:     "200 OK",
 		StatusCode: 200,
 	}
-	client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, nil, output).Return(
+	client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, nil).Return(
 		httpResp,
 		nil,
 	)
@@ -197,7 +77,7 @@ func TestListApplicationExecution(t *testing.T) {
 		logger: logger,
 	}
 
-	err := list.Execute(ctx)
+	err = list.Execute(ctx)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())
 	}
@@ -226,6 +106,5 @@ func TestListApplicationExecution(t *testing.T) {
 		if app.Updated.String() != allApps[i].Updated.String() {
 			t.Fatalf("expected \"%s\" got \"%s\"", a.Updated.String(), app.Updated.String())
 		}
-
 	}
 }

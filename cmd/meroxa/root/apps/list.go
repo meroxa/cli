@@ -57,7 +57,7 @@ func (l *List) Execute(ctx context.Context) error {
 	var err error
 	apps := &Applications{}
 
-	response, err := l.client.CollectionRequest(ctx, "GET", collectionName, "", nil, nil, apps)
+	response, err := l.client.CollectionRequest(ctx, "GET", collectionName, "", nil, nil)
 	if err != nil {
 		return err
 	}
