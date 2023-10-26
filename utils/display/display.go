@@ -39,7 +39,6 @@ func interfaceSlice(slice interface{}) []interface{} {
 	if s.Kind() != reflect.Slice {
 		panic("InterfaceSlice() given a non-slice type")
 	}
-
 	// Keep the distinction between nil and empty slice input
 	if s.IsNil() {
 		return nil
@@ -50,7 +49,6 @@ func interfaceSlice(slice interface{}) []interface{} {
 	for i := 0; i < s.Len(); i++ {
 		ret[i] = s.Index(i).Interface()
 	}
-
 	return ret
 }
 

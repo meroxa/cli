@@ -18,30 +18,25 @@ package apps
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 var (
-	_ builder.CommandWithDocs      = (*List)(nil)
-	_ builder.CommandWithClient    = (*List)(nil)
-	_ builder.CommandWithLogger    = (*List)(nil)
-	_ builder.CommandWithExecute   = (*List)(nil)
-	_ builder.CommandWithAliases   = (*List)(nil)
-	_ builder.CommandWithNoHeaders = (*List)(nil)
+	_ builder.CommandWithDocs        = (*List)(nil)
+	_ builder.CommandWithBasicClient = (*List)(nil)
+	_ builder.CommandWithLogger      = (*List)(nil)
+	_ builder.CommandWithExecute     = (*List)(nil)
+	_ builder.CommandWithAliases     = (*List)(nil)
 )
 
-type listApplicationsClient interface {
-	ListApplications(ctx context.Context) ([]*meroxa.Application, error)
-}
-
 type List struct {
-	client      listApplicationsClient
-	logger      log.Logger
-	hideHeaders bool
+	client global.BasicClient
+	logger log.Logger
 }
 
 func (l *List) Usage() string {
@@ -60,13 +55,19 @@ func (l *List) Aliases() []string {
 
 func (l *List) Execute(ctx context.Context) error {
 	var err error
-	apps, err := l.client.ListApplications(ctx)
+	apps := &Applications{}
+
+	response, err := l.client.CollectionRequest(ctx, "GET", collectionName, "", nil, nil)
+	if err != nil {
+		return err
+	}
+	err = json.NewDecoder(response.Body).Decode(&apps)
 	if err != nil {
 		return err
 	}
 
+	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
-	l.logger.Info(ctx, display.AppsTable(apps, l.hideHeaders))
 
 	output := " ✨ To view your applications, visit https://dashboard.meroxa.io/apps"
 	l.logger.Info(ctx, output)
@@ -77,10 +78,6 @@ func (l *List) Logger(logger log.Logger) {
 	l.logger = logger
 }
 
-func (l *List) Client(client meroxa.Client) {
+func (l *List) BasicClient(client global.BasicClient) {
 	l.client = client
-}
-
-func (l *List) HideHeaders(hide bool) {
-	l.hideHeaders = hide
 }

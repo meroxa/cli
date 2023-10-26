@@ -68,7 +68,7 @@ linters-settings:
           - github.com/stretchr/testify
           - github.com/withfig/autocomplete-tools/integrations/cobra
           - github.com/davecgh/go-spew/spew
-
+          - github.com/pocketbase/pocketbase/tools/types
 linters:
   # please, do not use `enable-all`: it's deprecated and will be removed soon.
   # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint

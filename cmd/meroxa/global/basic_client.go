@@ -19,8 +19,8 @@ const (
 
 //go:generate mockgen -source=basic_client.go -package=mock -destination=mock/basic_client_mock.go
 type BasicClient interface {
-	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values, interface{}) (*http.Response, error)
-	CollectionRequest(context.Context, string, string, string, interface{}, url.Values, interface{}) (*http.Response, error)
+	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
+	CollectionRequest(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
 	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
 	AddHeader(key, value string)
 }
@@ -84,12 +84,12 @@ func (r *client) CollectionRequest(
 	id string,
 	body interface{},
 	params url.Values,
-	output interface{},
 ) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
-	if id != "" {
+	if len(id) != 0 {
 		path += fmt.Sprintf("/%s", id)
 	}
+
 	req, err := r.newRequest(ctx, method, path, body, params, nil)
 	if err != nil {
 		return nil, err
@@ -106,12 +106,6 @@ func (r *client) CollectionRequest(
 		return nil, err
 	}
 
-	if output != nil {
-		err = json.NewDecoder(resp.Body).Decode(&output)
-		if err != nil {
-			return nil, err
-		}
-	}
 	return resp, nil
 }
 
@@ -122,7 +116,6 @@ func (r *client) CollectionRequestMultipart(
 	id string,
 	body interface{},
 	params url.Values,
-	output interface{},
 ) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
 	if id != "" {
@@ -144,12 +137,6 @@ func (r *client) CollectionRequestMultipart(
 		return nil, err
 	}
 
-	if output != nil {
-		err = json.NewDecoder(resp.Body).Decode(&output)
-		if err != nil {
-			return nil, err
-		}
-	}
 	return resp, nil
 }
 
@@ -169,11 +156,6 @@ func (r *client) URLRequest(
 
 	// Merge params
 	resp, err := r.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = handleAPIErrors(resp)
 	if err != nil {
 		return nil, err
 	}

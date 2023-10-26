@@ -72,7 +72,8 @@ type authRequest struct {
 }
 
 type pocketbaseResponse struct {
-	Token string `json:"token"`
+	Token  string                 `json:"token"`
+	Record map[string]interface{} `json:"record"`
 }
 
 func (l *Login) Execute(ctx context.Context) error {
