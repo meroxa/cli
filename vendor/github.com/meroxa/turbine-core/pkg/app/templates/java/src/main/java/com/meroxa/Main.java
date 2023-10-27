@@ -21,7 +21,7 @@ public class Main implements TurbineApp {
 
     private List<TurbineRecord> process(List<TurbineRecord> records) {
         return records.stream()
-            .filter(r -> r.jsonGet("$.payload.after.id").equals(9582724))
+            .filter(r -> r.jsonGet("$.after.id").equals(9582724))
             .map(r -> {
                 var copy = r.copy();
                 String email = (String) copy.jsonGet("$.after.customer_email");
