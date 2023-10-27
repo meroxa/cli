@@ -199,11 +199,14 @@ func (r *client) newRequest(
 		req.Header = r.headers
 	}
 
-	accessToken, _, err := GetUserToken()
-	if err != nil {
-		return nil, err
+	if path != "/api/collections/users/auth-with-password" {
+		accessToken, _, err := GetUserToken()
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Authorization", accessToken)
 	}
-	req.Header.Add("Authorization", accessToken)
+
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", r.userAgent)

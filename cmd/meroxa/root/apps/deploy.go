@@ -141,11 +141,12 @@ func (d *Deploy) createAndRemoveZipFile(buildPath string) error {
 }
 
 func (d *Deploy) runDockerImage(ctx context.Context) error {
-	// docker run --rm -p 8080:80 -t simple-with-process-mdpx-demo
+	// docker run -d --rm -p 8080:80 -t simple-with-process-mdpx-demo
 	cmd := exec.CommandContext(
 		ctx,
 		"docker",
 		"run",
+		"-d",
 		"--rm",
 		"-p",
 		"8080:80",
@@ -192,6 +193,9 @@ func (d *Deploy) buildAndRunImageForMDPX(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("\ndocker build failed: %v", string(out))
 	}
+
+	d.fnName = d.appName
+
 	return d.runDockerImage(ctx)
 }
 
