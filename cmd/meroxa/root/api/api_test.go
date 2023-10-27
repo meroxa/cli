@@ -38,23 +38,21 @@ func TestDescribeAPIArgs(t *testing.T) {
 		err    error
 		method string
 		path   string
-		body   string
+		body   interface{}
 	}{
-		{
-			args: nil,
-			err:  errors.New("requires METHOD and PATH"),
-		},
 		{
 			args:   []string{"GET", "/v1/resources"},
 			err:    nil,
 			method: "GET",
 			path:   "/v1/resources",
+			body:   nil,
 		},
 		{
 			args:   []string{"get", "/v1/resources"}, // lowercase
 			err:    nil,
 			method: "GET",
 			path:   "/v1/resources",
+			body:   nil,
 		},
 		{
 			args: []string{
@@ -66,6 +64,10 @@ func TestDescribeAPIArgs(t *testing.T) {
 			method: "POST",
 			path:   "/v1/resources",
 			body:   `'{"type":"postgres", "name":"pg", "url":"postgres://u:p@127.0.01:5432/db"}'`,
+		},
+		{
+			args: nil,
+			err:  errors.New("requires METHOD and PATH"),
 		},
 	}
 
@@ -102,9 +104,9 @@ func TestAPIExecution(t *testing.T) {
 		logger: logger,
 	}
 	a.args.Method = "GET"
-	a.args.Path = "apps"
+	a.args.Path = "/api/collections/apps/records"
 	a.args.ID = "04b0d690-dd44-4df3-8"
-	a.args.Body = ""
+	a.args.Body = "somebody"
 
 	bodyResponse := `{ "key": "value" }`
 
@@ -115,10 +117,11 @@ func TestAPIExecution(t *testing.T) {
 		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
-	client.EXPECT().CollectionRequest(ctx, "GET", "apps", "04b0d690-dd44-4df3-8", "", nil).Return(
+	client.EXPECT().URLRequest(ctx, "GET", "/api/collections/apps/records", "", nil, nil, nil).Return(
 		httpResponse,
 		nil,
 	)
+
 	err := a.Execute(ctx)
 	if err != nil {
 		t.Fatalf("not expected error, got %q", err.Error())

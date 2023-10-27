@@ -52,7 +52,7 @@ func (l *List) Aliases() []string {
 }
 
 func (l *List) Execute(ctx context.Context) error {
-	//List flink jobs.
+	// List flink jobs.
 	output := "\n ✨ To view your Flink Jobs, visit https://dashboard.meroxa.io/apps"
 	l.logger.Info(ctx, output)
 

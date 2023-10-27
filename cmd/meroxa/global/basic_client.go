@@ -244,7 +244,6 @@ func (r *client) encodeBody(w io.Writer, v interface{}) error {
 }
 
 func GetUserToken() (accessToken string, err error) {
-
 	accessToken = Config.GetString(AccessTokenEnv)
 	if accessToken == "" {
 		// we need at least one token for creating an authenticated client

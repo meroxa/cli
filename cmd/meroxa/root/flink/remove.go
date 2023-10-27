@@ -51,9 +51,9 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing Flink Job %q...", r.args.NameOrUUID)
 
-	//Get flink job .
+	// Get flink job .
 
-	//Delete flink job.
+	// Delete flink job.
 
 	r.logger.Infof(ctx, "Flink Job %q successfully removed", r.args.NameOrUUID)
 
