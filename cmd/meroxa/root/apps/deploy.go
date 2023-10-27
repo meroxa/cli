@@ -149,7 +149,7 @@ func (d *Deploy) runDockerImage(ctx context.Context) error {
 		"-d",
 		"--rm",
 		"-p",
-		"8080:80",
+		"8080:8080",
 		"-t",
 		d.appName,
 	)
