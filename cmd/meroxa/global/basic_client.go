@@ -200,11 +200,15 @@ func (r *client) newRequest(
 		req.Header = r.headers
 	}
 
-	accessToken, err := GetUserToken()
-	if err != nil {
-		return nil, err
+	// No need to check for a valid token when trying to authenticate.
+	// TODO: Need to change this once we integrate with OAuth2
+	if path != "/api/collections/users/auth-with-password" {
+		accessToken, _, err := GetUserToken()
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Authorization", accessToken)
 	}
-	req.Header.Add("Authorization", accessToken)
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
 	req.Header.Add("User-Agent", r.userAgent)
