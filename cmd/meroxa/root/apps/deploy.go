@@ -311,7 +311,7 @@ func (d *Deploy) getAppImage(ctx context.Context) error {
 		return nil
 	}
 
-	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
+	d.logger.StopSpinnerWithStatus("Application processes found. Creating function image...", log.Successful)
 
 	// Classic Platform
 	//return d.getPlatformImage(ctx)
