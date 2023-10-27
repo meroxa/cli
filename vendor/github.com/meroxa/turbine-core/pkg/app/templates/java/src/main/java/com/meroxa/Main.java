@@ -24,7 +24,8 @@ public class Main implements TurbineApp {
             .filter(r -> r.jsonGet("$.payload.after.id").equals(9582724))
             .map(r -> {
                 var copy = r.copy();
-                copy.setPayload("customer emails is: " + copy.jsonGet("$.payload.after.customer_email"));
+                String email = (String) copy.jsonGet("$.after.customer_email");
+                copy.jsonSet("$.after.customer_email", email.toLowerCase());
 
                 return copy;
             })
