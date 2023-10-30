@@ -19,6 +19,7 @@ package apps
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -63,13 +64,14 @@ func (l *List) Execute(ctx context.Context) error {
 	}
 	err = json.NewDecoder(response.Body).Decode(&apps)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
 	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
 
-	output := " ✨ To view your applications, visit https://dashboard.meroxa.io/apps"
+	output := fmt.Sprintf("✨ To view your applications, visit %s/apps", global.GetMeroxaAPIURL())
 	l.logger.Info(ctx, output)
 	return nil
 }

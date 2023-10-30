@@ -17,7 +17,6 @@ limitations under the License.
 package global
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -52,7 +51,6 @@ const (
 	RefreshTokenEnv              = "REFRESH_TOKEN"
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
-	Actor                        = "ACTOR"
 	TenantSubdomainEnv           = "TENANT_SUBDOMAIN"
 	TenantEmailAddress           = "TENANT_EMAIL_ADDRESS"
 	TenantPassword               = "TENANT_PASSWORD"
@@ -64,10 +62,6 @@ func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&flagAPIURL, "api-url", "", "API url")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
 	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", time.Second*10, "set the duration of the client timeout in seconds") //nolint:lll
-
-	if err := cmd.PersistentFlags().MarkHidden("api-url"); err != nil {
-		panic(fmt.Sprintf("could not mark flag as hidden: %v", err))
-	}
 }
 
 func PersistentPreRunE(cmd *cobra.Command) error {

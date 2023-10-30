@@ -18,6 +18,7 @@ package flink
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -52,8 +53,8 @@ func (l *List) Aliases() []string {
 }
 
 func (l *List) Execute(ctx context.Context) error {
-	//List flink jobs.
-	output := "\n ✨ To view your Flink Jobs, visit https://dashboard.meroxa.io/apps"
+
+	output := fmt.Sprintf("\n ✨ To view your Flink Jobs, visit %s/flink", global.GetMeroxaAPIURL())
 	l.logger.Info(ctx, output)
 
 	return nil

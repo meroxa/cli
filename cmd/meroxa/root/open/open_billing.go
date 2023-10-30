@@ -19,18 +19,13 @@ package open
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/meroxa/cli/log"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 
 	"github.com/pkg/browser"
-)
-
-const (
-	DashboardProductionURL = "https://dashboard.meroxa.io"
-	DashboardStagingURL    = "https://dashboard.staging.meroxa.io"
 )
 
 type Billing struct {
@@ -63,10 +58,5 @@ func (b *Billing) Execute(ctx context.Context) error {
 }
 
 func (b *Billing) getBillingURL() string {
-	platformURL := DashboardProductionURL
-
-	if os.Getenv("ENV") == "staging" {
-		platformURL = DashboardStagingURL
-	}
-	return fmt.Sprintf("%s/settings/billing", platformURL)
+	return fmt.Sprintf("%s/settings/billing", global.GetMeroxaAPIURL())
 }

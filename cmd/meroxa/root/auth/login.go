@@ -77,6 +77,7 @@ type pocketbaseResponse struct {
 }
 
 func (l *Login) Execute(ctx context.Context) error {
+
 	req := authRequest{
 		Identity: l.config.GetString(global.TenantEmailAddress),
 		Password: l.config.GetString(global.TenantPassword),
