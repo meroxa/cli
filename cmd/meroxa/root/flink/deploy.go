@@ -18,7 +18,6 @@ package flink
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"path/filepath"
 
@@ -28,7 +27,6 @@ import (
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
-	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 type Deploy struct {
@@ -123,6 +121,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	return nil
 }
 
+/*
 func (d *Deploy) addIntegrations(ctx context.Context, spec *ir.DeploymentSpec) error {
 	d.logger.StartSpinner("\t", "Checking Meroxa integrations...")
 	successMsg := "Finished checking Meroxa integrations"
@@ -141,8 +140,8 @@ func (d *Deploy) addIntegrations(ctx context.Context, spec *ir.DeploymentSpec) e
 			return unmarshalErr
 		}
 		successMsg = "Added Meroxa integrations to request"
-
 	}
 	d.logger.StopSpinnerWithStatus(successMsg, log.Successful)
 	return nil
 }
+*/

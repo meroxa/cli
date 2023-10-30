@@ -54,7 +54,8 @@ func (d *Describe) Docs() builder.Docs {
 
 func (d *Describe) Execute(ctx context.Context) error {
 	// Get flink joob.
-
+	output := "\n ✨ To view your Flink Jobs, visit https://dashboard.meroxa.io/apps"
+	d.logger.Info(ctx, output)
 	return nil
 }
 

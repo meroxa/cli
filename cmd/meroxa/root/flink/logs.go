@@ -61,7 +61,8 @@ meroxa jobs logs my-flink-job-uuid`,
 
 func (l *Logs) Execute(ctx context.Context) error {
 	// Get flink job logs.
-
+	output := "\n ✨ To view your Flink Logs, visit https://dashboard.meroxa.io/apps"
+	l.logger.Info(ctx, output)
 	return nil
 }
 
