@@ -53,7 +53,6 @@ func (l *List) Aliases() []string {
 }
 
 func (l *List) Execute(ctx context.Context) error {
-
 	output := fmt.Sprintf("\n ✨ To view your Flink Jobs, visit %s/flink", global.GetMeroxaAPIURL())
 	l.logger.Info(ctx, output)
 

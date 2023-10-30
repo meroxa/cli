@@ -103,7 +103,6 @@ func TestOpenAppExecution(t *testing.T) {
 		apiURL    string
 		wantErr   error
 	}{
-
 		{
 			desc:      "Successfully open app link with arg",
 			appArg:    "app-name",

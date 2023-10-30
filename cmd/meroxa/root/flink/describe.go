@@ -53,7 +53,7 @@ func (d *Describe) Docs() builder.Docs {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	//Get flink joob.
+	// Get flink joob.
 
 	return nil
 }

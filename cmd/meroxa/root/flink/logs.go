@@ -60,8 +60,7 @@ meroxa jobs logs my-flink-job-uuid`,
 }
 
 func (l *Logs) Execute(ctx context.Context) error {
-
-	//Get flink job logs.
+	// Get flink job logs.
 
 	return nil
 }

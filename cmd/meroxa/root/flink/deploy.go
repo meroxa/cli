@@ -117,7 +117,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	// Logging happens inside UploadFile
 
-	//Creqte flink job
+	// Creqte flink job
 
 	d.logger.StopSpinnerWithStatus("Flink job created", log.Successful)
 	return nil
