@@ -36,7 +36,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
 type Command interface {
@@ -62,12 +61,6 @@ type CommandWithArgs interface {
 	Command
 	// ParseArgs is meant to parse arguments after the command name.
 	ParseArgs([]string) error
-}
-
-type CommandWithClient interface {
-	Command
-	// Client provides the meroxa client to the command.
-	Client(meroxa.Client)
 }
 
 type CommandWithBasicClient interface {
@@ -205,7 +198,6 @@ func BuildCobraCommand(c Command) *cobra.Command {
 
 	buildCommandWithAliases(cmd, c)
 	buildCommandWithArgs(cmd, c)
-	buildCommandWithClient(cmd, c)
 	buildCommandWithBasicClient(cmd, c)
 	buildCommandWithConfig(cmd, c)
 
@@ -257,29 +249,6 @@ func buildCommandWithArgs(cmd *cobra.Command, c Command) {
 			}
 		}
 		return v.ParseArgs(args)
-	}
-}
-
-func buildCommandWithClient(cmd *cobra.Command, c Command) {
-	v, ok := c.(CommandWithClient)
-	if !ok {
-		return
-	}
-
-	old := cmd.PreRunE
-	cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-		if old != nil {
-			err := old(cmd, args)
-			if err != nil {
-				return err
-			}
-		}
-		c, err := global.NewOauthClient()
-		if err != nil {
-			return err
-		}
-		v.Client(c)
-		return nil
 	}
 }
 

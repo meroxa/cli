@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -202,7 +203,7 @@ func (r *client) newRequest(
 	// No need to check for a valid token when trying to authenticate.
 	// TODO: Need to change this once we integrate with OAuth2
 	if path != "/api/collections/users/auth-with-password" {
-		accessToken, _, err := GetUserToken()
+		accessToken, err := GetUserToken()
 		if err != nil {
 			return nil, err
 		}
@@ -244,4 +245,14 @@ func (r *client) encodeBody(w io.Writer, v interface{}) error {
 	default:
 		return json.NewEncoder(w).Encode(v)
 	}
+}
+
+func GetUserToken() (accessToken string, err error) {
+	accessToken = Config.GetString(AccessTokenEnv)
+	if accessToken == "" {
+		// we need at least one token for creating an authenticated client
+		return "", errors.New("please login or signup by running 'meroxa login'")
+	}
+
+	return accessToken, nil
 }

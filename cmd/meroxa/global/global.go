@@ -52,10 +52,9 @@ const (
 	RefreshTokenEnv              = "REFRESH_TOKEN"
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
-
-	TenantSubdomainEnv = "TENANT_SUBDOMAIN"
-	TenantEmailAddress = "TENANT_EMAIL_ADDRESS"
-	TenantPassword     = "TENANT_PASSWORD"
+	TenantSubdomainEnv           = "TENANT_SUBDOMAIN"
+	TenantEmailAddress           = "TENANT_EMAIL_ADDRESS"
+	TenantPassword               = "TENANT_PASSWORD"
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {

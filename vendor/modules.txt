@@ -10,9 +10,6 @@ github.com/cased/cased-go
 # github.com/cpuguy83/go-md2man/v2 v2.0.2
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man
-# github.com/cristalhq/jwt/v3 v3.1.0
-## explicit; go 1.13
-github.com/cristalhq/jwt/v3
 # github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 ## explicit
 github.com/davecgh/go-spew/spew
@@ -96,10 +93,6 @@ github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
-# github.com/meroxa/meroxa-go v0.0.0-20230825083516-b71959984f10
-## explicit; go 1.20
-github.com/meroxa/meroxa-go/pkg/meroxa
-github.com/meroxa/meroxa-go/pkg/mock
 # github.com/meroxa/turbine-core v0.0.0-20230815153536-e0c914b74ea1
 ## explicit; go 1.20
 github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core
@@ -212,10 +205,6 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.13.0
-## explicit; go 1.18
-golang.org/x/oauth2
-golang.org/x/oauth2/internal
 # golang.org/x/sys v0.13.0
 ## explicit; go 1.17
 golang.org/x/sys/plan9
@@ -236,15 +225,6 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# google.golang.org/appengine v1.6.8
-## explicit; go 1.11
-google.golang.org/appengine/internal
-google.golang.org/appengine/internal/base
-google.golang.org/appengine/internal/datastore
-google.golang.org/appengine/internal/log
-google.golang.org/appengine/internal/remote_api
-google.golang.org/appengine/internal/urlfetch
-google.golang.org/appengine/urlfetch
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status

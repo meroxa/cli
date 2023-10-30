@@ -21,17 +21,12 @@ import (
 	"errors"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/meroxa"
 )
 
-type removeFlinkJobClient interface {
-	GetFlinkJob(ctx context.Context, nameOrUUID string) (*meroxa.FlinkJob, error)
-	DeleteFlinkJob(ctx context.Context, nameOrUUID string) error
-}
-
 type Remove struct {
-	client removeFlinkJobClient
+	client global.BasicClient
 	logger log.Logger
 
 	args struct {
@@ -56,19 +51,11 @@ func (r *Remove) ValueToConfirm(_ context.Context) (wantInput string) {
 func (r *Remove) Execute(ctx context.Context) error {
 	r.logger.Infof(ctx, "Removing Flink Job %q...", r.args.NameOrUUID)
 
-	fj, err := r.client.GetFlinkJob(ctx, r.args.NameOrUUID)
-	if err != nil {
-		return err
-	}
+	// Get flink job .
 
-	err = r.client.DeleteFlinkJob(ctx, r.args.NameOrUUID)
-
-	if err != nil {
-		return err
-	}
+	// Delete flink job.
 
 	r.logger.Infof(ctx, "Flink Job %q successfully removed", r.args.NameOrUUID)
-	r.logger.JSON(ctx, fj)
 
 	return nil
 }
@@ -77,7 +64,7 @@ func (r *Remove) Logger(logger log.Logger) {
 	r.logger = logger
 }
 
-func (r *Remove) Client(client meroxa.Client) {
+func (r *Remove) BasicClient(client global.BasicClient) {
 	r.client = client
 }
 
@@ -98,7 +85,7 @@ var (
 	_ builder.CommandWithDocs             = (*Remove)(nil)
 	_ builder.CommandWithAliases          = (*Remove)(nil)
 	_ builder.CommandWithArgs             = (*Remove)(nil)
-	_ builder.CommandWithClient           = (*Remove)(nil)
+	_ builder.CommandWithBasicClient      = (*Remove)(nil)
 	_ builder.CommandWithLogger           = (*Remove)(nil)
 	_ builder.CommandWithExecute          = (*Remove)(nil)
 	_ builder.CommandWithConfirmWithValue = (*Remove)(nil)

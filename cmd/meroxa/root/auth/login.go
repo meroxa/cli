@@ -82,6 +82,8 @@ func (l *Login) Execute(ctx context.Context) error {
 		Password: l.config.GetString(global.TenantPassword),
 	}
 
+	l.config.Set(global.AccessTokenEnv, "token")
+
 	var pbResp pocketbaseResponse
 	_, err := l.client.URLRequest(ctx, "POST", "/api/collections/users/auth-with-password", req, nil, nil, &pbResp)
 	l.config.Set(global.AccessTokenEnv, pbResp.Token)

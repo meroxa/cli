@@ -26,9 +26,10 @@ import (
 	"strings"
 	"testing"
 
+	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
+
 	"github.com/golang/mock/gomock"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/meroxa-go/pkg/mock"
 )
 
 func TestDescribeAPIArgs(t *testing.T) {
@@ -37,23 +38,21 @@ func TestDescribeAPIArgs(t *testing.T) {
 		err    error
 		method string
 		path   string
-		body   string
+		body   interface{}
 	}{
-		{
-			args: nil,
-			err:  errors.New("requires METHOD and PATH"),
-		},
 		{
 			args:   []string{"GET", "/v1/resources"},
 			err:    nil,
 			method: "GET",
 			path:   "/v1/resources",
+			body:   nil,
 		},
 		{
 			args:   []string{"get", "/v1/resources"}, // lowercase
 			err:    nil,
 			method: "GET",
 			path:   "/v1/resources",
+			body:   nil,
 		},
 		{
 			args: []string{
@@ -65,6 +64,10 @@ func TestDescribeAPIArgs(t *testing.T) {
 			method: "POST",
 			path:   "/v1/resources",
 			body:   `'{"type":"postgres", "name":"pg", "url":"postgres://u:p@127.0.01:5432/db"}'`,
+		},
+		{
+			args: nil,
+			err:  errors.New("requires METHOD and PATH"),
 		},
 	}
 
@@ -93,7 +96,7 @@ func TestDescribeAPIArgs(t *testing.T) {
 func TestAPIExecution(t *testing.T) {
 	ctx := context.Background()
 	ctrl := gomock.NewController(t)
-	client := mock.NewMockClient(ctrl)
+	client := basicMock.NewMockBasicClient(ctrl)
 	logger := log.NewTestLogger()
 
 	a := &API{
@@ -101,7 +104,9 @@ func TestAPIExecution(t *testing.T) {
 		logger: logger,
 	}
 	a.args.Method = "GET"
-	a.args.Path = "/v1/my-path"
+	a.args.Path = "/api/collections/apps/records"
+	a.args.ID = "04b0d690-dd44-4df3-8"
+	a.args.Body = "somebody"
 
 	bodyResponse := `{ "key": "value" }`
 
@@ -112,17 +117,10 @@ func TestAPIExecution(t *testing.T) {
 		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
-	client.
-		EXPECT().
-		MakeRequest(
-			ctx,
-			a.args.Method,
-			a.args.Path,
-			"",
-			nil,
-			nil,
-		).
-		Return(httpResponse, nil)
+	client.EXPECT().URLRequest(ctx, "GET", "/api/collections/apps/records", "somebody", nil, nil, nil).Return(
+		httpResponse,
+		nil,
+	)
 
 	err := a.Execute(ctx)
 	if err != nil {
