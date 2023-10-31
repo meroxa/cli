@@ -43,19 +43,22 @@ func TestListApplicationExecution(t *testing.T) {
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
-	a := &Application{}
-	a.Name = "my-env"
-	a.State = "running"
-	a.SpecVersion = "0.2.0"
-	a.Created = appTime
-	a.Updated = appTime
 
-	a2 := &Application{}
-	a2.Name = "my-env2"
-	a2.State = "creating"
-	a2.SpecVersion = "0.2.0"
-	a2.Created = appTime
-	a2.Updated = appTime
+	a := &Application{
+		Name:        "my-env",
+		State:       "running",
+		SpecVersion: "0.2.0",
+		Created:     appTime,
+		Updated:     appTime,
+	}
+
+	a2 := &Application{
+		Name:        "my-env2",
+		State:       "creating",
+		SpecVersion: "0.2.0",
+		Created:     appTime,
+		Updated:     appTime,
+	}
 
 	allApps := []Application{*a, *a2}
 

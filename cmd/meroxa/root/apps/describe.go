@@ -81,8 +81,13 @@ func (d *Describe) Execute(ctx context.Context) error {
 		return err
 	}
 	d.lang = config.Language
-	if d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.flags.Path); err != nil {
-		return err
+
+	if d.turbineCLI == nil {
+		if d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.flags.Path); err != nil {
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	turbineVersion, err := d.turbineCLI.GetVersion(ctx)
