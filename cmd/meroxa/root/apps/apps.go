@@ -201,6 +201,7 @@ func (a Applications) RetrieveApplicationID(ctx context.Context, client global.B
 		if err != nil {
 			return nil, err
 		}
+
 		err = json.NewDecoder(response.Body).Decode(&apps)
 		if err != nil {
 			return nil, err
