@@ -23,16 +23,17 @@ import (
 	"github.com/skratchdot/open-golang/open"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
 )
 
 var (
-	_ builder.CommandWithDocs    = (*Open)(nil)
-	_ builder.CommandWithLogger  = (*Open)(nil)
-	_ builder.CommandWithExecute = (*Open)(nil)
-	_ builder.CommandWithArgs    = (*Open)(nil)
-	_ builder.CommandWithFlags   = (*Open)(nil)
+	_ builder.CommandWithDocs        = (*Open)(nil)
+	_ builder.CommandWithLogger      = (*Open)(nil)
+	_ builder.CommandWithExecute     = (*Open)(nil)
+	_ builder.CommandWithArgs        = (*Open)(nil)
+	_ builder.CommandWithFlags       = (*Open)(nil)
+	_ builder.CommandWithBasicClient = (*List)(nil)
 )
 
 type Opener interface {
@@ -45,8 +46,14 @@ func (b *browserOpener) Start(URL string) error {
 	return open.Start(URL)
 }
 
+func (o *Open) BasicClient(client global.BasicClient) {
+	o.client = client
+}
+
 type Open struct {
 	Opener
+
+	client global.BasicClient
 
 	logger log.Logger
 	path   string
@@ -89,27 +96,15 @@ func (o *Open) Execute(ctx context.Context) error {
 		o.Opener = &browserOpener{}
 	}
 
-	nameOrUUID := o.args.NameOrUUID
-	if nameOrUUID != "" && o.flags.Path != "" {
-		return fmt.Errorf("supply either NameOrUUID argument or --path flag")
-	}
-
-	if nameOrUUID == "" {
-		var err error
-		if o.path, err = turbine.GetPath(o.flags.Path); err != nil {
-			return err
-		}
-
-		config, err := turbine.ReadConfigFile(o.path)
-		if err != nil {
-			return err
-		}
-		nameOrUUID = config.Name
+	apps := &Applications{}
+	apps, err := apps.RetrieveApplicationID(ctx, o.client, o.args.NameOrUUID, o.flags.Path)
+	if err != nil {
+		return err
 	}
 
 	// open a browser window to the application details
-	dashboardURL := fmt.Sprintf("https://dashboard.meroxa.io/apps/%s/detail", nameOrUUID)
-	err := o.Start(dashboardURL)
+	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaAPIURL(), apps.Items[0].ID)
+	err = o.Start(dashboardURL)
 	if err != nil {
 		o.logger.Errorf(ctx, "can't open browser to URL %s\n", dashboardURL)
 	}

@@ -19,15 +19,20 @@ package apps
 import (
 	"context"
 	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
-	"path/filepath"
+	"strings"
 	"testing"
 
-	"github.com/google/uuid"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
 )
@@ -91,65 +96,63 @@ func TestOpenAppExecution(t *testing.T) {
 	testCases := []struct {
 		desc      string
 		appArg    string
+		tenant    string
 		appFlag   string
+		appPath   string
 		expectURL string
+		apiURL    string
 		wantErr   error
 	}{
 		{
 			desc:      "Successfully open app link with arg",
 			appArg:    "app-name",
-			expectURL: "https://dashboard.meroxa.io/apps/app-name/detail",
-		},
-		{
-			desc:      "Successfully open app link with flag",
-			expectURL: "https://dashboard.meroxa.io/apps/my-app/detail",
+			tenant:    "test",
+			expectURL: "https://test.na1.meroxa.cloud/apps/b0p2ok0dcjisn4z/detail",
+			appPath:   "",
+			apiURL:    "https://test.na1.meroxa.cloud",
 		},
 		{
 			desc:    "Fail with bad path",
 			appFlag: os.TempDir(),
-			wantErr: errors.New("could not find an app.json file on path"),
+			wantErr: errors.New("supply either ID/Name argument or --path flag"),
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			os.Setenv("UNIT_TEST", "1")
-			path := filepath.Join(os.TempDir(), uuid.New().String())
+			ctrl := gomock.NewController(t)
+			client := basicMock.NewMockBasicClient(ctrl)
 			logger := log.NewTestLogger()
-			cc := &Init{}
-			cc.Logger(logger)
-			cc.flags.Path = path
-			cc.flags.Lang = "golang"
-			if tc.appArg != "" {
-				cc.args.appName = tc.appArg
-				if tc.appFlag == "" {
-					tc.appFlag = path + "/" + tc.appArg
-				}
-			} else {
-				cc.args.appName = "my-app"
-				if tc.appFlag == "" {
-					tc.appFlag = path + "/my-app"
-				}
-			}
+			os.Setenv("UNIT_TEST", "true")
+			os.Setenv("MEROXA_API_URL", tc.apiURL)
 
-			err := cc.Execute(context.Background())
-			require.NoError(t, err)
+			filter := &url.Values{}
+			filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", tc.appArg, tc.appArg))
+
+			httpResp := &http.Response{
+				Body:       io.NopCloser(strings.NewReader(body)),
+				Status:     "200 OK",
+				StatusCode: 200,
+			}
+			if tc.wantErr == nil {
+				client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, *filter).Return(
+					httpResp,
+					nil,
+				)
+			}
 
 			opener := &mockOpener{}
 			o := &Open{
 				logger: logger,
 				Opener: opener,
-			}
-			if tc.appArg != "" {
-				o.args = struct {
+				args: struct {
 					NameOrUUID string
-				}{NameOrUUID: tc.appArg}
-			} else if tc.appFlag != "" {
-				o.flags = struct {
-					Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
-				}{Path: tc.appFlag}
+				}{NameOrUUID: tc.appArg},
+				path:   tc.appPath,
+				client: client,
 			}
 
-			err = o.Execute(ctx)
+			err := o.Execute(ctx)
+
 			if tc.wantErr != nil {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.wantErr.Error())
