@@ -21,6 +21,8 @@ import (
 	"fmt"
 
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
+	"github.com/meroxa/turbine-core/pkg/ir"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
@@ -37,9 +39,11 @@ var (
 )
 
 type Describe struct {
-	client global.BasicClient
-	logger log.Logger
-	args   struct {
+	client     global.BasicClient
+	logger     log.Logger
+	turbineCLI turbine.CLI
+	lang       ir.Lang
+	args       struct {
 		idOrName string
 	}
 	flags struct {
@@ -70,7 +74,29 @@ meroxa apps describe NAME `,
 
 func (d *Describe) Execute(ctx context.Context) error {
 	apps := &Applications{}
-	apps, err := apps.RetrieveApplicationID(ctx, d.client, d.args.idOrName, d.flags.Path)
+	var err error
+
+	config, err := turbine.ReadConfigFile(d.flags.Path)
+	if err != nil {
+		return err
+	}
+	d.lang = config.Language
+
+	if d.turbineCLI == nil {
+		if d.turbineCLI, err = getTurbineCLIFromLanguage(d.logger, d.lang, d.flags.Path); err != nil {
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	turbineVersion, err := d.turbineCLI.GetVersion(ctx)
+	if err != nil {
+		return err
+	}
+	addTurbineHeaders(d.client, d.lang, turbineVersion)
+
+	apps, err = apps.RetrieveApplicationID(ctx, d.client, d.args.idOrName, d.flags.Path)
 	if err != nil {
 		return err
 	}

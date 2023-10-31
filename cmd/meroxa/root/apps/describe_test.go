@@ -24,10 +24,16 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
+	turbineMock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
+	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/stretchr/testify/require"
 
 	"github.com/golang/mock/gomock"
 
@@ -131,19 +137,45 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := basicMock.NewMockBasicClient(ctrl)
 	logger := log.NewTestLogger()
+	mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 
+	path := filepath.Join(os.TempDir(), uuid.NewString())
 	appName := "my-env"
 	appTime := AppTime{}
 	err := appTime.UnmarshalJSON([]byte(`"2023-10-25 22:40:21.297Z"`))
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 	}
-	a := &Application{}
-	a.Name = appName
-	a.State = "running"
-	a.SpecVersion = "0.2.0"
-	a.Created = appTime
-	a.Updated = appTime
+
+	i := &Init{
+		logger: logger,
+		args:   struct{ appName string }{appName: appName},
+		flags: struct {
+			Lang        string "long:\"lang\" short:\"l\" usage:\"language to use (js|go|py)\" required:\"true\""
+			Path        string "long:\"path\" usage:\"path where application will be initialized (current directory as default)\""
+			ModVendor   bool   "long:\"mod-vendor\" usage:\"whether to download modules to vendor or globally while initializing a Go application\""
+			SkipModInit bool   "long:\"skip-mod-init\" usage:\"whether to run 'go mod init' while initializing a Go application\""
+		}{
+			Lang:        string(ir.GoLang),
+			Path:        path,
+			ModVendor:   false,
+			SkipModInit: true,
+		},
+	}
+
+	a := &Application{
+		Name:        appName,
+		State:       "running",
+		SpecVersion: "0.2.0",
+		Created:     appTime,
+		Updated:     appTime,
+	}
+
+	err = i.Execute(ctx)
+	defer func(path string) {
+		os.RemoveAll(path)
+	}(path)
+	require.NoError(t, err)
 
 	filter := &url.Values{}
 	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
@@ -158,11 +190,19 @@ func TestDescribeApplicationExecution(t *testing.T) {
 		nil,
 	)
 
+	mockTurbineCLI.EXPECT().GetVersion(ctx).Return("1.0", nil)
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
+	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
+
 	dc := &Describe{
-		client: client,
-		logger: logger,
+		client:     client,
+		logger:     logger,
+		turbineCLI: mockTurbineCLI,
+		args:       struct{ idOrName string }{idOrName: a.Name},
+		flags: struct {
+			Path string "long:\"path\" usage:\"Path to the app directory (default is local directory)\""
+		}{Path: filepath.Join(path, appName)},
 	}
-	dc.args.idOrName = a.Name
 
 	err = dc.Execute(ctx)
 	if err != nil {

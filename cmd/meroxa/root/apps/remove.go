@@ -26,12 +26,16 @@ import (
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
+	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 type Remove struct {
-	client global.BasicClient
-	logger log.Logger
+	client     global.BasicClient
+	logger     log.Logger
+	lang       ir.Lang
+	turbineCLI turbine.CLI
 
 	args struct {
 		idOrName string
@@ -77,7 +81,27 @@ func (r *Remove) Execute(ctx context.Context) error {
 	}
 
 	apps := &Applications{}
-	apps, err := apps.RetrieveApplicationID(ctx, r.client, r.args.idOrName, r.flags.Path)
+	var err error
+
+	config, err := turbine.ReadConfigFile(r.flags.Path)
+	if err != nil {
+		return err
+	}
+
+	r.lang = config.Language
+	if r.turbineCLI == nil {
+		if r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, r.lang, r.flags.Path); err != nil {
+			return err
+		}
+	}
+
+	turbineVersion, err := r.turbineCLI.GetVersion(ctx)
+	if err != nil {
+		return err
+	}
+	addTurbineHeaders(r.client, r.lang, turbineVersion)
+
+	apps, err = apps.RetrieveApplicationID(ctx, r.client, r.args.idOrName, r.flags.Path)
 	if err != nil {
 		return err
 	}
