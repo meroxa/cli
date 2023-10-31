@@ -91,9 +91,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 	r.lang = config.Language
 	if r.turbineCLI == nil {
 		if r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, r.lang, r.flags.Path); err != nil {
-			if err != nil {
-				return err
-			}
+			return err
 		}
 	}
 
