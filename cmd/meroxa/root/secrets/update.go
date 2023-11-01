@@ -88,7 +88,7 @@ func (d *Update) Execute(ctx context.Context) error {
 	for k := range getSecrets.Items[0].Data {
 		fmt.Printf("\n %q: ", k)
 		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n') //nolint:shadow
+		input, err := reader.ReadString('\n') //nolint
 		if err != nil {
 			return err
 		}
@@ -99,7 +99,7 @@ func (d *Update) Execute(ctx context.Context) error {
 
 	if d.flags.Data != "" {
 		appendData := make(map[string]interface{})
-		err := json.Unmarshal([]byte(d.flags.Data), &appendData) //nolint:shadow
+		err := json.Unmarshal([]byte(d.flags.Data), &appendData) //nolint
 		if err != nil {
 			return err
 		}
