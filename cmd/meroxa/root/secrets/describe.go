@@ -15,7 +15,7 @@ import (
 
 type Describe struct {
 	args struct {
-		idOrName string
+		nameOrUUID string
 	}
 
 	client global.BasicClient
@@ -33,7 +33,7 @@ var (
 )
 
 func (*Describe) Usage() string {
-	return "describe idOrName"
+	return "describe nameOrUUID"
 }
 
 func (*Describe) Docs() builder.Docs {
@@ -41,7 +41,7 @@ func (*Describe) Docs() builder.Docs {
 		Short: "Describe a Turbine Secret",
 		Long: `This command will describe a turbine secret by id or name.
 `,
-		Example: `meroxa secrets describe idOrName
+		Example: `meroxa secrets describe nameOrUUID
 `,
 	}
 }
@@ -52,7 +52,7 @@ func (d *Describe) Config(cfg config.Config) {
 
 func (d *Describe) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		d.args.idOrName = args[0]
+		d.args.nameOrUUID = args[0]
 	}
 	return nil
 }
@@ -66,9 +66,8 @@ func (d *Describe) Logger(logger log.Logger) {
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	if d.args.idOrName != "" {
-
-		getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.idOrName)
+	if d.args.nameOrUUID != "" {
+		getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.nameOrUUID)
 		if err != nil {
 			return err
 		}
@@ -79,7 +78,6 @@ func (d *Describe) Execute(ctx context.Context) error {
 			d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your secret, visit %s", dashboardURL))
 		}
 		d.logger.JSON(ctx, getSecrets)
-
 	} else {
 		return errors.New("action aborted")
 	}

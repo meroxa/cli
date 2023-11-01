@@ -39,8 +39,8 @@ func TestRemoveAppArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != cc.args.idOrName {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.idOrName)
+		if tt.name != cc.args.nameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, cc.args.nameOrUUID)
 		}
 	}
 }

@@ -24,7 +24,7 @@ func TestRemoveSecrets(t *testing.T) {
 	remove := &Remove{
 		client: client,
 		logger: logger,
-		args:   struct{ idOrName string }{idOrName: "test"},
+		args:   struct{ nameOrUUID string }{nameOrUUID: "test"},
 		flags: struct {
 			Force bool "long:\"force\" short:\"f\" default:\"false\" usage:\"skip confirmation\""
 		}{Force: true},
@@ -57,7 +57,7 @@ func TestRemoveSecrets(t *testing.T) {
 	}
 
 	a := &url.Values{}
-	a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", remove.args.idOrName, remove.args.idOrName))
+	a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", remove.args.nameOrUUID, remove.args.nameOrUUID))
 
 	client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, *a).Return(
 		httpResp,

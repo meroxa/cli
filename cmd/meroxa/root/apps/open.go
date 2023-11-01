@@ -96,7 +96,6 @@ func (o *Open) Execute(ctx context.Context) error {
 		o.Opener = &browserOpener{}
 	}
 
-	apps := &Applications{}
 	apps, err := RetrieveApplicationByNameOrID(ctx, o.client, o.args.NameOrUUID, o.flags.Path)
 	if err != nil {
 		return err

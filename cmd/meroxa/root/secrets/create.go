@@ -94,7 +94,10 @@ func (d *Create) Execute(ctx context.Context) error {
 	secret := &Secrets{
 		Name: d.args.secretName,
 	}
-	json.Unmarshal([]byte(d.flags.Data), &secret.Data)
+	err := json.Unmarshal([]byte(d.flags.Data), &secret.Data)
+	if err != nil {
+		return err
+	}
 
 	d.logger.Infof(ctx, "Adding a secret %q...", d.args.secretName)
 	response, err := d.client.CollectionRequest(ctx, "POST", collectionName, "", secret, nil)

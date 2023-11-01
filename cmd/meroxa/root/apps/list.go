@@ -71,7 +71,7 @@ func (l *List) Execute(ctx context.Context) error {
 	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
 
-	output := fmt.Sprintf("✨ To view your applications, visit %s/apps", global.GetMeroxaAPIURL())
+	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/apps", global.GetMeroxaAPIURL())
 	l.logger.Info(ctx, output)
 	return nil
 }

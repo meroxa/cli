@@ -25,13 +25,13 @@ func TestDescribeSecrets(t *testing.T) {
 	describe := &Describe{
 		client: client,
 		logger: logger,
-		args:   struct{ idOrName string }{idOrName: "test"},
+		args:   struct{ nameOrUUID string }{nameOrUUID: "test"},
 	}
 	body := `
 	{
         "page": 1,
         "perPage": 30,
-        "totalItems": 2,
+        "totalItems": 1,
         "totalPages": 1,
         "items": [
                 {

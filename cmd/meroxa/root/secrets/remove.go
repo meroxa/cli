@@ -20,7 +20,7 @@ type Remove struct {
 		Force bool `long:"force" short:"f" default:"false" usage:"skip confirmation"`
 	}
 	args struct {
-		idOrName string
+		nameOrUUID string
 	}
 
 	client global.BasicClient
@@ -47,7 +47,7 @@ func (*Remove) Docs() builder.Docs {
 	return builder.Docs{
 		Short:   "Remove a Turbine Secret",
 		Long:    `This command will remove the secret specified either by name or id`,
-		Example: `meroxa apps remove idOrName`,
+		Example: `meroxa apps remove nameOrUUID`,
 	}
 }
 
@@ -73,7 +73,7 @@ func (d *Remove) Logger(logger log.Logger) {
 
 func (d *Remove) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		d.args.idOrName = args[0]
+		d.args.nameOrUUID = args[0]
 	}
 	return nil
 }
@@ -81,29 +81,29 @@ func (d *Remove) ParseArgs(args []string) error {
 func (d *Remove) Execute(ctx context.Context) error {
 	if !d.flags.Force {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", d.args.idOrName)
+		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", d.args.nameOrUUID)
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			return err
 		}
 
-		if d.args.idOrName != strings.TrimRight(input, "\r\n") {
+		if d.args.nameOrUUID != strings.TrimRight(input, "\r\n") {
 			return errors.New("action aborted")
 		}
 	}
 
-	getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.idOrName)
+	getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.nameOrUUID)
 	if err != nil {
 		return err
 	}
 
-	d.logger.Infof(ctx, "Removing secret %q...", d.args.idOrName)
+	d.logger.Infof(ctx, "Removing secret %q...", d.args.nameOrUUID)
 	_, err = d.client.CollectionRequest(ctx, "DELETE", collectionName, getSecrets.Items[0].ID, nil, nil)
 	if err != nil {
 		return err
 	}
 
-	d.logger.Infof(ctx, "Secret %q successfully removed", d.args.idOrName)
+	d.logger.Infof(ctx, "Secret %q successfully removed", d.args.nameOrUUID)
 
 	return nil
 }

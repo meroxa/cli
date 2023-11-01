@@ -17,7 +17,11 @@ import (
 
 type Update struct {
 	args struct {
-		idOrName string
+		nameOrUUID string
+	}
+
+	flags struct {
+		Data string `long:"data" usage:"Secret's data, passed as a JSON string"`
 	}
 
 	client global.BasicClient
@@ -32,17 +36,20 @@ var (
 	_ builder.CommandWithExecute     = (*Update)(nil)
 	_ builder.CommandWithLogger      = (*Update)(nil)
 	_ builder.CommandWithArgs        = (*Update)(nil)
+	_ builder.CommandWithFlags       = (*Update)(nil)
 )
 
 func (*Update) Usage() string {
-	return "update idOrName --data '{}'"
+	return `update nameOrUUID --data '{"key": "any new data"}`
 }
 
 func (*Update) Docs() builder.Docs {
 	return builder.Docs{
-		Short:   "Update a Turbine Secret",
-		Long:    `This command will update the specified Turbine Secret's data.`,
-		Example: `meroxa secrets update idOrName --data '{"key": "value"}' `,
+		Short: "Update a Turbine Secret",
+		Long:  `This command will update the specified Turbine Secret's data.`,
+		Example: `meroxa secrets update nameOrUUID --data '{"key": "value"}' 
+		or 
+		meroxa secrets update nameOrUUID `,
 	}
 }
 
@@ -50,10 +57,14 @@ func (d *Update) Config(cfg config.Config) {
 	d.config = cfg
 }
 
+func (d *Update) Flags() []builder.Flag {
+	return builder.BuildFlags(&d.flags)
+}
+
 // ParseArgs implements builder.CommandWithArgs.
 func (d *Update) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		d.args.idOrName = args[0]
+		d.args.nameOrUUID = args[0]
 	}
 	return nil
 }
@@ -67,14 +78,15 @@ func (d *Update) Logger(logger log.Logger) {
 }
 
 func (d *Update) Execute(ctx context.Context) error {
-	getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.idOrName)
+	var err error
+	getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.nameOrUUID)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("To proceed, enter new data for each key or press enter to skip. ")
 	for k := range getSecrets.Items[0].Data {
-		fmt.Printf("%q: ", k)
+		fmt.Printf("\n %q: ", k)
 		reader := bufio.NewReader(os.Stdin)
 		input, err := reader.ReadString('\n')
 		if err != nil {
@@ -85,7 +97,18 @@ func (d *Update) Execute(ctx context.Context) error {
 		}
 	}
 
-	d.logger.Infof(ctx, "Updating secret %q...", d.args.idOrName)
+	if d.flags.Data != "" {
+		appendData := make(map[string]interface{})
+		err := json.Unmarshal([]byte(d.flags.Data), &appendData)
+		if err != nil {
+			return err
+		}
+		for key, string := range appendData {
+			getSecrets.Items[0].Data[key] = string
+		}
+	}
+
+	d.logger.Infof(ctx, "Updating secret %q...", d.args.nameOrUUID)
 	response, err := d.client.CollectionRequest(ctx, "PATCH", collectionName, getSecrets.Items[0].ID, getSecrets.Items[0], nil)
 	if err != nil {
 		return err
