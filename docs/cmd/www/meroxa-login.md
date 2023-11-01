@@ -30,5 +30,5 @@ meroxa login [flags]
 
 ### SEE ALSO
 
-* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
 

@@ -34,10 +34,6 @@ meroxa resources list --types
 
 * [meroxa api](/cli/cmd/meroxa-api/)	 - Invoke Meroxa API
 * [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
-* [meroxa auth](/cli/cmd/meroxa-auth/)	 - Authentication commands for Meroxa
-* [meroxa completion](/cli/cmd/meroxa-completion/)	 - Generate completion script
-* [meroxa config](/cli/cmd/meroxa-config/)	 - Manage your Meroxa CLI configuration
-* [meroxa environments](/cli/cmd/meroxa-environments/)	 - Manage environments on Meroxa
 * [meroxa login](/cli/cmd/meroxa-login/)	 - Login to a Conduit Platform tenant
 * [meroxa logout](/cli/cmd/meroxa-logout/)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](/cli/cmd/meroxa-open/)	 - Open in a web browser

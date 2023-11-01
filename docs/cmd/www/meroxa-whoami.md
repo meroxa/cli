@@ -9,15 +9,10 @@ url: /cli/cmd/meroxa-whoami/
 
 Display the current logged in user
 
-
-```
-meroxa whoami [flags]
-```
-
 ### Examples
 
 ```
-meroxa whoami
+meroxa whoami [flags]
 ```
 
 ### Options
@@ -37,5 +32,5 @@ meroxa whoami
 
 ### SEE ALSO
 
-* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
 

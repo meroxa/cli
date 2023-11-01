@@ -73,9 +73,6 @@ make gomod
 make build
 ```
 
-### Development Configuration
-The [meroxa-dev CLI](https://github.com/meroxa/meroxa-dev#install) makes it convenient to set the necessary env vars for different dev environments.
-
 ## Release
 
 A [goreleaser](https://github.com/goreleaser/goreleaser) GitHub Action is
@@ -108,6 +105,20 @@ func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
 
+## Setting Local Environment Variables
+
+To start using the Meroxa CLI locally, you'll need to set the following environment variables: 
+
+```
+export MEROXA_API_URL=""
+export MEROXA_TENANT_SUBDOMAIN=""
+export MEROXA_TENANT_EMAIL_ADDRESS=""
+export MEROXA_TENANT_PASSWORD=""
+
+```
+
+The tenant email and password should come from an already existing platform user, not the console admin. 
+
 ## Tests
 
 To run the test suite:
@@ -115,6 +126,7 @@ To run the test suite:
 ```
 make test
 ```
+
 
 ## Shell Completion
 

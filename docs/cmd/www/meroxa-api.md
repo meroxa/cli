@@ -17,8 +17,8 @@ meroxa api METHOD PATH [body] [flags]
 
 ```
 
-meroxa api GET /v1/resources
-meroxa api POST /v1/resources '{"type":"postgres", "name":"pg", "url":"postgres://.."}'
+meroxa api GET /api/collectoions/{collection}/records
+meroxa api POST /api/collectoions/{collection}/records '{"type":"postgres", "name":"pg", "url":"postgres://.."}'
 ```
 
 ### Options
@@ -38,5 +38,5 @@ meroxa api POST /v1/resources '{"type":"postgres", "name":"pg", "url":"postgres:
 
 ### SEE ALSO
 
-* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
 
