@@ -55,8 +55,10 @@ func interfaceSlice(slice interface{}) []interface{} {
 func PrintList(input interface{}, details Details) string {
 	table := simpletable.New()
 	headers := []*simpletable.Cell{}
-	for column := range details {
+	var hh []string
+	for column, js := range details {
 		headers = append(headers, &simpletable.Cell{Align: simpletable.AlignCenter, Text: strings.ToUpper(column)})
+		hh = append(hh, js)
 	}
 	objs := interfaceSlice(input)
 	for _, o := range objs {
@@ -71,11 +73,13 @@ func PrintList(input interface{}, details Details) string {
 			fmt.Printf("err: %v\n", err)
 			return ""
 		}
-
 		row := []*simpletable.Cell{}
-		for _, field := range details {
+
+		for _, o := range hh {
+			// fmt.Printf("Field: %s\n", o)
+			// fmt.Printf("Value: %v\n", amorphous[o])
 			row = append(row,
-				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", amorphous[field])})
+				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", amorphous[o])})
 		}
 		table.Body.Cells = append(table.Body.Cells, row)
 	}

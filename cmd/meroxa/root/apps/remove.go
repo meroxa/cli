@@ -101,7 +101,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 	}
 	addTurbineHeaders(r.client, r.lang, turbineVersion)
 
-	apps, err = apps.RetrieveApplicationID(ctx, r.client, r.args.idOrName, r.flags.Path)
+	apps, err = RetrieveApplicationByNameOrID(ctx, r.client, r.args.idOrName, r.flags.Path)
 	if err != nil {
 		return err
 	}

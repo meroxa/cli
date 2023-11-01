@@ -96,7 +96,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	}
 	addTurbineHeaders(d.client, d.lang, turbineVersion)
 
-	apps, err = apps.RetrieveApplicationID(ctx, d.client, d.args.idOrName, d.flags.Path)
+	apps, err = RetrieveApplicationByNameOrID(ctx, d.client, d.args.idOrName, d.flags.Path)
 	if err != nil {
 		return err
 	}

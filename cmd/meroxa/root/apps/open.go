@@ -97,7 +97,7 @@ func (o *Open) Execute(ctx context.Context) error {
 	}
 
 	apps := &Applications{}
-	apps, err := apps.RetrieveApplicationID(ctx, o.client, o.args.NameOrUUID, o.flags.Path)
+	apps, err := RetrieveApplicationByNameOrID(ctx, o.client, o.args.NameOrUUID, o.flags.Path)
 	if err != nil {
 		return err
 	}

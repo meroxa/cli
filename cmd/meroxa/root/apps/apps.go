@@ -168,7 +168,7 @@ func addTurbineHeaders(c addHeader, lang ir.Lang, version string) {
 	c.AddHeader("Meroxa-CLI-App-Version", version)
 }
 
-func (a Applications) RetrieveApplicationID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
+func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
 	var getPath string
 	apps := Applications{}
 	if path != "" {
@@ -209,5 +209,12 @@ func (a Applications) RetrieveApplicationID(ctx context.Context, client global.B
 	} else {
 		return nil, fmt.Errorf("supply either ID/Name argument or --path flag")
 	}
+
+	if apps.TotalItems == 0 {
+		return nil, fmt.Errorf("no applications found")
+	} else if apps.TotalItems > 1 {
+		return nil, fmt.Errorf("multiple applications found")
+	}
+
 	return &apps, nil
 }
