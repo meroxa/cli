@@ -38,7 +38,7 @@ type Remove struct {
 	turbineCLI turbine.CLI
 
 	args struct {
-		idOrName string
+		nameOrUUID string
 	}
 	flags struct {
 		Path  string `long:"path" usage:"Path to the app directory (default is local directory)"`
@@ -62,20 +62,20 @@ func (r *Remove) Docs() builder.Docs {
 or the Application specified by the given name or UUID identifier.`,
 		Example: `meroxa apps remove # assumes that the Application is in the current directory
 meroxa apps remove --path /my/app
-meroxa apps remove IDorName`,
+meroxa apps remove nameOrUUID`,
 	}
 }
 
 func (r *Remove) Execute(ctx context.Context) error {
 	if !r.flags.Force {
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", r.args.idOrName)
+		fmt.Printf("To proceed, type %q or re-run this command with --force\n▸ ", r.args.nameOrUUID)
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			return err
 		}
 
-		if r.args.idOrName != strings.TrimRight(input, "\r\n") {
+		if r.args.nameOrUUID != strings.TrimRight(input, "\r\n") {
 			return errors.New("action aborted")
 		}
 	}
@@ -101,18 +101,18 @@ func (r *Remove) Execute(ctx context.Context) error {
 	}
 	addTurbineHeaders(r.client, r.lang, turbineVersion)
 
-	apps, err = apps.RetrieveApplicationID(ctx, r.client, r.args.idOrName, r.flags.Path)
+	apps, err = RetrieveApplicationByNameOrID(ctx, r.client, r.args.nameOrUUID, r.flags.Path)
 	if err != nil {
 		return err
 	}
 
-	r.logger.Infof(ctx, "Removing application %q...", r.args.idOrName)
+	r.logger.Infof(ctx, "Removing application %q...", r.args.nameOrUUID)
 	response, err := r.client.CollectionRequest(ctx, "DELETE", collectionName, apps.Items[0].ID, nil, nil)
 	if err != nil {
 		return err
 	}
 
-	r.logger.Infof(ctx, "Application %q successfully removed", r.args.idOrName)
+	r.logger.Infof(ctx, "Application %q successfully removed", r.args.nameOrUUID)
 	r.logger.JSON(ctx, response)
 
 	return nil
@@ -128,7 +128,7 @@ func (r *Remove) BasicClient(client global.BasicClient) {
 
 func (r *Remove) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		r.args.idOrName = args[0]
+		r.args.nameOrUUID = args[0]
 	}
 
 	return nil

@@ -126,8 +126,8 @@ func TestDescribeApplicationArgs(t *testing.T) {
 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
 		}
 
-		if tt.name != ar.args.idOrName {
-			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.idOrName)
+		if tt.name != ar.args.nameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.nameOrUUID)
 		}
 	}
 }
@@ -198,7 +198,7 @@ func TestDescribeApplicationExecution(t *testing.T) {
 		client:     client,
 		logger:     logger,
 		turbineCLI: mockTurbineCLI,
-		args:       struct{ idOrName string }{idOrName: a.Name},
+		args:       struct{ nameOrUUID string }{nameOrUUID: a.Name},
 		flags: struct {
 			Path string "long:\"path\" usage:\"Path to the app directory (default is local directory)\""
 		}{Path: filepath.Join(path, appName)},

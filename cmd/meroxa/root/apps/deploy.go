@@ -415,11 +415,20 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if _, err = d.client.CollectionRequest(ctx, "POST", collectionName, "", input, nil); err != nil {
+
+	response, err := d.client.CollectionRequest(ctx, "POST", collectionName, "", input, nil)
+	if err != nil {
 		return err
 	}
 
-	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaAPIURL(), input.ID)
+	apps := &Application{}
+	err = json.NewDecoder(response.Body).Decode(&apps)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaAPIURL(), apps.ID)
 	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To view your application, visit %s",
 		d.appName, dashboardURL)
 

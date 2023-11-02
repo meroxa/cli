@@ -44,7 +44,7 @@ type Describe struct {
 	turbineCLI turbine.CLI
 	lang       ir.Lang
 	args       struct {
-		idOrName string
+		nameOrUUID string
 	}
 	flags struct {
 		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
@@ -52,7 +52,7 @@ type Describe struct {
 }
 
 func (d *Describe) Usage() string {
-	return "describe [IDorName] [--path pwd]"
+	return "describe [nameOrUUID] [--path pwd]"
 }
 
 func (d *Describe) Flags() []builder.Flag {
@@ -96,7 +96,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	}
 	addTurbineHeaders(d.client, d.lang, turbineVersion)
 
-	apps, err = apps.RetrieveApplicationID(ctx, d.client, d.args.idOrName, d.flags.Path)
+	apps, err = RetrieveApplicationByNameOrID(ctx, d.client, d.args.nameOrUUID, d.flags.Path)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func (d *Describe) Logger(logger log.Logger) {
 
 func (d *Describe) ParseArgs(args []string) error {
 	if len(args) > 0 {
-		d.args.idOrName = args[0]
+		d.args.nameOrUUID = args[0]
 	}
 
 	return nil

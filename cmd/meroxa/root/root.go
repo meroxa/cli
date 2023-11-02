@@ -30,6 +30,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/login"
 	"github.com/meroxa/cli/cmd/meroxa/root/logout"
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
+	"github.com/meroxa/cli/cmd/meroxa/root/secrets"
 	"github.com/meroxa/cli/cmd/meroxa/root/version"
 	"github.com/meroxa/cli/cmd/meroxa/root/whoami"
 
@@ -81,6 +82,7 @@ meroxa resources list --types
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&version.Version{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&whoami.WhoAmI{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&secrets.Secrets{}))
 
 	return cmd
 }

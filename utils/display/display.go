@@ -24,9 +24,11 @@ func PrintTable(obj interface{}, details Details) string {
 
 	mainTable := simpletable.New()
 	for row, field := range details {
+		cellData, _ := json.Marshal(amorphous[field])
+		jsonStr := string(cellData)
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: row + ":"},
-			{Text: fmt.Sprintf("%v", amorphous[field])},
+			{Text: fmt.Sprintf("%v", jsonStr)},
 		})
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -55,8 +57,10 @@ func interfaceSlice(slice interface{}) []interface{} {
 func PrintList(input interface{}, details Details) string {
 	table := simpletable.New()
 	headers := []*simpletable.Cell{}
-	for column := range details {
+	var hh []string
+	for column, js := range details {
 		headers = append(headers, &simpletable.Cell{Align: simpletable.AlignCenter, Text: strings.ToUpper(column)})
+		hh = append(hh, js)
 	}
 	objs := interfaceSlice(input)
 	for _, o := range objs {
@@ -71,11 +75,13 @@ func PrintList(input interface{}, details Details) string {
 			fmt.Printf("err: %v\n", err)
 			return ""
 		}
-
 		row := []*simpletable.Cell{}
-		for _, field := range details {
+
+		for _, h := range hh {
+			cellData, _ := json.Marshal(amorphous[h])
+			jsonStr := string(cellData)
 			row = append(row,
-				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", amorphous[field])})
+				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", jsonStr)})
 		}
 		table.Body.Cells = append(table.Body.Cells, row)
 	}
