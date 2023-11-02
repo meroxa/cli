@@ -26,6 +26,6 @@ Open in a web browser
 
 ### SEE ALSO
 
-* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
-* [meroxa open billing](/cli/cmd/meroxa-open-billing/)	 - Open your billing page in a web browser
+* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
+* [meroxa open billing](//docs/cmd/www/meroxa-open-billing.md)	 - Open your billing page in a web browser
 

@@ -1,0 +1,39 @@
+---
+createdAt: 
+updatedAt: 
+title: "meroxa secrets update"
+slug: meroxa-secrets-update
+url: /cli/cmd/meroxa-secrets-update/
+---
+## meroxa secrets update
+
+Update a Turbine Secret
+
+### Synopsis
+
+This command will update a turbine secret defined on the platform. Adding a --data flag with a json string will append a new key/value pair to already existing data. The command will also prompt the user to update existing key/value pairs, if no value is provided they will remain unchanged.
+
+### Examples
+
+```
+meroxa secrets update nameOrUUID --data '{"key":"new_data"}'
+```
+
+### Options inherited from parent commands
+
+```
+      --cli-config-file string   meroxa configuration file
+      --debug                    display any debugging information
+      --json                     output json
+      --timeout duration         set the duration of the client timeout in seconds (default 10s)
+```
+
+### SEE ALSO
+
+* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
+* [meroxa secrets create](/docs/cmd/www/meroxa-secrets-create.md)	 - Create a Turbine Secret
+* [meroxa secrets describe](/docs/cmd/www/meroxa-secrets-describe.md)	 - Describe a Turbine Secret
+* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - update Turbine Secrets
+* [meroxa secrets remove](/docs/cmd/www/meroxa-secrets-remove.md)	 - Remove a Turbine Secret
+* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - Update a Turbine Secret
+

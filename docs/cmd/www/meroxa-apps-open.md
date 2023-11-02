@@ -39,5 +39,5 @@ meroxa apps open NAMEorUUID
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
+* [meroxa apps](/docs/cmd/www/meroxa-apps.md)	 - Manage Turbine Data Applications
 

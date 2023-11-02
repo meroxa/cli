@@ -30,5 +30,5 @@ meroxa open billing [flags]
 
 ### SEE ALSO
 
-* [meroxa open](/cli/cmd/meroxa-open/)	 - Open in a web browser
+* [meroxa open](/docs/cmd/www/meroxa-open.md)	 - Open in a web browser
 
