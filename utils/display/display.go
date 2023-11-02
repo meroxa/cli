@@ -24,9 +24,11 @@ func PrintTable(obj interface{}, details Details) string {
 
 	mainTable := simpletable.New()
 	for row, field := range details {
+		cellData, _ := json.Marshal(amorphous[field])
+		jsonStr := string(cellData)
 		mainTable.Body.Cells = append(mainTable.Body.Cells, []*simpletable.Cell{
 			{Align: simpletable.AlignRight, Text: row + ":"},
-			{Text: fmt.Sprintf("%v", amorphous[field])},
+			{Text: fmt.Sprintf("%v", jsonStr)},
 		})
 	}
 	mainTable.SetStyle(simpletable.StyleCompact)
@@ -75,11 +77,11 @@ func PrintList(input interface{}, details Details) string {
 		}
 		row := []*simpletable.Cell{}
 
-		for _, o := range hh {
-			// fmt.Printf("Field: %s\n", o)
-			// fmt.Printf("Value: %v\n", amorphous[o])
+		for _, h := range hh {
+			cellData, _ := json.Marshal(amorphous[h])
+			jsonStr := string(cellData)
 			row = append(row,
-				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", amorphous[o])})
+				&simpletable.Cell{Align: simpletable.AlignCenter, Text: fmt.Sprintf("%v", jsonStr)})
 		}
 		table.Body.Cells = append(table.Body.Cells, row)
 	}
