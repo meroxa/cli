@@ -1,10 +1,3 @@
----
-describedAt: 
-updatedAt: 
-title: "meroxa secrets describe"
-slug: meroxa-secrets-describe
-url: /cli/cmd/meroxa-secrets-describe/
----
 ## meroxa secrets describe
 
 describe a Turbine Secret

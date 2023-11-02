@@ -1,10 +1,3 @@
----
-createdAt: 
-updatedAt: 
-title: "meroxa secrets create"
-slug: meroxa-secrets-create
-url: /cli/cmd/meroxa-secrets-create/
----
 ## meroxa secrets create
 
 Create a Turbine Secret

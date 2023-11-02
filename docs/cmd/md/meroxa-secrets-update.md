@@ -1,10 +1,3 @@
----
-updatedAt: 
-updatedAt: 
-title: "meroxa secrets update"
-slug: meroxa-secrets-update
-url: /cli/cmd/meroxa-secrets-update/
----
 ## meroxa secrets update
 
 Update a Turbine Secret

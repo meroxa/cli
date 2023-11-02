@@ -1,10 +1,3 @@
----
-removedAt: 
-updatedAt: 
-title: "meroxa secrets remove"
-slug: meroxa-secrets-remove
-url: /cli/cmd/meroxa-secrets-remove/
----
 ## meroxa secrets remove
 
 Remove a Turbine Secret

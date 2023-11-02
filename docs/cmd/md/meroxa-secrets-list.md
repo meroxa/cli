@@ -1,10 +1,3 @@
----
-listdAt: 
-updatedAt: 
-title: "meroxa secrets list"
-slug: meroxa-secrets-list
-url: /cli/cmd/meroxa-secrets-list/
----
 ## meroxa secrets list
 
 List a Turbine Secret

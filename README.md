@@ -117,7 +117,7 @@ export MEROXA_TENANT_PASSWORD=""
 
 ```
 
-The tenant email and password should come from an already existing platform user, not the console admin. 
+The tenant email and password should come from an existing platform user.
 
 ## Tests
 

@@ -1,10 +1,3 @@
----
-createdAt: 
-updatedAt: 
-title: "meroxa secrets"
-slug: meroxa-secrets
-url: /cli/cmd/meroxa-secrets/
----
 ## meroxa secrets
 
 Manage Turbine Secrets
