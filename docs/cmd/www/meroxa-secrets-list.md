@@ -1,5 +1,5 @@
 ---
-listdAt: 
+createdAt: 
 updatedAt: 
 title: "meroxa secrets list"
 slug: meroxa-secrets-list

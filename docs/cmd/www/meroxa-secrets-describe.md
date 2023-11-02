@@ -1,5 +1,5 @@
 ---
-describedAt: 
+createdAt: 
 updatedAt: 
 title: "meroxa secrets describe"
 slug: meroxa-secrets-describe
