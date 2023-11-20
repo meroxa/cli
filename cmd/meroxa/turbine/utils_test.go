@@ -13,7 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -94,37 +94,6 @@ unable to update app.json file on path "#nope$". Maybe try using a different val
 			require.NoError(t, err)
 			require.Equal(t, "true", read.Vendor)
 			require.Equal(t, "false", read.ModuleInit)
-		})
-	}
-}
-
-func TestGetResourceNamesFromString(t *testing.T) {
-	tests := []struct {
-		name   string
-		input  string
-		output []ApplicationResource
-	}{
-		{
-			name:   "Successfully parse names",
-			input:  "[one two]",
-			output: []ApplicationResource{{Name: "one"}, {Name: "two"}},
-		},
-		{
-			name:   "Successfully parse empty set",
-			input:  "[]",
-			output: []ApplicationResource{},
-		},
-		{
-			name:   "Successfully parse nonsense",
-			input:  "ABC",
-			output: []ApplicationResource{},
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			val := GetResourceNamesFromString(tc.input)
-			assert.Equal(t, tc.output, val)
 		})
 	}
 }
@@ -301,7 +270,7 @@ func TestUploadFile(t *testing.T) {
 		{
 			name: "Successfully upload file",
 			server: func(status int) *httptest.Server {
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 					retries++
 					w.WriteHeader(status)
 				}))
@@ -314,7 +283,7 @@ func TestUploadFile(t *testing.T) {
 		{
 			name: "Fail to upload file",
 			server: func(status int) *httptest.Server {
-				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 					retries++
 					w.WriteHeader(status)
 				}))

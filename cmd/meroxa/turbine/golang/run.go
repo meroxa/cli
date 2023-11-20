@@ -9,7 +9,7 @@ import (
 )
 
 func (t *turbineGoCLI) Run(ctx context.Context) error {
-	gracefulStop, grpcListenAddress := t.Core.Run(ctx)
+	gracefulStop, grpcListenAddress := t.core.Run(ctx)
 	defer gracefulStop()
 
 	cmd := exec.Command("go", []string{

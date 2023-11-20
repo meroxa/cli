@@ -8,5 +8,10 @@ import (
 )
 
 func (t *turbineRbCLI) Init(_ context.Context, appName string) error {
-	return app.NewAppInit(appName, ir.Ruby, t.appPath).Init()
+	a := &app.AppInit{
+		AppName:  appName,
+		Language: ir.Ruby,
+		Path:     t.appPath,
+	}
+	return a.Init()
 }

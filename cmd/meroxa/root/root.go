@@ -53,13 +53,8 @@ func Cmd() *cobra.Command {
 		Short: "The Meroxa CLI",
 		Long: `The Meroxa CLI allows quick and easy access to the Meroxa Data Platform.
 
-Using the CLI you are able to create and manage sophisticated data pipelines
-with only a few simple commands. You can get started by listing the supported
-resource types:
-
-meroxa resources list --types
-`,
-		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+Using the CLI you are able to create and manage sophisticated data pipelines with only a few simple commands.`,
+		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			return global.PersistentPreRunE(cmd)
 		},
 		SilenceUsage:      true,

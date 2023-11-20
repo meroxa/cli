@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
@@ -20,7 +21,7 @@ const (
 
 //go:generate mockgen -source=basic_client.go -package=mock -destination=mock/basic_client_mock.go
 type BasicClient interface {
-	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
+	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values, map[string]string) (*http.Response, error)
 	CollectionRequest(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
 	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
 	AddHeader(key, value string)
@@ -112,21 +113,19 @@ func (r *client) CollectionRequest(
 
 func (r *client) CollectionRequestMultipart(
 	ctx context.Context,
-	method string,
-	collection string,
-	id string,
+	method, collection, id string,
 	body interface{},
 	params url.Values,
+	files map[string]string,
 ) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
 	if id != "" {
 		path += fmt.Sprintf("/%s", id)
 	}
-	req, err := r.newRequest(ctx, method, path, body, params, nil)
+	req, err := r.newRequestMultiPart(ctx, method, path, body, params, nil, files)
 	if err != nil {
 		return nil, err
 	}
-
 	// Merge params
 	resp, err := r.httpClient.Do(req)
 	if err != nil {
@@ -143,8 +142,7 @@ func (r *client) CollectionRequestMultipart(
 
 func (r *client) URLRequest(
 	ctx context.Context,
-	method string,
-	path string,
+	method, path string,
 	body interface{},
 	params url.Values,
 	headers http.Header,
@@ -168,6 +166,102 @@ func (r *client) URLRequest(
 		}
 	}
 	return resp, nil
+}
+
+//nolint:gocyclo
+func (r *client) newRequestMultiPart(
+	ctx context.Context,
+	method string,
+	path string,
+	body interface{},
+	params url.Values,
+	headers http.Header,
+	files map[string]string,
+) (*http.Request, error) {
+	u, err := r.baseURL.Parse(path)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	mp := multipart.NewWriter(buf)
+
+	bodyMP := make(map[string]interface{})
+	byteData, _ := json.Marshal(body)
+	if err = json.Unmarshal(byteData, &bodyMP); err != nil {
+		return nil, err
+	}
+
+	var w io.Writer
+	for k, v := range bodyMP {
+		if v != "" {
+			w, err = mp.CreateFormField(k)
+			if err != nil {
+				return nil, err
+			}
+
+			if err = r.encodeBody(w, v); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	var file *os.File
+	for k, v := range files {
+		file, err = os.Open(v)
+		if err != nil {
+			return nil, err
+		}
+
+		w, err = mp.CreateFormFile(k, file.Name())
+		if err != nil {
+			return nil, err
+		}
+		if _, err = io.Copy(w, file); err != nil {
+			return nil, err
+		}
+	}
+
+	mp.Close()
+
+	req, err := http.NewRequestWithContext(ctx, method, u.String(), buf)
+	if err != nil {
+		return nil, err
+	}
+
+	// add global headers to request
+	if len(r.headers) > 0 {
+		req.Header = r.headers
+	}
+
+	// No need to check for a valid token when trying to authenticate.
+	// TODO: Need to change this once we integrate with OAuth2
+	if path != "/api/collections/users/auth-with-password" {
+		accessToken, err := GetUserToken()
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Authorization", accessToken)
+	}
+
+	req.Header.Set("User-Agent", r.userAgent)
+	req.Header.Set("Content-Type", mp.FormDataContentType())
+	for key, value := range headers {
+		req.Header.Add(key, strings.Join(value, ","))
+	}
+
+	// add params
+	if params != nil {
+		q := req.URL.Query()
+		for k, v := range params { // v is a []string
+			for _, vv := range v {
+				q.Add(k, vv)
+			}
+			req.URL.RawQuery = q.Encode()
+		}
+	}
+
+	return req, nil
 }
 
 func (r *client) newRequest(

@@ -17,14 +17,14 @@ limitations under the License.
 package apps
 
 import (
-	"archive/tar"
-	"bytes"
 	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -34,7 +34,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type Deploy struct {
@@ -117,138 +117,118 @@ func (d *Deploy) getPlatformImage(ctx context.Context) error {
 	defer d.turbineCLI.CleanupDockerfile(d.logger, d.path)
 	d.logger.StopSpinnerWithStatus("Dockerfile created", log.Successful)
 
-	dFile := fmt.Sprintf("turbine-%s.tar.gz", d.appName)
+	d.appTarName = fmt.Sprintf("turbine-%s.tar.gz", d.appName)
 
-	var buf bytes.Buffer
-	if err = createTarAndZipFile(buildPath, &buf); err != nil {
+	if err = d.buildAndRunImage(ctx); err != nil {
 		return err
 	}
 
-	d.logger.StartSpinner("\t", fmt.Sprintf("Creating %q in %q to upload to our build service...", buildPath, dFile))
+	d.logger.StartSpinner("\t", fmt.Sprintf("Saving and uploading %q image", d.appName))
 
-	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0o777)) //nolint:gomnd
-	defer func(fileToWrite *os.File) {
-		if err = fileToWrite.Close(); err != nil {
-			panic(err.Error())
-		}
-
-		// remove .tar.gz file
-		d.logger.StartSpinner("\t", fmt.Sprintf("Removing %q...", dFile))
-		if err = os.Remove(dFile); err != nil {
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
-		} else {
-			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
-		}
-	}(fileToWrite)
-	if err != nil {
+	if err = d.saveImageAsTar(ctx); err != nil {
 		return err
 	}
-	if _, err = io.Copy(fileToWrite, &buf); err != nil {
-		return err
-	}
-	d.appTarName = dFile
-	d.fnName = dFile
-	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", dFile, buildPath), log.Successful)
+
+	d.logger.StopSpinnerWithStatus(fmt.Sprintf("%q successfully created in %q", d.appTarName, buildPath), log.Successful)
 	return nil
 }
 
-// CreateTarAndZipFile creates a .tar.gz file from `src` on current directory.
-func createTarAndZipFile(src string, buf io.Writer) error {
-	// Grab the directory we care about (app's directory)
-	appDir := filepath.Base(src)
+func (d *Deploy) runDockerImage(ctx context.Context) error {
+	// docker run -d --rm -p 8080:80 -t simple-with-process-mdpx-demo
+	cmd := exec.CommandContext(
+		ctx,
+		"docker",
+		"run",
+		"-d",
+		"--rm",
+		"-p",
+		"8080:8080",
+		"-t",
+		d.appName,
+	)
 
-	// Change to parent's app directory
-	pwd, err := turbine.SwitchToAppDirectory(filepath.Dir(src))
+	cmd.Dir = d.path
+	cmd.Env = os.Environ()
+
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return err
+		return fmt.Errorf("\ndocker run failed: %v", string(out))
 	}
-
-	zipWriter := gzip.NewWriter(buf)
-	tarWriter := tar.NewWriter(zipWriter)
-
-	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if shouldSkipDir(fi) {
-			return filepath.SkipDir
-		}
-		header, err := tar.FileInfoHeader(fi, file)
-		if err != nil {
-			return err
-		}
-
-		header.Name = filepath.ToSlash(file)
-		if err := tarWriter.WriteHeader(header); err != nil { //nolint:govet
-			return err
-		}
-		if !fi.Mode().IsRegular() {
-			return nil
-		}
-		if !fi.IsDir() {
-			var data *os.File
-			data, err = os.Open(file)
-			defer func(data *os.File) {
-				err = data.Close()
-				if err != nil {
-					panic(err.Error())
-				}
-			}(data)
-			if err != nil {
-				return err
-			}
-			if _, err := io.Copy(tarWriter, data); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-
-	if err := tarWriter.Close(); err != nil {
-		return err
-	}
-	if err := zipWriter.Close(); err != nil {
-		return err
-	}
-
-	return os.Chdir(pwd)
+	return nil
 }
 
-func shouldSkipDir(fi os.FileInfo) bool {
-	if !fi.IsDir() {
-		return false
+func (d *Deploy) buildAndRunImage(ctx context.Context) error {
+	d.logger.StartSpinner("\t", fmt.Sprintf("Creating function image in %s", d.path))
+	cmd := exec.CommandContext(
+		ctx,
+		"docker",
+		"build",
+		"-t",
+		d.appName,
+		".",
+	)
+
+	cmd.Dir = d.path
+	cmd.Env = os.Environ()
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("\ndocker build failed: %v", string(out))
 	}
 
-	switch fi.Name() {
-	case ".git", "fixtures", "node_modules":
-		return true
-	}
+	d.fnName = d.appName
 
-	return false
+	return d.runDockerImage(ctx)
 }
 
-// getAppImage will check what type of build needs to perform and ultimately will return the image name to use
-// when deploying.
-func (d *Deploy) getAppImage(ctx context.Context) error {
-	d.logger.StartSpinner("\t", "Checking if application has processes...")
+func (d *Deploy) saveImageAsTar(ctx context.Context) error {
+	app := fmt.Sprintf("%s:latest", d.appName)
+	appTar := fmt.Sprintf("%s.tar", d.appName)
+	cmd := exec.CommandContext(
+		ctx,
+		"docker",
+		"save",
+		"-o",
+		appTar,
+		app,
+	)
 
-	needsToBuild, err := d.turbineCLI.NeedsToBuild(ctx)
+	cmd.Dir = d.path
+	cmd.Env = os.Environ()
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		d.logger.StopSpinnerWithStatus("\t", log.Failed)
+		return fmt.Errorf("\ndocker run failed: %v - %v", err.Error(), string(out))
+	}
+
+	err = d.gzipImageTar(ctx, appTar)
+	return err
+}
+
+func (d *Deploy) gzipImageTar(_ context.Context, appTar string) error {
+	reader, err := os.Open(filepath.Join(d.path, appTar))
+	if err != nil {
 		return err
 	}
 
-	// If no need to build, return empty imageName which won't be utilized by the deployment process anyway.
-	if !needsToBuild {
-		d.logger.StopSpinnerWithStatus("No need to create process image\n", log.Successful)
-		return nil
+	filename := filepath.Base(filepath.Join(d.path, appTar))
+	target := filepath.Join(d.path, d.appTarName)
+	writer, err := os.Create(target)
+	if err != nil {
+		return err
+	}
+	defer writer.Close()
+
+	archiver := gzip.NewWriter(writer)
+	archiver.Name = filename
+	defer archiver.Close()
+
+	_, err = io.Copy(archiver, reader)
+	if err != nil {
+		return err
 	}
 
-	d.logger.StopSpinnerWithStatus("Application processes found. Creating application image...", log.Successful)
-	return d.getPlatformImage(ctx)
+	err = os.Remove(filepath.Join(d.path, appTar))
+	return err
 }
 
 // validateLanguage stops execution of the deployment in case language is not supported.
@@ -303,11 +283,6 @@ func (d *Deploy) readFromAppJSON(ctx context.Context) error {
 	d.appName = d.prepareAppName(ctx)
 
 	return nil
-}
-
-func (d *Deploy) prepareDeployment(ctx context.Context) error {
-	d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
-	return d.getAppImage(ctx)
 }
 
 func (d *Deploy) prepareAppName(ctx context.Context) string {
@@ -407,16 +382,42 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	}
 	defer gracefulStop()
 
-	if err = d.prepareDeployment(ctx); err != nil {
-		return err
-	}
-
 	input, err := d.createApplicationRequest(ctx)
 	if err != nil {
 		return err
 	}
 
-	response, err := d.client.CollectionRequest(ctx, "POST", collectionName, "", input, nil)
+	/*	TODO: Enable when function integration is done
+
+		d.logger.Infof(ctx, "Preparing to deploy application %q...", d.appName)
+
+		if err = d.getPlatformImage(ctx); err != nil {
+			return err
+		}
+
+		file := filepath.Join(d.path, d.appTarName)
+		if _, err = os.Stat(file); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				return fmt.Errorf("turbine archive %q does not exist: %w", file, err)
+			}
+
+			return err
+		}
+
+		files := map[string]string{
+			"imageArchive": file,
+		}
+	*/
+
+	response, err := d.client.CollectionRequestMultipart(
+		ctx,
+		http.MethodPost,
+		collectionName,
+		"",
+		input,
+		nil,
+		map[string]string{}, // TODO: change back to files from above
+	)
 	if err != nil {
 		return err
 	}
@@ -424,7 +425,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	apps := &Application{}
 	err = json.NewDecoder(response.Body).Decode(&apps)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 

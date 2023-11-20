@@ -41,10 +41,10 @@ endif
 fig:
 	go run gen-spec/main.go
 
+# downgrade linter until https://github.com/golangci/golangci-lint/issues/4239 is fixed
 .PHONY: lint
 lint:
-	docker pull golangci/golangci-lint:latest
-	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:latest golangci-lint run --timeout 5m -v
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.54.2 golangci-lint run --timeout 5m -v
 
 .PHONY: generate
 generate: mockgen-install
