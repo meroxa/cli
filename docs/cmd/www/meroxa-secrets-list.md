@@ -7,21 +7,33 @@ url: /cli/cmd/meroxa-secrets-list/
 ---
 ## meroxa secrets list
 
-List a Turbine Secret
+List all Turbine Secrets
 
 ### Synopsis
 
-This command will list all turbine secrets defined on the platform.
+This command will list all the secrets defined on the platform.
+
+
+```
+meroxa secrets list [--path pwd] [flags]
+```
 
 ### Examples
 
 ```
-meroxa secrets list  
+meroxa secrets list
+```
+
+### Options
+
+```
+  -h, --help   help for list
 ```
 
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -30,10 +42,5 @@ meroxa secrets list
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
-* [meroxa secrets create](/docs/cmd/www/meroxa-secrets-create.md)	 - Create a Turbine Secret
-* [meroxa secrets describe](/docs/cmd/www/meroxa-secrets-describe.md)	 - Describe a Turbine Secret
-* [meroxa secrets list](/docs/cmd/www/meroxa-secrets-list.md)	 - List Turbine Secrets
-* [meroxa secrets remove](/docs/cmd/www/meroxa-secrets-remove.md)	 - Remove a Turbine Secret
-* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - Update a Turbine Secret
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
 

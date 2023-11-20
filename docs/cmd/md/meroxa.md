@@ -16,6 +16,7 @@ meroxa resources list --types
 ### Options
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
   -h, --help                     help for meroxa
@@ -30,10 +31,10 @@ meroxa resources list --types
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
 * [meroxa completion](meroxa_completion.md)	 - Generate completion script
 * [meroxa config](meroxa_config.md)	 - Manage your Meroxa CLI configuration
-* [meroxa environments](meroxa_environments.md)	 - Manage environments on Meroxa
 * [meroxa login](meroxa_login.md)	 - Login to a Conduit Platform tenant
 * [meroxa logout](meroxa_logout.md)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](meroxa_open.md)	 - Open in a web browser
+* [meroxa secrets](meroxa_secrets.md)	 - Manage Turbine Data Applications
 * [meroxa version](meroxa_version.md)	 - Display the Meroxa CLI version
 * [meroxa whoami](meroxa_whoami.md)	 - Display the current logged in user
 

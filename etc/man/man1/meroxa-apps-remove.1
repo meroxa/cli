@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Oct 2023" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Nov 2023" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -8,7 +8,7 @@ meroxa-apps-remove - Remove a Turbine Data Application
 
 .SH SYNOPSIS
 .PP
-\fBmeroxa apps remove [NameOrUUID] [--path pwd] [flags]\fP
+\fBmeroxa apps remove [ID or Name] [--path pwd] [flags]\fP
 
 
 .SH DESCRIPTION
@@ -34,6 +34,10 @@ or the Application specified by the given name or UUID identifier.
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
+\fB--api-url\fP=""
+	API url
+
+.PP
 \fB--cli-config-file\fP=""
 	meroxa configuration file
 
@@ -57,7 +61,7 @@ or the Application specified by the given name or UUID identifier.
 .nf
 meroxa apps remove # assumes that the Application is in the current directory
 meroxa apps remove --path /my/app
-meroxa apps remove NAME
+meroxa apps remove nameOrUUID
 
 .fi
 .RE

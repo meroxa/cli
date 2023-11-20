@@ -16,7 +16,7 @@ This command will remove the Application specified in '--path'
 or the Application specified by the given name or UUID identifier.
 
 ```
-meroxa apps remove [NameOrUUID] [--path pwd] [flags]
+meroxa apps remove [ID or Name] [--path pwd] [flags]
 ```
 
 ### Examples
@@ -24,7 +24,7 @@ meroxa apps remove [NameOrUUID] [--path pwd] [flags]
 ```
 meroxa apps remove # assumes that the Application is in the current directory
 meroxa apps remove --path /my/app
-meroxa apps remove NAME
+meroxa apps remove nameOrUUID
 ```
 
 ### Options
@@ -38,6 +38,7 @@ meroxa apps remove NAME
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -46,5 +47,5 @@ meroxa apps remove NAME
 
 ### SEE ALSO
 
-* [meroxa apps](/docs/cmd/www/meroxa-apps.md)	 - Manage Turbine Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

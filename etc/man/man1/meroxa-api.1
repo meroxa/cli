@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Oct 2023" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Nov 2023" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -24,6 +24,10 @@ Invoke Meroxa API
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
+\fB--api-url\fP=""
+	API url
+
+.PP
 \fB--cli-config-file\fP=""
 	meroxa configuration file
 
@@ -46,8 +50,8 @@ Invoke Meroxa API
 
 .nf
 
-meroxa api GET /v1/resources
-meroxa api POST /v1/resources '{"type":"postgres", "name":"pg", "url":"postgres://.."}'
+meroxa api GET /apps/{id}
+'
 
 .fi
 .RE

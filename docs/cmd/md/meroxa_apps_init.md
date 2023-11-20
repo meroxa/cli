@@ -31,6 +31,7 @@ meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json

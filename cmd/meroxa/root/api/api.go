@@ -58,8 +58,8 @@ func (a *API) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Invoke Meroxa API",
 		Example: `
-meroxa api GET {collection} {id}
-meroxa api POST {collection} {id} '{"type":"postgres", "name":"pg", "url":"postgres://.."}'`,
+meroxa api GET /apps/{id}
+'`,
 	}
 }
 

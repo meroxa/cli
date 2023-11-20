@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-secrets/
 ---
 ## meroxa secrets
 
-Manage Turbine Secrets
+Manage Turbine Data Applications
 
 ### Options
 
@@ -18,6 +18,7 @@ Manage Turbine Secrets
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -26,10 +27,10 @@ Manage Turbine Secrets
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
-* [meroxa secrets create](/docs/cmd/www/meroxa-secrets-create.md)	 - Create a Turbine Secret
-* [meroxa secrets describe](/docs/cmd/www/meroxa-secrets-describe.md)	 - Describe a Turbine Secret
-* [meroxa secrets list](/docs/cmd/www/meroxa-secrets-list.md)	 - List Turbine Secrets
-* [meroxa secrets remove](/docs/cmd/www/meroxa-secrets-remove.md)	 - Remove a Turbine Secret
-* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - Update a Turbine Secret
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa secrets create](/cli/cmd/meroxa-secrets-create/)	 - Create a Turbine Secret
+* [meroxa secrets describe](/cli/cmd/meroxa-secrets-describe/)	 - Describe a Turbine Secret
+* [meroxa secrets list](/cli/cmd/meroxa-secrets-list/)	 - List all Turbine Secrets
+* [meroxa secrets remove](/cli/cmd/meroxa-secrets-remove/)	 - Remove a Turbine Secret
+* [meroxa secrets update](/cli/cmd/meroxa-secrets-update/)	 - Update a Turbine Secret
 

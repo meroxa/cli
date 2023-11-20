@@ -17,8 +17,8 @@ meroxa api METHOD PATH [body] [flags]
 
 ```
 
-meroxa api GET /api/collectoions/{collection}/records
-meroxa api POST /api/collectoions/{collection}/records '{"type":"postgres", "name":"pg", "url":"postgres://.."}'
+meroxa api GET /apps/{id}
+'
 ```
 
 ### Options
@@ -30,6 +30,7 @@ meroxa api POST /api/collectoions/{collection}/records '{"type":"postgres", "nam
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -38,5 +39,5 @@ meroxa api POST /api/collectoions/{collection}/records '{"type":"postgres", "nam
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

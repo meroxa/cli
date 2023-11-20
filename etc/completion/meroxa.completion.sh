@@ -376,6 +376,8 @@ _meroxa_api()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -407,6 +409,8 @@ _meroxa_apps_deploy()
     flags+=("--path=")
     two_word_flags+=("--path")
     flags+=("--skip-collection-validation")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -437,6 +441,8 @@ _meroxa_apps_describe()
     flags+=("-h")
     flags+=("--path=")
     two_word_flags+=("--path")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -463,6 +469,8 @@ _meroxa_apps_help()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -499,6 +507,8 @@ _meroxa_apps_init()
     flags+=("--path=")
     two_word_flags+=("--path")
     flags+=("--skip-mod-init")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -529,7 +539,8 @@ _meroxa_apps_list()
 
     flags+=("--help")
     flags+=("-h")
-    flags+=("--no-headers")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -560,6 +571,8 @@ _meroxa_apps_open()
     flags+=("-h")
     flags+=("--path=")
     two_word_flags+=("--path")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -592,6 +605,8 @@ _meroxa_apps_remove()
     flags+=("-h")
     flags+=("--path=")
     two_word_flags+=("--path")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -622,6 +637,8 @@ _meroxa_apps_run()
     flags+=("-h")
     flags+=("--path=")
     two_word_flags+=("--path")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -668,6 +685,8 @@ _meroxa_apps()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -694,6 +713,8 @@ _meroxa_auth_help()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -723,6 +744,8 @@ _meroxa_auth_login()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -751,6 +774,8 @@ _meroxa_auth_logout()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -779,6 +804,8 @@ _meroxa_auth_whoami()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -811,6 +838,8 @@ _meroxa_auth()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -839,6 +868,8 @@ _meroxa_completion()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -871,6 +902,8 @@ _meroxa_config_describe()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -897,6 +930,8 @@ _meroxa_config_help()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -926,6 +961,8 @@ _meroxa_config_set()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -957,267 +994,8 @@ _meroxa_config()
 
     flags+=("--help")
     flags+=("-h")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments_create()
-{
-    last_command="meroxa_environments_create"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    two_word_flags+=("-c")
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--provider=")
-    two_word_flags+=("--provider")
-    flags+=("--region=")
-    two_word_flags+=("--region")
-    flags+=("--type=")
-    two_word_flags+=("--type")
-    flags+=("--yes")
-    flags+=("-y")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments_describe()
-{
-    last_command="meroxa_environments_describe"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments_help()
-{
-    last_command="meroxa_environments_help"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    has_completion_function=1
-    noun_aliases=()
-}
-
-_meroxa_environments_list()
-{
-    last_command="meroxa_environments_list"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--no-headers")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments_remove()
-{
-    last_command="meroxa_environments_remove"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--force")
-    flags+=("-f")
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments_repair()
-{
-    last_command="meroxa_environments_repair"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments_update()
-{
-    last_command="meroxa_environments_update"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--config=")
-    two_word_flags+=("--config")
-    two_word_flags+=("-c")
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--name=")
-    two_word_flags+=("--name")
-    flags+=("--yes")
-    flags+=("-y")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
-_meroxa_environments()
-{
-    last_command="meroxa_environments"
-
-    command_aliases=()
-
-    commands=()
-    commands+=("create")
-    commands+=("describe")
-    commands+=("help")
-    commands+=("list")
-    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
-        command_aliases+=("ls")
-        aliashash["ls"]="list"
-    fi
-    commands+=("remove")
-    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
-        command_aliases+=("delete")
-        aliashash["delete"]="remove"
-        command_aliases+=("rm")
-        aliashash["rm"]="remove"
-    fi
-    commands+=("repair")
-    commands+=("update")
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--help")
-    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1244,6 +1022,8 @@ _meroxa_help()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1273,6 +1053,8 @@ _meroxa_login()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1301,6 +1083,8 @@ _meroxa_logout()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1329,6 +1113,8 @@ _meroxa_open_billing()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1355,6 +1141,8 @@ _meroxa_open_help()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1386,6 +1174,239 @@ _meroxa_open()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_secrets_create()
+{
+    last_command="meroxa_secrets_create"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--data=")
+    two_word_flags+=("--data")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_secrets_describe()
+{
+    last_command="meroxa_secrets_describe"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_secrets_help()
+{
+    last_command="meroxa_secrets_help"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    has_completion_function=1
+    noun_aliases=()
+}
+
+_meroxa_secrets_list()
+{
+    last_command="meroxa_secrets_list"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_secrets_remove()
+{
+    last_command="meroxa_secrets_remove"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--force")
+    flags+=("-f")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_secrets_update()
+{
+    last_command="meroxa_secrets_update"
+
+    command_aliases=()
+
+    commands=()
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--data=")
+    two_word_flags+=("--data")
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
+    flags+=("--cli-config-file=")
+    two_word_flags+=("--cli-config-file")
+    flags+=("--debug")
+    flags+=("--json")
+    flags+=("--timeout=")
+    two_word_flags+=("--timeout")
+
+    must_have_one_flag=()
+    must_have_one_noun=()
+    noun_aliases=()
+}
+
+_meroxa_secrets()
+{
+    last_command="meroxa_secrets"
+
+    command_aliases=()
+
+    commands=()
+    commands+=("create")
+    commands+=("describe")
+    commands+=("help")
+    commands+=("list")
+    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
+        command_aliases+=("ls")
+        aliashash["ls"]="list"
+    fi
+    commands+=("remove")
+    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
+        command_aliases+=("delete")
+        aliashash["delete"]="remove"
+        command_aliases+=("rm")
+        aliashash["rm"]="remove"
+    fi
+    commands+=("update")
+
+    flags=()
+    two_word_flags=()
+    local_nonpersistent_flags=()
+    flags_with_completion=()
+    flags_completion=()
+
+    flags+=("--help")
+    flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1414,6 +1435,8 @@ _meroxa_version()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1442,6 +1465,8 @@ _meroxa_whoami()
 
     flags+=("--help")
     flags+=("-h")
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")
@@ -1474,17 +1499,15 @@ _meroxa_root_command()
         command_aliases+=("cfg")
         aliashash["cfg"]="config"
     fi
-    commands+=("environments")
-    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
-        command_aliases+=("env")
-        aliashash["env"]="environments"
-        command_aliases+=("environment")
-        aliashash["environment"]="environments"
-    fi
     commands+=("help")
     commands+=("login")
     commands+=("logout")
     commands+=("open")
+    commands+=("secrets")
+    if [[ -z "${BASH_VERSION:-}" || "${BASH_VERSINFO[0]:-}" -gt 3 ]]; then
+        command_aliases+=("secrets")
+        aliashash["secrets"]="secrets"
+    fi
     commands+=("version")
     commands+=("whoami")
 
@@ -1494,6 +1517,8 @@ _meroxa_root_command()
     flags_with_completion=()
     flags_completion=()
 
+    flags+=("--api-url=")
+    two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
     two_word_flags+=("--cli-config-file")
     flags+=("--debug")

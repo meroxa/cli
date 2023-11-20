@@ -7,21 +7,34 @@ url: /cli/cmd/meroxa-secrets-describe/
 ---
 ## meroxa secrets describe
 
-describe a Turbine Secret
+Describe a Turbine Secret
 
 ### Synopsis
 
-This command will describe a turbine secret defined on the platform.
+This command will describe a turbine secret by id or name.
+
+
+```
+meroxa secrets describe nameOrUUID [flags]
+```
 
 ### Examples
 
 ```
-meroxa secrets describe nameOrUUID 
+meroxa secrets describe nameOrUUID
+
+```
+
+### Options
+
+```
+  -h, --help   help for describe
 ```
 
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -30,10 +43,5 @@ meroxa secrets describe nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
-* [meroxa secrets create](/docs/cmd/www/meroxa-secrets-create.md)	 - Create a Turbine Secret
-* [meroxa secrets describe](/docs/cmd/www/meroxa-secrets-describe.md)	 - Describe a Turbine Secret
-* [meroxa secrets list](/docs/cmd/www/meroxa-secrets-list.md)	 - List Turbine Secrets
-* [meroxa secrets remove](/docs/cmd/www/meroxa-secrets-remove.md)	 - Remove a Turbine Secret
-* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - Update a Turbine Secret
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
 
