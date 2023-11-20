@@ -22,6 +22,7 @@ meroxa login [flags]
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -30,5 +31,5 @@ meroxa login [flags]
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
 

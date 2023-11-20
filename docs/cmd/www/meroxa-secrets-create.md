@@ -11,19 +11,33 @@ Create a Turbine Secret
 
 ### Synopsis
 
-This command will create a turbine secret with data specified by --data flag.
+This command will create a secret as promted by the user.'
+After successful creation, the secret can be used in a connector. 
+
+
+```
+meroxa secrets create NAME --data '{}' [flags]
+```
 
 ### Examples
 
 ```
-meroxa secrets create name 
-meroxa secrets create name --data '{}'
+meroxa secret create NAME
+		          meroxa secret create NAME --data '{}'
+		
+```
 
+### Options
+
+```
+      --data string   Secret's data, passed as a JSON string
+  -h, --help          help for create
 ```
 
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -32,10 +46,5 @@ meroxa secrets create name --data '{}'
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
-* [meroxa secrets create](/docs/cmd/www/meroxa-secrets-create.md)	 - Create a Turbine Secret
-* [meroxa secrets describe](/docs/cmd/www/meroxa-secrets-describe.md)	 - Describe a Turbine Secret
-* [meroxa secrets list](/docs/cmd/www/meroxa-secrets-list.md)	 - List Turbine Secrets
-* [meroxa secrets remove](/docs/cmd/www/meroxa-secrets-remove.md)	 - Remove a Turbine Secret
-* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - Update a Turbine Secret
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
 

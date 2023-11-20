@@ -32,6 +32,7 @@ refresh_token: c337a0d...c0f928b
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json

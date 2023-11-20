@@ -49,6 +49,7 @@ meroxa completion [bash|zsh|fish|powershell]
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json

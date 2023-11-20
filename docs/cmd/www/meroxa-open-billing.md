@@ -22,6 +22,7 @@ meroxa open billing [flags]
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -30,5 +31,5 @@ meroxa open billing [flags]
 
 ### SEE ALSO
 
-* [meroxa open](/docs/cmd/www/meroxa-open.md)	 - Open in a web browser
+* [meroxa open](/cli/cmd/meroxa-open/)	 - Open in a web browser
 

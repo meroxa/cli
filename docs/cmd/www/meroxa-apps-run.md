@@ -35,6 +35,7 @@ meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -43,5 +44,5 @@ meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
 
 ### SEE ALSO
 
-* [meroxa apps](/docs/cmd/www/meroxa-apps.md)	 - Manage Turbine Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
 

@@ -18,6 +18,7 @@ Manage Turbine Data Applications
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -26,12 +27,12 @@ Manage Turbine Data Applications
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
-* [meroxa apps deploy](/docs/cmd/www/cmd/meroxa-apps-deploy.md)	 - Deploy a Turbine Data Application
-* [meroxa apps describe](/docs/cmd/www/meroxa-apps-describe.md)	 - Describe a Turbine Data Application
-* [meroxa apps init](//docs/cmd/www/meroxa-apps-init.md)	 - Initialize a Turbine Data Application
-* [meroxa apps list](/docs/cmd/www/meroxa-apps-list.md)	 - List Turbine Data Applications
-* [meroxa apps open](/docs/cmd/www/meroxa-apps-open.md)	 - Open the link to a Turbine Data Application in the Dashboard
-* [meroxa apps remove](/docs/cmd/www/meroxa-apps-remove.md)	 - Remove a Turbine Data Application
-* [meroxa apps run](/docs/cmd/www/meroxa-apps-run.md)	 - Execute a Turbine Data Application locally
+* [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
+* [meroxa apps deploy](/cli/cmd/meroxa-apps-deploy/)	 - Deploy a Turbine Data Application
+* [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Turbine Data Application
+* [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Turbine Data Application
+* [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Turbine Data Applications
+* [meroxa apps open](/cli/cmd/meroxa-apps-open/)	 - Open the link to a Turbine Data Application in the Dashboard
+* [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Remove a Turbine Data Application
+* [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Turbine Data Application locally
 

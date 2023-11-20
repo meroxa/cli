@@ -10,8 +10,8 @@ meroxa api METHOD PATH [body] [flags]
 
 ```
 
-meroxa api GET /v1/resources
-meroxa api POST /v1/resources '{"type":"postgres", "name":"pg", "url":"postgres://.."}'
+meroxa api GET /apps/{id}
+'
 ```
 
 ### Options
@@ -23,6 +23,7 @@ meroxa api POST /v1/resources '{"type":"postgres", "name":"pg", "url":"postgres:
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json

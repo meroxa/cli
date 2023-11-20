@@ -9,13 +9,13 @@ meroxa apps list [flags]
 ### Options
 
 ```
-  -h, --help         help for list
-      --no-headers   display output without headers
+  -h, --help   help for list
 ```
 
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json

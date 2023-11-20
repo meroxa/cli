@@ -11,17 +11,29 @@ Remove a Turbine Secret
 
 ### Synopsis
 
-This command will remove a turbine secret defined on the platform.
+This command will remove the secret specified either by name or id
+
+```
+meroxa secrets remove [--path pwd] [flags]
+```
 
 ### Examples
 
 ```
-meroxa secrets remove nameOrUUID 
+meroxa apps remove nameOrUUID
+```
+
+### Options
+
+```
+  -f, --force   skip confirmation
+  -h, --help    help for remove
 ```
 
 ### Options inherited from parent commands
 
 ```
+      --api-url string           API url
       --cli-config-file string   meroxa configuration file
       --debug                    display any debugging information
       --json                     output json
@@ -30,10 +42,5 @@ meroxa secrets remove nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa](/docs/cmd/www/meroxa.md)	 - The Meroxa CLI
-* [meroxa secrets create](/docs/cmd/www/meroxa-secrets-create.md)	 - Create a Turbine Secret
-* [meroxa secrets describe](/docs/cmd/www/meroxa-secrets-describe.md)	 - Describe a Turbine Secret
-* [meroxa secrets list](/docs/cmd/www/meroxa-secrets-list.md)	 - List Turbine Secrets
-* [meroxa secrets remove](/docs/cmd/www/meroxa-secrets-remove.md)	 - Remove a Turbine Secret
-* [meroxa secrets update](/docs/cmd/www/meroxa-secrets-update.md)	 - Update a Turbine Secret
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
 
