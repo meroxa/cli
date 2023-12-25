@@ -31,7 +31,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.14.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.32.0
 )
 
 require github.com/cristalhq/jwt/v3 v3.1.0 // indirect
