@@ -1,12 +1,8 @@
 package secrets
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
-	"fmt"
-	"os"
-	"strings"
 
 	"github.com/meroxa/cli/log"
 
@@ -82,19 +78,6 @@ func (d *Update) Execute(ctx context.Context) error {
 	getSecrets, err := RetrieveSecretsID(ctx, d.client, d.args.nameOrUUID)
 	if err != nil {
 		return err
-	}
-
-	fmt.Println("To proceed, enter new data for each key or press enter to skip. ")
-	for k := range getSecrets.Items[0].Data {
-		fmt.Printf("\n %q: ", k)
-		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n') //nolint
-		if err != nil {
-			return err
-		}
-		if len(strings.TrimRight(input, "\r\n")) != 0 {
-			getSecrets.Items[0].Data[k] = strings.TrimRight(input, "\r\n")
-		}
 	}
 
 	if d.flags.Data != "" {
