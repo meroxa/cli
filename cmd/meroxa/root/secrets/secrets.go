@@ -99,7 +99,6 @@ func (*Secrets) SubCommands() []*cobra.Command {
 		builder.BuildCobraCommand(&Create{}),
 		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&List{}),
-		builder.BuildCobraCommand(&Update{}),
 		builder.BuildCobraCommand(&Remove{}),
 	}
 }
