@@ -28,6 +28,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -39,10 +40,8 @@ import (
 
 type Deploy struct {
 	flags struct {
-		Path                     string `long:"path" usage:"Path to the app directory (default is local directory)"`
-		Spec                     string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
-		SkipCollectionValidation bool   `long:"skip-collection-validation" usage:"Skips unique destination collection and looping validations"` //nolint:lll
-		Verbose                  bool   `long:"verbose" usage:"Prints more logging messages" hidden:"true"`
+		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
+		Spec string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 	}
 
 	client        global.BasicClient
@@ -93,6 +92,11 @@ func (d *Deploy) Config(cfg config.Config) {
 
 func (d *Deploy) BasicClient(client global.BasicClient) {
 	d.client = client
+
+	// deployments needs to ensure enough time to complete
+	if !global.ClientWithCustomTimeout() {
+		d.client.SetTimeout(60 * time.Second)
+	}
 }
 
 func (d *Deploy) Flags() []builder.Flag {
@@ -432,11 +436,7 @@ func (d *Deploy) Execute(ctx context.Context) error {
 	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To view your application, visit %s",
 		d.appName, dashboardURL)
 
-	if d.flags.Verbose {
-		d.logger.Info(ctx, fmt.Sprintf("\n\t%s %s", d.logger.SuccessfulCheck(), output))
-	} else {
-		d.logger.StopSpinnerWithStatus(output, log.Successful)
-	}
+	d.logger.StopSpinnerWithStatus(output, log.Successful)
 
 	return nil
 }

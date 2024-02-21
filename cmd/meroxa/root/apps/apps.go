@@ -157,11 +157,11 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (tu
 	return nil, newLangUnsupportedError(lang)
 }
 
-type addHeader interface {
-	AddHeader(key, value string)
+type appsClient interface {
+	AddHeader(string, string)
 }
 
-func addTurbineHeaders(c addHeader, lang ir.Lang, version string) {
+func addTurbineHeaders(c appsClient, lang ir.Lang, version string) {
 	c.AddHeader("Meroxa-CLI-App-Lang", string(lang))
 	if lang == ir.JavaScript {
 		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)
