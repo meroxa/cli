@@ -28,7 +28,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type Remove struct {

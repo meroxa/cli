@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/meroxa/turbine-core/pkg/ir"
-
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 
@@ -18,6 +16,7 @@ import (
 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils"
+	"github.com/meroxa/turbine-core/pkg/ir"
 )
 
 func TestInitAppArgs(t *testing.T) {

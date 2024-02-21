@@ -9,11 +9,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/meroxa/turbine-core/pkg/app"
-	"github.com/meroxa/turbine-core/pkg/ir"
-
 	utils "github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
+	"github.com/meroxa/turbine-core/v2/pkg/app"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 func (t *turbineGoCLI) Init(_ context.Context, appName string) error {

@@ -10,7 +10,7 @@ filter __meroxa_escapeStringWithSpecialChars {
     $_ -replace '\s|#|@|\$|;|,|''|\{|\}|\(|\)|"|`|\||<|>|&','`$&'
 }
 
-[scriptblock]$__meroxaCompleterBlock = {
+[scriptblock]${__meroxaCompleterBlock} = {
     param(
             $WordToComplete,
             $CommandAst,
@@ -85,7 +85,7 @@ filter __meroxa_escapeStringWithSpecialChars {
 
     __meroxa_debug "Calling $RequestComp"
     # First disable ActiveHelp which is not supported for Powershell
-    $env:MEROXA_ACTIVE_HELP=0
+    ${env:MEROXA_ACTIVE_HELP}=0
 
     #call the command store the output in $out and redirect stderr and stdout to null
     # $Out is an array contains each line per element
@@ -242,4 +242,4 @@ filter __meroxa_escapeStringWithSpecialChars {
     }
 }
 
-Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock $__meroxaCompleterBlock
+Register-ArgumentCompleter -CommandName 'meroxa' -ScriptBlock ${__meroxaCompleterBlock}

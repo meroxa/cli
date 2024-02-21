@@ -8,5 +8,10 @@ import (
 )
 
 func (t *turbinePyCLI) Init(_ context.Context, appName string) error {
-	return app.NewAppInit(appName, ir.Python, t.appPath).Init()
+	a := &app.AppInit{
+		AppName:  appName,
+		Language: ir.Python,
+		Path:     t.appPath,
+	}
+	return a.Init()
 }

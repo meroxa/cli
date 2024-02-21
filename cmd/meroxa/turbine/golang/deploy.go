@@ -36,7 +36,7 @@ func (t *turbineGoCLI) CreateDockerfile(_ context.Context, appName string) (stri
 }
 
 func (t *turbineGoCLI) StartGrpcServer(ctx context.Context, gitSha string) (func(), error) {
-	grpcListenAddress, err := t.Core.Start(ctx)
+	grpcListenAddress, err := t.core.Start(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -58,5 +58,5 @@ func (t *turbineGoCLI) StartGrpcServer(ctx context.Context, gitSha string) (func
 		return nil, err
 	}
 
-	return t.Core.Stop()
+	return t.core.Stop()
 }

@@ -49,7 +49,7 @@ __meroxa_handle_go_custom_completion()
     local out requestComp lastParam lastChar comp directive args
 
     # Prepare the command to request completions for the program.
-    # Calling ${words[0]} instead of directly meroxa allows to handle aliases
+    # Calling ${words[0]} instead of directly meroxa allows handling aliases
     args=("${words[@]:1}")
     # Disable ActiveHelp which is not supported for bash completion v1
     requestComp="MEROXA_ACTIVE_HELP=0 ${words[0]} __completeNoDesc ${args[*]}"
@@ -408,7 +408,6 @@ _meroxa_apps_deploy()
     flags+=("-h")
     flags+=("--path=")
     two_word_flags+=("--path")
-    flags+=("--skip-collection-validation")
     flags+=("--api-url=")
     two_word_flags+=("--api-url")
     flags+=("--cli-config-file=")
@@ -1341,38 +1340,6 @@ _meroxa_secrets_remove()
     noun_aliases=()
 }
 
-_meroxa_secrets_update()
-{
-    last_command="meroxa_secrets_update"
-
-    command_aliases=()
-
-    commands=()
-
-    flags=()
-    two_word_flags=()
-    local_nonpersistent_flags=()
-    flags_with_completion=()
-    flags_completion=()
-
-    flags+=("--data=")
-    two_word_flags+=("--data")
-    flags+=("--help")
-    flags+=("-h")
-    flags+=("--api-url=")
-    two_word_flags+=("--api-url")
-    flags+=("--cli-config-file=")
-    two_word_flags+=("--cli-config-file")
-    flags+=("--debug")
-    flags+=("--json")
-    flags+=("--timeout=")
-    two_word_flags+=("--timeout")
-
-    must_have_one_flag=()
-    must_have_one_noun=()
-    noun_aliases=()
-}
-
 _meroxa_secrets()
 {
     last_command="meroxa_secrets"
@@ -1395,7 +1362,6 @@ _meroxa_secrets()
         command_aliases+=("rm")
         aliashash["rm"]="remove"
     fi
-    commands+=("update")
 
     flags=()
     two_word_flags=()

@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	turbine "github.com/meroxa/cli/cmd/meroxa/turbine"
 	log "github.com/meroxa/cli/log"
 )
 
@@ -107,21 +106,6 @@ func (mr *MockCLIMockRecorder) GetGitSha(arg0, arg1 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGitSha", reflect.TypeOf((*MockCLI)(nil).GetGitSha), arg0, arg1)
 }
 
-// GetResources mocks base method.
-func (m *MockCLI) GetResources(arg0 context.Context) ([]turbine.ApplicationResource, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResources", arg0)
-	ret0, _ := ret[0].([]turbine.ApplicationResource)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetResources indicates an expected call of GetResources.
-func (mr *MockCLIMockRecorder) GetResources(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResources", reflect.TypeOf((*MockCLI)(nil).GetResources), arg0)
-}
-
 // GetVersion mocks base method.
 func (m *MockCLI) GetVersion(arg0 context.Context) (string, error) {
 	m.ctrl.T.Helper()
@@ -163,21 +147,6 @@ func (m *MockCLI) Init(arg0 context.Context, arg1 string) error {
 func (mr *MockCLIMockRecorder) Init(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Init", reflect.TypeOf((*MockCLI)(nil).Init), arg0, arg1)
-}
-
-// NeedsToBuild mocks base method.
-func (m *MockCLI) NeedsToBuild(arg0 context.Context) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NeedsToBuild", arg0)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// NeedsToBuild indicates an expected call of NeedsToBuild.
-func (mr *MockCLIMockRecorder) NeedsToBuild(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NeedsToBuild", reflect.TypeOf((*MockCLI)(nil).NeedsToBuild), arg0)
 }
 
 // Run mocks base method.

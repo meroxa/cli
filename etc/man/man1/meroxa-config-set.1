@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Nov 2023" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Feb 2024" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -13,7 +13,7 @@ meroxa-config-set - Update your Meroxa CLI configuration file with a specific ke
 
 .SH DESCRIPTION
 .PP
-This command will let you update your Meroxa configuration file to customize your CLI experience. You can check the presence of this file by running \fB\fCmeroxa config describe\fR, or even provide your own using \fB\fC--config my-other-cfg-file\fR\&. A key with a format such as \fB\fCMyKey\fR will be converted automatically to as \fB\fCMY_KEY\fR\&.
+This command will let you update your Meroxa configuration file to customize your CLI experience. You can check the presence of this file by running \fBmeroxa config describe\fR, or even provide your own using \fB--config my-other-cfg-file\fR\&. A key with a format such as \fBMyKey\fR will be converted automatically to as \fBMY_KEY\fR\&.
 
 
 .SH OPTIONS
@@ -45,17 +45,13 @@ This command will let you update your Meroxa configuration file to customize you
 
 
 .SH EXAMPLE
-.PP
-.RS
-
-.nf
+.EX
 meroxa config set DisableUpdateNotification=true
 meroxa config set DISABLE_UPDATE_NOTIFICATION=true
 meroxa config set OneKey=true AnotherKey=false
 meroxa config set ApiUrl=https://staging.meroxa.com
 
-.fi
-.RE
+.EE
 
 
 .SH SEE ALSO

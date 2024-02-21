@@ -32,5 +32,4 @@ Manage Turbine Data Applications
 * [meroxa secrets describe](/cli/cmd/meroxa-secrets-describe/)	 - Describe a Turbine Secret
 * [meroxa secrets list](/cli/cmd/meroxa-secrets-list/)	 - List all Turbine Secrets
 * [meroxa secrets remove](/cli/cmd/meroxa-secrets-remove/)	 - Remove a Turbine Secret
-* [meroxa secrets update](/cli/cmd/meroxa-secrets-update/)	 - Update a Turbine Secret
 

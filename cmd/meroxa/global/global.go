@@ -54,6 +54,7 @@ const (
 	TenantSubdomainEnv           = "TENANT_SUBDOMAIN"
 	TenantEmailAddress           = "TENANT_EMAIL_ADDRESS"
 	TenantPassword               = "TENANT_PASSWORD"
+	defaultClientTimeout         = time.Second * 10
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {
@@ -61,7 +62,7 @@ func RegisterGlobalFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&flagCLIConfigFile, "cli-config-file", "", "meroxa configuration file")
 	cmd.PersistentFlags().StringVar(&flagAPIURL, "api-url", "", "API url")
 	cmd.PersistentFlags().BoolVar(&flagDebug, "debug", false, "display any debugging information")
-	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", time.Second*10, "set the duration of the client timeout in seconds") //nolint:lll
+	cmd.PersistentFlags().DurationVar(&flagTimeout, "timeout", defaultClientTimeout, "set the duration of the client timeout in seconds") //nolint:lll
 }
 
 func PersistentPreRunE(cmd *cobra.Command) error {
@@ -98,4 +99,9 @@ func bindFlags(cmd *cobra.Command, v *viper.Viper) error {
 		}
 	})
 	return err
+}
+
+// ClientWithCustomTimeout returns if a custom value for client time out was specified.
+func ClientWithCustomTimeout() bool {
+	return flagTimeout != defaultClientTimeout
 }

@@ -266,11 +266,11 @@ func buildCommandWithBasicClient(cmd *cobra.Command, c Command) {
 				return err
 			}
 		}
-		c, err := global.NewBasicClient()
+		cl, err := global.NewBasicClient()
 		if err != nil {
 			return err
 		}
-		v.BasicClient(c)
+		v.BasicClient(cl)
 		return nil
 	}
 }

@@ -24,6 +24,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
+
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
@@ -35,7 +37,6 @@ import (
 
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
-	"github.com/meroxa/turbine-core/pkg/ir"
 	"github.com/spf13/cobra"
 )
 
@@ -69,6 +70,7 @@ type Application struct {
 	SpecVersion string                 `json:"specVersion"`
 	Created     AppTime                `json:"created"`
 	Updated     AppTime                `json:"updated"`
+	Image       string                 `json:"imageArchive"`
 }
 
 type Applications struct {
@@ -91,7 +93,6 @@ func (at *AppTime) UnmarshalJSON(b []byte) error {
 
 	dt, err := pb.ParseDateTime(appTime) // time.Parse(pb.DefaultDateLayout, appTime)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	at.Time = dt.Time()
@@ -156,11 +157,11 @@ func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (tu
 	return nil, newLangUnsupportedError(lang)
 }
 
-type addHeader interface {
-	AddHeader(key, value string)
+type appsClient interface {
+	AddHeader(string, string)
 }
 
-func addTurbineHeaders(c addHeader, lang ir.Lang, version string) {
+func addTurbineHeaders(c appsClient, lang ir.Lang, version string) {
 	c.AddHeader("Meroxa-CLI-App-Lang", string(lang))
 	if lang == ir.JavaScript {
 		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)

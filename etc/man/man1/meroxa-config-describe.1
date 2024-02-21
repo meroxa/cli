@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Nov 2023" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Feb 2024" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -13,7 +13,7 @@ meroxa-config-describe - Show Meroxa CLI configuration details
 
 .SH DESCRIPTION
 .PP
-This command will return the content of your configuration file where you could find your \fB\fCaccess_token\fR and then \fB\fCrefresh_token\fR for your \fB\fCmeroxa login\fR\&. They're stored in the home directory on your machine. On Unix, including MacOS, it's stored in \fB\fC$HOME\fR, and on Windows is stored in \fB\fC%USERPROFILE%\fR\&.
+This command will return the content of your configuration file where you could find your \fBaccess_token\fR and then \fBrefresh_token\fR for your \fBmeroxa login\fR\&. They're stored in the home directory on your machine. On Unix, including MacOS, it's stored in \fB$HOME\fR, and on Windows is stored in \fB%USERPROFILE%\fR\&.
 
 
 .SH OPTIONS
@@ -45,10 +45,7 @@ This command will return the content of your configuration file where you could 
 
 
 .SH EXAMPLE
-.PP
-.RS
-
-.nf
+.EX
 $ meroxa config describe
 Using meroxa config located in "/Users/my-name/Library/Application Support/meroxa/config.env
 
@@ -58,8 +55,7 @@ actor_uuid: c0f928ba-d40e-40c5-a7fa-cf281c337a0d
 refresh_token: c337a0d...c0f928b
 
 
-.fi
-.RE
+.EE
 
 
 .SH SEE ALSO

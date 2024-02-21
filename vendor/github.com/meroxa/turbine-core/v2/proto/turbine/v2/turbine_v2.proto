@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package turbine.v2;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "opencdc/v1/opencdc.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/meroxa/turbine/core";
+
+service Service {
+  rpc Init(InitRequest) returns (google.protobuf.Empty);
+
+  rpc AddSource(AddSourceRequest) returns (AddSourceResponse);
+  rpc ReadRecords(ReadRecordsRequest) returns (ReadRecordsResponse);
+
+  rpc ProcessRecords(ProcessRecordsRequest) returns (ProcessRecordsResponse);
+
+  rpc AddDestination(AddDestinationRequest) returns (AddDestinationResponse);
+  rpc WriteRecords(WriteRecordsRequest) returns (google.protobuf.Empty);
+
+  rpc GetSpec(GetSpecRequest) returns (GetSpecResponse);
+}
+
+enum Language {
+  GOLANG = 0;
+  PYTHON = 1;
+  JAVASCRIPT = 2;
+  RUBY = 3;
+}
+
+message InitRequest {
+  string appName = 1 [(validate.rules).string.min_len = 1];
+  string configFilePath = 2 [(validate.rules).string.min_len = 1];
+  Language language = 3 [(validate.rules).enum.defined_only = true];
+  string gitSHA = 4;
+  string turbineVersion = 5;
+}
+
+message AddSourceRequest {
+  string name = 1 [(validate.rules).string.min_len = 1];
+  Plugin plugin = 2;
+}
+
+message AddSourceResponse {
+  string id = 1 [(validate.rules).string.min_len = 1];
+  string streamName = 2 [(validate.rules).string.min_len = 1];
+}
+
+message ReadRecordsRequest {
+  string sourceStream = 1 [(validate.rules).string.min_len = 1];
+}
+
+message ReadRecordsResponse {
+  StreamRecords streamRecords = 1 [(validate.rules).message.required = true];
+}
+
+message ProcessRecordsRequest {
+  message Process {
+    string name = 1 [(validate.rules).string.min_len = 1];
+  }
+
+  Process process = 1 [(validate.rules).message.required = true];
+  StreamRecords streamRecords = 2 [(validate.rules).message.required = true];
+}
+
+message ProcessRecordsResponse {
+  StreamRecords streamRecords = 1 [(validate.rules).message.required = true];
+}
+
+message AddDestinationRequest {
+  string name = 1 [(validate.rules).string.min_len = 1];
+  Plugin plugin = 2;
+}
+
+message AddDestinationResponse {
+  string id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message WriteRecordsRequest {
+  string destinationID = 1 [(validate.rules).string.min_len = 1];
+  StreamRecords streamRecords = 2 [(validate.rules).message.required = true];
+}
+
+message GetSpecRequest {
+  string image = 1;
+}
+
+message GetSpecResponse {
+  bytes spec = 1;
+}
+
+// Represents a collection of records consumed from a stream.
+message StreamRecords {
+  string streamName = 1 [(validate.rules).string.min_len = 1];
+  repeated opencdc.v1.Record records = 2;
+}
+
+message Plugin {
+  string name = 1 [(validate.rules).string.min_len = 1];
+  map<string, string> config = 2;
+}

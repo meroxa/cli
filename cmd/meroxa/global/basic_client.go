@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
@@ -20,10 +21,11 @@ const (
 
 //go:generate mockgen -source=basic_client.go -package=mock -destination=mock/basic_client_mock.go
 type BasicClient interface {
-	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
+	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values, map[string]string) (*http.Response, error)
 	CollectionRequest(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
 	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
-	AddHeader(key, value string)
+	AddHeader(string, string)
+	SetTimeout(time.Duration)
 }
 
 type client struct {
@@ -52,10 +54,7 @@ func NewBasicClient() (BasicClient, error) {
 			obfuscateAuthorization: true,
 		}
 	}
-	timeout := 5 * time.Second
-	if flagTimeout != 0 {
-		timeout = flagTimeout
-	}
+
 	headers := make(http.Header)
 	headers.Add("Meroxa-CLI-Version", Version)
 
@@ -63,7 +62,7 @@ func NewBasicClient() (BasicClient, error) {
 		baseURL:   u,
 		userAgent: fmt.Sprintf("Meroxa CLI %s", Version),
 		httpClient: &http.Client{
-			Timeout:   timeout,
+			Timeout:   flagTimeout,
 			Transport: transport,
 		},
 		headers: headers,
@@ -71,14 +70,18 @@ func NewBasicClient() (BasicClient, error) {
 	return r, nil
 }
 
-func (r *client) AddHeader(key, value string) {
-	if len(r.headers) == 0 {
-		r.headers = make(http.Header)
+func (c *client) AddHeader(key, value string) {
+	if len(c.headers) == 0 {
+		c.headers = make(http.Header)
 	}
-	r.headers.Add(key, value)
+	c.headers.Add(key, value)
 }
 
-func (r *client) CollectionRequest(
+func (c *client) SetTimeout(timeout time.Duration) {
+	c.httpClient.Timeout = timeout
+}
+
+func (c *client) CollectionRequest(
 	ctx context.Context,
 	method string,
 	collection string,
@@ -91,13 +94,13 @@ func (r *client) CollectionRequest(
 		path += fmt.Sprintf("/%s", id)
 	}
 
-	req, err := r.newRequest(ctx, method, path, body, params, nil)
+	req, err := c.newRequest(ctx, method, path, body, params, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	// Merge params
-	resp, err := r.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -110,25 +113,23 @@ func (r *client) CollectionRequest(
 	return resp, nil
 }
 
-func (r *client) CollectionRequestMultipart(
+func (c *client) CollectionRequestMultipart(
 	ctx context.Context,
-	method string,
-	collection string,
-	id string,
+	method, collection, id string,
 	body interface{},
 	params url.Values,
+	files map[string]string,
 ) (*http.Response, error) {
 	path := fmt.Sprintf("/api/collections/%s/records", collection)
 	if id != "" {
 		path += fmt.Sprintf("/%s", id)
 	}
-	req, err := r.newRequest(ctx, method, path, body, params, nil)
+	req, err := c.newRequestMultiPart(ctx, method, path, body, params, nil, files)
 	if err != nil {
 		return nil, err
 	}
-
 	// Merge params
-	resp, err := r.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -141,22 +142,21 @@ func (r *client) CollectionRequestMultipart(
 	return resp, nil
 }
 
-func (r *client) URLRequest(
+func (c *client) URLRequest(
 	ctx context.Context,
-	method string,
-	path string,
+	method, path string,
 	body interface{},
 	params url.Values,
 	headers http.Header,
 	output interface{},
 ) (*http.Response, error) {
-	req, err := r.newRequest(ctx, method, path, body, params, headers)
+	req, err := c.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
 		return nil, err
 	}
 
 	// Merge params
-	resp, err := r.httpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -170,25 +170,61 @@ func (r *client) URLRequest(
 	return resp, nil
 }
 
-func (r *client) newRequest(
+//nolint:gocyclo
+func (c *client) newRequestMultiPart(
 	ctx context.Context,
 	method string,
 	path string,
 	body interface{},
 	params url.Values,
 	headers http.Header,
+	files map[string]string,
 ) (*http.Request, error) {
-	u, err := r.baseURL.Parse(path)
+	u, err := c.baseURL.Parse(path)
 	if err != nil {
 		return nil, err
 	}
 
 	buf := new(bytes.Buffer)
-	if body != nil {
-		if encodeErr := r.encodeBody(buf, body); encodeErr != nil {
+	mp := multipart.NewWriter(buf)
+
+	bodyMP := make(map[string]interface{})
+	byteData, _ := json.Marshal(body)
+	if err = json.Unmarshal(byteData, &bodyMP); err != nil {
+		return nil, err
+	}
+
+	var w io.Writer
+	for k, v := range bodyMP {
+		if v != "" {
+			w, err = mp.CreateFormField(k)
+			if err != nil {
+				return nil, err
+			}
+
+			if err = c.encodeBody(w, v); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	var file *os.File
+	for k, v := range files {
+		file, err = os.Open(v)
+		if err != nil {
+			return nil, err
+		}
+
+		w, err = mp.CreateFormFile(k, file.Name())
+		if err != nil {
+			return nil, err
+		}
+		if _, err = io.Copy(w, file); err != nil {
 			return nil, err
 		}
 	}
+
+	mp.Close()
 
 	req, err := http.NewRequestWithContext(ctx, method, u.String(), buf)
 	if err != nil {
@@ -196,8 +232,8 @@ func (r *client) newRequest(
 	}
 
 	// add global headers to request
-	if len(r.headers) > 0 {
-		req.Header = r.headers
+	if len(c.headers) > 0 {
+		req.Header = c.headers
 	}
 
 	// No need to check for a valid token when trying to authenticate.
@@ -207,11 +243,11 @@ func (r *client) newRequest(
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Add("Authorization", accessToken)
+		req.Header.Set("Authorization", accessToken)
 	}
-	req.Header.Add("Content-Type", jsonContentType)
-	req.Header.Add("Accept", jsonContentType)
-	req.Header.Add("User-Agent", r.userAgent)
+
+	req.Header.Set("User-Agent", c.userAgent)
+	req.Header.Set("Content-Type", mp.FormDataContentType())
 	for key, value := range headers {
 		req.Header.Add(key, strings.Join(value, ","))
 	}
@@ -230,7 +266,67 @@ func (r *client) newRequest(
 	return req, nil
 }
 
-func (r *client) encodeBody(w io.Writer, v interface{}) error {
+func (c *client) newRequest(
+	ctx context.Context,
+	method string,
+	path string,
+	body interface{},
+	params url.Values,
+	headers http.Header,
+) (*http.Request, error) {
+	u, err := c.baseURL.Parse(path)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	if body != nil {
+		if encodeErr := c.encodeBody(buf, body); encodeErr != nil {
+			return nil, err
+		}
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, u.String(), buf)
+	if err != nil {
+		return nil, err
+	}
+
+	// add global headers to request
+	if len(c.headers) > 0 {
+		req.Header = c.headers
+	}
+
+	// No need to check for a valid token when trying to authenticate.
+	// TODO: Need to change this once we integrate with OAuth2
+	if path != "/api/collections/users/auth-with-password" {
+		accessToken, err := GetUserToken()
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Authorization", accessToken)
+	}
+	req.Header.Add("Content-Type", jsonContentType)
+	req.Header.Add("Accept", jsonContentType)
+	req.Header.Add("User-Agent", c.userAgent)
+	for key, value := range headers {
+		req.Header.Add(key, strings.Join(value, ","))
+	}
+
+	// add params
+	if params != nil {
+		q := req.URL.Query()
+		for k, v := range params { // v is a []string
+			for _, vv := range v {
+				q.Add(k, vv)
+			}
+			req.URL.RawQuery = q.Encode()
+		}
+	}
+
+	return req, nil
+}
+
+func (c *client) encodeBody(w io.Writer, v interface{}) error {
 	if v == nil {
 		return nil
 	}

@@ -15,7 +15,7 @@ import (
 	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
 	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type Init struct {

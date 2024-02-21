@@ -4,14 +4,10 @@ import (
 	"context"
 	"time"
 
-	"google.golang.org/protobuf/types/known/emptypb"
-
 	"github.com/meroxa/cli/cmd/meroxa/turbine/internal"
-
-	"github.com/meroxa/turbine-core/pkg/client"
-	"github.com/meroxa/turbine-core/pkg/server"
-
-	pb "github.com/meroxa/turbine-core/lib/go/github.com/meroxa/turbine/core"
+	"github.com/meroxa/turbine-core/v2/pkg/client"
+	"github.com/meroxa/turbine-core/v2/pkg/server"
+	pb "github.com/meroxa/turbine-core/v2/proto/turbine/v2"
 )
 
 type Core struct {
@@ -64,6 +60,7 @@ func (t *Core) Run(ctx context.Context) (func(), string) {
 func (t *Core) GetDeploymentSpec(ctx context.Context, imageName string) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
+
 	resp, err := t.client.GetSpec(ctx, &pb.GetSpecRequest{
 		Image: imageName,
 	})
@@ -72,36 +69,4 @@ func (t *Core) GetDeploymentSpec(ctx context.Context, imageName string) (string,
 	}
 
 	return string(resp.Spec), nil
-}
-
-func (t *Core) GetResources(ctx context.Context) ([]ApplicationResource, error) {
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-	resp, err := t.client.ListResources(ctx, &emptypb.Empty{})
-	if err != nil {
-		return nil, err
-	}
-	var resources []ApplicationResource
-	for _, r := range resp.Resources {
-		resources = append(resources, ApplicationResource{
-			Name:        r.Name,
-			Destination: r.Destination,
-			Source:      r.Source,
-			Collection:  r.Collection,
-		})
-	}
-	return resources, nil
-}
-
-// NeedsToBuild reads from the Turbine application to determine whether it needs to be built or not
-// this is currently based on the number of functions.
-func (t *Core) NeedsToBuild(ctx context.Context) (bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, time.Second)
-	defer cancel()
-	resp, err := t.client.HasFunctions(ctx, &emptypb.Empty{})
-	if err != nil {
-		return false, err
-	}
-
-	return resp.Value, nil
 }

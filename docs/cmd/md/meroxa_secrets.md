@@ -25,5 +25,4 @@ Manage Turbine Data Applications
 * [meroxa secrets describe](meroxa_secrets_describe.md)	 - Describe a Turbine Secret
 * [meroxa secrets list](meroxa_secrets_list.md)	 - List all Turbine Secrets
 * [meroxa secrets remove](meroxa_secrets_remove.md)	 - Remove a Turbine Secret
-* [meroxa secrets update](meroxa_secrets_update.md)	 - Update a Turbine Secret
 

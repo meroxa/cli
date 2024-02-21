@@ -3,7 +3,7 @@ package apps
 import (
 	"fmt"
 
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 func newLangUnsupportedError(lang ir.Lang) error {

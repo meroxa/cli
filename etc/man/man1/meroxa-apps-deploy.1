@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Nov 2023" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Feb 2024" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -27,10 +27,6 @@ If deployment was successful, you should expect an application you'll be able to
 \fB--path\fP=""
 	Path to the app directory (default is local directory)
 
-.PP
-\fB--skip-collection-validation\fP[=false]
-	Skips unique destination collection and looping validations
-
 
 .SH OPTIONS INHERITED FROM PARENT COMMANDS
 .PP
@@ -55,16 +51,12 @@ If deployment was successful, you should expect an application you'll be able to
 
 
 .SH EXAMPLE
-.PP
-.RS
-
-.nf
+.EX
 meroxa apps deploy # assumes you run it from the app directory
 meroxa apps deploy --path ./my-app
 
 
-.fi
-.RE
+.EE
 
 
 .SH SEE ALSO

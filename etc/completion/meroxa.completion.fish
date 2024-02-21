@@ -79,7 +79,7 @@ function __meroxa_clear_perform_completion_once_result
     __meroxa_debug ""
     __meroxa_debug "========= clearing previously set __meroxa_perform_completion_once_result variable =========="
     set --erase __meroxa_perform_completion_once_result
-    __meroxa_debug "Succesfully erased the variable __meroxa_perform_completion_once_result"
+    __meroxa_debug "Successfully erased the variable __meroxa_perform_completion_once_result"
 end
 
 function __meroxa_requires_order_preservation

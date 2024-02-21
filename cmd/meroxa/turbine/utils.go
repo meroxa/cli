@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/pkg/ir"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 const (
@@ -25,10 +25,6 @@ const (
 	Python     = "python"
 	Python3    = "python3"
 	Ruby       = "ruby"
-
-	IncompatibleTurbineVersion = `your Turbine library version is incompatible with the Meroxa CLI.
-For guidance on updating to the latest version, visit:
-https://docs.meroxa.com/beta-overview#updated-meroxa-cli-and-outdated-turbine-library`
 
 	grpcFuncCollectionErr = "invalid ProcessCollectionRequest.Collection: embedded message failed validation | " +
 		"caused by: invalid Collection.Name: value length must be at least 1 runes"
@@ -48,33 +44,6 @@ type AppConfig struct {
 }
 
 var prefetched *AppConfig
-
-type ApplicationResource struct {
-	Name        string `json:"name"`
-	Source      bool   `json:"source"`
-	Destination bool   `json:"destination"`
-	Collection  string `json:"collection"`
-}
-
-// GetResourceNamesFromString provides backward compatibility with turbine-go
-// legacy resource listing format.
-func GetResourceNamesFromString(s string) []ApplicationResource {
-	resources := make([]ApplicationResource, 0)
-
-	r := regexp.MustCompile(`\[(.+?)\]`)
-	sliceString := r.FindStringSubmatch(s)
-	if len(sliceString) == 0 {
-		return resources
-	}
-
-	for _, n := range strings.Fields(sliceString[1]) {
-		resources = append(resources, ApplicationResource{
-			Name: n,
-		})
-	}
-
-	return resources
-}
 
 func GetPath(flag string) (string, error) {
 	if flag == "" {

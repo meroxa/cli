@@ -20,13 +20,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	"github.com/meroxa/turbine-core/pkg/ir"
-
-	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
+	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 var (
