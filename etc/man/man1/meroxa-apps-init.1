@@ -1,5 +1,5 @@
 .nh
-.TH "Meroxa" "1" "Nov 2023" "Meroxa CLI " "Meroxa Manual"
+.TH "Meroxa" "1" "Feb 2024" "Meroxa CLI " "Meroxa Manual"
 
 .SH NAME
 .PP
@@ -61,10 +61,7 @@ Initialize a Turbine Data Application
 
 
 .SH EXAMPLE
-.PP
-.RS
-
-.nf
+.EX
 meroxa apps init my-app --path ~/code --lang js
 meroxa apps init my-app --lang py
 meroxa apps init my-app --lang go 			# will be initialized in a dir called my-app in the current directory
@@ -73,8 +70,7 @@ meroxa apps init my-app --lang go --mod-vendor 		# will initialize the new go mo
 meroxa apps init my-app --lang go --path $GOPATH/src/github.com/my.org
 
 
-.fi
-.RE
+.EE
 
 
 .SH SEE ALSO

@@ -6,12 +6,7 @@ The Meroxa CLI
 
 The Meroxa CLI allows quick and easy access to the Meroxa Data Platform.
 
-Using the CLI you are able to create and manage sophisticated data pipelines
-with only a few simple commands. You can get started by listing the supported
-resource types:
-
-meroxa resources list --types
-
+Using the CLI you are able to create and manage sophisticated data pipelines with only a few simple commands.
 
 ### Options
 
