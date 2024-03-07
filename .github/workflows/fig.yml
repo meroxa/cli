@@ -20,7 +20,7 @@ jobs:
       run: |
        make fig
     - name: Create Autocomplete PR ## Create the autocomplete PR using this action
-      uses: withfig/push-to-fig-autocomplete-action@v1
+      uses: withfig/push-to-fig-autocomplete-action@v2
       with:
         token: ${{ secrets.MEROXA_MACHINE }}
         autocomplete-spec-name: meroxa
