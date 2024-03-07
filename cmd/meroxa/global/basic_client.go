@@ -243,7 +243,12 @@ func (c *client) newRequestMultiPart(
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Set("Authorization", accessToken)
+		if _, exists := req.Header["Authorization"]; !exists {
+
+			req.Header.Set("Authorization", accessToken)
+
+		}
+		fmt.Println("Content-Type header already set.")
 	}
 
 	req.Header.Set("User-Agent", c.userAgent)
@@ -303,7 +308,12 @@ func (c *client) newRequest(
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Add("Authorization", accessToken)
+		if _, exists := req.Header["Authorization"]; !exists {
+
+			req.Header.Set("Authorization", accessToken)
+
+		}
+		fmt.Println("Content-Type header already set.")
 	}
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)
