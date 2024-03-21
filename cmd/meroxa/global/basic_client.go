@@ -248,7 +248,6 @@ func (c *client) newRequestMultiPart(
 			req.Header.Set("Authorization", accessToken)
 
 		}
-		fmt.Println("Content-Type header already set.")
 	}
 
 	req.Header.Set("User-Agent", c.userAgent)
@@ -313,7 +312,6 @@ func (c *client) newRequest(
 			req.Header.Set("Authorization", accessToken)
 
 		}
-		fmt.Println("Content-Type header already set.")
 	}
 	req.Header.Add("Content-Type", jsonContentType)
 	req.Header.Add("Accept", jsonContentType)

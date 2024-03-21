@@ -46,7 +46,7 @@ func (l *List) Usage() string {
 
 func (l *List) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "List Turbine Data Applications",
+		Short: "List Conduit Data Applications",
 	}
 }
 
@@ -58,7 +58,7 @@ func (l *List) Execute(ctx context.Context) error {
 	var err error
 	apps := &Applications{}
 
-	response, err := l.client.CollectionRequest(ctx, "GET", collectionName, "", nil, nil)
+	response, err := l.client.CollectionRequest(ctx, "GET", applicationCollection, "", nil, nil)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (l *List) Execute(ctx context.Context) error {
 	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
 
-	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/apps", global.GetMeroxaAPIURL())
+	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/conduitapps", global.GetMeroxaAPIURL())
 	l.logger.Info(ctx, output)
 	return nil
 }

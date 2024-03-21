@@ -58,7 +58,7 @@ func (l *Login) Usage() string {
 
 func (l *Login) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Login to a Conduit Platform tenant",
+		Short: "Login to a Meroxa Platform tenant",
 	}
 }
 

@@ -4,24 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
-	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
+
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type Init struct {
-	logger     log.Logger
-	turbineCLI turbine.CLI
-	path       string
+	logger log.Logger
+	path   string
 
 	args struct {
 		appName string
@@ -101,7 +94,6 @@ func (i *Init) Execute(ctx context.Context) error {
 		err error
 
 		name = i.args.appName
-		lang = strings.ToLower(i.flags.Lang)
 	)
 
 	name, err = validateAppName(name)
@@ -109,62 +101,47 @@ func (i *Init) Execute(ctx context.Context) error {
 		return err
 	}
 
-	i.path, err = turbine.GetPath(i.flags.Path)
+	i.path, err = GetPath(i.flags.Path)
 	if err != nil {
 		return err
 	}
 
-	i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
-	if i.turbineCLI == nil {
-		i.turbineCLI, err = newTurbineCLI(i.logger, lang, i.path)
-		if err != nil {
-			i.logger.StopSpinnerWithStatus("\t", log.Failed)
-			return err
-		}
-	}
+	// i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
+	// if i.turbineCLI == nil {
+	// 	i.turbineCLI, err = newTurbineCLI(i.logger, lang, i.path)
+	// 	if err != nil {
+	// 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
+	// 		return err
+	// 	}
+	// }
 
-	if err = i.turbineCLI.Init(ctx, name); err != nil {
-		i.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-	i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
+	// if err = i.turbineCLI.Init(ctx, name); err != nil {
+	// 	i.logger.StopSpinnerWithStatus("\t", log.Failed)
+	// 	return err
+	// }
+	// i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
 
-	if lang == "go" || lang == string(ir.GoLang) {
-		if err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor); err != nil {
-			i.logger.StopSpinnerWithStatus("\t", log.Failed)
-			return err
-		}
-	}
+	// if lang == "go" || lang == string(ir.GoLang) {
+	// 	if err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor); err != nil {
+	// 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
+	// 		return err
+	// 	}
+	// }
 
-	i.logger.StartSpinner("\t", "Running git initialization...")
-	if err = i.turbineCLI.GitInit(ctx, i.path+"/"+name); err != nil {
-		i.logger.StopSpinnerWithStatus(
-			"\tThe final step to 'git init' the Application repo failed. Please complete this step manually.",
-			log.Failed)
-		return err
-	}
-	i.logger.StopSpinnerWithStatus("Git initialized successfully!", log.Successful)
+	// i.logger.StartSpinner("\t", "Running git initialization...")
+	// if err = i.turbineCLI.GitInit(ctx, i.path+"/"+name); err != nil {
+	// 	i.logger.StopSpinnerWithStatus(
+	// 		"\tThe final step to 'git init' the Application repo failed. Please complete this step manually.",
+	// 		log.Failed)
+	// 	return err
+	// }
+	// i.logger.StopSpinnerWithStatus("Git initialized successfully!", log.Successful)
 
-	appPath := filepath.Join(i.path, name)
+	// appPath := filepath.Join(i.path, name)
 
-	i.logger.Infof(ctx, "Turbine Data Application successfully initialized!\n"+
-		"You can start interacting with Meroxa in your app located at \"%s\".\n"+
-		"Your Application will not be visible in the Meroxa Dashboard until after deployment.", appPath)
+	// i.logger.Infof(ctx, "Turbine Data Application successfully initialized!\n"+
+	// 	"You can start interacting with Meroxa in your app located at \"%s\".\n"+
+	// 	"Your Application will not be visible in the Meroxa Dashboard until after deployment.", appPath)
 
 	return nil
-}
-
-func newTurbineCLI(logger log.Logger, lang, path string) (turbine.CLI, error) {
-	switch lang {
-	case "go", turbine.GoLang:
-		return turbineGo.New(logger, path), nil
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		return turbineJS.New(logger, path), nil
-	case "py", turbine.Python3, turbine.Python:
-		return turbinePY.New(logger, path), nil
-	case "rb", turbine.Ruby:
-		return turbineRb.New(logger, path), nil
-	default:
-		return nil, newLangUnsupportedError(ir.Lang(lang))
-	}
 }

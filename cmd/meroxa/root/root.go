@@ -26,7 +26,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/apps"
 	"github.com/meroxa/cli/cmd/meroxa/root/auth"
 	"github.com/meroxa/cli/cmd/meroxa/root/config"
-	"github.com/meroxa/cli/cmd/meroxa/root/flink"
 	"github.com/meroxa/cli/cmd/meroxa/root/login"
 	"github.com/meroxa/cli/cmd/meroxa/root/logout"
 	"github.com/meroxa/cli/cmd/meroxa/root/open"
@@ -71,7 +70,6 @@ Using the CLI you are able to create and manage sophisticated data pipelines wit
 	cmd.AddCommand(builder.BuildCobraCommand(&auth.Auth{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&apps.Apps{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&config.Config{}))
-	cmd.AddCommand(builder.BuildCobraCommand(&flink.Job{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&login.Login{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&logout.Logout{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&open.Open{}))
