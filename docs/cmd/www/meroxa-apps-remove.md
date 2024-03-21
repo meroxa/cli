@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-remove/
 ---
 ## meroxa apps remove
 
-Remove a Turbine Data Application
+Remove a Conduit Data Application
 
 ### Synopsis
 
@@ -47,5 +47,5 @@ meroxa apps remove nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Conduit Data Applications
 

@@ -33,8 +33,12 @@ const (
 	envType   = "env"
 )
 
-func GetMeroxaAPIURL() string {
+func GetMeroxaTenantURL() string {
 	return getEnvVal([]string{"MEROXA_API_URL"}, "https://api.meroxa.io")
+}
+
+func GetMeroxaTenantUser() string {
+	return getEnvVal([]string{"TENANT_EMAIL_ADDRESS"}, "")
 }
 
 func GetMeroxaAuthAudience() string {
@@ -47,10 +51,6 @@ func GetMeroxaAuthDomain() string {
 
 func GetMeroxaAuthClientID() string {
 	return getEnvVal([]string{"MEROXA_AUTH_CLIENT_ID", "MEROXA_CLIENT_ID"}, "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
-}
-
-func GetLocalTurbineJSSetting() string {
-	return getEnvVal([]string{"MEROXA_USE_LOCAL_TURBINE_JS"}, "false")
 }
 
 func getMeroxaAuthCallbackPort() string {

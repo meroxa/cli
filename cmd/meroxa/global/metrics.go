@@ -36,7 +36,7 @@ func NewPublisher() cased.Publisher {
 	if casedAPIKey != "" {
 		options = append(options, cased.WithPublishKey(casedAPIKey))
 	} else {
-		options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaAPIURL())))
+		options = append(options, cased.WithPublishURL(fmt.Sprintf("%s/telemetry", GetMeroxaTenantURL())))
 	}
 
 	if v := Config.GetString(PublishMetricsEnv); v == "false" {

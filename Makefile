@@ -44,7 +44,7 @@ fig:
 # downgrade linter until https://github.com/golangci/golangci-lint/issues/4239 is fixed
 .PHONY: lint
 lint:
-	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.54.2 golangci-lint run --timeout 5m -v
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.57.2 golangci-lint run --timeout 5m -v
 
 .PHONY: generate
 generate: mockgen-install

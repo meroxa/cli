@@ -1,6 +1,6 @@
 ## meroxa apps describe
 
-Describe a Turbine Data Application
+Describe a Conduit Data Application
 
 ### Synopsis
 
@@ -40,5 +40,5 @@ meroxa apps describe NAME
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Conduit Data Applications
 

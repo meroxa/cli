@@ -44,7 +44,7 @@ func (*Create) Usage() string {
 
 func (*Create) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Create a Turbine Secret",
+		Short: "Create a Conduit Secret",
 		Long: `This command will create a secret as promted by the user.'
 After successful creation, the secret can be used in a connector. 
 `,
@@ -113,7 +113,7 @@ func (d *Create) Execute(ctx context.Context) error {
 
 	d.logger.Infof(ctx, "Secret %q successfully added", responseSecret.Name)
 	d.logger.JSON(ctx, responseSecret)
-	dashboardURL := fmt.Sprintf("\n ✨ To view your secrets, visit %s/secrets/%s", global.GetMeroxaAPIURL(), responseSecret.ID)
+	dashboardURL := fmt.Sprintf("\n ✨ To view your secrets, visit %s/secrets/%s", global.GetMeroxaTenantURL(), responseSecret.ID)
 	d.logger.Info(ctx, dashboardURL)
 
 	return nil

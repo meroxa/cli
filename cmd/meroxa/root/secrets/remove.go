@@ -45,7 +45,7 @@ func (*Remove) Usage() string {
 
 func (*Remove) Docs() builder.Docs {
 	return builder.Docs{
-		Short:   "Remove a Turbine Secret",
+		Short:   "Remove a Conduit Secret",
 		Long:    `This command will remove the secret specified either by name or id`,
 		Example: `meroxa apps remove nameOrUUID`,
 	}

@@ -24,18 +24,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/meroxa/turbine-core/v2/pkg/ir"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
-	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	pb "github.com/pocketbase/pocketbase/tools/types"
 
-	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 	"github.com/spf13/cobra"
 )
@@ -126,7 +118,7 @@ func (*Apps) Usage() string {
 
 func (*Apps) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Manage Turbine Data Applications",
+		Short: "Manage Conduit Data Applications",
 	}
 }
 
@@ -142,59 +134,9 @@ func (*Apps) SubCommands() []*cobra.Command {
 	}
 }
 
-// getTurbineCLIFromLanguage will return the appropriate turbine.CLI based on language.
-func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (turbine.CLI, error) {
-	switch lang {
-	case "go", turbine.GoLang:
-		return turbineGo.New(logger, path), nil
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		return turbineJS.New(logger, path), nil
-	case "py", turbine.Python3, turbine.Python:
-		return turbinePY.New(logger, path), nil
-	case "rb", turbine.Ruby:
-		return turbineRb.New(logger, path), nil
-	}
-	return nil, newLangUnsupportedError(lang)
-}
-
-type appsClient interface {
-	AddHeader(string, string)
-}
-
-func addTurbineHeaders(c appsClient, lang ir.Lang, version string) {
-	c.AddHeader("Meroxa-CLI-App-Lang", string(lang))
-	if lang == ir.JavaScript {
-		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)
-	}
-	c.AddHeader("Meroxa-CLI-App-Version", version)
-}
-
-func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
-	var getPath string
+func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID string) (*Applications, error) {
 	apps := Applications{}
-	if path != "" {
-		var err error
-		if getPath, err = turbine.GetPath(path); err != nil {
-			return nil, err
-		}
-
-		config, err := turbine.ReadConfigFile(getPath)
-		if err != nil {
-			return nil, err
-		}
-
-		a := &url.Values{}
-		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", config.Name, config.Name))
-
-		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a)
-		if err != nil {
-			return nil, err
-		}
-		err = json.NewDecoder(response.Body).Decode(&apps)
-		if err != nil {
-			return nil, err
-		}
-	} else if nameOrID != "" {
+	if nameOrID != "" {
 		a := &url.Values{}
 		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrID, nameOrID))
 

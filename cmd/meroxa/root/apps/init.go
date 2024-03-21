@@ -3,25 +3,15 @@ package apps
 import (
 	"context"
 	"errors"
-	"fmt"
-	"path/filepath"
-	"regexp"
-	"strings"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
-	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
+
 	"github.com/meroxa/cli/log"
-	"github.com/meroxa/turbine-core/v2/pkg/ir"
 )
 
 type Init struct {
-	logger     log.Logger
-	turbineCLI turbine.CLI
-	path       string
+	logger log.Logger
+	path   string
 
 	args struct {
 		appName string
@@ -49,7 +39,7 @@ func (*Init) Usage() string {
 
 func (*Init) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Initialize a Turbine Data Application",
+		Short: "Initialize a Conduit Data Application",
 		Example: `meroxa apps init my-app --path ~/code --lang js
 meroxa apps init my-app --lang py
 meroxa apps init my-app --lang go 			# will be initialized in a dir called my-app in the current directory
@@ -77,94 +67,55 @@ func (i *Init) ParseArgs(args []string) error {
 	return nil
 }
 
-func validateAppName(name string) (string, error) {
+func (i *Init) Execute(_ context.Context) error {
 	var err error
 
-	// must be lowercase because of reusing the name for the Docker image
-	name = strings.ToLower(name)
+	// name, err = validateAppName(name)
+	// if err != nil {
+	// 	return err
+	// }
 
-	// Platform API requires the first character be a letter and
-	// that the whole name be alphanumeric with dashes and underscores.
-	r := regexp.MustCompile(`^([a-z][a-z0-9-_]*)$`)
-	matches := r.FindStringSubmatch(name)
-	if len(matches) == 0 {
-		err = fmt.Errorf(
-			"invalid application name: %s;"+
-				" should start with a letter, be alphanumeric, and only have dashes as separators",
-			name)
-	}
-	return name, err
-}
-
-func (i *Init) Execute(ctx context.Context) error {
-	var (
-		err error
-
-		name = i.args.appName
-		lang = strings.ToLower(i.flags.Lang)
-	)
-
-	name, err = validateAppName(name)
+	i.path, err = GetPath(i.flags.Path)
 	if err != nil {
 		return err
 	}
 
-	i.path, err = turbine.GetPath(i.flags.Path)
-	if err != nil {
-		return err
-	}
+	// i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
+	// if i.turbineCLI == nil {
+	// 	i.turbineCLI, err = newTurbineCLI(i.logger, lang, i.path)
+	// 	if err != nil {
+	// 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
+	// 		return err
+	// 	}
+	// }
 
-	i.logger.StartSpinner("\t", fmt.Sprintf("Initializing application %q in %q...", name, i.path))
-	if i.turbineCLI == nil {
-		i.turbineCLI, err = newTurbineCLI(i.logger, lang, i.path)
-		if err != nil {
-			i.logger.StopSpinnerWithStatus("\t", log.Failed)
-			return err
-		}
-	}
+	// if err = i.turbineCLI.Init(ctx, name); err != nil {
+	// 	i.logger.StopSpinnerWithStatus("\t", log.Failed)
+	// 	return err
+	// }
+	// i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
 
-	if err = i.turbineCLI.Init(ctx, name); err != nil {
-		i.logger.StopSpinnerWithStatus("\t", log.Failed)
-		return err
-	}
-	i.logger.StopSpinnerWithStatus("Application directory created!", log.Successful)
+	// if lang == "go" || lang == string(ir.GoLang) {
+	// 	if err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor); err != nil {
+	// 		i.logger.StopSpinnerWithStatus("\t", log.Failed)
+	// 		return err
+	// 	}
+	// }
 
-	if lang == "go" || lang == string(ir.GoLang) {
-		if err = turbineGo.GoInit(i.logger, i.path+"/"+name, i.flags.SkipModInit, i.flags.ModVendor); err != nil {
-			i.logger.StopSpinnerWithStatus("\t", log.Failed)
-			return err
-		}
-	}
+	// i.logger.StartSpinner("\t", "Running git initialization...")
+	// if err = i.turbineCLI.GitInit(ctx, i.path+"/"+name); err != nil {
+	// 	i.logger.StopSpinnerWithStatus(
+	// 		"\tThe final step to 'git init' the Application repo failed. Please complete this step manually.",
+	// 		log.Failed)
+	// 	return err
+	// }
+	// i.logger.StopSpinnerWithStatus("Git initialized successfully!", log.Successful)
 
-	i.logger.StartSpinner("\t", "Running git initialization...")
-	if err = i.turbineCLI.GitInit(ctx, i.path+"/"+name); err != nil {
-		i.logger.StopSpinnerWithStatus(
-			"\tThe final step to 'git init' the Application repo failed. Please complete this step manually.",
-			log.Failed)
-		return err
-	}
-	i.logger.StopSpinnerWithStatus("Git initialized successfully!", log.Successful)
+	// appPath := filepath.Join(i.path, name)
 
-	appPath := filepath.Join(i.path, name)
-
-	i.logger.Infof(ctx, "Turbine Data Application successfully initialized!\n"+
-		"You can start interacting with Meroxa in your app located at \"%s\".\n"+
-		"Your Application will not be visible in the Meroxa Dashboard until after deployment.", appPath)
+	// i.logger.Infof(ctx, "Conduit Data Application successfully initialized!\n"+
+	// 	"You can start interacting with Meroxa in your app located at \"%s\".\n"+
+	// 	"Your Application will not be visible in the Meroxa Dashboard until after deployment.", appPath)
 
 	return nil
-}
-
-func newTurbineCLI(logger log.Logger, lang, path string) (turbine.CLI, error) {
-	switch lang {
-	case "go", turbine.GoLang:
-		return turbineGo.New(logger, path), nil
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		return turbineJS.New(logger, path), nil
-	case "py", turbine.Python3, turbine.Python:
-		return turbinePY.New(logger, path), nil
-	case "rb", turbine.Ruby:
-		return turbineRb.New(logger, path), nil
-	default:
-		return nil, newLangUnsupportedError(ir.Lang(lang))
-	}
 }

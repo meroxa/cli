@@ -20,16 +20,11 @@ import (
 	"context"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
 	"github.com/meroxa/cli/log"
 )
 
 type Run struct {
-	path   string
-	config *turbine.AppConfig
-
-	logger     log.Logger
-	turbineCLI turbine.CLI
+	logger log.Logger
 
 	flags struct {
 		Path string `long:"path" usage:"path of application to run"`
@@ -49,7 +44,7 @@ func (*Run) Usage() string {
 
 func (*Run) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Execute a Turbine Data Application locally",
+		Short: "Execute a Conduit Data Application locally",
 		Long:  "meroxa apps run will build your app locally to then run it locally in --path.",
 		Example: `meroxa apps run 			# assumes you run it from the app directory
 meroxa apps run --path ../go-demo 	# it'll use lang defined in your app.json
@@ -65,24 +60,6 @@ func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
 }
 
-func (r *Run) Execute(ctx context.Context) error {
-	if r.turbineCLI != nil {
-		return r.turbineCLI.Run(ctx)
-	}
-
-	var err error
-	if r.config == nil {
-		if r.path, err = turbine.GetPath(r.flags.Path); err != nil {
-			return err
-		}
-		if r.config, err = turbine.ReadConfigFile(r.path); err != nil {
-			return err
-		}
-	}
-
-	if r.turbineCLI, err = getTurbineCLIFromLanguage(r.logger, r.config.Language, r.path); err != nil {
-		return err
-	}
-
-	return r.turbineCLI.Run(ctx)
+func (r *Run) Execute(_ context.Context) error {
+	return nil
 }

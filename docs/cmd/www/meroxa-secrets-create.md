@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-secrets-create/
 ---
 ## meroxa secrets create
 
-Create a Turbine Secret
+Create a Conduit Secret
 
 ### Synopsis
 
@@ -46,5 +46,5 @@ meroxa secret create NAME
 
 ### SEE ALSO
 
-* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Conduit Data Applications
 

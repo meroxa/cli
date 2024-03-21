@@ -1,6 +1,6 @@
 ## meroxa secrets list
 
-List all Turbine Secrets
+List all Conduit Secrets
 
 ### Synopsis
 
@@ -35,5 +35,5 @@ meroxa secrets list
 
 ### SEE ALSO
 
-* [meroxa secrets](meroxa_secrets.md)	 - Manage Turbine Data Applications
+* [meroxa secrets](meroxa_secrets.md)	 - Manage Conduit Data Applications
 

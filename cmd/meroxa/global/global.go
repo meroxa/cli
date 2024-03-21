@@ -54,6 +54,7 @@ const (
 	TenantSubdomainEnv           = "TENANT_SUBDOMAIN"
 	TenantEmailAddress           = "TENANT_EMAIL_ADDRESS"
 	TenantPassword               = "TENANT_PASSWORD"
+	TenantURL                    = "TENANT_URL"
 	defaultClientTimeout         = time.Second * 10
 )
 

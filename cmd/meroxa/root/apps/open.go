@@ -56,7 +56,7 @@ type Open struct {
 	client global.BasicClient
 
 	logger log.Logger
-	path   string
+	// path   string
 
 	args struct {
 		NameOrUUID string
@@ -84,9 +84,8 @@ func (o *Open) ParseArgs(args []string) error {
 
 func (o *Open) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Open the link to a Turbine Data Application in the Dashboard",
+		Short: "Open the link to a Conduit Data Application in the Dashboard",
 		Example: `meroxa apps open # assumes that the Application is in the current directory
-meroxa apps open --path /my/app
 meroxa apps open NAMEorUUID`,
 	}
 }
@@ -96,13 +95,13 @@ func (o *Open) Execute(ctx context.Context) error {
 		o.Opener = &browserOpener{}
 	}
 
-	apps, err := RetrieveApplicationByNameOrID(ctx, o.client, o.args.NameOrUUID, o.flags.Path)
+	apps, err := RetrieveApplicationByNameOrID(ctx, o.client, o.args.NameOrUUID)
 	if err != nil {
 		return err
 	}
 
 	// open a browser window to the application details
-	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaAPIURL(), apps.Items[0].ID)
+	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaTenantURL(), apps.Items[0].ID)
 	err = o.Start(dashboardURL)
 	if err != nil {
 		o.logger.Errorf(ctx, "can't open browser to URL %s\n", dashboardURL)

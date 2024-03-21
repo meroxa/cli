@@ -1,6 +1,6 @@
 ## meroxa secrets create
 
-Create a Turbine Secret
+Create a Conduit Secret
 
 ### Synopsis
 
@@ -39,5 +39,5 @@ meroxa secret create NAME
 
 ### SEE ALSO
 
-* [meroxa secrets](meroxa_secrets.md)	 - Manage Turbine Data Applications
+* [meroxa secrets](meroxa_secrets.md)	 - Manage Conduit Data Applications
 

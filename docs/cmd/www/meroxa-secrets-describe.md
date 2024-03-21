@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-secrets-describe/
 ---
 ## meroxa secrets describe
 
-Describe a Turbine Secret
+Describe a Conduit Secret
 
 ### Synopsis
 
@@ -43,5 +43,5 @@ meroxa secrets describe nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Conduit Data Applications
 
