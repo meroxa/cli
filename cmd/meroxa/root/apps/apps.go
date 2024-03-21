@@ -24,18 +24,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/meroxa/turbine-core/v2/pkg/ir"
-
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/cmd/meroxa/turbine"
-	turbineGo "github.com/meroxa/cli/cmd/meroxa/turbine/golang"
-	turbineJS "github.com/meroxa/cli/cmd/meroxa/turbine/javascript"
-	turbinePY "github.com/meroxa/cli/cmd/meroxa/turbine/python"
-	turbineRb "github.com/meroxa/cli/cmd/meroxa/turbine/ruby"
 	pb "github.com/pocketbase/pocketbase/tools/types"
 
-	"github.com/meroxa/cli/log"
 	"github.com/meroxa/cli/utils/display"
 	"github.com/spf13/cobra"
 )
@@ -50,27 +43,36 @@ const (
 	ApplicationStateDegraded    ApplicationState = "degraded"
 	ApplicationStateFailed      ApplicationState = "failed"
 
-	collectionName = "apps"
+	deploymentCollection  = "conduitdeployments"
+	applicationCollection = "conduitapps"
 )
 
 var displayDetails = display.Details{
-	"Name":        "name",
-	"State":       "state",
-	"SpecVersion": "specVersion",
-	"Created":     "created",
-	"Updated":     "updated",
+	"Name":              "name",
+	"State":             "state",
+	"ApplicationSpec":   "stream_tech",
+	"Config":            "config",
+	"PipelineFilenames": "pipelines_filenames",
+	// "PipelineEnriched":  "pipeline_enriched",
+	// "PipelineOriginal":  "pipeline_original",
+	"Created": "created",
+	"Updated": "updated",
 }
 
 // Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
-	ID          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	State       ApplicationState       `json:"state"`
-	Spec        map[string]interface{} `json:"spec"`
-	SpecVersion string                 `json:"specVersion"`
-	Created     AppTime                `json:"created"`
-	Updated     AppTime                `json:"updated"`
-	Image       string                 `json:"imageArchive"`
+	ID                string `json:"id"`
+	Name              string `json:"name"`
+	State             string `json:"state"`
+	ApplicationSpec   string `json:"stream_tech"`
+	Config            string `json:"config"`
+	PipelineFilenames string `json:"pipeline_filenames"`
+	PipelineEnriched  string `json:"pipeline_enriched"`
+	PipelineOriginal  string `json:"pipeline_original"`
+
+	Created AppTime `json:"created"`
+	Updated AppTime `json:"updated"`
+	Archive string  `json:"archive"`
 }
 
 type Applications struct {
@@ -126,7 +128,7 @@ func (*Apps) Usage() string {
 
 func (*Apps) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Manage Turbine Data Applications",
+		Short: "Manage Conduit Data Applications",
 	}
 }
 
@@ -142,31 +144,8 @@ func (*Apps) SubCommands() []*cobra.Command {
 	}
 }
 
-// getTurbineCLIFromLanguage will return the appropriate turbine.CLI based on language.
-func getTurbineCLIFromLanguage(logger log.Logger, lang ir.Lang, path string) (turbine.CLI, error) {
-	switch lang {
-	case "go", turbine.GoLang:
-		return turbineGo.New(logger, path), nil
-	case "js", turbine.JavaScript, turbine.NodeJs:
-		return turbineJS.New(logger, path), nil
-	case "py", turbine.Python3, turbine.Python:
-		return turbinePY.New(logger, path), nil
-	case "rb", turbine.Ruby:
-		return turbineRb.New(logger, path), nil
-	}
-	return nil, newLangUnsupportedError(lang)
-}
-
 type appsClient interface {
 	AddHeader(string, string)
-}
-
-func addTurbineHeaders(c appsClient, lang ir.Lang, version string) {
-	c.AddHeader("Meroxa-CLI-App-Lang", string(lang))
-	if lang == ir.JavaScript {
-		version = fmt.Sprintf("%s:cli%s", version, turbineJS.TurbineJSVersion)
-	}
-	c.AddHeader("Meroxa-CLI-App-Version", version)
 }
 
 func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
@@ -174,11 +153,11 @@ func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClien
 	apps := Applications{}
 	if path != "" {
 		var err error
-		if getPath, err = turbine.GetPath(path); err != nil {
+		if getPath, err = GetPath(path); err != nil {
 			return nil, err
 		}
 
-		config, err := turbine.ReadConfigFile(getPath)
+		config, err := ReadConfigFile(getPath)
 		if err != nil {
 			return nil, err
 		}
@@ -186,7 +165,7 @@ func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClien
 		a := &url.Values{}
 		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", config.Name, config.Name))
 
-		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a)
+		response, err := client.CollectionRequest(ctx, "GET", applicationCollection, "", nil, *a)
 		if err != nil {
 			return nil, err
 		}
@@ -198,7 +177,7 @@ func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClien
 		a := &url.Values{}
 		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrID, nameOrID))
 
-		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a)
+		response, err := client.CollectionRequest(ctx, "GET", applicationCollection, "", nil, *a)
 		if err != nil {
 			return nil, err
 		}

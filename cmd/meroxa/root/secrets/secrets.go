@@ -90,7 +90,7 @@ func (*Secrets) Usage() string {
 
 func (*Secrets) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Manage Turbine Data Applications",
+		Short: "Manage Conduit Application Secrets",
 	}
 }
 
