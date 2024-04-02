@@ -234,8 +234,6 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Println("Get response from app")
-
 	var j map[string]interface{}
 	err = json.NewDecoder(response.Body).Decode(&j)
 
