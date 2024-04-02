@@ -34,7 +34,7 @@ func (*List) Usage() string {
 
 func (*List) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "List all Turbine Secrets",
+		Short: "List all Conduit Secrets",
 		Long: `This command will list all the secrets defined on the platform.
 `,
 		Example: `meroxa secrets list`,

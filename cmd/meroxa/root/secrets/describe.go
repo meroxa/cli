@@ -38,8 +38,8 @@ func (*Describe) Usage() string {
 
 func (*Describe) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Describe a Turbine Secret",
-		Long: `This command will describe a turbine secret by id or name.
+		Short: "Describe a Conduit Secret",
+		Long: `This command will describe a Conduit secret by id or name.
 `,
 		Example: `meroxa secrets describe nameOrUUID
 `,

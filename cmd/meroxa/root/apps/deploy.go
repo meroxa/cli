@@ -29,6 +29,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/log"
@@ -39,11 +40,9 @@ type Deploy struct {
 		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
 	}
 
-	client  global.BasicClient
-	logger  log.Logger
-	appName string
-	path    string
-	gitSha  string
+	client global.BasicClient
+	logger log.Logger
+	path   string
 }
 
 type ApplicationDeployment struct {
@@ -99,89 +98,128 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
-func (d *Deploy) gzipConduitApp(src string, buf io.Writer) error {
-	zr := gzip.NewWriter(buf)
-	tw := tar.NewWriter(zr)
+func switchToAppDirectory(appPath string) (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return pwd, err
+	}
+	return pwd, os.Chdir(appPath)
+}
 
-	// walk through every file in the folder
-	filepath.Walk(src, func(file string, fi os.FileInfo, err error) error {
-		// generate tar header
+func shouldSkipDir(fi os.FileInfo) bool {
+	if !fi.IsDir() {
+		return false
+	}
+
+	switch fi.Name() {
+	case ".git", "fixtures", "node_modules":
+		return true
+	}
+
+	return false
+}
+
+func (d *Deploy) gzipConduitApp(src string, buf io.Writer) error {
+	// Grab the directory we care about (app's directory)
+	appDir := filepath.Base(src)
+
+	// Change to parent's app directory
+	pwd, err := switchToAppDirectory(filepath.Dir(src))
+	if err != nil {
+		return err
+	}
+
+	zipWriter := gzip.NewWriter(buf)
+	tarWriter := tar.NewWriter(zipWriter)
+
+	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if shouldSkipDir(fi) {
+			return filepath.SkipDir
+		}
 		header, err := tar.FileInfoHeader(fi, file)
 		if err != nil {
 			return err
 		}
 
 		header.Name = filepath.ToSlash(file)
-
-		// write header
-		if err := tw.WriteHeader(header); err != nil {
+		if err := tarWriter.WriteHeader(header); err != nil { //nolint:govet
 			return err
 		}
-		// if not a dir, write file content
+		if !fi.Mode().IsRegular() {
+			return nil
+		}
 		if !fi.IsDir() {
-			data, err := os.Open(file)
+			var data *os.File
+			data, err = os.Open(file)
+			defer func(data *os.File) {
+				err = data.Close()
+				if err != nil {
+					panic(err.Error())
+				}
+			}(data)
 			if err != nil {
 				return err
 			}
-			if _, err := io.Copy(tw, data); err != nil {
+			if _, err := io.Copy(tarWriter, data); err != nil {
 				return err
 			}
 		}
 		return nil
 	})
-
-	if err := tw.Close(); err != nil {
-		return err
-	}
-	if err := zr.Close(); err != nil {
-		return err
-	}
-	//
-	return nil
-}
-
-func (d *Deploy) getGitInfo(ctx context.Context) error {
-	var err error
-	if err = CheckUncommittedChanges(ctx, d.logger, d.path); err != nil {
+	if err != nil {
 		return err
 	}
 
-	d.gitSha, err = GetGitSha(ctx, d.path)
-	return err
+	if err := tarWriter.Close(); err != nil {
+		return err
+	}
+	if err := zipWriter.Close(); err != nil {
+		return err
+	}
+
+	return os.Chdir(pwd)
 }
 
 func (d *Deploy) Execute(ctx context.Context) error {
 	var err error
 
-	if err = d.getGitInfo(ctx); err != nil { //nolint:shadow
-		return err
-	}
+	d.logger.StartSpinner("\t", "Starting app deploy, zipping and uploading application tar.")
 
 	d.path, err = GetPath(d.flags.Path)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(d.path)
-
 	var buf bytes.Buffer
 	d.gzipConduitApp(d.path, &buf)
 
-	// write the .tar.gzip
-	file, err := os.CreateTemp("", "temp_conduit.tar.gzip")
+	dFile := fmt.Sprintf("conduit-%s.tar.gz", uuid.NewString())
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0o777)) //nolint:gomnd
+	defer func(fileToWrite *os.File) {
+		if err = fileToWrite.Close(); err != nil {
+			panic(err.Error())
+		}
+
+		d.logger.StartSpinner("\t", fmt.Sprintf("Removing %q...", dFile))
+		if err = os.Remove(dFile); err != nil {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		} else {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
+		}
+	}(fileToWrite)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	if _, err := io.Copy(file, &buf); err != nil {
-		panic(err)
+	if _, err = io.Copy(fileToWrite, &buf); err != nil {
+		return err
 	}
 
-	fmt.Println(file.Name())
 	files := map[string]string{
-		"archive": file.Name(),
+		"archive": fileToWrite.Name(),
 	}
-
-	fmt.Println(files)
 
 	response, err := d.client.CollectionRequestMultipart(
 		ctx,
@@ -190,24 +228,22 @@ func (d *Deploy) Execute(ctx context.Context) error {
 		"",
 		nil,
 		nil,
-		//		map[string]string{},
 		files,
 	)
 	if err != nil {
 		return err
 	}
 
-	apps := &Application{}
-	err = json.NewDecoder(response.Body).Decode(&apps)
-	if err != nil {
-		return err
+	fmt.Println("Get response from app")
+
+	var j map[string]interface{}
+	err = json.NewDecoder(response.Body).Decode(&j)
+
+	if j["state"] == "failed" {
+		return fmt.Errorf("error deploying application, application state - %s", j["state"])
 	}
 
-	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaAPIURL(), apps.ID)
-	fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To view your application, visit %s",
-		d.appName, dashboardURL)
-
-	//d.logger.StopSpinnerWithStatus(output, log.Successful)
+	d.logger.StopSpinnerWithStatus("Application successfully deployed!", log.Successful)
 
 	return nil
 }

@@ -1,10 +1,10 @@
 ## meroxa secrets describe
 
-Describe a Turbine Secret
+Describe a Conduit Secret
 
 ### Synopsis
 
-This command will describe a turbine secret by id or name.
+This command will describe a Conduit secret by id or name.
 
 
 ```
@@ -36,5 +36,5 @@ meroxa secrets describe nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa secrets](meroxa_secrets.md)	 - Manage Turbine Data Applications
+* [meroxa secrets](meroxa_secrets.md)	 - Manage Conduit Data Applications
 

@@ -36,12 +36,11 @@ import (
 type ApplicationState string
 
 const (
-	ApplicationStateInitialized ApplicationState = "initialized"
-	ApplicationStateDeploying   ApplicationState = "deploying"
-	ApplicationStatePending     ApplicationState = "pending"
-	ApplicationStateRunning     ApplicationState = "running"
-	ApplicationStateDegraded    ApplicationState = "degraded"
-	ApplicationStateFailed      ApplicationState = "failed"
+	AppProvisioningState   ApplicationState = "provisioning"
+	AppProvisionedState    ApplicationState = "provisioned"
+	AppDeprovisioningState ApplicationState = "deprovisioning"
+	AppDeprovisionedState  ApplicationState = "deprovisioned"
+	AppDegradedState       ApplicationState = "degraded"
 
 	deploymentCollection  = "conduitdeployments"
 	applicationCollection = "conduitapps"
@@ -59,16 +58,38 @@ var displayDetails = display.Details{
 	"Updated": "updated",
 }
 
+type Deployment struct {
+	ID              string `json:"id,omitempty"`
+	Archive         string `json:"archive"`
+	State           string `json:"state,omitempty"`
+	ApplicationSpec string `json:"app_spec,omitempty"`
+
+	Created            AppTime `json:"created,omitempty"`
+	Updated            AppTime `json:"updated,omitempty"`
+	ProcessorPlugins   string  `json:"processors_plugins,omitempty"`
+	ProcessorFilenames string  `json:"processors_filenames,omitempty"`
+	PipelineFilenames  string  `json:"pipeline_filenames,omitempty"`
+}
+
+type Deployments struct {
+	Page       int          `json:"page"`
+	PerPage    int          `json:"perPage"`
+	TotalItems int          `json:"totalItems"`
+	TotalPages int          `json:"totalPages"`
+	Items      []Deployment `json:"items"`
+}
+
 // Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
-	ID                string `json:"id"`
-	Name              string `json:"name"`
-	State             string `json:"state"`
-	ApplicationSpec   string `json:"stream_tech"`
-	Config            string `json:"config"`
-	PipelineFilenames string `json:"pipeline_filenames"`
-	PipelineEnriched  string `json:"pipeline_enriched"`
-	PipelineOriginal  string `json:"pipeline_original"`
+	ID                string   `json:"id"`
+	DeploymentID      []string `json:"deployment_id"`
+	Name              string   `json:"name"`
+	State             string   `json:"state"`
+	ApplicationSpec   string   `json:"stream_tech"`
+	Config            string   `json:"config"`
+	PipelineFilenames string   `json:"pipeline_filenames"`
+	PipelineEnriched  string   `json:"pipeline_enriched"`
+	PipelineOriginal  string   `json:"pipeline_original"`
 
 	Created AppTime `json:"created"`
 	Updated AppTime `json:"updated"`
@@ -134,46 +155,20 @@ func (*Apps) Docs() builder.Docs {
 
 func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
+		//TODO - commenting out run and init until implemented
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Describe{}),
-		builder.BuildCobraCommand(&Init{}),
+		//builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Open{}),
 		builder.BuildCobraCommand(&Remove{}),
-		builder.BuildCobraCommand(&Run{}),
+		//builder.BuildCobraCommand(&Run{}),
 	}
 }
 
-type appsClient interface {
-	AddHeader(string, string)
-}
-
 func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
-	var getPath string
 	apps := Applications{}
-	if path != "" {
-		var err error
-		if getPath, err = GetPath(path); err != nil {
-			return nil, err
-		}
-
-		config, err := ReadConfigFile(getPath)
-		if err != nil {
-			return nil, err
-		}
-
-		a := &url.Values{}
-		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", config.Name, config.Name))
-
-		response, err := client.CollectionRequest(ctx, "GET", applicationCollection, "", nil, *a)
-		if err != nil {
-			return nil, err
-		}
-		err = json.NewDecoder(response.Body).Decode(&apps)
-		if err != nil {
-			return nil, err
-		}
-	} else if nameOrID != "" {
+	if nameOrID != "" {
 		a := &url.Values{}
 		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrID, nameOrID))
 

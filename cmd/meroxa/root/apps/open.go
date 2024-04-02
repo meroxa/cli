@@ -86,7 +86,6 @@ func (o *Open) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Open the link to a Conduit Data Application in the Dashboard",
 		Example: `meroxa apps open # assumes that the Application is in the current directory
-meroxa apps open --path /my/app
 meroxa apps open NAMEorUUID`,
 	}
 }

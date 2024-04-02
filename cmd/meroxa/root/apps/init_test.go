@@ -13,10 +13,10 @@ package apps
 // 	"github.com/google/uuid"
 
 // 	"github.com/meroxa/cli/cmd/meroxa/builder"
-// 	mockturbinecli "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
+// 	mockConduitcli "github.com/meroxa/cli/cmd/meroxa/Conduit/mock"
 // 	"github.com/meroxa/cli/log"
 // 	"github.com/meroxa/cli/utils"
-// 	"github.com/meroxa/turbine-core/pkg/ir"
+// 	"github.com/meroxa/Conduit-core/pkg/ir"
 // )
 
 // func TestInitAppArgs(t *testing.T) {
@@ -246,14 +246,14 @@ package apps
 // 			i.args.appName = tt.name
 // 			i.flags.Lang = string(tt.language)
 
-// 			mock := mockturbinecli.NewMockCLI(mockCtrl)
+// 			mock := mockConduitcli.NewMockCLI(mockCtrl)
 // 			if tt.err == nil {
 // 				mock.EXPECT().Init(ctx, tt.name)
 // 				mock.EXPECT().GitInit(ctx, filepath.Join(tt.path, tt.name))
 // 			} else {
 // 				mock.EXPECT().Init(ctx, tt.name).Return(tt.err)
 // 			}
-// 			i.turbineCLI = mock
+// 			i.ConduitCLI = mock
 
 // 			err := i.Execute(ctx)
 // 			if err != nil {

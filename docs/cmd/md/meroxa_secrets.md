@@ -1,6 +1,6 @@
 ## meroxa secrets
 
-Manage Turbine Data Applications
+Manage Conduit Data Applications
 
 ### Options
 
@@ -21,8 +21,8 @@ Manage Turbine Data Applications
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa secrets create](meroxa_secrets_create.md)	 - Create a Turbine Secret
-* [meroxa secrets describe](meroxa_secrets_describe.md)	 - Describe a Turbine Secret
-* [meroxa secrets list](meroxa_secrets_list.md)	 - List all Turbine Secrets
-* [meroxa secrets remove](meroxa_secrets_remove.md)	 - Remove a Turbine Secret
+* [meroxa secrets create](meroxa_secrets_create.md)	 - Create a Conduit Secret
+* [meroxa secrets describe](meroxa_secrets_describe.md)	 - Describe a Conduit Secret
+* [meroxa secrets list](meroxa_secrets_list.md)	 - List all Conduit Secrets
+* [meroxa secrets remove](meroxa_secrets_remove.md)	 - Remove a Conduit Secret
 

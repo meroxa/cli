@@ -1,6 +1,6 @@
 ## meroxa apps remove
 
-Remove a Turbine Data Application
+Remove a Conduit Data Application
 
 ### Synopsis
 
@@ -40,5 +40,5 @@ meroxa apps remove nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa apps](meroxa_apps.md)	 - Manage Turbine Data Applications
+* [meroxa apps](meroxa_apps.md)	 - Manage Conduit Data Applications
 

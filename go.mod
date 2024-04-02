@@ -22,7 +22,7 @@ require (
 
 require (
 	github.com/briandowns/spinner v1.23.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 	golang.org/x/mod v0.14.0
 )
@@ -37,6 +37,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dewski/jsonpath v0.0.0-20210103075638-af6da8f1a897 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/google/uuid v1.6.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect

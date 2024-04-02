@@ -31,8 +31,6 @@ package apps
 
 // 	"github.com/google/uuid"
 // 	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
-// 	turbineMock "github.com/meroxa/cli/cmd/meroxa/turbine/mock"
-// 	"github.com/meroxa/turbine-core/pkg/ir"
 // 	"github.com/stretchr/testify/require"
 
 // 	"github.com/golang/mock/gomock"
@@ -41,71 +39,34 @@ package apps
 // )
 
 // const (
-// 	body = `{
-// 		"page":1,
-// 		"perPage":30,
-// 		"totalItems":1,
-// 		"totalPages":1,
-// 		"items":[
-// 		   {
-// 			  "collectionId":"gnhz55oi6tulkvs",
-// 			  "collectionName":"apps",
-// 			  "created":"2023-10-25 22:40:21.297Z",
-// 			  "id":"b0p2ok0dcjisn4z",
-// 			  "name":"my-env",
-// 			  "specVersion":"0.2.0",
-// 			  "state":"running",
-// 			  "updated":"2023-10-25 22:40:21.297Z",
-// 			  "spec":{
-// 				 "connectors":[
-// 					{
-// 					   "collection":"collection_name",
-// 					   "resource":"source_name",
-// 					   "type":"source",
-// 					   "uuid":"5ce244be-e404-4fc1-b486-a35ee200fd27"
-// 					},
-// 					{
-// 					   "collection":"collection_archive",
-// 					   "resource":"destination_name",
-// 					   "type":"destination",
-// 					   "uuid":"0362c2df-6e99-445e-b95e-a798e69a651f"
-// 					}
-// 				 ],
-// 				 "definition":{
-// 					"git_sha":"f7baf1e05df0becdf946847b8f7411d22988a3d7\n",
-// 					"metadata":{
-// 					   "spec_version":"0.2.0",
-// 					   "turbine":{
-// 						  "language":"golang",
-// 						  "version":"v2.1.3"
-// 					   }
-// 					}
-// 				 },
-// 				 "functions":[
-// 					{
-// 					   "image":"turbine-newgo.tar.gz",
-// 					   "name":"anonymize",
-// 					   "uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93"
-// 					}
-// 				 ],
-// 				 "streams":[
-// 					{
-// 					   "from_uuid":"5ce244be-e404-4fc1-b486-a35ee200fd27",
-// 					   "name":"5ce244be-e404-4fc1-b486-a35ee200fd27_04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-// 					   "to_uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-// 					   "uuid":"ef1e3681-fbaa-4bff-9d21-6e010bcdec3e"
-// 					},
-// 					{
-// 					   "from_uuid":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93",
-// 					   "name":"04b0d690-dd44-4df3-8636-6f0c4dfb5c93_0362c2df-6e99-445e-b95e-a798e69a651f",
-// 					   "to_uuid":"0362c2df-6e99-445e-b95e-a798e69a651f",
-// 					   "uuid":"06c89e49-753d-4a54-81f1-ee1e036003e6"
-// 					}
-// 				 ]
-// 			  }
-// 		   }
+// 	body = `
+// 	{
+// 		"page": 1,
+// 		"perPage": 30,
+// 		"totalItems": 1,
+// 		"totalPages": 1,
+// 		"items": [
+// 		  {
+// 			"collectionId": "77byam8idl1rv8b",
+// 			"collectionName": "conduitapps",
+// 			"config": null,
+// 			"created": "2024-04-01 20:13:20.111Z",
+// 			"deployment_id": [
+// 			  "tcsmsunmfo5v8kw"
+// 			],
+// 			"id": "lxjcdlsvet3aeoe",
+// 			"name": "test-pipeline-1",
+// 			"pipeline_enriched": "version: \"2.2\"\npipelines:\n    - id: cp-pipeline-generator-log-source-generator.0\n      status: \"\"\n      name: pipeline-generator-log-name-0\n      description: \"\"\n      connectors:\n        - id: source-generator.0\n          type: source\n          plugin: builtin:generator\n          name: \"\"\n          settings:\n            format.options: event_id:int,pg_generator:bool,sensor_id:int,msg:string,triggered:bool\n            format.type: structured\n            readTime: 1s\n          processors: []\n        - id: kafka-source-generator.0\n          type: destination\n          plugin: builtin:kafka\n          name: kafka-source-generator.0.0\n          settings:\n            servers: 127.0.0.1:19092\n            topic: default.a9fc5274-c1df-4e85-a15a-a71337291817.0\n          processors: []\n      processors: []\n      dead-letter-queue:\n        plugin: builtin:log\n        settings:\n            level: warn\n            message: record delivery failed\n        window-size: 1\n        window-nack-threshold: 0\n    - id: cp-pipeline-generator-log-log-destination.1\n      status: \"\"\n      name: pipeline-generator-log-name-1\n      description: \"\"\n      connectors:\n        - id: log-destination.1\n          type: destination\n          plugin: builtin:log\n          name: \"\"\n          settings: {}\n          processors: []\n        - id: kafka-log-destination.1\n          type: source\n          plugin: builtin:kafka\n          name: kafka-log-destination.1.1\n          settings:\n            servers: 127.0.0.1:19092\n            topic: default.a9fc5274-c1df-4e85-a15a-a71337291817.0\n          processors: []\n      processors: []\n      dead-letter-queue:\n        plugin: builtin:log\n        settings:\n            level: warn\n            message: record delivery failed\n        window-size: 1\n        window-nack-threshold: 0\n",
+// 			"pipeline_filename": "test-pipeline-1.yaml",
+// 			"pipeline_original": "version: \"2.2\"\npipelines:\n    - id: pipeline-generator-log\n      status: running\n      name: pipeline-generator-log-name\n      description: \"\"\n      connectors:\n        - id: source-generator\n          type: source\n          plugin: builtin:generator\n          name: \"\"\n          settings:\n            format.options: event_id:int,pg_generator:bool,sensor_id:int,msg:string,triggered:bool\n            format.type: structured\n            readTime: 1s\n          processors: []\n        - id: log-destination\n          type: destination\n          plugin: builtin:log\n          name: \"\"\n          settings: {}\n          processors: []\n      processors: []\n      dead-letter-queue:\n        plugin: \"\"\n        settings: {}\n        window-size: null\n        window-nack-threshold: null\n",
+// 			"state": "provisioned",
+// 			"stream_tech": "kafka",
+// 			"updated": "2024-04-01 20:13:20.111Z"
+// 		  }
 // 		]
-// 	 }`
+// 	  }
+
+// 	`
 // )
 
 // func TestDescribeApplicationArgs(t *testing.T) {
@@ -137,12 +98,11 @@ package apps
 // 	ctrl := gomock.NewController(t)
 // 	client := basicMock.NewMockBasicClient(ctrl)
 // 	logger := log.NewTestLogger()
-// 	mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
 
 // 	path := filepath.Join(os.TempDir(), uuid.NewString())
-// 	appName := "my-env"
+// 	appName := "test-pipeline-1"
 // 	appTime := AppTime{}
-// 	err := appTime.UnmarshalJSON([]byte(`"2023-10-25 22:40:21.297Z"`))
+// 	err := appTime.UnmarshalJSON([]byte(`"2024-04-01 20:13:20.111Z"`))
 // 	if err != nil {
 // 		t.Fatalf("not expected error, got \"%s\"", err.Error())
 // 	}
@@ -156,7 +116,6 @@ package apps
 // 			ModVendor   bool   "long:\"mod-vendor\" usage:\"whether to download modules to vendor or globally while initializing a Go application\""
 // 			SkipModInit bool   "long:\"skip-mod-init\" usage:\"whether to run 'go mod init' while initializing a Go application\""
 // 		}{
-// 			Lang:        string(ir.GoLang),
 // 			Path:        path,
 // 			ModVendor:   false,
 // 			SkipModInit: true,
@@ -164,11 +123,10 @@ package apps
 // 	}
 
 // 	a := &Application{
-// 		Name:        appName,
-// 		State:       "running",
-// 		SpecVersion: "0.2.0",
-// 		Created:     appTime,
-// 		Updated:     appTime,
+// 		Name:    appName,
+// 		State:   "running",
+// 		Created: appTime,
+// 		Updated: appTime,
 // 	}
 
 // 	err = i.Execute(ctx)
@@ -185,20 +143,17 @@ package apps
 // 		Status:     "200 OK",
 // 		StatusCode: 200,
 // 	}
-// 	client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, *filter).Return(
+// 	client.EXPECT().CollectionRequest(ctx, "GET", applicationCollection, "", nil, *filter).Return(
 // 		httpResp,
 // 		nil,
 // 	)
 
-// 	mockTurbineCLI.EXPECT().GetVersion(ctx).Return("1.0", nil)
-// 	client.EXPECT().AddHeader("Meroxa-CLI-App-Lang", string(ir.GoLang)).Times(1)
 // 	client.EXPECT().AddHeader("Meroxa-CLI-App-Version", gomock.Any()).Times(1)
 
 // 	dc := &Describe{
-// 		client:     client,
-// 		logger:     logger,
-// 		turbineCLI: mockTurbineCLI,
-// 		args:       struct{ nameOrUUID string }{nameOrUUID: a.Name},
+// 		client: client,
+// 		logger: logger,
+// 		args:   struct{ nameOrUUID string }{nameOrUUID: a.Name},
 // 		flags: struct {
 // 			Path string "long:\"path\" usage:\"Path to the app directory (default is local directory)\""
 // 		}{Path: filepath.Join(path, appName)},
@@ -220,9 +175,7 @@ package apps
 // 	if gotApp.Name != a.Name {
 // 		t.Fatalf("expected \"%s\" got \"%s\"", a.Name, gotApp.Name)
 // 	}
-// 	if gotApp.SpecVersion != a.SpecVersion {
-// 		t.Fatalf("expected \"%s\" got \"%s\"", a.SpecVersion, gotApp.SpecVersion)
-// 	}
+
 // 	if gotApp.State != a.State {
 // 		t.Fatalf("expected \"%s\" got \"%s\"", a.State, gotApp.State)
 // 	}

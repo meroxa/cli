@@ -57,11 +57,8 @@ func (d *Describe) Flags() []builder.Flag {
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe a Conduit Data Application",
-		Long: `This command will fetch details about the Application specified in '--path'
-(or current working directory if not specified) on our Meroxa Platform,
-or the Application specified by the given ID or Application Name.`,
-		Example: `meroxa apps describe # assumes that the Application is in the current directory
-meroxa apps describe --path /my/app
+		Long:  `This command will fetch details about the Application specified by the given ID or Application Name.`,
+		Example: `
 meroxa apps describe ID
 meroxa apps describe NAME `,
 	}

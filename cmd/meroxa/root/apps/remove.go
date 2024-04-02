@@ -53,11 +53,8 @@ func (r *Remove) Flags() []builder.Flag {
 func (r *Remove) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Remove a Conduit Data Application",
-		Long: `This command will remove the Application specified in '--path'
-(or current working directory if not specified) previously deployed on our Meroxa Platform,
-or the Application specified by the given name or UUID identifier.`,
-		Example: `meroxa apps remove # assumes that the Application is in the current directory
-meroxa apps remove --path /my/app
+		Long:  `This command will remove the Application specified by the given name or UUID identifier.`,
+		Example: `
 meroxa apps remove nameOrUUID`,
 	}
 }
@@ -83,9 +80,10 @@ func (r *Remove) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	app := apps.Items[0]
 
 	r.logger.Infof(ctx, "Removing application %q...", r.args.nameOrUUID)
-	response, err := r.client.CollectionRequest(ctx, "DELETE", applicationCollection, apps.Items[0].ID, nil, nil)
+	response, err := r.client.CollectionRequest(ctx, "DELETE", applicationCollection, app.ID, nil, nil)
 	if err != nil {
 		return err
 	}

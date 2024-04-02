@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps/
 ---
 ## meroxa apps
 
-Manage Turbine Data Applications
+Manage Conduit Data Applications
 
 ### Options
 
@@ -28,11 +28,11 @@ Manage Turbine Data Applications
 ### SEE ALSO
 
 * [meroxa](/cli/cmd/meroxa/)	 - The Meroxa CLI
-* [meroxa apps deploy](/cli/cmd/meroxa-apps-deploy/)	 - Deploy a Turbine Data Application
-* [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Turbine Data Application
-* [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Turbine Data Application
-* [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Turbine Data Applications
-* [meroxa apps open](/cli/cmd/meroxa-apps-open/)	 - Open the link to a Turbine Data Application in the Dashboard
-* [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Remove a Turbine Data Application
-* [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Turbine Data Application locally
+* [meroxa apps deploy](/cli/cmd/meroxa-apps-deploy/)	 - Deploy a Conduit Data Application
+* [meroxa apps describe](/cli/cmd/meroxa-apps-describe/)	 - Describe a Conduit Data Application
+* [meroxa apps init](/cli/cmd/meroxa-apps-init/)	 - Initialize a Conduit Data Application
+* [meroxa apps list](/cli/cmd/meroxa-apps-list/)	 - List Conduit Data Applications
+* [meroxa apps open](/cli/cmd/meroxa-apps-open/)	 - Open the link to a Conduit Data Application in the Dashboard
+* [meroxa apps remove](/cli/cmd/meroxa-apps-remove/)	 - Remove a Conduit Data Application
+* [meroxa apps run](/cli/cmd/meroxa-apps-run/)	 - Execute a Conduit Data Application locally
 

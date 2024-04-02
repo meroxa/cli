@@ -44,7 +44,7 @@ func (*Create) Usage() string {
 
 func (*Create) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Create a Turbine Secret",
+		Short: "Create a Conduit Secret",
 		Long: `This command will create a secret as promted by the user.'
 After successful creation, the secret can be used in a connector. 
 `,

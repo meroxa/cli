@@ -49,10 +49,6 @@ func GetMeroxaAuthClientID() string {
 	return getEnvVal([]string{"MEROXA_AUTH_CLIENT_ID", "MEROXA_CLIENT_ID"}, "2VC9z0ZxtzTcQLDNygeEELV3lYFRZwpb")
 }
 
-func GetLocalTurbineJSSetting() string {
-	return getEnvVal([]string{"MEROXA_USE_LOCAL_TURBINE_JS"}, "false")
-}
-
 func getMeroxaAuthCallbackPort() string {
 	return getEnvVal([]string{MeroxaAuthCallbackPort}, "21900")
 }
