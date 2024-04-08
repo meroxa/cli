@@ -218,14 +218,13 @@ golang.org/x/exp/slog/internal/buffer
 golang.org/x/mod/semver
 # golang.org/x/net v0.22.0
 ## explicit; go 1.18
-golang.org/x/net/context
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.18.0
+# golang.org/x/oauth2 v0.19.0
 ## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
@@ -249,15 +248,6 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# google.golang.org/appengine v1.6.7
-## explicit; go 1.11
-google.golang.org/appengine/internal
-google.golang.org/appengine/internal/base
-google.golang.org/appengine/internal/datastore
-google.golang.org/appengine/internal/log
-google.golang.org/appengine/internal/remote_api
-google.golang.org/appengine/internal/urlfetch
-google.golang.org/appengine/urlfetch
 # google.golang.org/genproto/googleapis/rpc v0.0.0-20231120223509-83a465c0220f
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
