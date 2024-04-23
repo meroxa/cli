@@ -76,7 +76,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	for _, app := range apps.Items {
 		d.logger.Info(ctx, display.PrintTable(app, displayDetails))
 		d.logger.JSON(ctx, app)
-		dashboardURL := fmt.Sprintf("%s/conduitapps/%s/detail", global.GetMeroxaAPIURL(), app.ID)
+		dashboardURL := fmt.Sprintf("%s/conduitapps/%s/detail", global.GetMeroxaTenantURL(), app.ID)
 		d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your application, visit %s", dashboardURL))
 	}
 

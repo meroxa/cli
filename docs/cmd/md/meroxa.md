@@ -26,7 +26,7 @@ Using the CLI you are able to create and manage sophisticated data pipelines wit
 * [meroxa auth](meroxa_auth.md)	 - Authentication commands for Meroxa
 * [meroxa completion](meroxa_completion.md)	 - Generate completion script
 * [meroxa config](meroxa_config.md)	 - Manage your Meroxa CLI configuration
-* [meroxa login](meroxa_login.md)	 - Login to a Conduit Platform tenant
+* [meroxa login](meroxa_login.md)	 - Login to a Meroxa Platform tenant
 * [meroxa logout](meroxa_logout.md)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa open](meroxa_open.md)	 - Open in a web browser
 * [meroxa secrets](meroxa_secrets.md)	 - Manage Conduit Data Applications

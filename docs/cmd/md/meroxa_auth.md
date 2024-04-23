@@ -21,7 +21,7 @@ Authentication commands for Meroxa
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa auth login](meroxa_auth_login.md)	 - Login to a Conduit Platform tenant
+* [meroxa auth login](meroxa_auth_login.md)	 - Login to a Meroxa Platform tenant
 * [meroxa auth logout](meroxa_auth_logout.md)	 - Clears local login credentials of the Meroxa Platform
 * [meroxa auth whoami](meroxa_auth_whoami.md)	 - Display the current logged in user
 

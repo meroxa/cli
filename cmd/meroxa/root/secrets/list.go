@@ -72,7 +72,7 @@ func (d *List) Execute(ctx context.Context) error {
 
 	d.logger.Info(ctx, display.PrintList(secrets.Items, displayDetails))
 	d.logger.JSON(ctx, secrets)
-	output := fmt.Sprintf("\n ✨ To view your secrets, visit %s/secrets", global.GetMeroxaAPIURL())
+	output := fmt.Sprintf("\n ✨ To view your secrets, visit %s/secrets", global.GetMeroxaTenantURL())
 	d.logger.Info(ctx, output)
 
 	return nil

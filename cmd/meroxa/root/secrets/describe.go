@@ -74,7 +74,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 
 		for _, secret := range getSecrets.Items {
 			d.logger.Info(ctx, display.PrintTable(secret, displayDetails))
-			dashboardURL := fmt.Sprintf("%s/secrets/%s", global.GetMeroxaAPIURL(), secret.ID)
+			dashboardURL := fmt.Sprintf("%s/secrets/%s", global.GetMeroxaTenantURL(), secret.ID)
 			d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your secret, visit %s", dashboardURL))
 		}
 		d.logger.JSON(ctx, getSecrets)

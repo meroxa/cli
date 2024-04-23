@@ -80,15 +80,17 @@ func (r *Remove) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	app := apps.Items[0]
 
-	r.logger.Infof(ctx, "Removing application %q...", r.args.nameOrUUID)
-	response, err := r.client.CollectionRequest(ctx, "DELETE", applicationCollection, app.ID, nil, nil)
+	app := apps.Items[0]
+	app.State = "deprovisioning"
+
+	r.logger.Infof(ctx, "Deprovisioning application %q...", r.args.nameOrUUID)
+	response, err := r.client.CollectionRequest(ctx, "PATCH", applicationCollection, app.ID, app, nil)
 	if err != nil {
 		return err
 	}
 
-	r.logger.Infof(ctx, "Application %q successfully removed", r.args.nameOrUUID)
+	r.logger.Infof(ctx, "Application %q successfully deprovisioned", r.args.nameOrUUID)
 	r.logger.JSON(ctx, response)
 
 	return nil

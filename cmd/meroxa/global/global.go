@@ -43,18 +43,14 @@ const (
 	CasedPublishKeyEnv           = "CASED_PUBLISH_KEY"
 	LatestCLIVersionUpdatedAtEnv = "LATEST_CLI_VERSION_UPDATED_AT"
 	DisableNotificationsUpdate   = "DISABLE_NOTIFICATIONS_UPDATE"
-	MeroxaAuthCallbackHost       = "MEROXA_AUTH_CALLBACK_HOST"
-	MeroxaAuthCallbackURL        = "MEROXA_AUTH_CALLBACK_URL"
-	MeroxaAuthCallbackPort       = "MEROXA_AUTH_CALLBACK_PORT"
-	MeroxaAuthCallbackProtocol   = "MEROXA_AUTH_CALLBACK_PROTOCOL"
 	PublishMetricsEnv            = "PUBLISH_METRICS"
-	RefreshTokenEnv              = "REFRESH_TOKEN"
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
-	TenantSubdomainEnv           = "TENANT_SUBDOMAIN"
 	TenantEmailAddress           = "TENANT_EMAIL_ADDRESS"
-	TenantPassword               = "TENANT_PASSWORD"
-	defaultClientTimeout         = time.Second * 10
+	// TenantPassword               = "TENANT_PASSWORD"
+	TenantURL = "TENANT_URL"
+
+	defaultClientTimeout = time.Second * 10
 )
 
 func RegisterGlobalFlags(cmd *cobra.Command) {

@@ -42,8 +42,8 @@ const (
 	AppDeprovisionedState  ApplicationState = "deprovisioned"
 	AppDegradedState       ApplicationState = "degraded"
 
-	deploymentCollection  = "conduitdeployments"
-	applicationCollection = "conduitapps"
+	deploymentCollection  = "conduit_deployments"
+	applicationCollection = "conduit_apps"
 )
 
 var displayDetails = display.Details{
@@ -155,14 +155,14 @@ func (*Apps) Docs() builder.Docs {
 
 func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
-		//TODO - commenting out run and init until implemented
+		// TODO - commenting out run and init until implemented
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Describe{}),
-		//builder.BuildCobraCommand(&Init{}),
+		// builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Open{}),
 		builder.BuildCobraCommand(&Remove{}),
-		//builder.BuildCobraCommand(&Run{}),
+		// builder.BuildCobraCommand(&Run{}),
 	}
 }
 

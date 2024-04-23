@@ -113,7 +113,7 @@ func (d *Create) Execute(ctx context.Context) error {
 
 	d.logger.Infof(ctx, "Secret %q successfully added", responseSecret.Name)
 	d.logger.JSON(ctx, responseSecret)
-	dashboardURL := fmt.Sprintf("\n ✨ To view your secrets, visit %s/secrets/%s", global.GetMeroxaAPIURL(), responseSecret.ID)
+	dashboardURL := fmt.Sprintf("\n ✨ To view your secrets, visit %s/secrets/%s", global.GetMeroxaTenantURL(), responseSecret.ID)
 	d.logger.Info(ctx, dashboardURL)
 
 	return nil

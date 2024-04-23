@@ -105,19 +105,9 @@ func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
 
-## Setting Local Environment Variables
+## Using Meroxa CLI 
 
-To start using the Meroxa CLI locally, you'll need to set the following environment variables: 
-
-```
-export MEROXA_API_URL=""
-export MEROXA_TENANT_SUBDOMAIN=""
-export MEROXA_TENANT_EMAIL_ADDRESS=""
-export MEROXA_TENANT_PASSWORD=""
-
-```
-
-The tenant email and password should come from an existing platform user.
+To start using the Meroxa CLI, you'll need to have an existing platform user from either local or deployed mdpx instance. Meroxa CLI will prompt you for tenant url ,which should be a full url (e.g http://localhost:8090), user email and password. 
 
 ## Tests
 

@@ -64,7 +64,6 @@ func (at *SecretTime) UnmarshalJSON(b []byte) error {
 
 	dt, err := pb.ParseDateTime(appTime) // time.Parse(pb.DefaultDateLayout, appTime)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	at.Time = dt.Time()

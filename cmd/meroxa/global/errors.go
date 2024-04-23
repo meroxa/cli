@@ -58,8 +58,6 @@ func handleAPIErrors(resp *http.Response) error {
 		if err != nil {
 			return err
 		}
-
-		// API error returned by Meroxa Platform API
 		return apiError
 	}
 	return nil

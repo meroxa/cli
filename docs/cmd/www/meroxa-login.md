@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-login/
 ---
 ## meroxa login
 
-Login to a Conduit Platform tenant
+Login to a Meroxa Platform tenant
 
 ```
 meroxa login [flags]

@@ -58,5 +58,5 @@ func (b *Billing) Execute(ctx context.Context) error {
 }
 
 func (b *Billing) getBillingURL() string {
-	return fmt.Sprintf("%s/settings/billing", global.GetMeroxaAPIURL())
+	return fmt.Sprintf("%s/settings/billing", global.GetMeroxaTenantURL())
 }

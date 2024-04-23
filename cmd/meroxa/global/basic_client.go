@@ -23,9 +23,10 @@ const (
 type BasicClient interface {
 	CollectionRequestMultipart(context.Context, string, string, string, interface{}, url.Values, map[string]string) (*http.Response, error)
 	CollectionRequest(context.Context, string, string, string, interface{}, url.Values) (*http.Response, error)
-	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header, interface{}) (*http.Response, error)
+	URLRequest(context.Context, string, string, interface{}, url.Values, http.Header) (*http.Response, error)
 	AddHeader(string, string)
 	SetTimeout(time.Duration)
+	ResetBaseURL() error
 }
 
 type client struct {
@@ -37,7 +38,7 @@ type client struct {
 
 func NewBasicClient() (BasicClient, error) {
 	// @TODO incorporate tenant subdomain
-	baseURL := GetMeroxaAPIURL()
+	baseURL := GetMeroxaTenantURL()
 	if flagAPIURL != "" {
 		baseURL = flagAPIURL
 	}
@@ -68,6 +69,19 @@ func NewBasicClient() (BasicClient, error) {
 		headers: headers,
 	}
 	return r, nil
+}
+
+func (c *client) ResetBaseURL() error {
+	baseURL := GetMeroxaTenantURL()
+	if flagAPIURL != "" {
+		baseURL = flagAPIURL
+	}
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return err
+	}
+	c.baseURL = u
+	return nil
 }
 
 func (c *client) AddHeader(key, value string) {
@@ -148,7 +162,6 @@ func (c *client) URLRequest(
 	body interface{},
 	params url.Values,
 	headers http.Header,
-	output interface{},
 ) (*http.Response, error) {
 	req, err := c.newRequest(ctx, method, path, body, params, headers)
 	if err != nil {
@@ -161,12 +174,6 @@ func (c *client) URLRequest(
 		return nil, err
 	}
 
-	if output != nil {
-		err = json.NewDecoder(resp.Body).Decode(&output)
-		if err != nil {
-			return nil, err
-		}
-	}
 	return resp, nil
 }
 
@@ -244,9 +251,7 @@ func (c *client) newRequestMultiPart(
 			return nil, err
 		}
 		if _, exists := req.Header["Authorization"]; !exists {
-
 			req.Header.Set("Authorization", accessToken)
-
 		}
 	}
 
@@ -308,9 +313,7 @@ func (c *client) newRequest(
 			return nil, err
 		}
 		if _, exists := req.Header["Authorization"]; !exists {
-
 			req.Header.Set("Authorization", accessToken)
-
 		}
 	}
 	req.Header.Add("Content-Type", jsonContentType)
