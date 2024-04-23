@@ -65,10 +65,7 @@ meroxa apps describe NAME `,
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	apps := &Applications{}
-	var err error
-
-	apps, err = RetrieveApplicationByNameOrID(ctx, d.client, d.args.nameOrUUID, d.flags.Path)
+	apps, err := RetrieveApplicationByNameOrID(ctx, d.client, d.args.nameOrUUID)
 	if err != nil {
 		return err
 	}

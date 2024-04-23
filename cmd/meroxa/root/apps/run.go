@@ -24,7 +24,7 @@ import (
 )
 
 type Run struct {
-	path string
+	// path string
 
 	logger log.Logger
 
@@ -62,7 +62,7 @@ func (r *Run) Flags() []builder.Flag {
 	return builder.BuildFlags(&r.flags)
 }
 
-// TODO - implement RUN
-func (r *Run) Execute(ctx context.Context) error {
+// TODO - implement RUN.
+func (r *Run) Execute(_ context.Context) error {
 	return nil
 }

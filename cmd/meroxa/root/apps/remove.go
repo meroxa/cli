@@ -73,10 +73,7 @@ func (r *Remove) Execute(ctx context.Context) error {
 		}
 	}
 
-	apps := &Applications{}
-	var err error
-
-	apps, err = RetrieveApplicationByNameOrID(ctx, r.client, r.args.nameOrUUID, r.flags.Path)
+	apps, err := RetrieveApplicationByNameOrID(ctx, r.client, r.args.nameOrUUID)
 	if err != nil {
 		return err
 	}

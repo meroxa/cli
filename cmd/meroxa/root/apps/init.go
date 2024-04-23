@@ -11,14 +11,13 @@ import (
 
 type Init struct {
 	logger log.Logger
-	path   string
+	// path   string
 
 	args struct {
 		appName string
 	}
 
 	flags struct {
-		Lang        string `long:"lang" short:"l" usage:"language to use (js|go|py)" required:"true"`
 		Path        string `long:"path" usage:"path where application will be initialized (current directory as default)"`
 		ModVendor   bool   `long:"mod-vendor" usage:"whether to download modules to vendor or globally while initializing a Go application"`
 		SkipModInit bool   `long:"skip-mod-init" usage:"whether to run 'go mod init' while initializing a Go application"`
@@ -67,8 +66,7 @@ func (i *Init) ParseArgs(args []string) error {
 	return nil
 }
 
-// TODO - implement app init
-func (i *Init) Execute(ctx context.Context) error {
-
+// TODO - implement app init.
+func (i *Init) Execute(_ context.Context) error {
 	return nil
 }

@@ -13,8 +13,6 @@ type AppConfig struct {
 	ModuleInit  string            `json:"module_init"`
 }
 
-var prefetched *AppConfig
-
 func GetPath(flag string) (string, error) {
 	if flag == "" {
 		flag = "."

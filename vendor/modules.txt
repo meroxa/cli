@@ -10,6 +10,9 @@ github.com/cased/cased-go
 # github.com/cpuguy83/go-md2man/v2 v2.0.3
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
+## explicit
+github.com/davecgh/go-spew/spew
 # github.com/dewski/jsonpath v0.0.0-20210103075638-af6da8f1a897
 ## explicit; go 1.14
 github.com/dewski/jsonpath
@@ -79,6 +82,9 @@ github.com/pelletier/go-toml/v2/unstable
 # github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8
 ## explicit; go 1.14
 github.com/pkg/browser
+# github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
+## explicit
+github.com/pmezard/go-difflib/difflib
 # github.com/pocketbase/pocketbase v0.19.0
 ## explicit; go 1.19
 github.com/pocketbase/pocketbase/tools/types
@@ -133,6 +139,8 @@ github.com/spf13/viper/internal/encoding/toml
 github.com/spf13/viper/internal/encoding/yaml
 # github.com/stretchr/testify v1.9.0
 ## explicit; go 1.17
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
 # github.com/subosito/gotenv v1.6.0
 ## explicit; go 1.18
 github.com/subosito/gotenv
@@ -142,9 +150,6 @@ github.com/withfig/autocomplete-tools/integrations/cobra
 # go.uber.org/multierr v1.11.0
 ## explicit; go 1.19
 go.uber.org/multierr
-# golang.org/x/crypto v0.22.0
-## explicit; go 1.18
-golang.org/x/crypto/ssh/terminal
 # golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 ## explicit; go 1.20
 golang.org/x/exp/constraints

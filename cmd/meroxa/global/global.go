@@ -47,8 +47,7 @@ const (
 	UserFeatureFlagsEnv          = "USER_FEATURE_FLAGS"
 	UserInfoUpdatedAtEnv         = "USER_INFO_UPDATED_AT"
 	TenantEmailAddress           = "TENANT_EMAIL_ADDRESS"
-	// TenantPassword               = "TENANT_PASSWORD"
-	TenantURL = "TENANT_URL"
+	TenantURL                    = "TENANT_URL"
 
 	defaultClientTimeout = time.Second * 10
 )

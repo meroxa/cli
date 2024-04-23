@@ -56,7 +56,7 @@ type Open struct {
 	client global.BasicClient
 
 	logger log.Logger
-	path   string
+	// path   string
 
 	args struct {
 		NameOrUUID string
@@ -95,7 +95,7 @@ func (o *Open) Execute(ctx context.Context) error {
 		o.Opener = &browserOpener{}
 	}
 
-	apps, err := RetrieveApplicationByNameOrID(ctx, o.client, o.args.NameOrUUID, o.flags.Path)
+	apps, err := RetrieveApplicationByNameOrID(ctx, o.client, o.args.NameOrUUID)
 	if err != nil {
 		return err
 	}

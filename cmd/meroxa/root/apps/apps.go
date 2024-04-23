@@ -87,7 +87,7 @@ type Application struct {
 	State             string   `json:"state"`
 	ApplicationSpec   string   `json:"stream_tech"`
 	Config            string   `json:"config"`
-	PipelineFilenames string   `json:"pipeline_filenames"`
+	PipelineFilenames string   `json:"pipeline_filename"`
 	PipelineEnriched  string   `json:"pipeline_enriched"`
 	PipelineOriginal  string   `json:"pipeline_original"`
 
@@ -166,7 +166,7 @@ func (*Apps) SubCommands() []*cobra.Command {
 	}
 }
 
-func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID, path string) (*Applications, error) {
+func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClient, nameOrID string) (*Applications, error) {
 	apps := Applications{}
 	if nameOrID != "" {
 		a := &url.Values{}

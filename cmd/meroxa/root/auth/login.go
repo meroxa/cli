@@ -79,15 +79,15 @@ type Data struct {
 	Identity map[string]any `json:"identity"`
 }
 
-func (l *Login) getSetTenantSetting(globalSetting string, reader *bufio.Reader) (string, error) {
+func (l *Login) getSetTenantSetting(globalSetting string, reader *bufio.Reader) error {
 	prompted, err := reader.ReadString('\n')
 	if err != nil {
-		return "", err
+		return err
 	}
 	if globalSetting != "" {
 		l.config.Set(globalSetting, strings.TrimSpace(prompted))
 	}
-	return strings.TrimSuffix(strings.TrimSpace(prompted), "\n"), nil
+	return nil
 }
 
 func (l *Login) settingsPromt(settingType, globalSetting, savedValue string, reader *bufio.Reader) error {
@@ -100,14 +100,14 @@ func (l *Login) settingsPromt(settingType, globalSetting, savedValue string, rea
 		yN = strings.ToLower(yN)
 		if strings.TrimSpace(yN) == "n" {
 			fmt.Printf("Please enter value for %s: \n", settingType)
-			_, err = l.getSetTenantSetting(globalSetting, reader)
+			err = l.getSetTenantSetting(globalSetting, reader)
 			if err != nil {
 				return err
 			}
 		}
 	} else {
 		fmt.Printf("Please enter value for %s: \n", settingType)
-		_, err := l.getSetTenantSetting(globalSetting, reader)
+		err := l.getSetTenantSetting(globalSetting, reader)
 		if err != nil {
 			return err
 		}
@@ -159,9 +159,8 @@ func (l *Login) Execute(ctx context.Context) error {
 			return err
 		}
 		return fmt.Errorf("failed to log in : %s %s %+v", pbRespError.Message, pbRespError.Data.Identity["message"], pbRespError)
-	} else {
-		err = json.NewDecoder(http.Body).Decode(&pbResp)
 	}
+	err = json.NewDecoder(http.Body).Decode(&pbResp)
 	l.config.Set(global.AccessTokenEnv, pbResp.Token)
 	l.config.Set(global.TenantEmailAddress, l.config.GetString(global.TenantEmailAddress))
 	l.config.Set(global.TenantURL, l.config.GetString(global.TenantURL))

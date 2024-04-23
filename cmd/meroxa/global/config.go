@@ -43,7 +43,6 @@ func GetMeroxaTenantUser() string {
 // getEnvVal returns the value of either the first existing key specified in keys, or defaultVal if none were present.
 func getEnvVal(keys []string, defaultVal string) string {
 	for _, key := range keys {
-
 		if Config != nil {
 			// First tries to return the value from the meroxa configuration file
 			if val := Config.GetString(key); val != "" {

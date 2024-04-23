@@ -190,11 +190,14 @@ func (d *Deploy) Execute(ctx context.Context) error {
 
 	d.path, err = GetPath(d.flags.Path)
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting conduit app path - %s", err)
 	}
 
 	var buf bytes.Buffer
-	d.gzipConduitApp(d.path, &buf)
+	err = d.gzipConduitApp(d.path, &buf)
+	if err != nil {
+		return fmt.Errorf("error zipping conduit app repository - %s", err)
+	}
 
 	dFile := fmt.Sprintf("conduit-%s.tar.gz", uuid.NewString())
 	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0o777)) //nolint:gomnd
