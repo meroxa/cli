@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
 	github.com/cased/cased-go v1.0.4
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/golang/mock v1.6.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
