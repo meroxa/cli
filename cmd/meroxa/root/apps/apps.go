@@ -126,11 +126,9 @@ func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Describe{}),
-		builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Open{}),
 		builder.BuildCobraCommand(&Remove{}),
-		builder.BuildCobraCommand(&Run{}),
 	}
 }
 
