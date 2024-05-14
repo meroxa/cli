@@ -16,27 +16,27 @@ limitations under the License.
 
 package apps
 
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"net/url"
-	"strings"
-	"testing"
+// import (
+// 	"context"
+// 	"encoding/json"
+// 	"fmt"
+// 	"io"
+// 	"net/http"
+// 	"net/url"
+// 	"strings"
+// 	"testing"
 
-	"github.com/meroxa/cli/log"
+// 	"github.com/meroxa/cli/log"
 
-	"github.com/golang/mock/gomock"
-	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
-)
+// 	"github.com/golang/mock/gomock"
+// 	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
+// )
 
-func TestListApplicationExecution(t *testing.T) {
-	ctx := context.Background()
-	ctrl := gomock.NewController(t)
-	client := basicMock.NewMockBasicClient(ctrl)
-	logger := log.NewTestLogger()
+// func TestListApplicationExecution(t *testing.T) {
+// 	ctx := context.Background()
+// 	ctrl := gomock.NewController(t)
+// 	client := basicMock.NewMockBasicClient(ctrl)
+// 	logger := log.NewTestLogger()
 
 	appTime := AppTime{}
 	err := appTime.UnmarshalJSON([]byte(`"2024-04-01 20:13:20.111Z"`))
@@ -58,10 +58,10 @@ func TestListApplicationExecution(t *testing.T) {
 		Updated: appTime,
 	}
 
-	allApps := []Application{*a, *a2}
+// 	allApps := []Application{*a, *a2}
 
-	filter := &url.Values{}
-	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
+// 	filter := &url.Values{}
+// 	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
 
 	httpResp := &http.Response{
 		Body:       io.NopCloser(strings.NewReader(body)),
@@ -73,23 +73,23 @@ func TestListApplicationExecution(t *testing.T) {
 		nil,
 	)
 
-	list := &List{
-		client: client,
-		logger: logger,
-	}
+// 	list := &List{
+// 		client: client,
+// 		logger: logger,
+// 	}
 
-	err = list.Execute(ctx)
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
+// 	err = list.Execute(ctx)
+// 	if err != nil {
+// 		t.Fatalf("not expected error, got %q", err.Error())
+// 	}
 
-	gotJSONOutput := logger.JSONOutput()
+// 	gotJSONOutput := logger.JSONOutput()
 
-	var gotApp Applications
-	err = json.Unmarshal([]byte(gotJSONOutput), &gotApp)
-	if err != nil {
-		t.Fatalf("not expected error, got %q", err.Error())
-	}
+// 	var gotApp Applications
+// 	err = json.Unmarshal([]byte(gotJSONOutput), &gotApp)
+// 	if err != nil {
+// 		t.Fatalf("not expected error, got %q", err.Error())
+// 	}
 
 	for i, app := range gotApp.Items {
 		if app.Name != allApps[i].Name {

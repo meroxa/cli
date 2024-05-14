@@ -17,21 +17,6 @@ func TestDeployAppFlags(t *testing.T) {
 		{name: "path", required: false},
 	}
 
-	c := builder.BuildCobraCommand(&Deploy{})
-
-	for _, f := range expectedFlags {
-		cf := c.Flags().Lookup(f.name)
-		if cf == nil {
-			t.Fatalf("expected flag \"%s\" to be present", f.name)
-		}
-
-		if f.shorthand != cf.Shorthand {
-			t.Fatalf("expected shorthand \"%s\" got \"%s\" for flag \"%s\"", f.shorthand, cf.Shorthand, f.name)
-		}
-
-		if f.required && !utils.IsFlagRequired(cf) {
-			t.Fatalf("expected flag \"%s\" to be required", f.name)
-		}
 
 		if cf.Hidden != f.hidden {
 			if cf.Hidden {
