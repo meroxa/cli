@@ -70,7 +70,7 @@ func (l *List) Execute(ctx context.Context) error {
 	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
 
-	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/conduitapps", global.GetMeroxaTenantURL())
+	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/apps", global.GetMeroxaTenantURL())
 	l.logger.Info(ctx, output)
 	return nil
 }

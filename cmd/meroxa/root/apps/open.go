@@ -101,7 +101,7 @@ func (o *Open) Execute(ctx context.Context) error {
 	}
 
 	// open a browser window to the application details
-	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaTenantURL(), apps.Items[0].ID)
+	dashboardURL := fmt.Sprintf("%s/apps/%s", global.GetMeroxaTenantURL(), apps.Items[0].ID)
 	err = o.Start(dashboardURL)
 	if err != nil {
 		o.logger.Errorf(ctx, "can't open browser to URL %s\n", dashboardURL)

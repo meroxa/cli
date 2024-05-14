@@ -16,27 +16,26 @@ limitations under the License.
 
 package apps
 
-// import (
-// 	"context"
-// 	"encoding/json"
-// 	"errors"
-// 	"fmt"
-// 	"io"
-// 	"net/http"
-// 	"net/url"
-// 	"os"
-// 	"path/filepath"
-// 	"strings"
-// 	"testing"
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
 
 	"github.com/google/uuid"
 	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
-	"github.com/stretchr/testify/require"
 
-// 	"github.com/golang/mock/gomock"
+	"github.com/golang/mock/gomock"
 
-// 	"github.com/meroxa/cli/log"
-// )
+	"github.com/meroxa/cli/log"
+)
 
 const (
 	body = `
@@ -60,7 +59,7 @@ const (
 			"pipeline_filename": "test-pipeline-1.yaml",
 			"pipeline_original": "pipeline original settings",
 			"state": "provisioned",
-			"stream_tech": "kafka",
+			"stream_provider": "kafka",
 			"updated": "2024-04-01 20:13:20.111Z"
 		  }
 		]
@@ -69,29 +68,29 @@ const (
 	`
 )
 
-// func TestDescribeApplicationArgs(t *testing.T) {
-// 	tests := []struct {
-// 		args []string
-// 		err  error
-// 		name string
-// 	}{
-// 		{args: nil, err: errors.New("requires app name or UUID"), name: ""},
-// 		{args: []string{"ApplicationName"}, err: nil, name: "ApplicationName"},
-// 	}
+func TestDescribeApplicationArgs(t *testing.T) {
+	tests := []struct {
+		args []string
+		err  error
+		name string
+	}{
+		{args: nil, err: errors.New("requires app name or UUID"), name: ""},
+		{args: []string{"ApplicationName"}, err: nil, name: "ApplicationName"},
+	}
 
-// 	for _, tt := range tests {
-// 		ar := &Describe{}
-// 		err := ar.ParseArgs(tt.args)
+	for _, tt := range tests {
+		ar := &Describe{}
+		err := ar.ParseArgs(tt.args)
 
-// 		if err != nil && tt.err.Error() != err.Error() {
-// 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
-// 		}
+		if err != nil && tt.err.Error() != err.Error() {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		}
 
-// 		if tt.name != ar.args.nameOrUUID {
-// 			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.nameOrUUID)
-// 		}
-// 	}
-// }
+		if tt.name != ar.args.nameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.name, ar.args.nameOrUUID)
+		}
+	}
+}
 
 func TestDescribeApplicationExecution(t *testing.T) {
 	ctx := context.Background()
@@ -103,20 +102,6 @@ func TestDescribeApplicationExecution(t *testing.T) {
 	err := appTime.UnmarshalJSON([]byte(`"2024-04-01 20:13:20.111Z"`))
 	if err != nil {
 		t.Fatalf("not expected error, got \"%s\"", err.Error())
-	}
-
-	i := &Init{
-		logger: logger,
-		args:   struct{ appName string }{appName: "test-pipeline-1"},
-		flags: struct {
-			Path        string "long:\"path\" usage:\"path where application will be initialized (current directory as default)\""
-			ModVendor   bool   "long:\"mod-vendor\" usage:\"whether to download modules to vendor or globally while initializing a Go application\""
-			SkipModInit bool   "long:\"skip-mod-init\" usage:\"whether to run 'go mod init' while initializing a Go application\""
-		}{
-			Path:        path,
-			ModVendor:   false,
-			SkipModInit: true,
-		},
 	}
 
 	a := &Application{
@@ -131,14 +116,8 @@ func TestDescribeApplicationExecution(t *testing.T) {
 		ApplicationSpec:   "kafka",
 	}
 
-// 	err = i.Execute(ctx)
-// 	defer func(path string) {
-// 		os.RemoveAll(path)
-// 	}(path)
-// 	require.NoError(t, err)
-
-// 	filter := &url.Values{}
-// 	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
+	filter := &url.Values{}
+	filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", a.Name, a.Name))
 
 	httpResp := &http.Response{
 		Body:       io.NopCloser(strings.NewReader(body)),
@@ -159,10 +138,10 @@ func TestDescribeApplicationExecution(t *testing.T) {
 		}{Path: filepath.Join(path, "appName")},
 	}
 
-// 	err = dc.Execute(ctx)
-// 	if err != nil {
-// 		t.Fatalf("not expected error, got %q", err.Error())
-// 	}
+	err = dc.Execute(ctx)
+	if err != nil {
+		t.Fatalf("not expected error, got %q", err.Error())
+	}
 
 	var gotApp Application
 	err = json.Unmarshal([]byte(logger.JSONOutput()), &gotApp)

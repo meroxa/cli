@@ -33,7 +33,7 @@ const (
 )
 
 func GetMeroxaTenantURL() string {
-	return getEnvVal([]string{"TENANT_URL"}, "https://api.meroxa.io")
+	return getEnvVal([]string{"TENANT_URL"}, "https://test.na1.meroxa.cloud")
 }
 
 func GetMeroxaTenantUser() string {

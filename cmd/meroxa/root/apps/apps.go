@@ -49,9 +49,10 @@ const (
 var displayDetails = display.Details{
 	"Name":              "name",
 	"State":             "state",
-	"ApplicationSpec":   "stream_tech",
+	"Application Spec":  "stream_tech",
 	"Config":            "config",
-	"PipelineFilenames": "pipelines_filenames",
+	"Pipeline Filename": "pipeline_filename",
+	"Stream Provider":   "stream_provider",
 	// "PipelineEnriched":  "pipeline_enriched",
 	// "PipelineOriginal":  "pipeline_original",
 	"Created": "created",
@@ -85,11 +86,12 @@ type Application struct {
 	DeploymentID      []string `json:"deployment_id"`
 	Name              string   `json:"name"`
 	State             string   `json:"state"`
-	ApplicationSpec   string   `json:"stream_tech"`
+	ApplicationSpec   string   `json:"stream_provider"`
 	Config            string   `json:"config"`
 	PipelineFilenames string   `json:"pipeline_filename"`
 	PipelineEnriched  string   `json:"pipeline_enriched"`
 	PipelineOriginal  string   `json:"pipeline_original"`
+	PipelineDraft     string   `json:"pipeline_draft"`
 
 	Created AppTime `json:"created"`
 	Updated AppTime `json:"updated"`
