@@ -21,7 +21,6 @@ require (
 
 require (
 	github.com/briandowns/spinner v1.23.0
-	github.com/stretchr/testify v1.9.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
 )
 

@@ -158,11 +158,9 @@ func (*Apps) SubCommands() []*cobra.Command {
 		// TODO - commenting out run and init until implemented
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Describe{}),
-		// builder.BuildCobraCommand(&Init{}),
 		builder.BuildCobraCommand(&List{}),
 		builder.BuildCobraCommand(&Open{}),
 		builder.BuildCobraCommand(&Remove{}),
-		// builder.BuildCobraCommand(&Run{}),
 	}
 }
 
