@@ -1,6 +1,6 @@
 ## meroxa apps
 
-Manage Turbine Data Applications
+Manage Conduit Data Applications
 
 ### Options
 
@@ -21,11 +21,11 @@ Manage Turbine Data Applications
 ### SEE ALSO
 
 * [meroxa](meroxa.md)	 - The Meroxa CLI
-* [meroxa apps deploy](meroxa_apps_deploy.md)	 - Deploy a Turbine Data Application
-* [meroxa apps describe](meroxa_apps_describe.md)	 - Describe a Turbine Data Application
-* [meroxa apps init](meroxa_apps_init.md)	 - Initialize a Turbine Data Application
-* [meroxa apps list](meroxa_apps_list.md)	 - List Turbine Data Applications
-* [meroxa apps open](meroxa_apps_open.md)	 - Open the link to a Turbine Data Application in the Dashboard
-* [meroxa apps remove](meroxa_apps_remove.md)	 - Remove a Turbine Data Application
-* [meroxa apps run](meroxa_apps_run.md)	 - Execute a Turbine Data Application locally
+* [meroxa apps deploy](meroxa_apps_deploy.md)	 - Deploy a Conduit Data Application
+* [meroxa apps describe](meroxa_apps_describe.md)	 - Describe a Conduit Data Application
+* [meroxa apps init](meroxa_apps_init.md)	 - Initialize a Conduit Data Application
+* [meroxa apps list](meroxa_apps_list.md)	 - List Conduit Data Applications
+* [meroxa apps open](meroxa_apps_open.md)	 - Open the link to a Conduit Data Application in the Dashboard
+* [meroxa apps remove](meroxa_apps_remove.md)	 - Remove a Conduit Data Application
+* [meroxa apps run](meroxa_apps_run.md)	 - Execute a Conduit Data Application locally
 

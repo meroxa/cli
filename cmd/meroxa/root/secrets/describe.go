@@ -38,7 +38,7 @@ func (*Describe) Usage() string {
 
 func (*Describe) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Describe a Turbine Secret",
+		Short: "Describe a Conduit Secret",
 		Long: `This command will describe a turbine secret by id or name.
 `,
 		Example: `meroxa secrets describe nameOrUUID
@@ -74,7 +74,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 
 		for _, secret := range getSecrets.Items {
 			d.logger.Info(ctx, display.PrintTable(secret, displayDetails))
-			dashboardURL := fmt.Sprintf("%s/secrets/%s", global.GetMeroxaAPIURL(), secret.ID)
+			dashboardURL := fmt.Sprintf("%s/secrets/%s", global.GetMeroxaTenantURL(), secret.ID)
 			d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your secret, visit %s", dashboardURL))
 		}
 		d.logger.JSON(ctx, getSecrets)

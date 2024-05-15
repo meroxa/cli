@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-secrets-remove/
 ---
 ## meroxa secrets remove
 
-Remove a Turbine Secret
+Remove a Conduit Secret
 
 ### Synopsis
 
@@ -42,5 +42,5 @@ meroxa apps remove nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Conduit Data Applications
 

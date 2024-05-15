@@ -1,6 +1,6 @@
 ## meroxa secrets remove
 
-Remove a Turbine Secret
+Remove a Conduit Secret
 
 ### Synopsis
 
@@ -35,5 +35,5 @@ meroxa apps remove nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa secrets](meroxa_secrets.md)	 - Manage Turbine Data Applications
+* [meroxa secrets](meroxa_secrets.md)	 - Manage Conduit Data Applications
 

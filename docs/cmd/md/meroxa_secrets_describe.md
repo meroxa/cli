@@ -1,6 +1,6 @@
 ## meroxa secrets describe
 
-Describe a Turbine Secret
+Describe a Conduit Secret
 
 ### Synopsis
 
@@ -36,5 +36,5 @@ meroxa secrets describe nameOrUUID
 
 ### SEE ALSO
 
-* [meroxa secrets](meroxa_secrets.md)	 - Manage Turbine Data Applications
+* [meroxa secrets](meroxa_secrets.md)	 - Manage Conduit Data Applications
 

@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-secrets-list/
 ---
 ## meroxa secrets list
 
-List all Turbine Secrets
+List all Conduit Secrets
 
 ### Synopsis
 
@@ -42,5 +42,5 @@ meroxa secrets list
 
 ### SEE ALSO
 
-* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Turbine Data Applications
+* [meroxa secrets](/cli/cmd/meroxa-secrets/)	 - Manage Conduit Data Applications
 

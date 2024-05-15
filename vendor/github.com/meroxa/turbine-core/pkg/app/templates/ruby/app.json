@@ -1,7 +1,0 @@
-{
-    "name": "{{.AppName}}",
-    "language": "ruby",
-    "resources": {
-        "demopg": "fixtures/demo.json"
-    }
-}

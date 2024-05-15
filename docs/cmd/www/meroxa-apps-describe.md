@@ -7,7 +7,7 @@ url: /cli/cmd/meroxa-apps-describe/
 ---
 ## meroxa apps describe
 
-Describe a Turbine Data Application
+Describe a Conduit Data Application
 
 ### Synopsis
 
@@ -47,5 +47,5 @@ meroxa apps describe NAME
 
 ### SEE ALSO
 
-* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Turbine Data Applications
+* [meroxa apps](/cli/cmd/meroxa-apps/)	 - Manage Conduit Data Applications
 

@@ -46,7 +46,7 @@ func (l *List) Usage() string {
 
 func (l *List) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "List Turbine Data Applications",
+		Short: "List Conduit Data Applications",
 	}
 }
 
@@ -71,7 +71,7 @@ func (l *List) Execute(ctx context.Context) error {
 	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
 
-	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/apps", global.GetMeroxaAPIURL())
+	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/conduitapps", global.GetMeroxaTenantURL())
 	l.logger.Info(ctx, output)
 	return nil
 }

@@ -5,11 +5,11 @@ const completionSpec: Fig.Spec = {
     { name: ["api"], description: "Invoke Meroxa API" },
     {
       name: ["app", "apps"],
-      description: "Manage Turbine Data Applications (Beta)",
+      description: "Manage Conduit Data Applications (Beta)",
       subcommands: [
         {
           name: ["deploy"],
-          description: "Deploy a Turbine Data Application (Beta)",
+          description: "Deploy a Conduit Data Application (Beta)",
           options: [
             {
               name: ["--docker-hub-access-token"],
@@ -42,11 +42,11 @@ const completionSpec: Fig.Spec = {
         },
         {
           name: ["describe"],
-          description: "Describe a Turbine Data Application (Beta)",
+          description: "Describe a Conduit Data Application (Beta)",
         },
         {
           name: ["init"],
-          description: "Initialize a Turbine Data Application (Beta)",
+          description: "Initialize a Conduit Data Application (Beta)",
           options: [
             {
               name: ["--lang", "-l"],
@@ -74,7 +74,7 @@ const completionSpec: Fig.Spec = {
         },
         {
           name: ["ls", "list"],
-          description: "List Turbine Data Applications (Beta)",
+          description: "List Conduit Data Applications (Beta)",
           options: [
             {
               name: ["--no-headers"],
@@ -85,11 +85,11 @@ const completionSpec: Fig.Spec = {
         {
           name: ["log", "logs"],
           description:
-            "View relevant logs to the state of the given Turbine Data Application (Beta)",
+            "View relevant logs to the state of the given Conduit Data Application (Beta)",
         },
         {
           name: ["rm", "delete", "remove"],
-          description: "Removes a Turbine Data Application (Beta)",
+          description: "Removes a Conduit Data Application (Beta)",
           options: [
             { name: ["--force", "-f"], description: "skip confirmation" },
             {
@@ -101,7 +101,7 @@ const completionSpec: Fig.Spec = {
         },
         {
           name: ["run"],
-          description: "Execute a Turbine Data Application locally (Beta)",
+          description: "Execute a Conduit Data Application locally (Beta)",
           options: [
             {
               name: ["--path"],
@@ -112,7 +112,7 @@ const completionSpec: Fig.Spec = {
         },
         {
           name: ["upgrade"],
-          description: "Upgrade a Turbine Data Application (Beta)",
+          description: "Upgrade a Conduit Data Application (Beta)",
           options: [
             {
               name: ["--path"],
@@ -459,40 +459,40 @@ const completionSpec: Fig.Spec = {
         { name: ["api"], description: "Invoke Meroxa API" },
         {
           name: ["app", "apps"],
-          description: "Manage Turbine Data Applications (Beta)",
+          description: "Manage Conduit Data Applications (Beta)",
           subcommands: [
             {
               name: ["deploy"],
-              description: "Deploy a Turbine Data Application (Beta)",
+              description: "Deploy a Conduit Data Application (Beta)",
             },
             {
               name: ["describe"],
-              description: "Describe a Turbine Data Application (Beta)",
+              description: "Describe a Conduit Data Application (Beta)",
             },
             {
               name: ["init"],
-              description: "Initialize a Turbine Data Application (Beta)",
+              description: "Initialize a Conduit Data Application (Beta)",
             },
             {
               name: ["ls", "list"],
-              description: "List Turbine Data Applications (Beta)",
+              description: "List Conduit Data Applications (Beta)",
             },
             {
               name: ["log", "logs"],
               description:
-                "View relevant logs to the state of the given Turbine Data Application (Beta)",
+                "View relevant logs to the state of the given Conduit Data Application (Beta)",
             },
             {
               name: ["rm", "delete", "remove"],
-              description: "Removes a Turbine Data Application (Beta)",
+              description: "Removes a Conduit Data Application (Beta)",
             },
             {
               name: ["run"],
-              description: "Execute a Turbine Data Application locally (Beta)",
+              description: "Execute a Conduit Data Application locally (Beta)",
             },
             {
               name: ["upgrade"],
-              description: "Upgrade a Turbine Data Application (Beta)",
+              description: "Upgrade a Conduit Data Application (Beta)",
             },
           ],
         },

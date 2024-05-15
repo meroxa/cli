@@ -105,19 +105,9 @@ func appendCell(cells []*simpletable.Cell, text string) []*simpletable.Cell {
      ^
 ```
 
-## Setting Local Environment Variables
+## Using Meroxa CLI 
 
-To start using the Meroxa CLI locally, you'll need to set the following environment variables: 
-
-```
-export MEROXA_API_URL=""
-export MEROXA_TENANT_SUBDOMAIN=""
-export MEROXA_TENANT_EMAIL_ADDRESS=""
-export MEROXA_TENANT_PASSWORD=""
-
-```
-
-The tenant email and password should come from an existing platform user.
+To start using the Meroxa CLI, you'll need to have an existing platform user from either local or deployed mdpx instance. Meroxa CLI will prompt you for tenant url ,which should be a full url (e.g http://localhost:8090), user email and password. 
 
 ## Tests
 
@@ -133,19 +123,6 @@ make test
 If you want to enable shell completion manually, you can generate your own using our `meroxa completion` command.
 
 Type `meroxa help completion` for more information, or simply take a look at our [documentation](docs/cmd/md/meroxa_completion.md).
-
-## Development with local TurbineJS dependency
-
-The CLI offers a mode, in which the local version of `turbine-js` is loaded by default which can be useful for developing the CLI and the JS dependency locally when contributing to this project.
-
-You can run the cli in this mode, by adding the following environment variable into your `.envrc` at the root of this project's directory:
-
-```bash
-MEROXA_USE_LOCAL_TURBINE_JS=true
-```
-
-If you run into any `executable not found` issues, please ensure that you have cloned [turbine-js](https://github.com/meroxa/turbine-js) locally and
-installed it globally via running `npm install -g .` in the turbine-js directory.
 
 If you'd like to see this development mode extended with other dependencies or features, you can send us a feature request in our Github issues: https://github.com/meroxa/cli/issues
 

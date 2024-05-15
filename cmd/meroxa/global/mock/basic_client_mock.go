@@ -79,6 +79,20 @@ func (mr *MockBasicClientMockRecorder) CollectionRequestMultipart(arg0, arg1, ar
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CollectionRequestMultipart", reflect.TypeOf((*MockBasicClient)(nil).CollectionRequestMultipart), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
 }
 
+// ResetBaseURL mocks base method.
+func (m *MockBasicClient) ResetBaseURL() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ResetBaseURL")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ResetBaseURL indicates an expected call of ResetBaseURL.
+func (mr *MockBasicClientMockRecorder) ResetBaseURL() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResetBaseURL", reflect.TypeOf((*MockBasicClient)(nil).ResetBaseURL))
+}
+
 // SetTimeout mocks base method.
 func (m *MockBasicClient) SetTimeout(arg0 time.Duration) {
 	m.ctrl.T.Helper()
@@ -92,16 +106,16 @@ func (mr *MockBasicClientMockRecorder) SetTimeout(arg0 interface{}) *gomock.Call
 }
 
 // URLRequest mocks base method.
-func (m *MockBasicClient) URLRequest(arg0 context.Context, arg1, arg2 string, arg3 interface{}, arg4 url.Values, arg5 http.Header, arg6 interface{}) (*http.Response, error) {
+func (m *MockBasicClient) URLRequest(arg0 context.Context, arg1, arg2 string, arg3 interface{}, arg4 url.Values, arg5 http.Header) (*http.Response, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "URLRequest", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	ret := m.ctrl.Call(m, "URLRequest", arg0, arg1, arg2, arg3, arg4, arg5)
 	ret0, _ := ret[0].(*http.Response)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // URLRequest indicates an expected call of URLRequest.
-func (mr *MockBasicClientMockRecorder) URLRequest(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
+func (mr *MockBasicClientMockRecorder) URLRequest(arg0, arg1, arg2, arg3, arg4, arg5 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "URLRequest", reflect.TypeOf((*MockBasicClient)(nil).URLRequest), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "URLRequest", reflect.TypeOf((*MockBasicClient)(nil).URLRequest), arg0, arg1, arg2, arg3, arg4, arg5)
 }

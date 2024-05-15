@@ -45,8 +45,8 @@ func (*Update) Usage() string {
 
 func (*Update) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Update a Turbine Secret",
-		Long:  `This command will update the specified Turbine Secret's data.`,
+		Short: "Update a Conduit Secret",
+		Long:  `This command will update the specified Conduit Secret's data.`,
 		Example: `meroxa secrets update nameOrUUID --data '{"key": "value"}' 
 		or 
 		meroxa secrets update nameOrUUID `,

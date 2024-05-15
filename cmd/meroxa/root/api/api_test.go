@@ -117,7 +117,7 @@ func TestAPIExecution(t *testing.T) {
 		Body:       io.NopCloser(bytes.NewReader([]byte(bodyResponse))),
 	}
 
-	client.EXPECT().URLRequest(ctx, "GET", "/api/collections/apps/records", "somebody", nil, nil, nil).Return(
+	client.EXPECT().URLRequest(ctx, "GET", "/api/collections/apps/records", "somebody", nil, nil).Return(
 		httpResponse,
 		nil,
 	)
