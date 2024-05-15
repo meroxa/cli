@@ -20,7 +20,7 @@ func TestDescribeSecrets(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	client := basicMock.NewMockBasicClient(ctrl)
 	logger := log.NewTestLogger()
-	// mockTurbineCLI := turbineMock.NewMockCLI(ctrl)
+	// mockConduitCLI := ConduitMock.NewMockCLI(ctrl)
 
 	describe := &Describe{
 		client: client,

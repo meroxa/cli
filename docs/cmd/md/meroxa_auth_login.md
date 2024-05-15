@@ -1,6 +1,6 @@
 ## meroxa auth login
 
-Login to a Conduit Platform tenant
+Login to a Meroxa Platform tenant
 
 ```
 meroxa auth login [flags]

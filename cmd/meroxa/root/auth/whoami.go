@@ -18,7 +18,6 @@ package auth
 
 import (
 	"context"
-	"os"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
@@ -53,7 +52,7 @@ func (w *WhoAmI) Logger(logger log.Logger) {
 }
 
 func (w *WhoAmI) Execute(ctx context.Context) error {
-	email := os.Getenv(global.TenantEmailAddress)
+	email := global.GetMeroxaTenantUser()
 	w.logger.Infof(ctx, "%s", email)
 	w.logger.JSON(ctx, email)
 

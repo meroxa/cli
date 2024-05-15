@@ -58,20 +58,19 @@ func (l *List) Execute(ctx context.Context) error {
 	var err error
 	apps := &Applications{}
 
-	response, err := l.client.CollectionRequest(ctx, "GET", collectionName, "", nil, nil)
+	response, err := l.client.CollectionRequest(ctx, "GET", applicationCollection, "", nil, nil)
 	if err != nil {
 		return err
 	}
 	err = json.NewDecoder(response.Body).Decode(&apps)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
 	l.logger.Info(ctx, display.PrintList(apps.Items, displayDetails))
 	l.logger.JSON(ctx, apps)
 
-	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/conduitapps", global.GetMeroxaTenantURL())
+	output := fmt.Sprintf("\n ✨ To view your applications, visit %s/apps", global.GetMeroxaTenantURL())
 	l.logger.Info(ctx, output)
 	return nil
 }

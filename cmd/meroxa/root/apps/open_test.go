@@ -16,148 +16,147 @@ limitations under the License.
 
 package apps
 
-// import (
-// 	"context"
-// 	"errors"
-// 	"fmt"
-// 	"io"
-// 	"net/http"
-// 	"net/url"
-// 	"os"
-// 	"strings"
-// 	"testing"
+import (
+	"context"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"strings"
+	"testing"
 
-// 	"github.com/golang/mock/gomock"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/require"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
-// 	"github.com/meroxa/cli/cmd/meroxa/builder"
-// 	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
-// 	"github.com/meroxa/cli/log"
-// 	"github.com/meroxa/cli/utils"
-// )
+	"github.com/meroxa/cli/cmd/meroxa/builder"
+	basicMock "github.com/meroxa/cli/cmd/meroxa/global/mock"
+	"github.com/meroxa/cli/log"
+	"github.com/meroxa/cli/utils"
+)
 
-// func TestOpenAppArgs(t *testing.T) {
-// 	tests := []struct {
-// 		args    []string
-// 		err     error
-// 		appName string
-// 	}{
-// 		{args: []string{"my-app-name"}, err: nil, appName: "my-app-name"},
-// 	}
+func TestOpenAppArgs(t *testing.T) {
+	tests := []struct {
+		args    []string
+		err     error
+		appName string
+	}{
+		{args: []string{"my-app-name"}, err: nil, appName: "my-app-name"},
+	}
 
-// 	for _, tt := range tests {
-// 		cc := &Open{}
-// 		err := cc.ParseArgs(tt.args)
+	for _, tt := range tests {
+		cc := &Open{}
+		err := cc.ParseArgs(tt.args)
 
-// 		if err != nil && tt.err.Error() != err.Error() {
-// 			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
-// 		}
+		if err != nil && tt.err.Error() != err.Error() {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.err, err)
+		}
 
-// 		if tt.appName != cc.args.NameOrUUID {
-// 			t.Fatalf("expected \"%s\" got \"%s\"", tt.appName, cc.args.NameOrUUID)
-// 		}
-// 	}
-// }
+		if tt.appName != cc.args.NameOrUUID {
+			t.Fatalf("expected \"%s\" got \"%s\"", tt.appName, cc.args.NameOrUUID)
+		}
+	}
+}
 
-// func TestOpenAppFlags(t *testing.T) {
-// 	expectedFlags := []struct {
-// 		name      string
-// 		required  bool
-// 		shorthand string
-// 		hidden    bool
-// 	}{
-// 		{name: "path", required: false},
-// 	}
+func TestOpenAppFlags(t *testing.T) {
+	expectedFlags := []struct {
+		name      string
+		required  bool
+		shorthand string
+		hidden    bool
+	}{
+		{name: "path", required: false},
+	}
 
-// 	c := builder.BuildCobraCommand(&Open{})
+	c := builder.BuildCobraCommand(&Open{})
 
-// 	for _, f := range expectedFlags {
-// 		cf := c.Flags().Lookup(f.name)
-// 		require.NotNil(t, cf)
-// 		assert.Equal(t, f.shorthand, cf.Shorthand)
-// 		assert.Equal(t, f.required, utils.IsFlagRequired(cf))
-// 		assert.Equal(t, f.hidden, cf.Hidden)
-// 	}
-// }
+	for _, f := range expectedFlags {
+		cf := c.Flags().Lookup(f.name)
+		require.NotNil(t, cf)
+		assert.Equal(t, f.shorthand, cf.Shorthand)
+		assert.Equal(t, f.required, utils.IsFlagRequired(cf))
+		assert.Equal(t, f.hidden, cf.Hidden)
+	}
+}
 
-// type mockOpener struct {
-// 	startURL string
-// }
+type mockOpener struct {
+	startURL string
+}
 
-// func (m *mockOpener) Start(URL string) error {
-// 	m.startURL = URL
-// 	return nil
-// }
+func (m *mockOpener) Start(URL string) error {
+	m.startURL = URL
+	return nil
+}
 
-// func TestOpenAppExecution(t *testing.T) {
-// 	ctx := context.Background()
+func TestOpenAppExecution(t *testing.T) {
+	ctx := context.Background()
 
-// 	testCases := []struct {
-// 		desc      string
-// 		appArg    string
-// 		tenant    string
-// 		appFlag   string
-// 		appPath   string
-// 		expectURL string
-// 		apiURL    string
-// 		wantErr   error
-// 	}{
-// 		{
-// 			desc:      "Successfully open app link with arg",
-// 			appArg:    "app-name",
-// 			tenant:    "test",
-// 			expectURL: "https://test.na1.meroxa.cloud/apps/b0p2ok0dcjisn4z/detail",
-// 			appPath:   "",
-// 			apiURL:    "https://test.na1.meroxa.cloud",
-// 		},
-// 		{
-// 			desc:    "Fail with bad path",
-// 			appFlag: os.TempDir(),
-// 			wantErr: errors.New("supply either ID/Name argument or --path flag"),
-// 		},
-// 	}
-// 	for _, tc := range testCases {
-// 		t.Run(tc.desc, func(t *testing.T) {
-// 			ctrl := gomock.NewController(t)
-// 			client := basicMock.NewMockBasicClient(ctrl)
-// 			logger := log.NewTestLogger()
-// 			os.Setenv("UNIT_TEST", "true")
-// 			os.Setenv("MEROXA_API_URL", tc.apiURL)
+	testCases := []struct {
+		desc      string
+		appArg    string
+		tenant    string
+		appFlag   string
+		appPath   string
+		expectURL string
+		apiURL    string
+		wantErr   error
+	}{
+		{
+			desc:      "Successfully open app link with arg",
+			appArg:    "app-name",
+			tenant:    "test",
+			expectURL: "https://test.na1.meroxa.cloud/apps/lxjcdlsvet3aeoe",
+			appPath:   "",
+			apiURL:    "https://test.na1.meroxa.cloud",
+		},
+		{
+			desc:    "Fail with bad path",
+			appFlag: os.TempDir(),
+			wantErr: errors.New("supply either ID/Name argument or --path flag"),
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.desc, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			client := basicMock.NewMockBasicClient(ctrl)
+			logger := log.NewTestLogger()
+			os.Setenv("UNIT_TEST", "true")
+			os.Setenv("MEROXA_API_URL", tc.apiURL)
 
-// 			filter := &url.Values{}
-// 			filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", tc.appArg, tc.appArg))
+			filter := &url.Values{}
+			filter.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", tc.appArg, tc.appArg))
 
-// 			httpResp := &http.Response{
-// 				Body:       io.NopCloser(strings.NewReader(body)),
-// 				Status:     "200 OK",
-// 				StatusCode: 200,
-// 			}
-// 			if tc.wantErr == nil {
-// 				client.EXPECT().CollectionRequest(ctx, "GET", collectionName, "", nil, *filter).Return(
-// 					httpResp,
-// 					nil,
-// 				)
-// 			}
+			httpResp := &http.Response{
+				Body:       io.NopCloser(strings.NewReader(body)),
+				Status:     "200 OK",
+				StatusCode: 200,
+			}
+			if tc.wantErr == nil {
+				client.EXPECT().CollectionRequest(ctx, "GET", applicationCollection, "", nil, *filter).Return(
+					httpResp,
+					nil,
+				)
+			}
 
-// 			opener := &mockOpener{}
-// 			o := &Open{
-// 				logger: logger,
-// 				Opener: opener,
-// 				args: struct {
-// 					NameOrUUID string
-// 				}{NameOrUUID: tc.appArg},
-// 				path:   tc.appPath,
-// 				client: client,
-// 			}
+			opener := &mockOpener{}
+			o := &Open{
+				logger: logger,
+				Opener: opener,
+				args: struct {
+					NameOrUUID string
+				}{NameOrUUID: tc.appArg},
+				client: client,
+			}
 
-// 			err := o.Execute(ctx)
+			err := o.Execute(ctx)
 
-// 			if tc.wantErr != nil {
-// 				require.Error(t, err)
-// 				require.Contains(t, err.Error(), tc.wantErr.Error())
-// 			}
-// 			require.Equal(t, opener.startURL, tc.expectURL)
-// 		})
-// 	}
-// }
+			if tc.wantErr != nil {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.wantErr.Error())
+			}
+			require.Equal(t, opener.startURL, tc.expectURL)
+		})
+	}
+}

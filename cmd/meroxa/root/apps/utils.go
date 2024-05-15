@@ -1,19 +1,8 @@
 package apps
 
 import (
-	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"os"
-	"os/exec"
-	"path"
 	"path/filepath"
-	"regexp"
-	"strings"
-
-	"github.com/meroxa/cli/log"
-	"golang.org/x/mod/semver"
 )
 
 type AppConfig struct {
@@ -23,8 +12,6 @@ type AppConfig struct {
 	Vendor      string            `json:"vendor"`
 	ModuleInit  string            `json:"module_init"`
 }
-
-var prefetched *AppConfig
 
 func GetPath(flag string) (string, error) {
 	if flag == "" {
@@ -36,172 +23,6 @@ func GetPath(flag string) (string, error) {
 		return "", err
 	}
 	return flag, nil
-}
-
-// GetAppNameFromAppJSON returns specified app name in users' app.json.
-func GetAppNameFromAppJSON(l log.Logger, pwd string) (string, error) {
-	l.StartSpinner("\t", "Reading application name from app.json...")
-	appConfig, err := ReadConfigFile(pwd)
-	if err != nil {
-		return "", err
-	}
-
-	if appConfig.Name == "" {
-		l.StopSpinnerWithStatus("`name` should be specified in your app.json", log.Failed)
-		return "", fmt.Errorf("add `name` to your app.json")
-	}
-	l.StopSpinnerWithStatus(fmt.Sprintf("Checked your application name is %q", appConfig.Name), log.Successful)
-	return appConfig.Name, nil
-}
-
-// SetModuleInitInAppJSON returns whether to run mod init.
-func SetModuleInitInAppJSON(pwd string, skipInit bool) error {
-	appConfig, err := ReadConfigFile(pwd)
-	if err != nil {
-		return err
-	}
-	appConfig.ModuleInit = "true"
-	if skipInit {
-		appConfig.ModuleInit = "false"
-	}
-	return WriteConfigFile(pwd, appConfig)
-}
-
-func GitInit(ctx context.Context, appPath string) error {
-	if appPath == "" {
-		return errors.New("path is required")
-	}
-
-	isGitOlderThan228, err := checkGitVersion(ctx)
-	if err != nil {
-		return err
-	}
-
-	cmd := exec.CommandContext(ctx, "git", "init", appPath)
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return fmt.Errorf(string(out))
-	}
-
-	if !isGitOlderThan228 {
-		cmd = exec.CommandContext(ctx, "git", "config", "init.defaultBranch", "main")
-		cmd.Dir = appPath
-		if out, err := cmd.CombinedOutput(); err != nil {
-			return errors.New(string(out))
-		}
-	}
-	cmd = exec.CommandContext(ctx, "git", "checkout", "-b", "main")
-	cmd.Dir = appPath
-	if out, err := cmd.CombinedOutput(); err != nil {
-		return errors.New(string(out))
-	}
-
-	return nil
-}
-
-// CheckUncommittedChanges prints warnings about uncommitted tracked and untracked files.
-func CheckUncommittedChanges(ctx context.Context, l log.Logger, appPath string) error {
-	l.Info(ctx, "Checking for uncommitted changes...")
-	cmd := exec.Command("git", "status", "--porcelain=v2")
-	cmd.Dir = appPath
-	output, err := cmd.Output()
-	if err != nil {
-		return err
-	}
-	all := string(output)
-	lines := strings.Split(strings.TrimSpace(all), "\n")
-	if len(lines) > 0 && lines[0] != "" {
-		cmd = exec.Command("git", "status")
-		output, err = cmd.Output()
-		if err != nil {
-			return err
-		}
-		l.Error(ctx, string(output))
-		return fmt.Errorf("unable to proceed with deployment because of uncommitted changes")
-	}
-	l.Infof(ctx, "\t%s No uncommitted changes!", l.SuccessfulCheck())
-	return nil
-}
-
-// GetGitSha will return the latest gitSha that will be used to create an application.
-func GetGitSha(ctx context.Context, appPath string) (string, error) {
-	// Gets latest git sha
-	cmd := exec.CommandContext(ctx, "git", "rev-parse", "HEAD")
-	cmd.Dir = appPath
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return "", fmt.Errorf("%s: %v", cmd.String(), string(output))
-	}
-
-	return string(output), nil
-}
-
-func checkGitVersion(ctx context.Context) (bool, error) {
-	cmd := exec.CommandContext(ctx, "git", "version")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return false, errors.New(string(out))
-	}
-	// looks like "git version 2.38.1"
-	r := regexp.MustCompile("git version ([0-9.]+)")
-	matches := r.FindStringSubmatch(string(out))
-	if len(matches) > 0 {
-		comparison := semver.Compare("2.28", matches[1])
-		return comparison >= 1, nil
-	}
-	return true, nil
-}
-
-func GitMainBranch(branch string) bool {
-	switch branch {
-	case "main", "master":
-		return true
-	}
-
-	return false
-}
-
-func GetGitBranch(appPath string) (string, error) {
-	cmd := exec.Command("git", "branch", "--show-current")
-	cmd.Dir = appPath
-	output, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(output)), nil
-}
-
-// ReadConfigFile will read the content of an app.json based on path.
-func ReadConfigFile(appPath string) (*AppConfig, error) {
-	var appConfig AppConfig
-
-	if prefetched == nil || os.Getenv("UNIT_TEST") != "" {
-		appConfigPath := path.Join(appPath, "app.json")
-		appConfigBytes, err := os.ReadFile(appConfigPath)
-		if err != nil {
-			return &appConfig, fmt.Errorf("could not find an app.json file on path %q."+
-				" Try a different value for `--path`", appPath)
-		}
-		if err := json.Unmarshal(appConfigBytes, &appConfig); err != nil {
-			return &appConfig, err
-		}
-		prefetched = &appConfig
-	}
-
-	return prefetched, nil
-}
-
-func WriteConfigFile(appPath string, cfg *AppConfig) error {
-	appConfigPath := path.Join(appPath, "app.json")
-	data, err := json.MarshalIndent(cfg, "", "  ")
-	if err != nil {
-		return err
-	}
-	err = os.WriteFile(appConfigPath, data, 0o664)
-	if err != nil {
-		return fmt.Errorf("%v\n"+
-			"unable to update app.json file on path %q. Maybe try using a different value for `--path`", err, appPath)
-	}
-	return nil
 }
 
 // SwitchToAppDirectory switches temporarily to the application's directory.

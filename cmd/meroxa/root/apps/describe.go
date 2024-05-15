@@ -57,21 +57,15 @@ func (d *Describe) Flags() []builder.Flag {
 func (d *Describe) Docs() builder.Docs {
 	return builder.Docs{
 		Short: "Describe a Conduit Data Application",
-		Long: `This command will fetch details about the Application specified in '--path'
-(or current working directory if not specified) on our Meroxa Platform,
-or the Application specified by the given ID or Application Name.`,
-		Example: `meroxa apps describe # assumes that the Application is in the current directory
-meroxa apps describe --path /my/app
+		Long:  `This command will fetch details about the Application specified by the given ID or Application Name.`,
+		Example: `
 meroxa apps describe ID
 meroxa apps describe NAME `,
 	}
 }
 
 func (d *Describe) Execute(ctx context.Context) error {
-	var apps *Applications
-	var err error
-
-	apps, err = RetrieveApplicationByNameOrID(ctx, d.client, d.args.nameOrUUID)
+	apps, err := RetrieveApplicationByNameOrID(ctx, d.client, d.args.nameOrUUID)
 	if err != nil {
 		return err
 	}
@@ -79,7 +73,7 @@ func (d *Describe) Execute(ctx context.Context) error {
 	for _, app := range apps.Items {
 		d.logger.Info(ctx, display.PrintTable(app, displayDetails))
 		d.logger.JSON(ctx, app)
-		dashboardURL := fmt.Sprintf("%s/conduitapps/%s/detail", global.GetMeroxaTenantURL(), app.ID)
+		dashboardURL := fmt.Sprintf("%s/apps/%s", global.GetMeroxaTenantURL(), app.ID)
 		d.logger.Info(ctx, fmt.Sprintf("\n ✨ To view your application, visit %s", dashboardURL))
 	}
 

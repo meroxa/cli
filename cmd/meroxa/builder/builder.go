@@ -266,6 +266,11 @@ func buildCommandWithBasicClient(cmd *cobra.Command, c Command) {
 				return err
 			}
 		}
+		err := global.PersistentPreRunE(cmd)
+		if err != nil {
+			return err
+		}
+
 		cl, err := global.NewBasicClient()
 		if err != nil {
 			return err

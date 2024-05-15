@@ -11,7 +11,7 @@ Describe a Conduit Secret
 
 ### Synopsis
 
-This command will describe a turbine secret by id or name.
+This command will describe a Conduit secret by id or name.
 
 
 ```

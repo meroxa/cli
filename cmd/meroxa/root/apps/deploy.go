@@ -17,34 +17,47 @@ limitations under the License.
 package apps
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/meroxa/cli/cmd/meroxa/builder"
 	"github.com/meroxa/cli/cmd/meroxa/global"
-	"github.com/meroxa/cli/config"
 	"github.com/meroxa/cli/log"
 )
 
 type Deploy struct {
 	flags struct {
 		Path string `long:"path" usage:"Path to the app directory (default is local directory)"`
-		Spec string `long:"spec" usage:"Deployment specification version to use to build and deploy the app" hidden:"true"`
 	}
 
 	client global.BasicClient
-	config config.Config
 	logger log.Logger
+	path   string
+}
 
-	appName string
+type ApplicationDeployment struct {
+	ID                string                 `json:"id"`
+	State             ApplicationState       `json:"state"`
+	ApplicationSpec   map[string]interface{} `json:"app_spec"`
+	ProcessorsPlugins map[string]interface{} `json:"processors_plugins"`
+	PipelineFilenames map[string]interface{} `json:"pipelines_filenames"`
+	Created           AppTime                `json:"created"`
+	Updated           AppTime                `json:"updated"`
+	Archive           string                 `json:"archive"`
 }
 
 var (
 	_ builder.CommandWithBasicClient = (*Deploy)(nil)
-	_ builder.CommandWithConfig      = (*Deploy)(nil)
 	_ builder.CommandWithDocs        = (*Deploy)(nil)
 	_ builder.CommandWithExecute     = (*Deploy)(nil)
 	_ builder.CommandWithFlags       = (*Deploy)(nil)
@@ -57,7 +70,7 @@ func (*Deploy) Usage() string {
 
 func (*Deploy) Docs() builder.Docs {
 	return builder.Docs{
-		Short: "Deploy a Turbine Data Application",
+		Short: "Deploy a Conduit Data Application",
 		Long: `This command will deploy the application specified in '--path'
 (or current working directory if not specified) to our Meroxa Platform.
 If deployment was successful, you should expect an application you'll be able to fully manage
@@ -66,10 +79,6 @@ If deployment was successful, you should expect an application you'll be able to
 meroxa apps deploy --path ./my-app
 `,
 	}
-}
-
-func (d *Deploy) Config(cfg config.Config) {
-	d.config = cfg
 }
 
 func (d *Deploy) BasicClient(client global.BasicClient) {
@@ -89,35 +98,153 @@ func (d *Deploy) Logger(logger log.Logger) {
 	d.logger = logger
 }
 
+func switchToAppDirectory(appPath string) (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return pwd, err
+	}
+	return pwd, os.Chdir(appPath)
+}
+
+func shouldSkipDir(fi os.FileInfo) bool {
+	if !fi.IsDir() {
+		return false
+	}
+
+	switch fi.Name() {
+	case ".git", "fixtures", "node_modules":
+		return true
+	}
+
+	return false
+}
+
+func (d *Deploy) gzipConduitApp(src string, buf io.Writer) error {
+	// Grab the directory we care about (app's directory)
+	appDir := filepath.Base(src)
+
+	// Change to parent's app directory
+	pwd, err := switchToAppDirectory(filepath.Dir(src))
+	if err != nil {
+		return err
+	}
+
+	zipWriter := gzip.NewWriter(buf)
+	tarWriter := tar.NewWriter(zipWriter)
+
+	err = filepath.Walk(appDir, func(file string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if shouldSkipDir(fi) {
+			return filepath.SkipDir
+		}
+		header, err := tar.FileInfoHeader(fi, file)
+		if err != nil {
+			return err
+		}
+
+		header.Name = filepath.ToSlash(file)
+		if err := tarWriter.WriteHeader(header); err != nil { //nolint:govet
+			return err
+		}
+		if !fi.Mode().IsRegular() {
+			return nil
+		}
+		if !fi.IsDir() {
+			var data *os.File
+			data, err = os.Open(file)
+			defer func(data *os.File) {
+				err = data.Close()
+				if err != nil {
+					panic(err.Error())
+				}
+			}(data)
+			if err != nil {
+				return err
+			}
+			if _, err := io.Copy(tarWriter, data); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := tarWriter.Close(); err != nil {
+		return err
+	}
+	if err := zipWriter.Close(); err != nil {
+		return err
+	}
+
+	return os.Chdir(pwd)
+}
+
 func (d *Deploy) Execute(ctx context.Context) error {
 	var err error
 
-	// TODO : add conduit logic for deploy
+	d.logger.StartSpinner("\t", "Starting app deploy, zipping and uploading application tar.")
+
+	d.path, err = GetPath(d.flags.Path)
+	if err != nil {
+		return fmt.Errorf("error getting conduit app path - %s", err)
+	}
+
+	var buf bytes.Buffer
+	err = d.gzipConduitApp(d.path, &buf)
+	if err != nil {
+		return fmt.Errorf("error zipping conduit app repository - %s", err)
+	}
+
+	dFile := fmt.Sprintf("conduit-%s.tar.gz", uuid.NewString())
+	fileToWrite, err := os.OpenFile(dFile, os.O_CREATE|os.O_RDWR, os.FileMode(0o777)) //nolint:gomnd
+	defer func(fileToWrite *os.File) {
+		if err = fileToWrite.Close(); err != nil {
+			panic(err.Error())
+		}
+
+		d.logger.StartSpinner("\t", fmt.Sprintf("Removing %q...", dFile))
+		if err = os.Remove(dFile); err != nil {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("\t Something went wrong trying to remove %q", dFile), log.Failed)
+		} else {
+			d.logger.StopSpinnerWithStatus(fmt.Sprintf("Removed %q", dFile), log.Successful)
+		}
+	}(fileToWrite)
+	if err != nil {
+		return err
+	}
+	if _, err = io.Copy(fileToWrite, &buf); err != nil {
+		return err
+	}
+
+	files := map[string]string{
+		"archive": fileToWrite.Name(),
+	}
 
 	response, err := d.client.CollectionRequestMultipart(
 		ctx,
 		http.MethodPost,
-		collectionName,
+		deploymentCollection,
 		"",
 		nil,
 		nil,
-		map[string]string{}, // TODO: change back to files from above
+		files,
 	)
 	if err != nil {
 		return err
 	}
 
-	apps := &Application{}
-	err = json.NewDecoder(response.Body).Decode(&apps)
-	if err != nil {
-		return err
+	var j map[string]interface{}
+	err = json.NewDecoder(response.Body).Decode(&j)
+
+	if j["state"] == "failed" {
+		return fmt.Errorf("error deploying application, application state - %s", j["state"])
 	}
 
-	dashboardURL := fmt.Sprintf("%s/apps/%s/detail", global.GetMeroxaTenantURL(), apps.ID)
-	output := fmt.Sprintf("Application %q successfully deployed!\n\n  ✨ To view your application, visit %s",
-		d.appName, dashboardURL)
-
-	d.logger.StopSpinnerWithStatus(output, log.Successful)
+	d.logger.StopSpinnerWithStatus("Application successfully deployed!", log.Successful)
 
 	return nil
 }

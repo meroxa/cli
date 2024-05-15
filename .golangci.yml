@@ -22,7 +22,8 @@ linters-settings:
   gocyclo:
     min-complexity: 15
   govet:
-    check-shadowing: true
+    enable:
+      - shadow
     settings:
       printf:
         funcs:
@@ -83,7 +84,6 @@ linters:
     - gochecknoinits
     - goconst
     - gocyclo
-    - godot
     - gofmt
     - goimports
     - goprintffuncname

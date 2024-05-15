@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"github.com/meroxa/cli/cmd/meroxa/builder"
+
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	pb "github.com/pocketbase/pocketbase/tools/types"
 
@@ -35,34 +36,66 @@ import (
 type ApplicationState string
 
 const (
-	ApplicationStateInitialized ApplicationState = "initialized"
-	ApplicationStateDeploying   ApplicationState = "deploying"
-	ApplicationStatePending     ApplicationState = "pending"
-	ApplicationStateRunning     ApplicationState = "running"
-	ApplicationStateDegraded    ApplicationState = "degraded"
-	ApplicationStateFailed      ApplicationState = "failed"
+	AppProvisioningState   ApplicationState = "provisioning"
+	AppProvisionedState    ApplicationState = "provisioned"
+	AppDeprovisioningState ApplicationState = "deprovisioning"
+	AppDeprovisionedState  ApplicationState = "deprovisioned"
+	AppDegradedState       ApplicationState = "degraded"
 
-	collectionName = "apps"
+	deploymentCollection  = "conduit_deployments"
+	applicationCollection = "conduit_apps"
 )
 
 var displayDetails = display.Details{
-	"Name":        "name",
-	"State":       "state",
-	"SpecVersion": "specVersion",
-	"Created":     "created",
-	"Updated":     "updated",
+	"Name":              "name",
+	"State":             "state",
+	"Application Spec":  "stream_tech",
+	"Config":            "config",
+	"Pipeline Filename": "pipeline_filename",
+	"Stream Provider":   "stream_provider",
+	// "PipelineEnriched":  "pipeline_enriched",
+	// "PipelineOriginal":  "pipeline_original",
+	"Created": "created",
+	"Updated": "updated",
+}
+
+type Deployment struct {
+	ID              string `json:"id,omitempty"`
+	Archive         string `json:"archive"`
+	State           string `json:"state,omitempty"`
+	ApplicationSpec string `json:"app_spec,omitempty"`
+
+	Created            AppTime `json:"created,omitempty"`
+	Updated            AppTime `json:"updated,omitempty"`
+	ProcessorPlugins   string  `json:"processors_plugins,omitempty"`
+	ProcessorFilenames string  `json:"processors_filenames,omitempty"`
+	PipelineFilenames  string  `json:"pipeline_filenames,omitempty"`
+}
+
+type Deployments struct {
+	Page       int          `json:"page"`
+	PerPage    int          `json:"perPage"`
+	TotalItems int          `json:"totalItems"`
+	TotalPages int          `json:"totalPages"`
+	Items      []Deployment `json:"items"`
 }
 
 // Application represents the Meroxa Application type within the Meroxa API.
 type Application struct {
-	ID          string                 `json:"id"`
-	Name        string                 `json:"name"`
-	State       ApplicationState       `json:"state"`
-	Spec        map[string]interface{} `json:"spec"`
-	SpecVersion string                 `json:"specVersion"`
-	Created     AppTime                `json:"created"`
-	Updated     AppTime                `json:"updated"`
-	Image       string                 `json:"imageArchive"`
+	ID                string   `json:"id"`
+	DeploymentID      []string `json:"deployment_id"`
+	Name              string   `json:"name"`
+	State             string   `json:"state"`
+	ApplicationSpec   string   `json:"stream_provider"`
+	Config            string   `json:"config"`
+	PipelineFilenames string   `json:"pipeline_filename"`
+	PipelineEnriched  string   `json:"pipeline_enriched"`
+	PipelineOriginal  string   `json:"pipeline_original"`
+	PipelineDraft     string   `json:"pipeline_draft"`
+
+	Created AppTime `json:"created"`
+	Updated AppTime `json:"updated"`
+	Archive string  `json:"archive"`
 }
 
 type Applications struct {
@@ -124,6 +157,7 @@ func (*Apps) Docs() builder.Docs {
 
 func (*Apps) SubCommands() []*cobra.Command {
 	return []*cobra.Command{
+		// TODO - commenting out run and init until implemented
 		builder.BuildCobraCommand(&Deploy{}),
 		builder.BuildCobraCommand(&Describe{}),
 		builder.BuildCobraCommand(&List{}),
@@ -138,7 +172,7 @@ func RetrieveApplicationByNameOrID(ctx context.Context, client global.BasicClien
 		a := &url.Values{}
 		a.Add("filter", fmt.Sprintf("(id='%s' || name='%s')", nameOrID, nameOrID))
 
-		response, err := client.CollectionRequest(ctx, "GET", collectionName, "", nil, *a)
+		response, err := client.CollectionRequest(ctx, "GET", applicationCollection, "", nil, *a)
 		if err != nil {
 			return nil, err
 		}
