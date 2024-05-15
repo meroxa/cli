@@ -47,7 +47,7 @@ const (
 		"items": [
 		  {
 			"collectionId": "77byam8idl1rv8b",
-			"collectionName": "conduitapps",
+			"collectionName": "conduit_apps",
 			"config": null,
 			"created": "2024-04-01 20:13:20.111Z",
 			"deployment_id": [
