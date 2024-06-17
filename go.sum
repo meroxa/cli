@@ -1,7 +1,7 @@
 github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb h1:k4DUpDUiAc2dlZxWWO82kBlKi8EU1kyDwNgu1nNsrhk=
 github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb/go.mod h1:gx4+gp4N5VWqThMIidoUMBNUCT4Pan3J8ETR1ParWUU=
-github.com/briandowns/spinner v1.23.0 h1:alDF2guRWqa/FOZZYWjlMIx2L6H0wyewPxo/CH4Pt2A=
-github.com/briandowns/spinner v1.23.0/go.mod h1:rPG4gmXeN3wQV/TsAY4w8lPdIM6RX3yqeBQJSrbXjuE=
+github.com/briandowns/spinner v1.23.1 h1:t5fDPmScwUjozhDj4FA46p5acZWIPXYE30qW2Ptu650=
+github.com/briandowns/spinner v1.23.1/go.mod h1:LaZeM4wm2Ywy6vO571mvhQNRcWfRUnXOs0RcKV0wYKM=
 github.com/cased/cased-go v1.0.4 h1:7HxJb80Z//e0g8o7yIANh0cqNMqv08UIHvADt1uAeX4=
 github.com/cased/cased-go v1.0.4/go.mod h1:ycyzk9B574kc7XGS6UhhlfTD19Q3D23N3irNe+LQ++A=
 github.com/chzyer/logex v1.1.10 h1:Swpa1K6QvQznwJRcfTfQJmTE72DqScAa40E+fbHEXEE=
