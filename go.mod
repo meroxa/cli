@@ -1,6 +1,7 @@
 module github.com/meroxa/cli
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/alexeyco/simpletable v0.0.0-20200730140406-5bb24159ccfb
@@ -30,7 +31,7 @@ require (
 	github.com/meroxa/turbine-core v0.0.0-20230815153536-e0c914b74ea1
 	github.com/stretchr/testify v1.9.0
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1
-	golang.org/x/mod v0.20.0
+	golang.org/x/mod v0.21.0
 	google.golang.org/protobuf v1.34.2
 )
 
