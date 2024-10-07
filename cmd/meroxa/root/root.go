@@ -24,6 +24,7 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/global"
 	"github.com/meroxa/cli/cmd/meroxa/root/api"
 	"github.com/meroxa/cli/cmd/meroxa/root/apps"
+	"github.com/meroxa/cli/cmd/meroxa/root/auditlogs"
 	"github.com/meroxa/cli/cmd/meroxa/root/auth"
 	"github.com/meroxa/cli/cmd/meroxa/root/config"
 	"github.com/meroxa/cli/cmd/meroxa/root/login"
@@ -32,7 +33,6 @@ import (
 	"github.com/meroxa/cli/cmd/meroxa/root/secrets"
 	"github.com/meroxa/cli/cmd/meroxa/root/version"
 	"github.com/meroxa/cli/cmd/meroxa/root/whoami"
-
 	"github.com/spf13/cobra"
 )
 
@@ -76,6 +76,7 @@ Using the CLI you are able to create and manage sophisticated data pipelines wit
 	cmd.AddCommand(builder.BuildCobraCommand(&version.Version{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&whoami.WhoAmI{}))
 	cmd.AddCommand(builder.BuildCobraCommand(&secrets.Secrets{}))
+	cmd.AddCommand(builder.BuildCobraCommand(&auditlogs.Auditlog{}))
 
 	return cmd
 }
